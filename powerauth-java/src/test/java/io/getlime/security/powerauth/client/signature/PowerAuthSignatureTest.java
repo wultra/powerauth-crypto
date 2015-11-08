@@ -76,7 +76,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKey = clientSignature.generateClientSignatureKey(masterClientKey);
                 byte[] signature = clientSignature.signatureForData(data, signatureClientKey, new Long(ctr));
                 
-                System.out.println("signature client: " + Arrays.toString(signature));
+                // System.out.println("signature client: " + Arrays.toString(signature));
 
                 // validate data signature
                 SecretKey masterServerKey = serverSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
@@ -85,7 +85,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureServerKey = serverSignature.generateServerSignatureKey(masterServerKey);
                 assertEquals(signatureClientKey, signatureServerKey);
                 
-                System.out.println("signature server: " + Arrays.toString(new SignatureUtils().computePowerAuthSignature(data, signatureServerKey, new Long(ctr))));
+                // System.out.println("signature server: " + Arrays.toString(new SignatureUtils().computePowerAuthSignature(data, signatureServerKey, new Long(ctr))));
                 
                 boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, signatureServerKey, new Long(ctr));
                 assertTrue(isSignatureValid);
