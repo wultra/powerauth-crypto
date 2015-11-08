@@ -1,28 +1,206 @@
 <?xml version="1.0"?>
 <xs:schema version="1.0"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://getlime.io/security/powerauth"
            targetNamespace="http://getlime.io/security/powerauth"
            elementFormDefault="qualified">
     
-    <xs:element name="initActivationRequest">
+    <!-- Init activation //-->
+    
+    <xs:element name="InitActivationRequest">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="userId" type="xs:string"/>
+                <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
     
-    <xs:element name="initActivationResponse">
+    <xs:element name="InitActivationResponse">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="activationIdShort" type="xs:string"/>
-                <xs:element name="activationOTP" type="xs:string"/>
-                <xs:element name="activationSignature" type="xs:string"/>
+                <xs:element name="activationIdShort" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationOTP" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationSignature" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
     
-    <xs:simpleType name="ActivationState">
+    <!-- Exchange public keys //-->
+    
+    <xs:element name="PrepareActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationIdShort" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationNonce" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="cDevicePublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="clientName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="PrepareActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationNonce" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="ephemeralPublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="cServerPublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="cServerPublicKeySignature" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Commit activation //-->
+    
+    <xs:element name="CommitActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="CommitActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activated" type="xs:boolean"  minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Get Activation Status //-->
+    
+    <xs:element name="GetActivationStatusRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetActivationStatusResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="cStatusBlob" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Remove Activation //-->
+    
+    <xs:element name="RemoveActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="RemoveActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="removed" type="xs:boolean"  minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Activations for user //-->
+    
+    <xs:element name="GetActivationListForUserRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetActivationListForUserResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activations" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                            <xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="1" maxOccurs="1"/>
+                            <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                            <xs:element name="clientName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Verify signature //-->
+    
+    <xs:element name="VerifySignatureRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="data" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="signature" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="VerifySignatureResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="remainingAttempts" type="xs:integer"  minOccurs="1" maxOccurs="1"/>
+                <xs:element name="signatureValid" type="xs:boolean"  minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Block Activation //-->
+    
+    <xs:element name="BlockActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="BlockActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Unblock Activation //-->
+    
+    <xs:element name="UnblockActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="UnblockActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- PowerAuth 2.0 Enumerations //-->
+    
+    <xs:simpleType name="ActivationStatus">
         <xs:restriction base="xs:string">
             <xs:enumeration value="CREATED"/>
             <xs:enumeration value="OTP_USED"/>

@@ -21,14 +21,14 @@ public class WebServiceConfig extends WsConfigurerAdapter {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(applicationContext);
         servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean(servlet, "/ws/*");
+        return new ServletRegistrationBean(servlet, "/powerauth/*");
     }
 
-    @Bean(name = "powerauth")
+    @Bean(name = "service")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema countriesSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("PowerAuthPort");
-        wsdl11Definition.setLocationUri("/ws");
+        wsdl11Definition.setLocationUri("/powerauth");
         wsdl11Definition.setTargetNamespace("http://getlime.io/security/powerauth");
         wsdl11Definition.setSchema(countriesSchema);
         return wsdl11Definition;

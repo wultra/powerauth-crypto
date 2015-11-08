@@ -21,7 +21,7 @@ public class PowerAuthEndpoint {
         this.powerAuthRepository = powerAuthRepository;
     }
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getCountryRequest")
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "initActivationRequest")
     @ResponsePayload
     public InitActivationResponse initActivation(@RequestPayload InitActivationRequest request) {
         InitActivationResponse response = new InitActivationResponse();
