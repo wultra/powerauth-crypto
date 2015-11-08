@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://getlime.io/security/powerauth"
+           elementFormDefault="qualified">
+    
+    <xs:element name="initActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="userId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="initActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationIdShort" type="xs:string"/>
+                <xs:element name="activationOTP" type="xs:string"/>
+                <xs:element name="activationSignature" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:simpleType name="ActivationState">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CREATED"/>
+            <xs:enumeration value="OTP_USED"/>
+            <xs:enumeration value="ACTIVE"/>
+            <xs:enumeration value="BLOCKED"/>
+            <xs:enumeration value="REMOVED"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

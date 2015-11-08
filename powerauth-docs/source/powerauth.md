@@ -560,7 +560,7 @@ Following keys are used for the PowerAuth cryptography scheme.
 	<tr>
 		<th>name</th>
 		<th>created as</th>
-		<th>purpose<th>
+		<th>purpose</th>
 	</tr>
 	<tr>
 		<td>`KEY_DEVICE_PRIVATE`</td>
