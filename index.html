@@ -1,0 +1,668 @@
+<h1>PowerAuth 2.0 Specification</h1>
+
+<p>PowerAuth 2.0 is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or identity management applications. It defines all items that are required for a complete security solution: a used cryptography, a security scheme and standard RESTful API end-points.</p>
+
+<p>A typical use-case for PowerAuth 2.0 protocol would be assuring the security of a mobile banking application. User usually downloads a "blank" (non-personalized) mobile banking app from the mobile application market. Then, user activates (personalizes, using a key-exchange algorithm) the mobile banking using some application that is assumed secure, for example via the internet banking or via the branch kiosk system. Finally, user can use activated mobile banking application to create signed requests - to log in to mobile banking, send a payment, certify contracts, etc.</p>
+
+<h1>Group PowerAuth Activation</h1>
+
+<p>In PowerAuth 2.0, both client and server must first share the same shared master secret <code>KEY_MASTER_SECRET</code>. The <code>KEY_MASTER_SECRET</code> is a symetric key that is used as a base for deriving the further purpose specific shared secret keys. These derived keys are then used for an HTTP request signing. In order to establish this shared master secret, a secure key exchange (or "activation") must take a place.</p>
+
+<h2>Activation Actors</h2>
+
+<p>Following components play role in activation:</p>
+
+<ul>
+<li><strong>PowerAuth 2.0 Client</strong> - A client "to be activated" application, that implements PowerAuth 2.0 protocol. A good example of a typical PowerAuth 2.0 Client can be a mobile banking application.</li>
+<li><strong>Master Front-End Application</strong> - An application that initiates the activation process and helps the PowerAuth 2.0 Client start the key exchange algorithm. Example of Master Front-End Application can be an Internet banking.</li>
+<li><strong>Intermediate Server Application</strong> - A front-end facing server application (or a set of applications, that we currently view as a single unified system, for the sake of simplicity) that is deployed in demilitarized zone in order to accomodate a communication between PowerAuth 2.0 Client, Master Front-End Application and PowerAuth 2.0 Server. A good example of Intermediate Server Application is a mobile banking RESTful API server.</li>
+<li><strong>PowerAuth 2.0 Server</strong> - A server application hidden deep in secure infrastructure, stores activation records, or verifies the request signatures. This application provides services for Intermediate Server Application to implement the PowerAuth 2.0 protocol. An example of a PowerAuth 2.0 Server is a bank identity management system.</li>
+</ul>
+
+<p><img src="api-big-picture.png" width="100%"/></p>
+
+<h2>Activation States</h2>
+
+<p>Record associated with given PowerAuth 2.0 keys transits between following states during it's lifecycle:</p>
+
+<ul>
+<li><strong>CREATED</strong> - The activation record is created but it was not activated yet.</li>
+<li><strong>OTP_USED</strong> - The activation record is created and activation OTP was already used, but the activation record was not activated yet.</li>
+<li><strong>ACTIVE</strong> - The activation record is created and active, ready to be used for generating signatures.</li>
+<li><strong>BLOCKED</strong> - The activation record is blocked and cannot be used for generating signatures. It can be renewed and activated again.</li>
+<li><strong>REMOVED</strong> - The activation record is permanently blocked - cannot be used for generating signatures or renewed.</li>
+</ul>
+
+<p>After the key exchange is initiated, an activation record is created in the database in the CREATED state. In subsequent requests, client application must complete the activation. The system that initiated the activation (such as the web interface) must push the status of the token to the ACTIVE state before it can be used.</p>
+
+<p>Following diagram shows transitions between activation states in more detail:</p>
+
+<p><img src="./powerauth-lifecycle.png" width="100%"/></p>
+
+<h2>Activation User Flow</h2>
+
+<p>From the user perspective, PowerAuth 2.0 activation is performed as a sequence of steps in PowerAuth 2.0 Client and Master Front-End Application. Following steps (with possible UI / UX alterations) must be performed:</p>
+
+<h3>Master Front-End Application</h3>
+
+<p>Following diagram shows example steps in Master Front-End Application - imagine the Internet banking as an example application.</p>
+
+<p><img src="./powerauth-master-frontend-activation.png" width="100%"/></p>
+
+<h3>PowerAuth 2.0 Client</h3>
+
+<p>Following diagram shows example steps in PowerAuth 2.0 Client - imagine the Mobile banking as an example application.</p>
+
+<p><img src="./powerauth-client-activation.png" width="100%"/></p>
+
+<h2>Activation Flow - Sequence Diagram</h2>
+
+<p>The sequence diagram below explains the PowerAuth 2.0 key exchange. It shows how PowerAuth 2.0 Client, Intermediate Server Application, Master Front-End Application and PowerAuth 2.0 Server play together in order to establish a shared secret between the client application and PowerAuth Server.</p>
+
+<p>//TODO: Review the diagram
+<img src="./powerauth.png" width="100%"/></p>
+
+<h2>Activation Flow - Description</h2>
+
+<p>To describe the steps more precisely, the activation process is performed in following steps:</p>
+
+<ol>
+<li><p>Master Front-End Application requests a new activation for a given user.</p></li>
+<li><p>PowerAuth 2.0 Server generates an <code>ACTIVATION_ID</code>, <code>ACTIVATION_ID_SHORT</code>, a key pair <code>(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC)</code> and <code>ACTIVATION_OTP</code>. Server also optionally computes a signature <code>ACTIVATION_SIGNATURE</code> of <code>ACTIVATION_ID_SHORT</code> and <code>ACTIVATION_OTP</code> using servers master private key <code>KEY_SERVER_MASTER_PRIVATE</code>.</p>
+
+<ul>
+<li><code>ACTIVATION_ID = UUID4_GEN()</code></li>
+<li><code>ACTIVATION_ID_SHORT = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)</code> (must be unique among records in CREATED and OTP_USED states)</li>
+<li><code>ACTIVATION_OTP = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)</code></li>
+<li><code>(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC) = KEY_GEN("ECDH", "secp256r1")</code></li>
+<li><code>ACTIVATION_SIGNATURE = ECDSA(ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP, KEY_SERVER_MASTER_PRIVATE)</code></li>
+</ul></li>
+<li><p>Record associated with given <code>ACTIVATION_ID</code> is now in <code>CREATED</code> state.</p></li>
+<li><p>Master Front-End Application receives an <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_OTP</code> and <code>ACTIVATION_SIGNATURE</code> (optional) and displays these information visually in the front-end so that a user can rewrite them in PowerAuth 2.0 Client.</p></li>
+<li><p>User enters <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_OTP</code> and <code>ACTIVATION_SIGNATURE</code> (optional) in the PowerAuth 2.0 Client.</p></li>
+<li><p>(optional) PowerAuth 2.0 Client verifies <code>ACTIVATION_SIGNATURE</code> against <code>ACTIVATION_ID_SHORT</code> and <code>ACTIVATION_OTP</code> using <code>KEY_SERVER_MASTER_PUBLIC</code> and if the signature matches, it proceeds.</p>
+
+<ul>
+<li><code>isSignatureOK = ECDSA^inverse(ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP, KEY_SERVER_MASTER_PUBLIC)</code></li>
+</ul></li>
+<li><p>PowerAuth 2.0 Client generates its key pair <code>(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC)</code>.</p>
+
+<ul>
+<li><code>(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC) = KEY_GEN("ECDH", "secp256r1")</code></li>
+</ul></li>
+<li><p>PowerAuth 2.0 Client sends a request with an <code>ACTIVATION_ID_SHORT</code> and <code>C_KEY_DEVICE_PUBLIC</code> to the PowerAuth 2.0 Server (via Intermediate Server Application).</p>
+
+<ul>
+<li><code>C_KEY_DEVICE_PUBLIC = BASE64(AES(KEY_DEVICE_PUBLIC, ACTIVATION_OTP), "UTF-8")</code></li>
+</ul></li>
+<li><p>PowerAuth 2.0 Server changes the record status to <code>OTP_USED</code></p></li>
+<li><p>PowerAuth 2.0 Server responds with <code>ACTIVATION_ID</code>, <code>C_KEY_SERVER_PUBLIC</code>, <code>KEY_EPHEMERAL_PUBLIC</code> and <code>C_KEY_SERVER_PUBLIC_SIGNATURE</code>.</p>
+
+<ul>
+<li><code>(KEY_EPHEMERAL_PRIVATE,KEY_EPHEMERAL_PUBLIC) = KEY_GEN("ECDH", "secp256r1")</code></li>
+<li><code>EPH_KEY = ECDH(KEY_EPHEMERAL_PRIVATE, KEY_DEVICE_PUBLIC)</code></li>
+<li><code>C_KEY_SERVER_PUBLIC = AES(AES(KEY_SERVER_PUBLIC, ACTIVATION_OTP), EPH_KEY)</code></li>
+<li><code>C_KEY_SERVER_PUBLIC_SIGNATURE = ECDSA(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)</code></li>
+</ul></li>
+<li><p>PowerAuth 2.0 Client receives an <code>ACTIVATION_ID</code>, <code>C_KEY_SERVER_PUBLIC</code>, <code>KEY_EPHEMERAL_PUBLIC</code> and <code>C_KEY_SERVER_PUBLIC_SIGNATURE</code> and if the signature matches the data, it retrieves <code>KEY_SERVER_PUBLIC</code>.</p>
+
+<ul>
+<li><code>isSignatureOK = ECDSA^inverse(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)</code></li>
+<li><code>EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)</code></li>
+<li><code>KEY_SERVER_PUBLIC = AES^inverse(AES^inverse(C_KEY_SERVER_PUBLIC, ACTIVATION_OTP), EPH_KEY)</code></li>
+</ul></li>
+<li><p>Both PowerAuth 2.0 Client and PowerAuth 2.0 Server set <code>CTR = 0</code> for given <code>ACTIVATION_ID</code>.</p></li>
+<li><p>(optional) PowerAuth 2.0 Client displays <code>H_K_DEVICE_PUBLIC</code>, so that a user can verify the device public key correctness by entering <code>H_K_DEVICE_PUBLIC</code> in the Master Front-End Application (Master Front-End Application sends <code>H_K_DEVICE_PUBLIC</code> for verification to PowerAuth 2.0 Server via Intermediate Server Application).</p>
+
+<ul>
+<li><code>H_K_DEVICE_PUBLIC = (TRUNCATE(SHA256(K_DEVICE_PUBLIC), 4) &amp; 0x7FFFFFFF) % (10 ^ 8)</code></li>
+<li><em>Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack. (Displaying fingerprint of the server key is not necessary, since the server's public key is signed using server's private master key and encrypted with activation OTP and server public key).</em></li>
+</ul></li>
+<li><p>PowerAuth 2.0 Client uses <code>KEY_DEVICE_PRIVATE</code> and <code>KEY_SERVER_PUBLIC</code> to deduce <code>KEY_MASTER_SECRET</code> using ECDH.</p>
+
+<ul>
+<li><code>KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)</code></li>
+</ul></li>
+<li><p>Master Front-End Application allows completion of the activation - for example, it may ask user to enter a code delivered via an SMS message. Master Front-End Application technically commits the activation by calling PowerAuth 2.0 Server (via Intermediate Server Application).</p></li>
+<li><p>Record associated with given <code>ACTIVATION_ID</code> is now in <code>ACTIVE</code> state.</p></li>
+</ol>
+
+<h1>Group PowerAuth Key Derivation</h1>
+
+<p>As an outcome of the previous activation steps, a single shared secret <code>KEY_MASTER_SECRET</code> is established for PowerAuth 2.0 Client and PowerAuth 2.0 Server. While additional shared secrets could be established by repeating the activation process, this may not be very handy in all situations, since the activation process is quite complex and not very user-friendly.</p>
+
+<p>For this reason, PowerAuth 2.0 establishes the concept of derived keys. Each derived key is computed using the KDF algorithm (see "Implementation details" section for the definition):</p>
+
+<ul>
+<li><code>KEY_DERIVED = KDF(KEY_MASTER_SECRET, INDEX)</code></li>
+</ul>
+
+<h2>Reserved derived keys</h2>
+
+<p>Following specific derived keys are reserved for the PowerAuth 2.0:</p>
+
+<ul>
+<li>Request signing key: <code>KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)</code></li>
+<li>Data transport key: <code>KEY_TRANSPORT = KDF(KEY_MASTER_SECRET, 2)</code></li>
+</ul>
+
+<p>Client application may use these defined keys to deduce additional derived shared keys in order to get more fine-graned control over the security domain. For example, it may use <code>KEY_SIGNATURE</code> as a signature master key and deduce different security domains for signatures:</p>
+
+<ul>
+<li>Weakly stored request signing key: <code>KEY_SIGNATURE_WEAK = KDF(KEY_SIGNATURE, 1)</code></li>
+<li>Strongly stored request signing key: <code>KEY_SIGNATURE_STRONG = KDF(KEY_SIGNATURE, 2)</code></li>
+</ul>
+
+<p>This, however, is not covered in PowerAuth 2.0 specification - for this version, only shared secrets for domains mentioned above are defined (request signing key, data transport key).</p>
+
+<h1>Group PowerAuth Signature</h1>
+
+<p>While PowerAuth 2.0 can be used for signing any type of data, the main objective of the protocol is to allow signing of HTTP requests sent to the server in order to prove consistency, authenticity and integrity (CIA) of the data that were sent in the request.</p>
+
+<p>In practical deployment, Intermediate Server Application is responsible for building the normalized data for the purpose of computing the signature and passing it to PowerAuth 2.0 Server, since it knows details about the networking operation (for example, it knows what endpoint is being signed, what HTTP method it uses, etc.). PowerAuth 2.0 Server can then just simply accept any data and signature and perform signature validation - in ideal world, PowerAuth 2.0 Server should know nothing about the business domain it is used in.</p>
+
+<h2>Computing the signature</h2>
+
+<p>The PowerAuth 2.0 signature is a number with 10 digits that is obtained in following manner:</p>
+
+<ul>
+<li><code>KEY_DERIVED = HMAC_SHA256(KEY_SIGNATURE, CTR)</code></li>
+<li><code>SIGNATURE_LONG = HMAC_SHA256(DATA, KEY_DERIVED)</code></li>
+<li><code>SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) &amp; 0x7FFFFFFF) % (10^10)</code></li>
+</ul>
+
+<p>PowerAuth 2.0 Client sents the signature in the HTTP <code>X-PowerAuth-Authorization</code> header:</p>
+
+<p><code>http
+X-PowerAuth-Authorization: PowerAuth
+    pa_activationId="hbG9duZ19gyYaW5kb521fYWN0aXZhdGlvbl9JRaA",
+    pa_applicationId="Z19gyYaW5kb521fYWN0aXZhdGlvbl9JRaAhbG9du", 
+    pa_nonce="kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg", 
+    pa_signature="1234567890",
+    pa_version="2.0"
+</code></p>
+
+<h2>Normalized data for HTTP requests</h2>
+
+<p>Normalized data to be signed are built using the following procedure:</p>
+
+<p><code>
+DATA = ${REQUEST_METHOD}&amp;${REQUEST_URI_IDENTIFIER_HASH}&amp;${APPLICATION_SECRET}&amp;${NONCE}&amp;${REQUEST_DATA}
+</code></p>
+
+<p>... where:</p>
+
+<p>//TODO: Design better way of normalizing request data and URI</p>
+
+<ul>
+<li><code>${REQUEST_METHOD}</code> - HTTP method written in upper-case, such as GET or POST.</li>
+<li><code>${REQUEST_URI_IDENTIFIER_HASH}</code> - SHA256 hashed identifier of given URI of the resource (hexadecimal format), for example SHA256("/api/payment"). The hashed value (in the example before, the "/api/payment" stirng) should be uniquely chosen for each URI, but can be of an arbitrary format.</li>
+<li><code>${APPLICATION_SECRET}</code> - An application secret key, used to bind an application identification in the signature explicitly.</li>
+<li><code>${NONCE}</code> - Random 16 bytes encoded as Base64 using UTF-8 encoding, serving as a cryptographic nonce.</li>
+<li><code>${REQUEST_DATA}</code> - Request data
+<ul>
+<li>In case of request without body (such as GET and DELETE requests), the request data is constructed from the URL query parameters (for example, GET request parameters) in a following way:
+<ol>
+<li>Take all URL query parameters as key-value pairs:
+<ul>
+<li><code>PARAM[i] = (KEY[i], VALUE[i]), i = 0 .. N</code></li>
+</ul></li>
+<li>Sort all these key-value pairs according to <code>KEY[i]</code> first, then sort duplicate keys according to the <code>VALUE[i]</code></li>
+<li>Construct data as concatenation of the sorted key-value pairs, key is separated from value using "=" character, individual key-value pairs are separated using "&amp;" character:
+<ul>
+<li><code>REQUEST_DATA = BASE64(CONCAT_ALL(CONCAT(KEY[j], VALUE[j], "="), "&amp;", j = 0 .. N))</code> (let's assume that <code>j</code> are sorted indexes)</li>
+</ul></li>
+</ol></li>
+<li>In case of request with body (such as POST and PUT requests), data from the resource body (bytes) are encoded using Base64 with UTF-8 encoding and appended:
+<ul>
+<li><code>REQUEST_DATA = BASE64(HTTP['body'])</code></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<h2>Validating the signature</h2>
+
+<p>PowerAuth 2.0 Server can validate the signature using the following mechanism:</p>
+
+<ol>
+<li>Find the activation record using activation ID</li>
+<li>Check the record state - if it is other than <code>ACTIVE</code>, terminate the validation.</li>
+<li>Obtain <code>KEY_SERVER_PRIV</code> and <code>KEY_DEVICE_PUB</code> from the record.</li>
+<li>Compute <code>KEY_MASTER_SECRET</code>.
+<ul>
+<li><code>KEY_MASTER_SECRET = ECDH(KEY_SERVER_PRIV, KEY_DEVICE_PUB)</code></li>
+</ul></li>
+<li>Compute <code>KEY_SIGNATURE</code>.
+<ul>
+<li><code>KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)</code></li>
+</ul></li>
+<li><p>Compute the expected signature for obtained data and check if the expected signature matches the one sent with the client. Since the PowerAuth 2.0 Client may be ahead with counter from PowerAuth 2.0 Server, server should try couple extra indexes ahead:</p>
+
+<pre><code>VERIFIED = false
+for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER &lt; CRT + TOLERANCE) {
+    KEY_DERIVED = HMAC_SHA256(KEY_SIGNATURE, CTR_ITER)
+    SIGNATURE_LONG = HMAC_SHA256(DATA, KEY_DERIVED)
+    SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) &amp; 0x7FFFFFFF) % (10^10)
+    if (SIGNATURE == SIGNATURE_PROVIDED &amp;&amp; !VERIFIED) {
+        VERIFIED = true
+        CTR = CTR_ITER
+    }
+}
+return VERIFIED
+</code></pre></li>
+</ol>
+
+<h1>Group PowerAuth Standard API</h1>
+
+<p>In order to assure a standard behavior of various PowerAuth 2.0 implementations, fixed endpoint and request/response structure between PowerAuth 2.0 Client and Intermediate Server Application is specified for the key exchange algorithm. </p>
+
+<p>While the PowerAuth 2.0 Client technically communicates with an Intermediate Server Application, all response data are actually built in PowerAuth 2.0 Server and Intermediate Server Application just forwards data back and forth. Therefore, we will further assume that the phrase "PowerAuth 2.0 Server responds to PowerAuth 2.0 Client" is a shortcut for "Intermediate Server Application requests a response from PowerAuth 2.0 Server and forwards the response to PowerAuth 2.0 Client".</p>
+
+<p>Each PowerAuth 2.0 implementation that is located on a specific base URL then has <code>/pa/</code> prefixed endpoints by convention.</p>
+
+<h2>Initiate activation</h2>
+
+<ul>
+<li>HTTP Method: POST</li>
+<li>Resource URI: /pa/activation/create</li>
+</ul>
+
+<p>Application activation is a process of key exchange between a PowerAuth 2.0 Client and a PowerAuth 2.0 Server. During this process, an "activation record" is created on the PowerAuth 2.0 Server and related keys are stored on a PowerAuth 2.0 Client.</p>
+
+<p>Exchange the public keys between PowerAuth 2.0 Client and PowerAuth 2.0 Server.</p>
+
+<p>PowerAuth 2.0 Client sends a short activation ID, it's public key encrypted using activation OTP and a visual identification (or a "client name"):</p>
+
+<ul>
+<li><code>id</code> - Represents an <code>ACTIVATION_ID_SHORT</code> value (first half of an activation code).</li>
+<li><code>cDevicePubKey</code> - Represents a public key <code>KEY_DEVICE_PUBLIC</code> AES encrypted with <code>ACTIVATION_OTP</code>
+<ul>
+<li><code>cDevicePubKey = AES(KEY_DEVICE_PUBLIC, ACTIVATION_OTP)</code></li>
+</ul></li>
+<li><code>clientName</code> - Visual representation of the device, for example "Johnny's iPhone" or "Samsung Galaxy S".</li>
+</ul>
+
+<p>PowerAuth 2.0 Server responds with an activation ID, public key encrypted using the activation OTP and device public key (for technical reasons, an ephemeral key is used here), and signature of this encrypted key created with the server's private master key:</p>
+
+<ul>
+<li><code>activationId</code> - Represents a long <code>ACTIVATION_ID</code> that uniquely identifies given activation records.</li>
+<li><code>ephemeralPubKey</code> - A technical component for AES encryption - a public component of the on-the-fly generated keypair.</li>
+<li><code>cServerPubKey</code> - Encrypted public key <code>KEY_SERVER_PUBLIC</code> of the server.
+<ul>
+<li><code>EPH_KEY = ECDH(ephemeralPrivKey, KEY_DEVICE_PUBLIC)</code></li>
+<li><code>cServerPubKey = AES(AES(KEY_SERVER_PUBLIC, ACTIVATION_OTP), EPH_KEY)</code></li>
+</ul></li>
+<li><code>cServerPubKeySignature = ECDSA(cServerPubKey, KEY_SERVER_MASTER_PRIVATE)</code></li>
+</ul>
+
+<p>After receiving the response, PowerAuth 2.0 Client verifies cSeverPubKeySignature using server's public master key <code>KEY_SERVER_MASTER_PUBLIC</code> (optional) and decrypts server public key using it's private <code>ACTIVATION_OTP</code>.</p>
+
+<ul>
+<li><code>signatureOK = ECDSA^inverse(cServerPubKey, KEY_SERVER_MASTER_PUBLIC)</code></li>
+<li><code>EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, ephemeralPubKey)</code></li>
+<li><code>serverPubKey = AES^inverse(AES^inverse(cServerPubKey, ACTIVATION_OTP), EPH_KEY)</code></li>
+</ul>
+
+<p>Then, PowerAuth 2.0 Client deduces <code>KEY_MASTER_SECRET</code>:</p>
+
+<ul>
+<li><code>KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, serverPubKey)</code></li>
+</ul>
+
+<h3>Request</h3>
+
+<ul>
+<li><p>MIME-type: application/json</p>
+
+<pre><code>{
+    "requestObject": {
+        "id": "XDA57-24TBC",
+        "cDevicePubKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
+        "clientName": "My iPhone"
+    }
+}
+</code></pre></li>
+</ul>
+
+<h3>Response</h3>
+
+<ul>
+<li>MIME-type: application/json</li>
+<li><p>Status Code: 200</p>
+
+<pre><code>{
+    "status": "OK",
+    "responseObject": {
+        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+        "ephemeralPubKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
+        "cServerPubKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
+        "cServerPubKeySignature": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+    }
+}
+</code></pre></li>
+</ul>
+
+<h2>Activation status</h2>
+
+<ul>
+<li>HTTP Method: POST</li>
+<li>Resource URI: /pa/activation/status</li>
+</ul>
+
+<p>Get the status of an activation with given activation ID. The PowerAuth 2.0 Server response contains an activation status blob that is AES encrypted with <code>KEY_TRANSPORT</code>.</p>
+
+<ul>
+<li><code>cStatusBlob = AES(statusBlob, KEY_TRANSPORT)</code></li>
+</ul>
+
+<p>PowerAuth 2.0 Client can later trivially decrypt the original status blob:</p>
+
+<ul>
+<li><code>statusBlob = AES^inverse(cStatusBlob, KEY_TRANSPORT)</code></li>
+</ul>
+
+<p>Structure of the status blob is following:</p>
+
+<pre><code>0xDE 0xAD 0xBE 0xEF 1B:${STATUS} 4B:${CTR} 7B:${RANDOM_NOISE}
+</code></pre>
+
+<p>where:</p>
+
+<ul>
+<li>The first 4 bytes (0xDE 0xAD 0xBE 0xEF) are basically a fixed prefix.</li>
+<li>${STATUS} - A status of the activation record, it can be one of following values:
+<ul>
+<li>0x01 - CREATED</li>
+<li>0x02 - OTP_USED</li>
+<li>0x03 - ACTIVE</li>
+<li>0x04 - BLOCKED</li>
+<li>0x05 - REMOVED</li>
+</ul></li>
+<li>${CTR} - 4 bytes representing information of the server counter (CTR value, as defined in PowerAuth 2.0 specification).</li>
+<li>${RANDOM_NOISE} - Random 7 byte padding, a complement to the total length of 16B. These bytes also serve as a source of entrophy for the transport (AES encrypted cStatusBlob will be different each time an endpoint is called).</li>
+</ul>
+
+<h3>Request</h3>
+
+<ul>
+<li><p>MIME-type: application/json</p>
+
+<pre><code>{
+    "requestObject": {
+        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+    }
+}
+</code></pre></li>
+</ul>
+
+<h3>Response</h3>
+
+<ul>
+<li>MIME-type: application/json</li>
+<li><p>Status code: 200</p>
+
+<pre><code>{
+    "status": "OK",
+    "responseObject": {
+        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+        "cStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ=="
+    }
+}
+</code></pre></li>
+</ul>
+
+<h2>Activation remove</h2>
+
+<ul>
+<li>HTTP Method: POST</li>
+<li>Resource URI: /pa/activation/remove</li>
+</ul>
+
+<p>Remove an activation with given ID, set it's status to REMOVED. Activation can be removed only after successful verification of the signature.</p>
+
+<h3>Request</h3>
+
+<ul>
+<li>MIME-type: application/json</li>
+<li><p>X-PowerAuth-Authorization: PowerAuth ...</p>
+
+<pre><code>    {
+        "requestObject": {
+            "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+        }
+    }
+</code></pre></li>
+</ul>
+
+<h4>Response</h4>
+
+<ul>
+<li>MIME-type: application/json</li>
+<li><p>Status code: 200</p>
+
+<pre><code>{
+    "status": "OK"
+}
+</code></pre></li>
+</ul>
+
+<h1>Group Implementation Details</h1>
+
+<h2>Used Cryptography</h2>
+
+<p>A PowerAuth 2.0 key exchange mechanism is based on <strong>ECDH</strong> key exchange agorithm with <strong>P256r1 curve</strong>. Additionally, an <strong>ECDSA</strong> (more specifically, <strong>SHA256withECDSA</strong> algorighm) is used for signing data sent from the service provider using a provider's Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0 (later on, each signature attempt increments this counter). The PowerAuth 2.0 signature is computed using data, shared master secret and counter using the <strong>HMAC</strong> algorithm.</p>
+
+<h2>KDF Algorithm</h2>
+
+<p>KDF (Key Derivation Function) is an algorithm used for deriving a secret key from a master secret key using a pseudo-random function. In case of PowerAuth 2.0 protocol, following implementation is used:</p>
+
+<ul>
+<li><code>KEY_SECRET[INDEX] = KDF(KEY_MASTER, INDEX) = AES(INDEX ⊕ 0x0000..., KEY_MASTER)</code></li>
+</ul>
+
+<h2>Activation ID</h2>
+
+<p>The <code>ACTIVATION_ID</code> must be in principle long, universally unique, random and with a temporary validity. UUID level 4 is therefore the selected format of this ID.</p>
+
+<pre><code>DO {
+    ACTIVATION_ID = UUID_GEN()
+    COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE ACTIVATION.ID = ACTIVATION_ID
+} WHILE (COUNT &gt; 0);
+</code></pre>
+
+<p>Example of activation ID:</p>
+
+<pre><code>c564e700-7e86-4a87-b6c8-a5a0cc89683f
+</code></pre>
+
+<p><em>Note: A single UUID for an activation in CREATED state must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most).</em></p>
+
+<p>Since the UUID is too long and inconvenient for practical applications, <code>ACTIVATION_ID</code> is exchanged between client and server automatically, using <code>ACTIVATION_ID_SHORT</code> - a shorter and more convenient identifier of an activation. This is the identifier user can rewrite or scan via the QR code.  <code>ACTIVATION_ID_SHORT</code> is a Base32 string, 2x 5 characters:</p>
+
+<pre><code>DO {
+    ACTIVATION_ID_SHORT = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
+    COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.ID_SHORT = ACTIVATION_ID_SHORT
+} WHILE (COUNT &gt; 0);
+</code></pre>
+
+<p>Example of short activation ID:</p>
+
+<pre><code>XDA57-24TBC
+</code></pre>
+
+<h2>Application ID and Application Secret</h2>
+
+<p>In order to explicitly bind a client application with the cryptography, an application ID and application secret are introduced. Both values follow the same format - 16B encoded as Base64, application ID must be unique.</p>
+
+<p>Both identifiers are embedded in the PowerAuth 2.0 Client application (for example, defined as a constants in the source code).</p>
+
+<p>Application ID is sent with every PowerAuth Signature as <code>pa_applicationId</code>.</p>
+
+<p>Application secret is a part of the PowerAuth signature (sent in <code>pa_signature</code>), it enters the algorithm in final HMAC_SHA256 as a part of the DATA.</p>
+
+<h2>Activation OTP</h2>
+
+<p>The <code>ACTIVATION_OTP</code> is a Base32 string, 2 x 5 characters:</p>
+
+<pre><code>ACTIVATION_OTP = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
+</code></pre>
+
+<p>Example of activation OTP:</p>
+
+<pre><code>TB24C-A57XD
+</code></pre>
+
+<p>This format matches the <code>ACTIVATION_ID_SHORT</code> format.</p>
+
+<p>Note: A single <code>ACTIVATION_OTP</code> must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most). Also, the activation OTP can be used only once - the moment client application sends and receives the encrypted public keys, it must be marked as "already used".</p>
+
+<h2>Entering values in client applications</h2>
+
+<p>Entering <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_OTP</code> and <code>ACTIVATION_SIGNATURE</code> can be expedited for example by using QR code for the storage. PowerAuth 2.0 defines using following format of information:</p>
+
+<pre><code>${ACTIVATION_ID_SHORT}-${ACTIVATION_OTP}#${ACTIVATION_SIGNATURE}
+</code></pre>
+
+<p>Example concatenated string:</p>
+
+<pre><code>XDA57-24TBC-TB24C-A57XD#1234567890
+</code></pre>
+
+<h2>Generating Keypairs</h2>
+
+<p>The device and server keys are generated using ECDH algorithm with P256 curve:</p>
+
+<p><code>java
+public KeyPair generateKeyPair() {
+    try {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", "BC"); // we assume BouncyCastle provider
+        kpg.initialize(new ECGenParameterSpec("secp256r1"));
+        KeyPair kp = kpg.generateKeyPair();
+        return kp;
+    } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+        Logger.getLogger(AirBondKeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+}
+</code></p>
+
+<h2>Shared Key Derivation (ECDH)</h2>
+
+<p>Shared key <code>KEY_MASTER_SECRET</code> is generated using following algorithm (ECDH):</p>
+
+<p><code>java
+public SecretKey generateSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
+    try {
+        KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", "BC"); // we assume BouncyCastle provider
+        keyAgreement.init((Key) privateKey, new ECGenParameterSpec("secp256r1"));
+        keyAgreement.doPhase(publicKey, true);
+        final byte[] sharedSecret = keyAgreement.generateSecret();
+        byte[] resultSecret = new byte[16];
+        for (int i = 0; i &lt; 16; i++) {
+            resultSecret[i] = (byte) (sharedSecret[i] ^ sharedSecret[i + 16]);
+        }
+        return keyConversionUtilities.convertBytesToSharedSecretKey(resultSecret);
+    } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+        Logger.getLogger(AirBondKeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+}
+</code></p>
+
+<h2>Secure Network Communication</h2>
+
+<p>All communication should be carried over a properly secured channel, such as HTTPS with correct server configuration and certificate issued with a trusted certificate authority. Client may implement certificate pinning to achieve better transport level security.</p>
+
+<h2>Lifecycle of the "Master keypair"</h2>
+
+<p>Server sends it's encrypted public key <code>C_KEY_SERVER_PUBLIC</code> to the client with a signature <code>C_KEY_SERVER_PUBLIC</code>. This signature is created using the server's "Master Private Key" <code>KEY_SERVER_MASTER_PRIVATE</code>. Since the same key is used for all activations, the "latent private key fingerprints" may accumulate over the time, making it simpler to attack the private key. Therefore, it is important to select the proper trusted certification authority to issue the keys and renew the key after certain time period. Usually, this also requires timely update of the clients that bundle the "Master Public Key".</p>
+
+<h2>Signing Data Using Master Private Key</h2>
+
+<p>The master keypair is generated using the same algorithm as above (with P256 curve).</p>
+
+<p>In order to generate the signature for given bytes, following code is used:</p>
+
+<p><code>java
+public byte[] signatureForBytes(byte[] bytes, PrivateKey privateKey) {
+    Signature ecdsaSign = Signature.getInstance("SHA256withECDSA", "BC");
+    ecdsaSign.initSign(privateKey);
+    ecdsaSign.update(bytes);
+    byte[] signature = ecdsaSign.sign();
+    return signature;
+}
+</code></p>
+
+<p>To verify the signature, following code is used:</p>
+
+<p><code>java
+public boolean isSignatureCorrectForBytes(byte[] bytes, byte[] signature, PublicKey publicKey)
+    Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC");
+    ecdsaVerify.initVerify(publicKey);
+    ecdsaVerify.update(bytes);
+    boolean result = ecdsaVerify.verify(signature);
+    return result;
+}
+</code></p>
+
+<h2>List of Keys Used in the Process</h2>
+
+<p>Following keys are used for the PowerAuth cryptography scheme.</p>
+
+<table>
+    <tr>
+        <th>name</th>
+        <th>created as</th>
+        <th>purpose<th>
+    </tr>
+    <tr>
+        <td>`KEY_DEVICE_PRIVATE`</td>
+        <td>ECDH - private key</td>
+        <td>Generated on client to allow construction of `KEY_MASTER_SECRET`</td>
+    </tr>
+    <tr>
+        <td>`KEY_DEVICE_PUBLIC`</td>
+        <td>ECDH - public key</td>
+        <td>Generated on client to allow construction of `KEY_MASTER_SECRET`</td>
+    </tr>
+    <tr>
+        <td>`KEY_SERVER_PRIVATE`</td>
+        <td>ECDH - private key</td>
+        <td>Generated on server to allow construction of `KEY_MASTER_SECRET`</td>
+    </tr>
+    <tr>
+        <td>`KEY_SERVER_PUBLIC`</td>
+        <td>ECDH - public key</td>
+        <td>Generated on server to allow construction of `KEY_MASTER_SECRET`</td>
+    </tr>
+    <tr>
+        <td>`KEY_SERVER_MASTER_PRIVATE`</td>
+        <td>ECDH - private key</td>
+        <td>Stored on server, used to assure authenticity of `KEY_DEVICE_PUBLIC` while transfering from server to client</td>
+    </tr>
+    <tr>
+        <td>`KEY_SERVER_MASTER_PUBLIC`</td>
+        <td>ECDH - public key</td>
+        <td>Stored on client, used to assure authenticity of `KEY_DEVICE_PUBLIC` while transfering from server to client</td>
+    </tr>
+    <tr>
+        <td>`ACTIVATION_OTP`</td>
+        <td>Random OTP</td>
+        <td>A 16b random OTP generated during activation, AES encrypts/decrypts data sent from server to client and vice versa</td>
+    </tr>
+    <tr>
+        <td>`KEY_MASTER_SECRET`</td>
+        <td>ECDH - pre-shared</td>
+        <td>A key deduced using ECDH derivation, `KEY_MASTER_SECRET` = (`KEY_DEVICE_PRIVATE`,`KEY_SERVER_PUBLIC`) = (`KEY_SERVER_PRIVATE`,`KEY_DEVICE_PUBLIC`)</td>
+    </tr>
+    <tr>
+        <td>`KEY_SIGNATURE`</td>
+        <td>KDF derived key from `KEY_MASTER_SECRET`</td>
+        <td>A key deduced using KDF derivation with INDEX = 1, `KEY_SIGNATURE` = KDF(`KEY_MASTER_SECRET`, 1), used for subsequent request signing</td>
+    </tr>
+    <tr>
+        <td>`KEY_TRANSPORT`</td>
+        <td>KDF derived key from `KEY_MASTER_SECRET`</td>
+        <td>A key deduced using KDF derivation with INDEX = 2, `KEY_TRANSPORT` = KDF(`KEY_MASTER_SECRET`, 2), used for encrypted data transport</td>
+    </tr>
+</table>
