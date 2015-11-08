@@ -7,9 +7,7 @@ package eu.lime.security.powerauth.activation;
 
 import eu.lime.security.powerauth.client.activation.PowerAuthClientActivation;
 import eu.lime.security.powerauth.lib.generator.KeyGenerator;
-import eu.lime.security.powerauth.lib.util.KeyConversionUtils;
 import eu.lime.security.powerauth.server.activation.PowerAuthServerActivation;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -54,6 +52,8 @@ public class PowerAuthActivationTest {
     @Test
     public void testActivationProcess() throws Exception {
 
+        System.out.println("TEST: Activation Process");
+        
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
 

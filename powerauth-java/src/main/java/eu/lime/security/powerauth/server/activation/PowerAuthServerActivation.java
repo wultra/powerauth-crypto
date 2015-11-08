@@ -1,6 +1,5 @@
 package eu.lime.security.powerauth.server.activation;
 
-import com.google.common.io.BaseEncoding;
 import eu.lime.security.powerauth.lib.generator.IdentifierGenerator;
 import eu.lime.security.powerauth.lib.generator.KeyGenerator;
 import eu.lime.security.powerauth.lib.util.AESEncryptionUtils;
@@ -22,7 +21,6 @@ import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
-import org.bouncycastle.util.encoders.Base64;
 
 public class PowerAuthServerActivation {
 

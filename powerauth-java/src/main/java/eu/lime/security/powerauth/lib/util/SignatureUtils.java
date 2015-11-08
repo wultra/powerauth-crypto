@@ -59,7 +59,7 @@ public class SignatureUtils {
     }
     
     public boolean validatePowerAuthSignature(byte[] data, byte[] signature, SecretKey signatureKey, Long counter) throws InvalidKeyException {
-        return Arrays.equals(data, computePowerAuthSignature(data, signatureKey, counter));
+        return Arrays.equals(signature, computePowerAuthSignature(data, signatureKey, counter));
     }
 
 }

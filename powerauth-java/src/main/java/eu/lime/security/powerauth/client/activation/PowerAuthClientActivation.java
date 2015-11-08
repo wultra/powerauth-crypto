@@ -1,6 +1,5 @@
 package eu.lime.security.powerauth.client.activation;
 
-import com.google.common.io.BaseEncoding;
 import eu.lime.security.powerauth.lib.config.PowerAuthConstants;
 import eu.lime.security.powerauth.lib.generator.KeyGenerator;
 import eu.lime.security.powerauth.lib.util.AESEncryptionUtils;
