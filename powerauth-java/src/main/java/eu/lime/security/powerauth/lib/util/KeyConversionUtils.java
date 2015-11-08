@@ -1,6 +1,5 @@
 package eu.lime.security.powerauth.lib.util;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -20,7 +19,6 @@ import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.util.encoders.Base64;
 
 public class KeyConversionUtils {
     
@@ -32,22 +30,6 @@ public class KeyConversionUtils {
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) {
         ECPublicKey ecpk = (ECPublicKey)publicKey;
         return ecpk.getQ().getEncoded();
-    }
-    
-    /**
-     * Converts an EC public key to a Base64 string. Uses
-     * convertPublicKeyToBytes method along the way, just converts the result
-     * to Base64.
-     * @param publicKey An EC public key to be converted.
-     * @return A Base64 string representing the EC public key.
-     */
-    public String convertPublicKeyToBase64String(PublicKey publicKey) {
-        try {
-            return new String(Base64.encode(convertPublicKeyToBytes(publicKey)), "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(KeyConversionUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
     
     /**
@@ -73,21 +55,6 @@ public class KeyConversionUtils {
         }
         return null;
     }
-
-    /**
-     * Converts a Base64 string to an EC public key. Uses
-     * convertBytesToPublicKey along the way, just converts the results from
-     * Base64 to byte array.
-     * @param base64KeyString The Base64 string to be converted to the EC
-     * public key.
-     * @return An instance of the EC public key on success, or null on failure.
-     * @throws InvalidKeySpecException When provided Base64 data are not
-     * a correct key representation.
-     */
-    public PublicKey convertBase64StringToPublicKey(String base64KeyString) throws InvalidKeySpecException {
-        byte[] keyBytes = Base64.decode(base64KeyString);
-        return convertBytesToPublicKey(keyBytes);
-    }
     
     /**
      * Converts an EC private key to bytes by encoding the D number parameter.
@@ -97,21 +64,6 @@ public class KeyConversionUtils {
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
         ECPrivateKey ecpk = (ECPrivateKey)privateKey;
         return ecpk.getD().toByteArray();
-    }
-
-    /**
-     * Convert an EC private key to Base64 string by encoding the D number
-     * parameter.
-     * @param privateKey An EC private key to be converted to Base64.
-     * @return A byte array containing the representation of the EC private key.
-     */
-    public String convertPrivateKeyToBase64String(PrivateKey privateKey) {
-        try {
-            return new String(Base64.encode(convertPrivateKeyToBytes(privateKey)), "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
 
     /**
@@ -137,20 +89,7 @@ public class KeyConversionUtils {
         }
         return null;
     }
-    
-    /**
-     * Convert a Base64 string to an instance of an EC private key. Calls
-     * convertBytesToPrivateKey along the way, just decodes the Base64 string
-     * to byte array and passes the result.
-     * @param base64PrivateKey A Base64 representation of the EC private key.
-     * @return An instance of an EC private key decoded from the input string.
-     * @throws InvalidKeySpecException The provided Base64 data are not a valid
-     * EC private key.
-     */
-    public PrivateKey convertBase64StringToPrivateKey(String base64PrivateKey) throws InvalidKeySpecException {
-        byte[] keyBytes = Base64.decode(base64PrivateKey);
-        return convertBytesToPrivateKey(keyBytes);
-    }
+
 
     /**
      * Converts a shared secret key (usually used for AES based operations)
@@ -160,21 +99,6 @@ public class KeyConversionUtils {
      */
     public byte[] convertSharedSecretKeyToBytes(SecretKey sharedSecretKey) {
         return sharedSecretKey.getEncoded();
-    }
-    
-    /**
-     * Converts a shared secret key (usually used for AES based operations)
-     * to a Base64 string.
-     * @param sharedSecretKey A shared key to be converted to Base64 data.
-     * @return A Base64 string representing the secret shared key.
-     */
-    public String convertSharedSecretKeyToBase64String(SecretKey sharedSecretKey) {
-        try {
-            return new String(Base64.encode(sharedSecretKey.getEncoded()), "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(KeyConversionUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
 
     /**
@@ -187,15 +111,5 @@ public class KeyConversionUtils {
         return new SecretKeySpec(bytesSecretKey, "AES/CBC/NoPadding");
     }
     
-    /**
-     * Converts a Base64 encoded string to the secret shared key (usually
-     * used for AES based operations).
-     * @param base64SharedSecretKey Base64 string representing the shared key.
-     * @return An instance of the secret key by decoding from provided Base64
-     * string.
-     */
-    public SecretKey convertBase64StringToSharedSecretKey(String base64SharedSecretKey) {
-        return new SecretKeySpec(Base64.decode(base64SharedSecretKey), "AES/CBC/NoPadding");
-    }
     
 }

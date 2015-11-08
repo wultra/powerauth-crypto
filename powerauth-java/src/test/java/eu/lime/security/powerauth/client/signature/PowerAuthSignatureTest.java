@@ -72,17 +72,17 @@ public class PowerAuthSignatureTest {
                 byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * 1000));
 
                 // compute data signature
-                SecretKey masterClientKey = clientSignature.generateMasterSignatureKey(devicePrivateKey, serverPublicKey);
-                SecretKey signatureClientKey = clientSignature.generateDerivedSignatureKey(masterClientKey);
+                SecretKey masterClientKey = clientSignature.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                SecretKey signatureClientKey = clientSignature.generateClientSignatureKey(masterClientKey);
                 byte[] signature = clientSignature.signatureForData(data, signatureClientKey, new Long(ctr));
                 
                 System.out.println("signature client: " + Arrays.toString(signature));
 
                 // validate data signature
-                SecretKey masterServerKey = serverSignature.generateMasterSignatureKey(serverPrivateKey, devicePublicKey);
+                SecretKey masterServerKey = serverSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
                 assertEquals(masterClientKey, masterServerKey);
                 
-                SecretKey signatureServerKey = serverSignature.generateDerivedSignatureKey(masterServerKey);
+                SecretKey signatureServerKey = serverSignature.generateServerSignatureKey(masterServerKey);
                 assertEquals(signatureClientKey, signatureServerKey);
                 
                 System.out.println("signature server: " + Arrays.toString(new SignatureUtils().computePowerAuthSignature(data, signatureServerKey, new Long(ctr))));

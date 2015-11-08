@@ -12,16 +12,41 @@ public class PowerAuthServerSignature {
     private final KeyGenerator keyGenerator = new KeyGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
     
-    public SecretKey generateMasterSignatureKey(
+    /**
+     * Generate a master secret key KEY_MASTER_SECRET using the server
+     * private key KEY_SERVER_PRIVATE and device public key KEY_DEVICE_PUBLIC.
+     * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE.
+     * @param devicePublicKey Device public key KEY_DEVICE_PUBLIC.
+     * @return Computed symmetric key KEY_MASTER_SECRET.
+     * @throws InvalidKeyException In case some provided key is invalid.
+     */
+    public SecretKey generateServerMasterSecretKey(
             PrivateKey serverPrivateKey, 
             PublicKey devicePublicKey) throws InvalidKeyException {
         return keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
     }
     
-    public SecretKey generateDerivedSignatureKey(SecretKey masterSignatureKey) {
-        return keyGenerator.deriveSecretKey(masterSignatureKey, new Long(1));
+    /**
+     * Generate a signature key KEY_SIGNATURE from master secret key
+     * KEY_MASTER_SECRET using KDF.
+     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.Long) 
+     * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
+     * @return An instance of signature key KEY_SIGNATURE.
+     */
+    public SecretKey generateServerSignatureKey(SecretKey masterSecretKey) {
+        return keyGenerator.deriveSecretKey(masterSecretKey, new Long(1));
     }
     
+    /**
+     * Verify a PowerAuth 2.0 signature against data using signature key
+     * and counter.
+     * @param data Signed data.
+     * @param signature Signature for the data.
+     * @param signatureKey Key used for signature.
+     * @param ctr Counter / derived signing key index.
+     * @return Returns "true" if the signature matches, "false" otherwise.
+     * @throws InvalidKeyException 
+     */
     public boolean verifySignatureForData(
             byte[] data,
             byte[] signature,

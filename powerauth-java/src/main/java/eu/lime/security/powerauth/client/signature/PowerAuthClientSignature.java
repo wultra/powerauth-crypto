@@ -12,16 +12,42 @@ public class PowerAuthClientSignature {
     private final KeyGenerator keyGenerator = new KeyGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
     
-    public SecretKey generateMasterSignatureKey(
+    /**
+     * Generate a master secret key KEY_MASTER_SECRET using the device
+     * private key KEY_DEVICE_PRIVATE and server public key KEY_SERVER_PUBLIC.
+     * @param devicePrivateKey Device private key KEY_DEVICE_PRIVATE.
+     * @param serverPublicKey Server public key KEY_SERVER_PUBLIC.
+     * @return Computed symmetric key KEY_MASTER_SECRET.
+     * @throws InvalidKeyException In case some provided key is invalid.
+     */
+    public SecretKey generateClientMasterSecretKey(
             PrivateKey devicePrivateKey, 
             PublicKey serverPublicKey) throws InvalidKeyException {
         return keyGenerator.computeSharedKey(devicePrivateKey, serverPublicKey);
     }
     
-    public SecretKey generateDerivedSignatureKey(SecretKey masterSignatureKey) {
-        return keyGenerator.deriveSecretKey(masterSignatureKey, new Long(1));
+    /**
+     * Generate a signature key KEY_SIGNATURE from master secret key
+     * KEY_MASTER_SECRET using KDF.
+     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.Long) 
+     * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
+     * @return An instance of signature key KEY_SIGNATURE.
+     */
+    public SecretKey generateClientSignatureKey(SecretKey masterSecretKey) {
+        return keyGenerator.deriveSecretKey(masterSecretKey, new Long(1));
     }
     
+    /**
+     * Compute a PowerAuth 2.0 signature for given data, signature key
+     * and counter. Signature key KEY_SIGNATURE is a symmetric key deduced using
+     * private device key KEY_DEVICE_PRIVATE and server public key
+     * KEY_SERVER_PUBLIC, and then using KDF function with index 1.
+     * @param data Data to be signed.
+     * @param signatureKey A signature key KEY_SIGNATURE.
+     * @param ctr Counter / index of the derived key KEY_DERIVED.
+     * @return PowerAuth 2.0 signature for given data.
+     * @throws InvalidKeyException In case signature key is invalid.
+     */
     public byte[] signatureForData(
             byte[] data,
             SecretKey signatureKey,
