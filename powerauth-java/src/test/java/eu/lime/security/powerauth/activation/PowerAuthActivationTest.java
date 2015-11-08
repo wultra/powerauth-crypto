@@ -112,7 +112,6 @@ public class PowerAuthActivationTest {
             int devicePublicKeyFingerprintClient = clientActivation.computeDevicePublicKeyFingerprint(devicePublicKey);
             int devicePublicKeyFingerprintServer = serverActivation.computeDevicePublicKeyFingerprint(decryptedDevicePublicKey);
             assertEquals(devicePublicKeyFingerprintClient, devicePublicKeyFingerprintServer);
-            System.out.println("Device public key fingerprint: " + devicePublicKeyFingerprintClient);
 
             // CLIENT and SERVER: Compute shared master secret
             SecretKey sharedMasterSecretDevice = keyGenerator.computeSharedKey(devicePrivateKey, serverPublicKey);
