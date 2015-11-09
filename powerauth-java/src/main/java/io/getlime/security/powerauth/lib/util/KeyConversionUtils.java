@@ -30,7 +30,7 @@ public class KeyConversionUtils {
      */
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) {
         ECPublicKey ecpk = (ECPublicKey) publicKey;
-        return ecpk.getQ().getEncoded();
+        return ecpk.getQ().getEncoded(false);
     }
 
     /**
