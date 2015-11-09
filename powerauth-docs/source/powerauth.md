@@ -259,29 +259,29 @@ PowerAuth 2.0 Client sends a short activation ID, it's public key encrypted usin
 
 - `id` - Represents an `ACTIVATION_ID_SHORT` value (first half of an activation code).
 - `activationNonce` - Represents an activation nonce, used as an IV for AES encryption.
-- `cDevicePubKey` - Represents a public key `KEY_DEVICE_PUBLIC` AES encrypted with `ACTIVATION_OTP`
-	- `cDevicePubKey = AES(KEY_DEVICE_PUBLIC, activationNonce, ACTIVATION_OTP)`
+- `cDevicePublicKey` - Represents a public key `KEY_DEVICE_PUBLIC` AES encrypted with `ACTIVATION_OTP`
+	- `cDevicePublicKey = AES(KEY_DEVICE_PUBLIC, activationNonce, ACTIVATION_OTP)`
 - `clientName` - Visual representation of the device, for example "Johnny's iPhone" or "Samsung Galaxy S".
 
 PowerAuth 2.0 Server responds with an activation ID, public key encrypted using the activation OTP and device public key (for technical reasons, an ephemeral key is used here), and signature of this encrypted key created with the server's private master key:
 
 - `activationId` - Represents a long `ACTIVATION_ID` that uniquely identifies given activation records.
-- `ephemeralPubKey` - A technical component for AES encryption - a public component of the on-the-fly generated key pair.
+- `ephemeralPublicKey` - A technical component for AES encryption - a public component of the on-the-fly generated key pair.
 - `activationNonce` - Represents an activation nonce, used as an IV for AES encryption.
-- `cServerPubKey` - Encrypted public key `KEY_SERVER_PUBLIC` of the server.
-	- `EPH_KEY = ECDH(ephemeralPrivKey, KEY_DEVICE_PUBLIC)`
-	- `cServerPubKey = AES(AES(KEY_SERVER_PUBLIC, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
-- `cServerPubKeySignature = ECDSA(cServerPubKey, KEY_SERVER_MASTER_PRIVATE)`
+- `cServerPublicKey` - Encrypted public key `KEY_SERVER_PUBLIC` of the server.
+	- `EPH_KEY = ECDH(ephemeralPrivateKey, KEY_DEVICE_PUBLIC)`
+	- `cServerPublicKey = AES(AES(KEY_SERVER_PUBLIC, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
+- `cServerPublicKeySignature = ECDSA(cServerPublicKey, KEY_SERVER_MASTER_PRIVATE)`
 
-After receiving the response, PowerAuth 2.0 Client verifies cSeverPubKeySignature using server's public master key `KEY_SERVER_MASTER_PUBLIC` (optional) and decrypts server public key using it's private `ACTIVATION_OTP`.
+After receiving the response, PowerAuth 2.0 Client verifies cSeverPublicKeySignature using server's public master key `KEY_SERVER_MASTER_PUBLIC` (optional) and decrypts server public key using it's private `ACTIVATION_OTP`.
 
-- `signatureOK = ECDSA^inverse(cServerPubKey, KEY_SERVER_MASTER_PUBLIC)`
-- `EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, ephemeralPubKey)`
-- `serverPubKey = AES^inverse(AES^inverse(cServerPubKey, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
+- `signatureOK = ECDSA^inverse(cServerPublicKey, KEY_SERVER_MASTER_PUBLIC)`
+- `EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, ephemeralPublicKey)`
+- `serverPublicKey = AES^inverse(AES^inverse(cServerPublicKey, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
 
 Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 
-- `KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, serverPubKey)`
+- `KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, serverPublicKey)`
 
 | Method | `POST` |
 | Resource URI | `/pa/activation/create` |
@@ -294,9 +294,9 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 ```json
 		{
 			"requestObject": {
-				"id": "XDA57-24TBC",
+				"activationIdShort": "XDA57-24TBC",
 				"activationNonce": "hbmRvbQRUNESF9QVUJMSUNfS0VZX3J==",
-				"cDevicePubKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
+				"cDevicePublicKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
 				"clientName": "My iPhone"
 			}
 		}
@@ -314,9 +314,9 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 			"responseObject": {
 				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
 				"activationNonce": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J==",
-				"ephemeralPubKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
-				"cServerPubKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-				"cServerPubKeySignature": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+				"ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
+				"cServerPublicKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
+				"cServerPublicKeySignature": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
 			}
 		}
 ```
