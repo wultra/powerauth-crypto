@@ -99,9 +99,10 @@ public class PowerAuthServerActivation {
         }
         return null;
     }
-    
+
     /**
      * Generate a new server activation nonce.
+     *
      * @return A new server activation nonce.
      */
     public byte[] generateActivationNonce() {
@@ -175,14 +176,8 @@ public class PowerAuthServerActivation {
 
             // Encrypt the data
             AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] encryptServerPublicKey = aes.encrypt(
-                    aes.encrypt(
-                            serverPublicKeyBytes,
-                            activationNonce,
-                            otpBasedSymmetricKey),
-                    activationNonce,
-                    ephemeralSymmetricKey
-            );
+            byte[] encryptedTMP = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
+            byte[] encryptServerPublicKey = aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
             return encryptServerPublicKey;
 
         } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException ex) {
@@ -192,8 +187,8 @@ public class PowerAuthServerActivation {
     }
 
     /**
-     * Compute an encrypted server public key signature using the
-     * Master Private Key.
+     * Compute an encrypted server public key signature using the Master Private
+     * Key.
      *
      * @param C_serverPublicKey Encrypted server public key.
      * @param masterPrivateKey Master Private Key.
@@ -227,7 +222,7 @@ public class PowerAuthServerActivation {
                 throw new IndexOutOfBoundsException();
             }
             int index = hash.length - 4;
-            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int)(Math.pow(10, PowerAuthConstants.FINGERPRINT_LENGTH));
+            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConstants.FINGERPRINT_LENGTH));
             return number;
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);

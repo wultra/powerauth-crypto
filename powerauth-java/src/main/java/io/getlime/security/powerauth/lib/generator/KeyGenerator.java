@@ -24,6 +24,7 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class KeyGenerator {
     
@@ -58,7 +59,7 @@ public class KeyGenerator {
     public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
         try {
             KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", "BC");
-            keyAgreement.init((Key) privateKey, new ECGenParameterSpec("secp256r1"));
+            keyAgreement.init(privateKey);
             keyAgreement.doPhase(publicKey, true);
             // Generate 16B key from 32B key by applying XOR
             final byte[] sharedSecret = keyAgreement.generateSecret();
@@ -67,7 +68,7 @@ public class KeyGenerator {
                 resultSecret[i] = (byte) (sharedSecret[i] ^ sharedSecret[i + 16]);
             }
             return new KeyConversionUtils().convertBytesToSharedSecretKey(resultSecret);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -128,7 +129,7 @@ public class KeyGenerator {
         try {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PowerAuthConstants.PBKDF_ITERATIONS, 128);
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            SecretKey encryptionKey = skf.generateSecret(spec);
+            SecretKey encryptionKey = new SecretKeySpec(skf.generateSecret(spec).getEncoded(), "AES/CBC/PKCS5Padding");
             return encryptionKey;
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);

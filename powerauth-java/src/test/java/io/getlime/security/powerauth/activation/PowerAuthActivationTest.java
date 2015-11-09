@@ -5,8 +5,10 @@
  */
 package io.getlime.security.powerauth.activation;
 
+import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -37,10 +39,21 @@ public class PowerAuthActivationTest {
 
     @Before
     public void setUp() {
+        // Add Bouncy Castle Security Provider
+        Security.addProvider(new BouncyCastleProvider());
     }
 
     @After
     public void tearDown() {
+    }
+    
+    @Test
+    public void testGenerateKeys() throws Exception {
+        KeyConversionUtils keyConversion = new KeyConversionUtils();
+        KeyGenerator keyGenerator = new KeyGenerator();
+        KeyPair kp = keyGenerator.generateKeyPair();
+        System.out.println("Private Key: " + BaseEncoding.base64().encode(keyConversion.convertPrivateKeyToBytes(kp.getPrivate())));
+        System.out.println("Public Key: " + BaseEncoding.base64().encode(keyConversion.convertPublicKeyToBytes(kp.getPublic())));
     }
 
     /**
@@ -53,9 +66,6 @@ public class PowerAuthActivationTest {
     public void testActivationProcess() throws Exception {
 
         System.out.println("TEST: Activation Process");
-        
-        // Add Bouncy Castle Security Provider
-        Security.addProvider(new BouncyCastleProvider());
 
         // Prepare test data
         KeyGenerator keyGenerator = new KeyGenerator();
