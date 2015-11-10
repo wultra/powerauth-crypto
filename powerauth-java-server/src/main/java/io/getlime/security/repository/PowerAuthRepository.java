@@ -2,7 +2,6 @@ package io.getlime.security.repository;
 
 import io.getlime.security.repository.model.ActivationRecordEntity;
 import io.getlime.security.repository.model.ActivationStatus;
-import io.getlime.security.repository.model.MasterKeyPairEntity;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
