@@ -245,12 +245,15 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	@Override
 	public VerifySignatureResponse verifySignature(VerifySignatureRequest request) throws Exception {
 		
+		// Get request data
 		String activationId = request.getActivationId();
 		byte[] data = BaseEncoding.base64().decode(request.getData());
 		String signature = request.getSignature();
 		
+		// Fetch related activation
         ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
         
+        // Only validate signature for existing ACTIVE activation records
         if (activation != null && activation.getActivationStatus() == ActivationStatus.ACTIVE) {
         	
         	// Get the server private and device public keys to compute the signing key 
@@ -265,43 +268,52 @@ public class PowerAuthServiceImpl implements PowerAuthService {
         	
         	// Verify the signature
         	boolean signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKey, activation.getCounter());
-        	
-        	// Increment failed attempt count
         	if (!signatureValid) {
+        		
+        		// Update failed attempts and block the activation, if necessary
         		activation.setFailedAttempts(activation.getFailedAttempts() + 1);
+            	Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts());
+            	if (remainingAttempts <= 0) {
+            		activation.setActivationStatus(ActivationStatus.BLOCKED);
+            	}
+            	powerAuthRepository.save(activation);
+            
+            	// return the data
+            	VerifySignatureResponse response = new VerifySignatureResponse();
+            	response.setActivationId(activationId);
+            	response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+            	response.setRemainingAttempts(BigInteger.valueOf(remainingAttempts));
+            	response.setSignatureValid(false);
+            	response.setUserId(activation.getUserId());
+            	
+            	return response;
+        		
         	} else {
+        		
+        		// Reset failed attempt count
         		activation.setFailedAttempts(0L);
+        		powerAuthRepository.save(activation);
+        		
+        		// return the data
+            	VerifySignatureResponse response = new VerifySignatureResponse();
+            	response.setActivationId(activationId);
+            	response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
+            	response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
+            	response.setSignatureValid(true);
+            	response.setUserId(activation.getUserId());
+            	
+            	return response;
         	}
-        	
-        	// Compute remaining attempts
-        	Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts());
-        	
-        	// Block the activation record when no attempts remain
-        	if (remainingAttempts <= 0) {
-        		activation.setActivationStatus(ActivationStatus.BLOCKED);
-        	}
-        	
-        	powerAuthRepository.save(activation);
-        
-        	// return the data
-        	VerifySignatureResponse response = new VerifySignatureResponse();
-        	response.setActivationId(activationId);
-        	response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-        	response.setRemainingAttempts(BigInteger.valueOf(remainingAttempts));
-        	response.setSignatureValid(signatureValid);
-        	response.setUserId(activation.getUserId());
-        	
-        	return response;
         	
         } else {
         	
         	// return the data
         	VerifySignatureResponse response = new VerifySignatureResponse();
         	response.setActivationId(activationId);
-        	response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+        	response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
         	response.setRemainingAttempts(BigInteger.valueOf(0));
         	response.setSignatureValid(false);
-        	response.setUserId(activation.getUserId());
+        	response.setUserId("UNKNOWN");
         	
         	return response;
         	

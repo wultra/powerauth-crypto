@@ -152,8 +152,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="remainingAttempts" type="xs:integer"  minOccurs="1" maxOccurs="1"/>
                 <xs:element name="signatureValid" type="xs:boolean"  minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
