@@ -83,7 +83,7 @@ public class SignatureUtils {
             }
             int index = signatureLong.length - 4;
             int number = (ByteBuffer.wrap(signatureLong).getInt(index) & 0x7FFFFFFF) % (int)(Math.pow(10, PowerAuthConstants.SIGNATURE_LENGTH));
-            String signature = String.valueOf(number);
+            String signature = String.format("%0" + PowerAuthConstants.SIGNATURE_LENGTH + "d", number);
             return signature;
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(SignatureUtils.class.getName()).log(Level.SEVERE, null, ex);
