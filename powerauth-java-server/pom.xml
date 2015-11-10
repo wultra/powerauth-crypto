@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.getlime.security</groupId>
-	<artifactId>powerauth-server-java</artifactId>
+	<artifactId>powerauth-java-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>powerauth-server-java</name>
+	<name>powerauth-java-server</name>
 	<description>PowerAuth 2.0 Server</description>
 
 	<parent>
