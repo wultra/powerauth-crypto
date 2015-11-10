@@ -31,6 +31,7 @@ import io.getlime.security.repository.PowerAuthRepository;
 import io.getlime.security.repository.model.ActivationRecordEntity;
 import io.getlime.security.repository.model.ActivationStatus;
 import io.getlime.security.repository.model.MasterKeyPairEntity;
+import io.getlime.security.service.exceptions.GenericServiceException;
 import io.getlime.security.service.util.ModelUtil;
 
 import java.math.BigInteger;
@@ -71,69 +72,78 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	@Override
 	public GetActivationListForUserResponse getActivatioListForUser(GetActivationListForUserRequest request)
 			throws Exception {
-		String userId = request.getUserId();
-		List<ActivationRecordEntity> activationsList = powerAuthRepository.findByUserId(userId);
+		try {
+			String userId = request.getUserId();
+			List<ActivationRecordEntity> activationsList = powerAuthRepository.findByUserId(userId);
 
-		GetActivationListForUserResponse response = new GetActivationListForUserResponse();
-		response.setUserId(userId);
-		if (activationsList != null) {
-			for (ActivationRecordEntity activation : activationsList) {
-				Activations activationServiceItem = new Activations();
-				activationServiceItem.setActivationId(activation.getActivationId());
-				activationServiceItem.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-				activationServiceItem.setClientName(activation.getClientName());
-				activationServiceItem.setUserId(activation.getUserId());
-				response.getActivations().add(activationServiceItem);
+			GetActivationListForUserResponse response = new GetActivationListForUserResponse();
+			response.setUserId(userId);
+			if (activationsList != null) {
+				for (ActivationRecordEntity activation : activationsList) {
+					Activations activationServiceItem = new Activations();
+					activationServiceItem.setActivationId(activation.getActivationId());
+					activationServiceItem
+							.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+					activationServiceItem.setClientName(activation.getClientName());
+					activationServiceItem.setUserId(activation.getUserId());
+					response.getActivations().add(activationServiceItem);
+				}
 			}
+			return response;
+		} catch (Exception ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw new GenericServiceException("Unknown exception has occurred");
 		}
-		return response;
 	}
 
 	@Override
-    public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception {
-        
-		String activationId = request.getActivationId();
-        ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
-        
-        // Handle the case with incorrect activation instance first here
-        if (activation == null || activation.getActivationStatus() == ActivationStatus.CREATED) {
-        	
-        	// Created activations do exist in DB, but should behave as if they didn't
-        	GetActivationStatusResponse response = new GetActivationStatusResponse();
-        	response.setActivationId(activationId);
-        	byte[] randomStatusBlob = new KeyGenerator().generateRandomBytes(16);
-        	response.setCStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
-        	return response;
-        	
-        } else {
-        	
-        	// Get the server private and device public keys to compute the transport key 
-        	PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(activation.getServerPrivateKey());
-        	PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(activation.getDevicePublicKey());
-        
-        	SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(
-        			serverPrivateKey, 
-        			devicePublicKey
-        	);
-        	SecretKey transportKey = powerAuthServerSignature.generateServerTransportKey(masterSecretKey);
-        
-        	// Encrypt the status blob
-        	byte[] C_statusBlob = powerAuthServerActivation.encryptedStatusBlob(
-        			activation.getActivationStatus().getByte(),
-        			activation.getCounter(),
-        			transportKey	
-        	);
-        
-        	// return the data
-        	GetActivationStatusResponse response = new GetActivationStatusResponse();
-        	response.setActivationId(activationId);
-        	response.setCStatusBlob(BaseEncoding.base64().encode(C_statusBlob));
-        
-        	return response;
-        	
-        }
-        
-    }
+	public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception {
+		try {
+			String activationId = request.getActivationId();
+			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+
+			// Handle the case with incorrect activation instance first here
+			if (activation == null || activation.getActivationStatus() == ActivationStatus.CREATED) {
+
+				// Created activations do exist in DB, but should behave as if
+				// they didn't
+				GetActivationStatusResponse response = new GetActivationStatusResponse();
+				response.setActivationId(activationId);
+				byte[] randomStatusBlob = new KeyGenerator().generateRandomBytes(16);
+				response.setCStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
+				return response;
+
+			} else {
+
+				// Get the server private and device public keys to compute the
+				// transport key
+				PrivateKey serverPrivateKey = keyConversionUtilities
+						.convertBytesToPrivateKey(activation.getServerPrivateKey());
+				PublicKey devicePublicKey = keyConversionUtilities
+						.convertBytesToPublicKey(activation.getDevicePublicKey());
+
+				SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey,
+						devicePublicKey);
+				SecretKey transportKey = powerAuthServerSignature.generateServerTransportKey(masterSecretKey);
+
+				// Encrypt the status blob
+				byte[] C_statusBlob = powerAuthServerActivation.encryptedStatusBlob(
+						activation.getActivationStatus().getByte(), activation.getCounter(), transportKey);
+
+				// return the data
+				GetActivationStatusResponse response = new GetActivationStatusResponse();
+				response.setActivationId(activationId);
+				response.setCStatusBlob(BaseEncoding.base64().encode(C_statusBlob));
+
+				return response;
+
+			}
+		} catch (Exception ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw new GenericServiceException("Unknown exception has occurred");
+		}
+
+	}
 
 	@Override
 	public InitActivationResponse initActivation(InitActivationRequest request) throws Exception {
@@ -148,8 +158,18 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
 			// Fetch the latest master private key
 			MasterKeyPairEntity masterKeyPair = masterKeyPairRepository.findFirstByOrderByTimestampCreatedDesc();
+			if (masterKeyPair == null) {
+				GenericServiceException ex = new GenericServiceException("No master server key pair configured in database");
+				Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+				throw ex;
+			}
 			byte[] masterPrivateKeyBytes = BaseEncoding.base64().decode(masterKeyPair.getMasterKeyPrivateBase64());
 			PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes);
+			if (masterPrivateKey == null) {
+				GenericServiceException ex = new GenericServiceException("Master server key pair contains private key in incorrect format");
+				Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+				throw ex;
+			}
 
 			// Generate new activation data
 			String activationId = powerAuthServerActivation.generateActivationId();
@@ -175,227 +195,240 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			response.setActivationSignature(activationSignatureBase64);
 
 			return response;
-			
+
 		} catch (InvalidKeySpecException | InvalidKeyException ex) {
-			
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-			return null;
-			
+			throw new GenericServiceException("Key with invalid format was provided");
 		}
 	}
 
 	@Override
 	public PrepareActivationResponse prepareActivation(PrepareActivationRequest request) throws Exception {
-		
-		// Get request parameters
-		String activationIdShort = request.getActivationIdShort();
-		String activationNonceBase64 = request.getActivationNonce();
-		String cDevicePublicKeyBase64 = request.getCDevicePublicKey();
-		String clientName = request.getClientName();
+		try {
+			// Get request parameters
+			String activationIdShort = request.getActivationIdShort();
+			String activationNonceBase64 = request.getActivationNonce();
+			String cDevicePublicKeyBase64 = request.getCDevicePublicKey();
+			String clientName = request.getClientName();
 
-		// Fetch remaining the current activation by short activation ID
-		Set<ActivationStatus> states = ImmutableSet.of(ActivationStatus.CREATED);
-		ActivationRecordEntity activation = powerAuthRepository
-				.findFirstByActivationIdShortAndActivationStatusIn(activationIdShort, states);
+			// Fetch remaining the current activation by short activation ID
+			Set<ActivationStatus> states = ImmutableSet.of(ActivationStatus.CREATED);
+			ActivationRecordEntity activation = powerAuthRepository
+					.findFirstByActivationIdShortAndActivationStatusIn(activationIdShort, states);
 
-		// Decrypt the device public key
-		byte[] C_devicePublicKey = BaseEncoding.base64().decode(cDevicePublicKeyBase64);
-		byte[] activationNonce = BaseEncoding.base64().decode(activationNonceBase64);
-		PublicKey devicePublicKey = powerAuthServerActivation.decryptDevicePublicKey(C_devicePublicKey,
-				activationIdShort, activation.getActivationOTP(), activationNonce);
+			// Decrypt the device public key
+			byte[] C_devicePublicKey = BaseEncoding.base64().decode(cDevicePublicKeyBase64);
+			byte[] activationNonce = BaseEncoding.base64().decode(activationNonceBase64);
+			PublicKey devicePublicKey = powerAuthServerActivation.decryptDevicePublicKey(C_devicePublicKey,
+					activationIdShort, activation.getActivationOTP(), activationNonce);
 
-		// Update and persist the activation record
-		activation.setActivationStatus(ActivationStatus.OTP_USED);
-		activation.setDevicePublicKey(devicePublicKey.getEncoded());
-		activation.setClientName(clientName);
-		powerAuthRepository.save(activation);
+			// Update and persist the activation record
+			activation.setActivationStatus(ActivationStatus.OTP_USED);
+			activation.setDevicePublicKey(devicePublicKey.getEncoded());
+			activation.setClientName(clientName);
+			powerAuthRepository.save(activation);
 
-		// Generate response data
-		byte[] activationNonceServer = powerAuthServerActivation.generateActivationNonce();
-		PublicKey serverPublicKey = keyConversionUtilities.convertBytesToPublicKey(activation.getServerPublicKey());
-		KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
-		PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
-		PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
-		byte[] ephemeralPublicKeyBytes = keyConversionUtilities.convertPublicKeyToBytes(ephemeralPublicKey);
-		byte[] masterPrivateKeyBytes = BaseEncoding.base64()
-				.decode(activation.getMasterKeypair().getMasterKeyPrivateBase64());
-		PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes);
-		String activationOtp = activation.getActivationOTP();
+			// Generate response data
+			byte[] activationNonceServer = powerAuthServerActivation.generateActivationNonce();
+			PublicKey serverPublicKey = keyConversionUtilities.convertBytesToPublicKey(activation.getServerPublicKey());
+			KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
+			PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
+			PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
+			byte[] ephemeralPublicKeyBytes = keyConversionUtilities.convertPublicKeyToBytes(ephemeralPublicKey);
+			byte[] masterPrivateKeyBytes = BaseEncoding.base64()
+					.decode(activation.getMasterKeypair().getMasterKeyPrivateBase64());
+			PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes);
+			String activationOtp = activation.getActivationOTP();
 
-		// Encrypt the public key
-		byte[] C_serverPublicKey = powerAuthServerActivation.encryptServerPublicKey(serverPublicKey, devicePublicKey,
-				ephemeralPrivateKey, activationOtp, activationIdShort, activationNonceServer);
+			// Encrypt the public key
+			byte[] C_serverPublicKey = powerAuthServerActivation.encryptServerPublicKey(serverPublicKey,
+					devicePublicKey, ephemeralPrivateKey, activationOtp, activationIdShort, activationNonceServer);
 
-		// Get encrypted public key signature
-		byte[] C_serverPubKeySignature = powerAuthServerActivation.computeServerPublicKeySignature(C_serverPublicKey,
-				masterPrivateKey);
+			// Get encrypted public key signature
+			byte[] C_serverPubKeySignature = powerAuthServerActivation
+					.computeServerPublicKeySignature(C_serverPublicKey, masterPrivateKey);
 
-		// Compute the response
-		PrepareActivationResponse response = new PrepareActivationResponse();
-		response.setActivationId(activation.getActivationId());
-		response.setActivationNonce(BaseEncoding.base64().encode(activationNonceServer));
-		response.setCServerPublicKey(BaseEncoding.base64().encode(C_serverPublicKey));
-		response.setCServerPublicKeySignature(BaseEncoding.base64().encode(C_serverPubKeySignature));
-		response.setEphemeralPublicKey(BaseEncoding.base64().encode(ephemeralPublicKeyBytes));
+			// Compute the response
+			PrepareActivationResponse response = new PrepareActivationResponse();
+			response.setActivationId(activation.getActivationId());
+			response.setActivationNonce(BaseEncoding.base64().encode(activationNonceServer));
+			response.setCServerPublicKey(BaseEncoding.base64().encode(C_serverPublicKey));
+			response.setCServerPublicKeySignature(BaseEncoding.base64().encode(C_serverPubKeySignature));
+			response.setEphemeralPublicKey(BaseEncoding.base64().encode(ephemeralPublicKeyBytes));
 
-		return response;
-		
+			return response;
+		} catch (Exception ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw new GenericServiceException("Unknown exception has occurred");
+		}
 	}
 
 	@Override
 	public VerifySignatureResponse verifySignature(VerifySignatureRequest request) throws Exception {
-		
-		// Get request data
-		String activationId = request.getActivationId();
-		byte[] data = BaseEncoding.base64().decode(request.getData());
-		String signature = request.getSignature();
-		
-		// Fetch related activation
-        ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
-        
-        // Only validate signature for existing ACTIVE activation records
-        if (activation != null && activation.getActivationStatus() == ActivationStatus.ACTIVE) {
-        	
-        	// Get the server private and device public keys to compute the signing key 
-        	PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(activation.getServerPrivateKey());
-        	PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(activation.getDevicePublicKey());
-        
-        	SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(
-        			serverPrivateKey, 
-        			devicePublicKey
-        	);
-        	SecretKey signatureKey = powerAuthServerSignature.generateServerSignatureKey(masterSecretKey);
-        	
-        	// Verify the signature
-        	boolean signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKey, activation.getCounter());
-        	if (!signatureValid) {
-        		
-        		// Update failed attempts and block the activation, if necessary
-        		activation.setFailedAttempts(activation.getFailedAttempts() + 1);
-            	Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts());
-            	if (remainingAttempts <= 0) {
-            		activation.setActivationStatus(ActivationStatus.BLOCKED);
-            	}
-            	powerAuthRepository.save(activation);
-            
-            	// return the data
-            	VerifySignatureResponse response = new VerifySignatureResponse();
-            	response.setActivationId(activationId);
-            	response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-            	response.setRemainingAttempts(BigInteger.valueOf(remainingAttempts));
-            	response.setSignatureValid(false);
-            	response.setUserId(activation.getUserId());
-            	
-            	return response;
-        		
-        	} else {
-        		
-        		// Reset failed attempt count
-        		activation.setFailedAttempts(0L);
-        		powerAuthRepository.save(activation);
-        		
-        		// return the data
-            	VerifySignatureResponse response = new VerifySignatureResponse();
-            	response.setActivationId(activationId);
-            	response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
-            	response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
-            	response.setSignatureValid(true);
-            	response.setUserId(activation.getUserId());
-            	
-            	return response;
-        	}
-        	
-        } else {
-        	
-        	// return the data
-        	VerifySignatureResponse response = new VerifySignatureResponse();
-        	response.setActivationId(activationId);
-        	response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
-        	response.setRemainingAttempts(BigInteger.valueOf(0));
-        	response.setSignatureValid(false);
-        	response.setUserId("UNKNOWN");
-        	
-        	return response;
-        	
-        }
+		try {
+			// Get request data
+			String activationId = request.getActivationId();
+			byte[] data = BaseEncoding.base64().decode(request.getData());
+			String signature = request.getSignature();
+
+			// Fetch related activation
+			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+
+			// Only validate signature for existing ACTIVE activation records
+			if (activation != null && activation.getActivationStatus() == ActivationStatus.ACTIVE) {
+
+				// Get the server private and device public keys to compute the
+				// signing key
+				PrivateKey serverPrivateKey = keyConversionUtilities
+						.convertBytesToPrivateKey(activation.getServerPrivateKey());
+				PublicKey devicePublicKey = keyConversionUtilities
+						.convertBytesToPublicKey(activation.getDevicePublicKey());
+
+				SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey,
+						devicePublicKey);
+				SecretKey signatureKey = powerAuthServerSignature.generateServerSignatureKey(masterSecretKey);
+
+				// Verify the signature
+				boolean signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKey,
+						activation.getCounter());
+				if (!signatureValid) {
+
+					// Update failed attempts and block the activation, if
+					// necessary
+					activation.setFailedAttempts(activation.getFailedAttempts() + 1);
+					Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS
+							- activation.getFailedAttempts());
+					if (remainingAttempts <= 0) {
+						activation.setActivationStatus(ActivationStatus.BLOCKED);
+					}
+					powerAuthRepository.save(activation);
+
+					// return the data
+					VerifySignatureResponse response = new VerifySignatureResponse();
+					response.setActivationId(activationId);
+					response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+					response.setRemainingAttempts(BigInteger.valueOf(remainingAttempts));
+					response.setSignatureValid(false);
+					response.setUserId(activation.getUserId());
+
+					return response;
+
+				} else {
+
+					// Reset failed attempt count
+					activation.setFailedAttempts(0L);
+					powerAuthRepository.save(activation);
+
+					// return the data
+					VerifySignatureResponse response = new VerifySignatureResponse();
+					response.setActivationId(activationId);
+					response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
+					response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
+					response.setSignatureValid(true);
+					response.setUserId(activation.getUserId());
+
+					return response;
+				}
+
+			} else {
+
+				// return the data
+				VerifySignatureResponse response = new VerifySignatureResponse();
+				response.setActivationId(activationId);
+				response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
+				response.setRemainingAttempts(BigInteger.valueOf(0));
+				response.setSignatureValid(false);
+				response.setUserId("UNKNOWN");
+
+				return response;
+
+			}
+		} catch (Exception ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw new GenericServiceException("Unknown exception has occurred");
+		}
 	}
 
 	@Override
 	public CommitActivationResponse commitActivation(CommitActivationRequest request) throws Exception {
-		String activationId = request.getActivationId();
-		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
-		boolean activated = false;
-		if (activation != null) { // does the record even exist?
-			activated = true;
-			activation.setActivationStatus(ActivationStatus.ACTIVE);
-			powerAuthRepository.save(activation);
+		try {
+			String activationId = request.getActivationId();
+			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+			boolean activated = false;
+			if (activation != null) { // does the record even exist?
+				activated = true;
+				activation.setActivationStatus(ActivationStatus.ACTIVE);
+				powerAuthRepository.save(activation);
+			}
+			CommitActivationResponse response = new CommitActivationResponse();
+			response.setActivationId(activationId);
+			response.setActivated(activated);
+			return response;
+		} catch (Exception ex) {
+			throw new GenericServiceException("Unknown exception has occurred");
 		}
-		CommitActivationResponse response = new CommitActivationResponse();
-		response.setActivationId(activationId);
-		response.setActivated(activated);
-		return response;
 	}
 
 	@Override
 	public RemoveActivationResponse removeActivation(RemoveActivationRequest request) throws Exception {
-		String activationId = request.getActivationId();
-		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
-		boolean removed = false;
-		if (activation != null) { // does the record even exist?
-			removed = true;
-			activation.setActivationStatus(ActivationStatus.REMOVED);
-			powerAuthRepository.save(activation);
+		try {
+			String activationId = request.getActivationId();
+			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+			boolean removed = false;
+			if (activation != null) { // does the record even exist?
+				removed = true;
+				activation.setActivationStatus(ActivationStatus.REMOVED);
+				powerAuthRepository.save(activation);
+			}
+			RemoveActivationResponse response = new RemoveActivationResponse();
+			response.setActivationId(activationId);
+			response.setRemoved(removed);
+			return response;
+		} catch (Exception ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw new GenericServiceException("Unknown exception has occurred");
 		}
-		RemoveActivationResponse response = new RemoveActivationResponse();
-		response.setActivationId(activationId);
-		response.setRemoved(removed);
-		return response;
 	}
 
 	@Override
 	public BlockActivationResponse blockActivation(BlockActivationRequest request) throws Exception {
-		String activationId = request.getActivationId();
-		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
-		if (activation != null && activation.getActivationStatus().equals(ActivationStatus.ACTIVE)) { // does
-																										// the
-																										// record
-																										// even
-																										// exist,
-																										// is
-																										// it
-																										// in
-																										// correct
-																										// state?
-			activation.setActivationStatus(ActivationStatus.BLOCKED);
-			powerAuthRepository.save(activation);
+		try {
+			String activationId = request.getActivationId();
+			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+			// does the record even exist, is it in correct state?
+			if (activation != null && activation.getActivationStatus().equals(ActivationStatus.ACTIVE)) {
+				activation.setActivationStatus(ActivationStatus.BLOCKED);
+				powerAuthRepository.save(activation);
+			}
+			BlockActivationResponse response = new BlockActivationResponse();
+			response.setActivationId(activationId);
+			response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+			return response;
+		} catch (Exception ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw new GenericServiceException("Unknown exception has occurred");
 		}
-		BlockActivationResponse response = new BlockActivationResponse();
-		response.setActivationId(activationId);
-		response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-		return response;
 	}
 
 	@Override
 	public UnblockActivationResponse unblockActivation(UnblockActivationRequest request) throws Exception {
-		String activationId = request.getActivationId();
-		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
-		if (activation != null && activation.getActivationStatus().equals(ActivationStatus.BLOCKED)) { // does
-																										// the
-																										// record
-																										// even
-																										// exist,
-																										// is
-																										// it
-																										// in
-																										// correct
-																										// state?
-			activation.setActivationStatus(ActivationStatus.ACTIVE);
-			powerAuthRepository.save(activation);
+		try {
+			String activationId = request.getActivationId();
+			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+			// does the record even exist, is it in correct state?
+			if (activation != null && activation.getActivationStatus().equals(ActivationStatus.BLOCKED)) {
+				activation.setActivationStatus(ActivationStatus.ACTIVE);
+				powerAuthRepository.save(activation);
+			}
+			UnblockActivationResponse response = new UnblockActivationResponse();
+			response.setActivationId(activationId);
+			response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+			return response;
+		} catch (Exception ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw new GenericServiceException("Unknown exception has occurred");
 		}
-		UnblockActivationResponse response = new UnblockActivationResponse();
-		response.setActivationId(activationId);
-		response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-		return response;
+
 	}
 
 }

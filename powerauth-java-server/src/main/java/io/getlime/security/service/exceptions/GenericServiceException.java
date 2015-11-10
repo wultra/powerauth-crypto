@@ -7,5 +7,9 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class GenericServiceException extends Exception {
 
 	private static final long serialVersionUID = 7185138483623356230L;
+	
+	public GenericServiceException(String message) {
+		super(message);
+	}
 
 }

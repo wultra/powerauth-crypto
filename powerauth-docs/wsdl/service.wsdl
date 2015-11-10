@@ -149,8 +149,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="remainingAttempts" type="xs:integer"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
             </xs:sequence>
@@ -423,7 +423,7 @@
   </wsdl:binding>
   <wsdl:service name="PowerAuthPortService">
     <wsdl:port binding="tns:PowerAuthPortSoap11" name="PowerAuthPortSoap11">
-      <soap:address location="http://localhost:8080/powerauth"/>
+      <soap:address location="http://localhost:8080/powerauth-java-server/powerauth"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
