@@ -1,13 +1,11 @@
 package io.getlime.security.powerauth.client.signature;
 
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.lib.util.SignatureUtils;
 import io.getlime.security.powerauth.server.signature.PowerAuthServerSignature;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
-import java.util.Arrays;
 import javax.crypto.SecretKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.After;
@@ -74,7 +72,7 @@ public class PowerAuthSignatureTest {
                 // compute data signature
                 SecretKey masterClientKey = clientSignature.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
                 SecretKey signatureClientKey = clientSignature.generateClientSignatureKey(masterClientKey);
-                byte[] signature = clientSignature.signatureForData(data, signatureClientKey, new Long(ctr));
+                String signature = clientSignature.signatureForData(data, signatureClientKey, new Long(ctr));
                 
                 // System.out.println("signature client: " + Arrays.toString(signature));
 
@@ -85,7 +83,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureServerKey = serverSignature.generateServerSignatureKey(masterServerKey);
                 assertEquals(signatureClientKey, signatureServerKey);
                 
-                // System.out.println("signature server: " + Arrays.toString(new SignatureUtils().computePowerAuthSignature(data, signatureServerKey, new Long(ctr))));
+                // System.out.println("signature server: " + new SignatureUtils().computePowerAuthSignature(data, signatureServerKey, new Long(ctr)));
                 
                 boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, signatureServerKey, new Long(ctr));
                 assertTrue(isSignatureValid);

@@ -80,7 +80,8 @@ public class PowerAuthActivationTest {
         for (int i = 0; i < 100; i++) {
 
             // SERVER: Generate data for activation
-            String activationId = serverActivation.generateActivationId();
+            @SuppressWarnings("unused")
+			String activationId = serverActivation.generateActivationId();
             String activationIdShort = serverActivation.generateActivationIdShort();
             String activationOTP = serverActivation.generateActivationOTP();
             byte[] activationSignature = serverActivation.generateActivationSignature(activationIdShort, activationOTP, masterPrivateKey);

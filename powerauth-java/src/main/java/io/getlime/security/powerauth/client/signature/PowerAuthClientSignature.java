@@ -1,5 +1,6 @@
 package io.getlime.security.powerauth.client.signature;
 
+import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.SignatureUtils;
 import java.security.InvalidKeyException;
@@ -34,7 +35,22 @@ public class PowerAuthClientSignature {
      * @return An instance of signature key KEY_SIGNATURE.
      */
     public SecretKey generateClientSignatureKey(SecretKey masterSecretKey) {
-        return keyGenerator.deriveSecretKey(masterSecretKey, new Long(1));
+        return keyGenerator.deriveSecretKey(masterSecretKey,
+        		new Long(PowerAuthConstants.KEY_DERIVED_KEY_SIGNATURE)
+        );
+    }
+    
+    /**
+     * Generate a transport key KEY_TRANSPORT from master secret key
+     * KEY_MASTER_SECRET using KDF.
+     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.Long) 
+     * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
+     * @return An instance of signature key KEY_TRANSPORT.
+     */
+    public SecretKey generateServerTransportKey(SecretKey masterSecretKey) {
+        return keyGenerator.deriveSecretKey(masterSecretKey,
+        		new Long(PowerAuthConstants.KEY_DERIVED_KEY_TRANSPORT)
+        );
     }
     
     /**
@@ -48,7 +64,7 @@ public class PowerAuthClientSignature {
      * @return PowerAuth 2.0 signature for given data.
      * @throws InvalidKeyException In case signature key is invalid.
      */
-    public byte[] signatureForData(
+    public String signatureForData(
             byte[] data,
             SecretKey signatureKey,
             Long ctr) throws InvalidKeyException {

@@ -35,55 +35,55 @@ public class PowerAuthEndpoint {
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "InitActivationRequest")
     @ResponsePayload
-    public InitActivationResponse initActivation(@RequestPayload InitActivationRequest request) {
+    public InitActivationResponse initActivation(@RequestPayload InitActivationRequest request) throws Exception {
         return powerAuthService.initActivation(request);
     }
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "PrepareActivationRequest")
     @ResponsePayload
-    public PrepareActivationResponse prepareActivation(@RequestPayload PrepareActivationRequest request) {
+    public PrepareActivationResponse prepareActivation(@RequestPayload PrepareActivationRequest request) throws Exception {
         return powerAuthService.prepareActivation(request);
     }
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "CommitActivationRequest")
     @ResponsePayload
-    public CommitActivationResponse commitActivation(@RequestPayload CommitActivationRequest request) {
+    public CommitActivationResponse commitActivation(@RequestPayload CommitActivationRequest request) throws Exception {
         return powerAuthService.commitActivation(request);
     }
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetActivationStatusRequest")
     @ResponsePayload
-    public GetActivationStatusResponse getActivationStatus(@RequestPayload GetActivationStatusRequest request) {
+    public GetActivationStatusResponse getActivationStatus(@RequestPayload GetActivationStatusRequest request) throws Exception {
         return powerAuthService.getActivationStatus(request);
     }
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RemoveActivationRequest")
     @ResponsePayload
-    public RemoveActivationResponse removeActivation(@RequestPayload RemoveActivationRequest request) {
+    public RemoveActivationResponse removeActivation(@RequestPayload RemoveActivationRequest request) throws Exception {
         return powerAuthService.removeActivation(request);
     }
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetActivationListForUserRequest")
     @ResponsePayload
-    public GetActivationListForUserResponse getActivatioListForUser(@RequestPayload GetActivationListForUserRequest request) {
+    public GetActivationListForUserResponse getActivatioListForUser(@RequestPayload GetActivationListForUserRequest request) throws Exception {
         return powerAuthService.getActivatioListForUser(request);
     }
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "VerifySignatureRequest")
     @ResponsePayload
-    public VerifySignatureResponse verifySignature(@RequestPayload VerifySignatureRequest request) {
+    public VerifySignatureResponse verifySignature(@RequestPayload VerifySignatureRequest request) throws Exception {
         return powerAuthService.verifySignature(request);
     }
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BlockActivationRequest")
     @ResponsePayload
-    public BlockActivationResponse blockActivation(@RequestPayload BlockActivationRequest request) {
+    public BlockActivationResponse blockActivation(@RequestPayload BlockActivationRequest request) throws Exception {
         return powerAuthService.blockActivation(request);
     }
     
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "UnblockActivationRequest")
     @ResponsePayload
-    public UnblockActivationResponse unblockActivation(@RequestPayload UnblockActivationRequest request) {
+    public UnblockActivationResponse unblockActivation(@RequestPayload UnblockActivationRequest request) throws Exception {
         return powerAuthService.unblockActivation(request);
     }
 

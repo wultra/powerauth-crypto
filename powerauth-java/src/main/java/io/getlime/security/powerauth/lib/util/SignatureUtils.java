@@ -8,12 +8,13 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
 
 public class SignatureUtils {
 
@@ -69,14 +70,20 @@ public class SignatureUtils {
      * @return PowerAuth 2.0 signature for given data.
      * @throws InvalidKeyException 
      */
-    public byte[] computePowerAuthSignature(byte[] data, SecretKey signatureKey, Long counter) throws InvalidKeyException {
+    public String computePowerAuthSignature(byte[] data, SecretKey signatureKey, Long counter) throws InvalidKeyException {
         try {
             byte[] ctr = ByteBuffer.allocate(16).putLong(counter).array();
             Mac hmacSha256 = Mac.getInstance("HmacSHA256", "BC");
             byte[] keyBytes = new KeyConversionUtils().convertSharedSecretKeyToBytes(signatureKey);
             SecretKey hmacKey = new SecretKeySpec(keyBytes, "HmacSHA256");
             hmacSha256.init(hmacKey);
-            byte[] signature = hmacSha256.doFinal(ctr);
+            byte[] signatureLong = hmacSha256.doFinal(ctr);
+            if (signatureLong.length < 4) { // assert
+                throw new IndexOutOfBoundsException();
+            }
+            int index = signatureLong.length - 4;
+            int number = (ByteBuffer.wrap(signatureLong).getInt(index) & 0x7FFFFFFF) % (int)(Math.pow(10, PowerAuthConstants.SIGNATURE_LENGTH));
+            String signature = String.valueOf(number);
             return signature;
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(SignatureUtils.class.getName()).log(Level.SEVERE, null, ex);
@@ -93,8 +100,8 @@ public class SignatureUtils {
      * @return Return "true" if signature matches, "false" otherwise.
      * @throws InvalidKeyException 
      */
-    public boolean validatePowerAuthSignature(byte[] data, byte[] signature, SecretKey signatureKey, Long counter) throws InvalidKeyException {
-        return Arrays.equals(signature, computePowerAuthSignature(data, signatureKey, counter));
+    public boolean validatePowerAuthSignature(byte[] data, String signature, SecretKey signatureKey, Long counter) throws InvalidKeyException {
+        return signature.equals(computePowerAuthSignature(data, signatureKey, counter));
     }
 
 }
