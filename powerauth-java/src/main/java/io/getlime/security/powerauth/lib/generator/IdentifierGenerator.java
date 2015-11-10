@@ -1,4 +1,4 @@
-package io.getlime.security.powerauth.lib.generator;
+	package io.getlime.security.powerauth.lib.generator;
 
 import com.google.common.io.BaseEncoding;
 import java.security.SecureRandom;
@@ -51,7 +51,7 @@ public class IdentifierGenerator {
     private String generateBase32Token(int length, SecureRandom random) {
         byte[] randomBytes = new byte[length];
         random.nextBytes(randomBytes);
-        return BaseEncoding.base32().omitPadding().encode(randomBytes);
+        return BaseEncoding.base32().omitPadding().encode(randomBytes).substring(0, length);
     }
     
 }
