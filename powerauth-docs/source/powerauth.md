@@ -4,6 +4,46 @@ PowerAuth 2.0 is a protocol for a key exchange and for subsequent request signin
 
 A typical use-case for PowerAuth 2.0 protocol would be assuring the security of a mobile banking application. User usually downloads a "blank" (non-personalized) mobile banking app from the mobile application market. Then, user activates (personalizes, using a key-exchange algorithm) the mobile banking using some application that is assumed secure, for example via the internet banking or via the branch kiosk system. Finally, user can use activated mobile banking application to create signed requests - to log in to mobile banking, send a payment, certify contracts, etc.
 
+## Basic definitions
+
+### Cryptographic functions
+
+Following basic cryptography algorithms and parameters are used in the PowerAuth 2.0 cryptography description:
+
+- **AES** - A symmetric key encryption algorithm, uses CBC mode and PKCS5 padding. It defines two operations:
+	- `byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key)` - encrypt bytes using symmetric key with given initialization vector.
+	- `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key)` - decrypt bytes using symmetric key with given initialization vector.
+- **PBKDF2** - An algorithm for key stretching, converts a short password into long key by performing repeated hash iteration on the original data, HMAC-SHA1 algorithm is used for a pseudo-random function. Implementations must make sure resulting key is converted in format usable by AES algorithm. One method is defined for this algorithm:
+	- `SharedKey expandedKey = PBKDF2.expand(char[] password, byte[] salt, long iterations, long lengthInBits)` - stretch the password using given number of iterations to achieve key of given length in bits, use given salt.
+- **ECDSA** - An algorithm for elliptic curve based signatures, uses SHA256 hash algorithm. It defines two operations:
+	- `byte[] signature = ECDSA.sign(byte[] data, PrivateKey privateKey)` - compute signature of given data and private key.
+	- `boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKey)` - verify the signature for given data using a given public key.
+- **ECDH** - An algorithm for elliptic curve with Diffie-Helman key exchange, uses P256r1 curve. We define single operation on ECDH, a symmetric key deduction between parties A and B:
+	- `SecretKey secretKey = ECDH.phase(PrivateKey privateKeyA, PublicKey publicKeyB)`
+
+### Helper functions
+
+These functions are used in the pseudo-codes:
+
+- Key generators and utilities
+	- **KeyPair keyPair = KeyGenerator.randomKeyPair()** - Generate a new ECDH key pair using P256r1 elliptic curve.
+	- **byte[] privateKeyBytes = KeyConversion.getBytes(PrivateKey privKey)** - Get bytes from the ECDH key pair private key by encoding the Q value (the number defining the ECDH private key).
+	- **byte[] publicKeyBytes = KeyConversion.getBytes(PublicKey pubKey)** - Get bytes from the ECDH key pair public key by encoding the D value (the point defining the ECDH public key).
+	- **byte[] secretKeyBytes = KeyConversion.getBytes(SecretKey secretKey)** - Get bytes from the symmetric key (using getEncoded).
+	- **PrivateKey privateKey = KeyConversion.privateKeyFromBytes(byte[] privKeyBytes)** - Get ECDH key pair private key by decoding the bytes into the original Q value (the number defining the ECDH private key).
+	- **PublicKey publicKey = KeyConversion.publicKeyFromBytes(byte[] pubKeyBytes)** - Get ECDH key pair public key by decoding the bytes into the original D value (the point defining the ECDH public key).
+	- **SecretKey secretKey = KeyConversion.secretKeyFromBytes(byte[] secretKeyBytes)** - Create a symmetric key using provided bytes.
+- Random data generators
+	- **byte[] randomBytes = Generator.randomBytes(int N)** - Generate N random bytes using a secure random generator.
+	- **String randomBase32 Generator.randomBase32String(int N)** - Generate string in Base32 encoding with N characters using a secure random generator.
+	- **String uuid = Generator.randomUUUD()** - Generate a new UUID level 4 and return it in string representation.
+- Hashing and MAC functions.
+	- **byte[] signature = Mac.hmacSha256(SharedKey key, byte[] message)** - Compute HMAC-SHA256 signature for given message using provided symmetric key.
+	- **byte[] hash = Hash.sha256(byte[] original)** - Compute SHA256 hash of a given input.
+- Utility functions
+	- **byte[] truncatedBytes = ByteUtils.truncate(byte[] bytes, int N)** - Get last N bytes of given byte array.
+	- **int integer = ByteUtils.getInt(byte[4] bytes)** - Get integer from 4 byte long byte array.
+
 # PowerAuth Activation
 
 In PowerAuth 2.0, both client and server must first share the same shared master secret `KEY_MASTER_SECRET`. The `KEY_MASTER_SECRET` is a symmetric key that is used as a base for deriving the further purpose specific shared secret keys. These derived keys are then used for an HTTP request signing. In order to establish this shared master secret, a secure key exchange (or "activation") must take a place.
@@ -67,12 +107,14 @@ To describe the steps more precisely, the activation process is performed in fol
 
 1. PowerAuth 2.0 Server generates an `ACTIVATION_ID`, `ACTIVATION_ID_SHORT`, a key pair `(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC)` and `ACTIVATION_OTP`. Server also optionally computes a signature `ACTIVATION_SIGNATURE` of `ACTIVATION_ID_SHORT` and `ACTIVATION_OTP` using servers master private key `KEY_SERVER_MASTER_PRIVATE`.
 
-	- `ACTIVATION_ID = UUID4_GEN()`
-	- `ACTIVATION_ID_SHORT = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)` (must be unique among records in CREATED and OTP_USED states)
-	- `ACTIVATION_OTP = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)`
-	- `(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC) = KEY_GEN("ECDH", "secp256r1")`
-	- `DATA = GET_BYTES(ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP, "UTF-8")`
-	- `ACTIVATION_SIGNATURE = ECDSA(DATA, KEY_SERVER_MASTER_PRIVATE)`
+	- `String ACTIVATION_ID = Generator.randomUUID()`
+	- `String ACTIVATION_ID_SHORT = Generator.randomBase32String(5) + "-" + Generator.randomBase32String(5)` (must be unique among records in CREATED and OTP_USED states)
+	- `String ACTIVATION_OTP = Generator.randomBase32String(5) + "-" + Generator.randomBase32String(5)`
+	- `KeyPair keyPair = KeyGenerator.randomKeyPair()`
+	- `PrivateKey KEY_SERVER_PRIVATE = keyPair.getPrivate()`
+	- `PublicKey KEY_SERVER_PUBLIC = keyPair.getPublic()`
+	- `byte[] DATA = (ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP).getBytes("UTF-8")`
+	- `byte[] ACTIVATION_SIGNATURE = ECDSA.sign(DATA, KEY_SERVER_MASTER_PRIVATE)`
 
 1. Record associated with given `ACTIVATION_ID` is now in `CREATED` state.
 
@@ -82,61 +124,65 @@ To describe the steps more precisely, the activation process is performed in fol
 
 1. (optional) PowerAuth 2.0 Client verifies `ACTIVATION_SIGNATURE` against `ACTIVATION_ID_SHORT` and `ACTIVATION_OTP` using `KEY_SERVER_MASTER_PUBLIC` and if the signature matches, it proceeds.
 
-	- `DATA = GET_BYTES(ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP, "UTF-8")`
-	- `isSignatureOK = ECDSA^inverse(DATA, KEY_SERVER_MASTER_PUBLIC)`
+	- `byte[] DATA = (ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP).getBytes("UTF-8")`
+	- `boolean isOK = ECDSA.verify(DATA, KEY_SERVER_MASTER_PUBLIC)`
 
 1. PowerAuth 2.0 Client generates its key pair `(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC)`.
 
-	- `(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC) = KEY_GEN("ECDH", "secp256r1")`
+	- `KeyPair keyPair = KeyGenerator.randomKeyPair()`
+	- `PrivateKey KEY_DEVICE_PRIVATE = keyPair.getPrivate()`
+	- `PublicKey KEY_DEVICE_PUBLIC = keyPair.getPublic()`
 
 1. PowerAuth 2.0 Client sends a request with an `ACTIVATION_ID_SHORT`, `ACTIVATION_NONCE` (used as an initialization vector for AES encryption) and `C_KEY_DEVICE_PUBLIC` to the PowerAuth 2.0 Server (via Intermediate Server Application).
 
-	- `ACTIVATION_ID_SHORT_BYTES GET_BYTES(ACTIVATION_ID_SHORT, "UTF-8")`
-	- `KEY_ENCRYPTION_OTP = PBKDF2(ACTIVATION_OTP, ACTIVATION_ID_SHORT_BYTES, 10 000)`
-	- `ACTIVATION_NONCE = RANDOM_BYTES(16)`
-	- `C_KEY_DEVICE_PUBLIC = BASE64Encode(AES(KEY_DEVICE_PUBLIC, KEY_ENCRYPTION_OTP), ACTIVATION_NONCE, "UTF-8")`
+	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
+	- `byte[] ACTIVATION_NONCE = Generator.randomBytes(16)`
+	- `byte[] keyPublicBytes = KeyConversion.getBytes(KEY_DEVICE_PUBLIC)`
+	- `byte[] C_KEY_DEVICE_PUBLIC = AES.encrypt(, ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)`
 
 1. PowerAuth 2.0 Server decrypts and stores the public key at given record.
 
-	- `ACTIVATION_ID_SHORT_BYTES = GET_BYTES(ACTIVATION_ID_SHORT, "UTF-8")`
-	- `KEY_ENCRYPTION_OTP = PBKDF2(ACTIVATION_OTP, ACTIVATION_ID_SHORT_BYTES, 10 000)`
-	- `KEY_DEVICE_PUBLIC = AES^inverse(BASE64Decode(C_KEY_DEVICE_PUBLIC, "UTF-8"), ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)`
+	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
+	- `byte[] keyPublicBytes = AES.decrypt(C_KEY_DEVICE_PUBLIC, ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)`
+	- `PublicKey KEY_DEVICE_PUBLIC = KeyConversion.publicKeyFromBytes(keyPublicBytes)`
 
 1. PowerAuth 2.0 Server changes the record status to `OTP_USED`
 
 1. PowerAuth 2.0 Server responds with `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `C_KEY_SERVER_PUBLIC_SIGNATURE`.
 
-	- `ACTIVATION_ID_SHORT_BYTES = BYTES(ACTIVATION_ID_SHORT, "UTF-8")`
-	- `KEY_ENCRYPTION_OTP = PBKDF2(ACTIVATION_OTP, ACTIVATION_ID_SHORT_BYTES, 10 000)`
-	- `(KEY_EPHEMERAL_PRIVATE, KEY_EPHEMERAL_PUBLIC) = KEY_GEN("ECDH", "secp256r1")`
-	- `EPH_KEY = ECDH(KEY_EPHEMERAL_PRIVATE, KEY_DEVICE_PUBLIC)`
-	- `EPHEMERAL_NONCE = RANDOM_BYTES(16)`
-	- `C_KEY_SERVER_PUBLIC = AES(AES(KEY_SERVER_PUBLIC, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, PH_KEY)`
-	- `C_KEY_SERVER_PUBLIC_SIGNATURE = ECDSA(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)`
+	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
+	- `KeyPair keyPair = KeyGenerator.randomKeyPair()`
+	- `PrivateKey KEY_EPHEMERAL_PRIVATE = keyPair.getPrivate()`
+	- `PublicKey KEY_EPHEMERAL_PUBLIC = keyPair.getPublic()`
+	- `SecretKey EPH_KEY = ECDH.phase(KEY_EPHEMERAL_PRIVATE, KEY_DEVICE_PUBLIC)`
+	- `byte[] EPHEMERAL_NONCE = Generator.randomBytes(16)`
+	- `byte[] keyPublicBytes = KeyConversion.getBytes(KEY_SERVER_PUBLIC)`
+	- `byte[] C_KEY_SERVER_PUBLIC = AES.encrypt(AES.encrypt(keyPublicBytes, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, EPH_KEY)`
+	- `byte[] C_KEY_SERVER_PUBLIC_SIGNATURE = ECDSA.sign(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)`
 
 1. PowerAuth 2.0 Client receives an `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `C_KEY_SERVER_PUBLIC_SIGNATURE` and if the signature matches the data, it retrieves `KEY_SERVER_PUBLIC`.
 
-	- `ACTIVATION_ID_SHORT_BYTES = BYTES(ACTIVATION_ID, "UTF-8")`
-	- `KEY_ENCRYPTION_OTP = PBKDF2(ACTIVATION_OTP, ACTIVATION_ID_SHORT_BYTES, 10 000)`
-	- `isSignatureOK = ECDSA^inverse(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)`
-	- `EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)`
-	- `KEY_SERVER_PUBLIC = AES^inverse(AES^inverse(C_KEY_SERVER_PUBLIC, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, PH_KEY)`
+	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
+	- `boolean isSignatureOK = ECDSA.verify(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)`
+	- `SecretKey EPH_KEY = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)`
+	- `byte[] keyPublicBytes = AES.decrypt(AES.decrypt(C_KEY_SERVER_PUBLIC, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, PH_KEY)`
+	- `PublicKey KEY_SERVER_PUBLIC = KeyConversion.publicKeyFromBytes(keyPublicBytes)`
 
 1. Both PowerAuth 2.0 Client and PowerAuth 2.0 Server set `CTR = 0` for given `ACTIVATION_ID`.
 
 1. (optional) PowerAuth 2.0 Client displays `H_K_DEVICE_PUBLIC`, so that a user can verify the device public key correctness by entering `H_K_DEVICE_PUBLIC` in the Master Front-End Application (Master Front-End Application sends `H_K_DEVICE_PUBLIC` for verification to PowerAuth 2.0 Server via Intermediate Server Application).
 
-	- `K_DEVICE_PUBLIC_BYTES = BYTES(K_DEVICE_PUBLIC, "UTF-8")`
-	- `H_K_DEVICE_PUBLIC = (TRUNCATE(SHA256(K_DEVICE_PUBLIC_BYTES), 4) & 0x7FFFFFFF) % (10 ^ 8)`
+	- `byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(KeyConversion.getBytes(K_DEVICE_PUBLIC_BYTES), 4)`
+	- `int H_K_DEVICE_PUBLIC = ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (10 ^ 8)`
 	- _Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack. (Displaying fingerprint of the server key is not necessary, since the server's public key is signed using server's private master key and encrypted with activation OTP and server public key)._
 
 1. PowerAuth 2.0 Client uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
 
-	- `KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)`
+	- `KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)`
 
 1. PowerAuth 2.0 Server uses `KEY_DEVICE_PUBLIC` and `KEY_SERVER_PRIVATE` to deduce `KEY_MASTER_SECRET` using ECDH.
 
-		- `KEY_MASTER_SECRET = ECDH(KEY_SERVER_PRIVATE, KEY_DEVICE_PUBLIC)`
+		- `KEY_MASTER_SECRET = ECDH.phase(KEY_SERVER_PRIVATE, KEY_DEVICE_PUBLIC)`
 
 1. Master Front-End Application allows completion of the activation - for example, it may ask user to enter a code delivered via an SMS message. Master Front-End Application technically commits the activation by calling PowerAuth 2.0 Server (via Intermediate Server Application).
 
@@ -174,9 +220,9 @@ In practical deployment, Intermediate Server Application is responsible for buil
 
 The PowerAuth 2.0 signature is a number with 10 digits that is obtained in following manner:
 
-- `KEY_DERIVED = HMAC_SHA256(KEY_SIGNATURE, CTR)`
-- `SIGNATURE_LONG = HMAC_SHA256(DATA, KEY_DERIVED)`
-- `SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) & 0x7FFFFFFF) % (10^10)`
+- `byte[] KEY_DERIVED = Mac.HMAC_SHA256(KEY_SIGNATURE, CTR)`
+- `byte[] SIGNATURE_LONG = Mac.HMAC_SHA256(DATA, KEY_DERIVED)`
+- `int SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) & 0x7FFFFFFF) % (10^10)`
 
 PowerAuth 2.0 Client sends the signature in the HTTP `X-PowerAuth-Authorization` header:
 
