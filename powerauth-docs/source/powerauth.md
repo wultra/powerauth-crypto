@@ -329,8 +329,16 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 
 - `KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, serverPublicKey)`
 
-| Method | `POST` |
-| Resource URI | `/pa/activation/create` |
+<table>
+	<tr>
+		<td>Method</td>
+		<td>`POST`</td>
+	</tr>
+	<tr>
+		<td>Resource URI</td>
+		<td>`/pa/activation/create`</td>
+	</tr>
+</table>
 
 ### Request
 
@@ -393,8 +401,16 @@ where:
 - ${CTR} - 4 bytes representing information of the server counter (CTR value, as defined in PowerAuth 2.0 specification).
 - ${RANDOM_NOISE} - Random 7 byte padding, a complement to the total length of 16B. These bytes also serve as a source of entropy for the transport (AES encrypted cStatusBlob will be different each time an endpoint is called).
 
-| Method | `POST` |
-| Resource URI | `/pa/activation/status` |
+<table>
+	<tr>
+		<td>Method</td>
+		<td>`POST`</td>
+	</tr>
+	<tr>
+		<td>Resource URI</td>
+		<td>`/pa/activation/status`</td>
+	</tr>
+</table>
 
 ### Request
 
@@ -429,8 +445,16 @@ where:
 
 Remove an activation with given ID, set it's status to REMOVED. Activation can be removed only after successful verification of the signature.
 
-| Method | `POST` |
-| Resource URI | `/pa/activation/remove` |
+<table>
+	<tr>
+		<td>Method</td>
+		<td>`POST`</td>
+	</tr>
+	<tr>
+		<td>Resource URI</td>
+		<td>`/pa/activation/remove`</td>
+	</tr>
+</table>
 
 ### Request
 
