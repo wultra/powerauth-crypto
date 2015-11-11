@@ -20,7 +20,7 @@ public class PowerAuthConstants {
     /**
      * How many failed signatures cause activation record blocking
      */
-    public static final Long SIGNATURE_MAX_FAILED_ATTEMPTS = 5L;
+    public static final long SIGNATURE_MAX_FAILED_ATTEMPTS = 5L;
     
     /**
      * Index of the signature key KEY_SIGNATURE.

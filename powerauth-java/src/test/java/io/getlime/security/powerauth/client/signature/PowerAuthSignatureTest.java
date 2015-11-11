@@ -95,7 +95,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKey = clientSignature.generateClientSignatureKey(masterClientKey);
                 System.out.println("### Client Signature Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureClientKey)));
                 
-                String signature = clientSignature.signatureForData(data, signatureClientKey, new Long(ctr));
+                String signature = clientSignature.signatureForData(data, signatureClientKey, ctr);
                 
                 System.out.println("## Client Signature: " + signature);
 
@@ -110,7 +110,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureServerKey)));
                 assertEquals(signatureClientKey, signatureServerKey);
                 
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, signatureServerKey, new Long(ctr));
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, signatureServerKey, ctr);
                 System.out.println("## Signature valid: " + (isSignatureValid?"TRUE": "FALSE"));
                 assertTrue(isSignatureValid);
 

@@ -104,7 +104,7 @@ public class KeyGenerator {
      * @param index An index of the key
      * @return A new derived key from a master key with given index.
      */
-    public SecretKey deriveSecretKey(SecretKey secret, Long index) {
+    public SecretKey deriveSecretKey(SecretKey secret, long index) {
         try {
             AESEncryptionUtils aes = new AESEncryptionUtils();
             byte[] bytes = ByteBuffer.allocate(16).putLong(index).array();

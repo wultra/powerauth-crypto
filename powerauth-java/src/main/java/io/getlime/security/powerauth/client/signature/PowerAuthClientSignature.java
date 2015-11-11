@@ -30,26 +30,28 @@ public class PowerAuthClientSignature {
     /**
      * Generate a signature key KEY_SIGNATURE from master secret key
      * KEY_MASTER_SECRET using KDF.
-     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.Long) 
+     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long) 
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE.
      */
     public SecretKey generateClientSignatureKey(SecretKey masterSecretKey) {
-        return keyGenerator.deriveSecretKey(masterSecretKey,
-        		new Long(PowerAuthConstants.KEY_DERIVED_KEY_SIGNATURE)
+        return keyGenerator.deriveSecretKey(
+        		masterSecretKey,
+        		PowerAuthConstants.KEY_DERIVED_KEY_SIGNATURE
         );
     }
     
     /**
      * Generate a transport key KEY_TRANSPORT from master secret key
      * KEY_MASTER_SECRET using KDF.
-     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.Long) 
+     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long) 
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_TRANSPORT.
      */
     public SecretKey generateServerTransportKey(SecretKey masterSecretKey) {
-        return keyGenerator.deriveSecretKey(masterSecretKey,
-        		new Long(PowerAuthConstants.KEY_DERIVED_KEY_TRANSPORT)
+        return keyGenerator.deriveSecretKey(
+        		masterSecretKey,
+        		PowerAuthConstants.KEY_DERIVED_KEY_TRANSPORT
         );
     }
     
@@ -67,7 +69,7 @@ public class PowerAuthClientSignature {
     public String signatureForData(
             byte[] data,
             SecretKey signatureKey,
-            Long ctr) throws InvalidKeyException {
+            long ctr) throws InvalidKeyException {
         return signatureUtils.computePowerAuthSignature(data, signatureKey, ctr);
     }
     

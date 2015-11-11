@@ -70,7 +70,7 @@ public class SignatureUtils {
      * @return PowerAuth 2.0 signature for given data.
      * @throws InvalidKeyException 
      */
-    public String computePowerAuthSignature(byte[] data, SecretKey signatureKey, Long counter) throws InvalidKeyException {
+    public String computePowerAuthSignature(byte[] data, SecretKey signatureKey, long counter) throws InvalidKeyException {
         try {
             byte[] ctr = ByteBuffer.allocate(16).putLong(counter).array();
             Mac hmacSha256 = Mac.getInstance("HmacSHA256", "BC");
@@ -100,7 +100,7 @@ public class SignatureUtils {
      * @return Return "true" if signature matches, "false" otherwise.
      * @throws InvalidKeyException 
      */
-    public boolean validatePowerAuthSignature(byte[] data, String signature, SecretKey signatureKey, Long counter) throws InvalidKeyException {
+    public boolean validatePowerAuthSignature(byte[] data, String signature, SecretKey signatureKey, long counter) throws InvalidKeyException {
         return signature.equals(computePowerAuthSignature(data, signatureKey, counter));
     }
 
