@@ -1,30 +1,532 @@
-<h1>PowerAuth 2.0 Specification</h1>
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8" />
+      <title>powerauth</title>
+      <style>.markdown-preview:not([data-use-github-style]) { padding: 2em; font-size: 1.2em; color: rgb(56, 58, 66); overflow: auto; background-color: rgb(250, 250, 250); }
+.markdown-preview:not([data-use-github-style]) > :first-child { margin-top: 0px; }
+.markdown-preview:not([data-use-github-style]) h1, .markdown-preview:not([data-use-github-style]) h2, .markdown-preview:not([data-use-github-style]) h3, .markdown-preview:not([data-use-github-style]) h4, .markdown-preview:not([data-use-github-style]) h5, .markdown-preview:not([data-use-github-style]) h6 { line-height: 1.2; margin-top: 1.5em; margin-bottom: 0.5em; color: rgb(0, 0, 0); }
+.markdown-preview:not([data-use-github-style]) h1 { font-size: 2.4em; font-weight: 300; }
+.markdown-preview:not([data-use-github-style]) h2 { font-size: 1.8em; font-weight: 400; }
+.markdown-preview:not([data-use-github-style]) h3 { font-size: 1.5em; font-weight: 500; }
+.markdown-preview:not([data-use-github-style]) h4 { font-size: 1.2em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) h5 { font-size: 1.1em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) h6 { font-size: 1em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) strong { color: rgb(0, 0, 0); }
+.markdown-preview:not([data-use-github-style]) del { color: rgb(94, 97, 110); }
+.markdown-preview:not([data-use-github-style]) a, .markdown-preview:not([data-use-github-style]) a code { color: rgb(82, 111, 255); }
+.markdown-preview:not([data-use-github-style]) img { max-width: 100%; }
+.markdown-preview:not([data-use-github-style]) > p { margin-top: 0px; margin-bottom: 1.5em; }
+.markdown-preview:not([data-use-github-style]) > ul, .markdown-preview:not([data-use-github-style]) > ol { margin-bottom: 1.5em; }
+.markdown-preview:not([data-use-github-style]) blockquote { margin: 1.5em 0px; font-size: inherit; color: rgb(94, 97, 110); border-color: rgb(209, 209, 210); border-width: 4px; }
+.markdown-preview:not([data-use-github-style]) hr { margin: 3em 0px; border-top-width: 2px; border-top-style: dashed; border-top-color: rgb(209, 209, 210); background: none; }
+.markdown-preview:not([data-use-github-style]) table { margin: 1.5em 0px; }
+.markdown-preview:not([data-use-github-style]) th { color: rgb(0, 0, 0); }
+.markdown-preview:not([data-use-github-style]) th, .markdown-preview:not([data-use-github-style]) td { padding: 0.66em 1em; border: 1px solid rgb(209, 209, 210); }
+.markdown-preview:not([data-use-github-style]) code { color: rgb(0, 0, 0); background-color: rgb(234, 234, 235); }
+.markdown-preview:not([data-use-github-style]) pre.editor-colors { margin: 1.5em 0px; padding: 1em; font-size: 0.92em; border-radius: 3px; background-color: rgb(240, 240, 240); }
+.markdown-preview:not([data-use-github-style]) kbd { color: rgb(0, 0, 0); border-width: 1px 1px 2px; border-style: solid; border-color: rgb(209, 209, 210) rgb(209, 209, 210) rgb(193, 193, 194); background-color: rgb(234, 234, 235); }
+.markdown-preview[data-use-github-style] { font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; line-height: 1.6; word-wrap: break-word; padding: 30px; font-size: 16px; color: rgb(51, 51, 51); overflow: scroll; background-color: rgb(255, 255, 255); }
+.markdown-preview[data-use-github-style] > :first-child { margin-top: 0px !important; }
+.markdown-preview[data-use-github-style] > :last-child { margin-bottom: 0px !important; }
+.markdown-preview[data-use-github-style] a:not([href]) { color: inherit; text-decoration: none; }
+.markdown-preview[data-use-github-style] .absent { color: rgb(204, 0, 0); }
+.markdown-preview[data-use-github-style] .anchor { position: absolute; top: 0px; left: 0px; display: block; padding-right: 6px; padding-left: 30px; margin-left: -30px; }
+.markdown-preview[data-use-github-style] .anchor:focus { outline: none; }
+.markdown-preview[data-use-github-style] h1, .markdown-preview[data-use-github-style] h2, .markdown-preview[data-use-github-style] h3, .markdown-preview[data-use-github-style] h4, .markdown-preview[data-use-github-style] h5, .markdown-preview[data-use-github-style] h6 { position: relative; margin-top: 1em; margin-bottom: 16px; font-weight: bold; line-height: 1.4; }
+.markdown-preview[data-use-github-style] h1 .octicon-link, .markdown-preview[data-use-github-style] h2 .octicon-link, .markdown-preview[data-use-github-style] h3 .octicon-link, .markdown-preview[data-use-github-style] h4 .octicon-link, .markdown-preview[data-use-github-style] h5 .octicon-link, .markdown-preview[data-use-github-style] h6 .octicon-link { display: none; color: rgb(0, 0, 0); vertical-align: middle; }
+.markdown-preview[data-use-github-style] h1:hover .anchor, .markdown-preview[data-use-github-style] h2:hover .anchor, .markdown-preview[data-use-github-style] h3:hover .anchor, .markdown-preview[data-use-github-style] h4:hover .anchor, .markdown-preview[data-use-github-style] h5:hover .anchor, .markdown-preview[data-use-github-style] h6:hover .anchor { padding-left: 8px; margin-left: -30px; text-decoration: none; }
+.markdown-preview[data-use-github-style] h1:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h2:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h3:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h4:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h5:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h6:hover .anchor .octicon-link { display: inline-block; }
+.markdown-preview[data-use-github-style] h1 tt, .markdown-preview[data-use-github-style] h2 tt, .markdown-preview[data-use-github-style] h3 tt, .markdown-preview[data-use-github-style] h4 tt, .markdown-preview[data-use-github-style] h5 tt, .markdown-preview[data-use-github-style] h6 tt, .markdown-preview[data-use-github-style] h1 code, .markdown-preview[data-use-github-style] h2 code, .markdown-preview[data-use-github-style] h3 code, .markdown-preview[data-use-github-style] h4 code, .markdown-preview[data-use-github-style] h5 code, .markdown-preview[data-use-github-style] h6 code { font-size: inherit; }
+.markdown-preview[data-use-github-style] h1 { padding-bottom: 0.3em; font-size: 2.25em; line-height: 1.2; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(238, 238, 238); }
+.markdown-preview[data-use-github-style] h1 .anchor { line-height: 1; }
+.markdown-preview[data-use-github-style] h2 { padding-bottom: 0.3em; font-size: 1.75em; line-height: 1.225; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(238, 238, 238); }
+.markdown-preview[data-use-github-style] h2 .anchor { line-height: 1; }
+.markdown-preview[data-use-github-style] h3 { font-size: 1.5em; line-height: 1.43; }
+.markdown-preview[data-use-github-style] h3 .anchor { line-height: 1.2; }
+.markdown-preview[data-use-github-style] h4 { font-size: 1.25em; }
+.markdown-preview[data-use-github-style] h4 .anchor { line-height: 1.2; }
+.markdown-preview[data-use-github-style] h5 { font-size: 1em; }
+.markdown-preview[data-use-github-style] h5 .anchor { line-height: 1.1; }
+.markdown-preview[data-use-github-style] h6 { font-size: 1em; color: rgb(119, 119, 119); }
+.markdown-preview[data-use-github-style] h6 .anchor { line-height: 1.1; }
+.markdown-preview[data-use-github-style] p, .markdown-preview[data-use-github-style] blockquote, .markdown-preview[data-use-github-style] ul, .markdown-preview[data-use-github-style] ol, .markdown-preview[data-use-github-style] dl, .markdown-preview[data-use-github-style] table, .markdown-preview[data-use-github-style] pre { margin-top: 0px; margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] hr { height: 4px; padding: 0px; margin: 16px 0px; border: 0px none; background-color: rgb(231, 231, 231); }
+.markdown-preview[data-use-github-style] ul, .markdown-preview[data-use-github-style] ol { padding-left: 2em; }
+.markdown-preview[data-use-github-style] ul.no-list, .markdown-preview[data-use-github-style] ol.no-list { padding: 0px; list-style-type: none; }
+.markdown-preview[data-use-github-style] ul ul, .markdown-preview[data-use-github-style] ul ol, .markdown-preview[data-use-github-style] ol ol, .markdown-preview[data-use-github-style] ol ul { margin-top: 0px; margin-bottom: 0px; }
+.markdown-preview[data-use-github-style] li > p { margin-top: 16px; }
+.markdown-preview[data-use-github-style] dl { padding: 0px; }
+.markdown-preview[data-use-github-style] dl dt { padding: 0px; margin-top: 16px; font-size: 1em; font-style: italic; font-weight: bold; }
+.markdown-preview[data-use-github-style] dl dd { padding: 0px 16px; margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] blockquote { padding: 0px 15px; color: rgb(119, 119, 119); border-left-width: 4px; border-left-style: solid; border-left-color: rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] blockquote > :first-child { margin-top: 0px; }
+.markdown-preview[data-use-github-style] blockquote > :last-child { margin-bottom: 0px; }
+.markdown-preview[data-use-github-style] table { display: block; width: 100%; overflow: auto; word-break: normal; }
+.markdown-preview[data-use-github-style] table th { font-weight: bold; }
+.markdown-preview[data-use-github-style] table th, .markdown-preview[data-use-github-style] table td { padding: 6px 13px; border: 1px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] table tr { border-top-width: 1px; border-top-style: solid; border-top-color: rgb(204, 204, 204); background-color: rgb(255, 255, 255); }
+.markdown-preview[data-use-github-style] table tr:nth-child(2n) { background-color: rgb(248, 248, 248); }
+.markdown-preview[data-use-github-style] img { max-width: 100%; box-sizing: border-box; }
+.markdown-preview[data-use-github-style] .emoji { max-width: none; }
+.markdown-preview[data-use-github-style] span.frame { display: block; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.frame > span { display: block; float: left; width: auto; padding: 7px; margin: 13px 0px 0px; overflow: hidden; border: 1px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] span.frame span img { display: block; float: left; }
+.markdown-preview[data-use-github-style] span.frame span span { display: block; padding: 5px 0px 0px; clear: both; color: rgb(51, 51, 51); }
+.markdown-preview[data-use-github-style] span.align-center { display: block; overflow: hidden; clear: both; }
+.markdown-preview[data-use-github-style] span.align-center > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: center; }
+.markdown-preview[data-use-github-style] span.align-center span img { margin: 0px auto; text-align: center; }
+.markdown-preview[data-use-github-style] span.align-right { display: block; overflow: hidden; clear: both; }
+.markdown-preview[data-use-github-style] span.align-right > span { display: block; margin: 13px 0px 0px; overflow: hidden; text-align: right; }
+.markdown-preview[data-use-github-style] span.align-right span img { margin: 0px; text-align: right; }
+.markdown-preview[data-use-github-style] span.float-left { display: block; float: left; margin-right: 13px; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.float-left span { margin: 13px 0px 0px; }
+.markdown-preview[data-use-github-style] span.float-right { display: block; float: right; margin-left: 13px; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.float-right > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: right; }
+.markdown-preview[data-use-github-style] code, .markdown-preview[data-use-github-style] tt { padding: 0.2em 0px; margin: 0px; font-size: 85%; border-radius: 3px; background-color: rgba(0, 0, 0, 0.0392157); }
+.markdown-preview[data-use-github-style] code::before, .markdown-preview[data-use-github-style] tt::before, .markdown-preview[data-use-github-style] code::after, .markdown-preview[data-use-github-style] tt::after { letter-spacing: -0.2em; content: ' '; }
+.markdown-preview[data-use-github-style] code br, .markdown-preview[data-use-github-style] tt br { display: none; }
+.markdown-preview[data-use-github-style] del code { text-decoration: inherit; }
+.markdown-preview[data-use-github-style] pre > code { padding: 0px; margin: 0px; font-size: 100%; word-break: normal; white-space: pre; border: 0px; background: transparent; }
+.markdown-preview[data-use-github-style] .highlight { margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] .highlight pre, .markdown-preview[data-use-github-style] pre { padding: 16px; overflow: auto; font-size: 85%; line-height: 1.45; border-radius: 3px; background-color: rgb(247, 247, 247); }
+.markdown-preview[data-use-github-style] .highlight pre { margin-bottom: 0px; word-break: normal; }
+.markdown-preview[data-use-github-style] pre { word-wrap: normal; }
+.markdown-preview[data-use-github-style] pre code, .markdown-preview[data-use-github-style] pre tt { display: inline; max-width: initial; padding: 0px; margin: 0px; overflow: initial; line-height: inherit; word-wrap: normal; border: 0px; background-color: transparent; }
+.markdown-preview[data-use-github-style] pre code::before, .markdown-preview[data-use-github-style] pre tt::before, .markdown-preview[data-use-github-style] pre code::after, .markdown-preview[data-use-github-style] pre tt::after { content: normal; }
+.markdown-preview[data-use-github-style] kbd { display: inline-block; padding: 3px 5px; font-size: 11px; line-height: 10px; color: rgb(85, 85, 85); vertical-align: middle; border-style: solid; border-width: 1px; border-color: rgb(204, 204, 204) rgb(204, 204, 204) rgb(187, 187, 187); border-radius: 3px; box-shadow: rgb(187, 187, 187) 0px -1px 0px inset; background-color: rgb(252, 252, 252); }
+.markdown-preview[data-use-github-style] a { color: rgb(51, 122, 183); }
+.markdown-preview[data-use-github-style] code { color: inherit; }
+.markdown-preview[data-use-github-style] pre.editor-colors { padding: 0.8em 1em; margin-bottom: 1em; font-size: 0.85em; border-radius: 4px; overflow: auto; }
+.scrollbars-visible-always .markdown-preview pre.editor-colors::shadow .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors::shadow .horizontal-scrollbar { visibility: hidden; }
+.scrollbars-visible-always .markdown-preview pre.editor-colors:hover::shadow .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors:hover::shadow .horizontal-scrollbar { visibility: visible; }
+.bracket-matcher .region {
+  border-bottom: 1px dotted lime;
+  position: absolute;
+}
 
+.spell-check-misspelling .region {
+  border-bottom: 2px dotted rgba(255, 51, 51, 0.75);
+}
+
+pre.editor-colors,
+.host {
+  background-color: #fafafa;
+  color: #383a42;
+}
+pre.editor-colors .line.cursor-line,
+.host .line.cursor-line {
+  background-color: rgba(56, 58, 66, 0.04);
+}
+pre.editor-colors .invisible,
+.host .invisible {
+  color: #383a42;
+}
+pre.editor-colors .cursor,
+.host .cursor {
+  border-left: 2px solid #526fff;
+}
+pre.editor-colors .selection .region,
+.host .selection .region {
+  background-color: #ededed;
+}
+pre.editor-colors .bracket-matcher .region,
+.host .bracket-matcher .region {
+  border-bottom: 1px solid #526fff;
+  box-sizing: border-box;
+}
+pre.editor-colors .invisible-character,
+.host .invisible-character {
+  color: rgba(56, 58, 66, 0.2);
+}
+pre.editor-colors .indent-guide,
+.host .indent-guide {
+  color: rgba(56, 58, 66, 0.2);
+}
+pre.editor-colors .wrap-guide,
+.host .wrap-guide {
+  background-color: rgba(56, 58, 66, 0.2);
+}
+pre.editor-colors .gutter .line-number,
+.host .gutter .line-number {
+  color: #9d9d9f;
+  -webkit-font-smoothing: antialiased;
+}
+pre.editor-colors .gutter .line-number.cursor-line,
+.host .gutter .line-number.cursor-line {
+  color: #4d5375;
+  background-color: #f2f2f2;
+}
+pre.editor-colors .gutter .line-number.cursor-line-no-selection,
+.host .gutter .line-number.cursor-line-no-selection {
+  background-color: transparent;
+}
+pre.editor-colors .gutter .line-number .icon-right,
+.host .gutter .line-number .icon-right {
+  color: #383a42;
+}
+pre.editor-colors .gutter:not(.git-diff-icon) .line-number.git-line-removed.git-line-removed::before,
+.host .gutter:not(.git-diff-icon) .line-number.git-line-removed.git-line-removed::before {
+  bottom: -3px;
+}
+pre.editor-colors .gutter:not(.git-diff-icon) .line-number.git-line-removed::after,
+.host .gutter:not(.git-diff-icon) .line-number.git-line-removed::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  width: 25px;
+  border-bottom: 1px dotted rgba(255, 20, 20, 0.5);
+  pointer-events: none;
+}
+pre.editor-colors .gutter .line-number.folded,
+.host .gutter .line-number.folded,
+pre.editor-colors .gutter .line-number:after,
+.host .gutter .line-number:after,
+pre.editor-colors .fold-marker:after,
+.host .fold-marker:after {
+  color: #4d5375;
+}
+.comment {
+  color: #a0a1a7;
+  font-style: italic;
+}
+.entity.name.type {
+  color: #c18401;
+}
+.entity.other.inherited-class {
+  color: #50a14f;
+}
+.keyword {
+  color: #a626a4;
+}
+.keyword.control {
+  color: #a626a4;
+}
+.keyword.operator {
+  color: #383a42;
+}
+.keyword.other.special-method {
+  color: #4078f2;
+}
+.keyword.other.unit {
+  color: #986801;
+}
+.storage {
+  color: #a626a4;
+}
+.storage.type.annotation,
+.storage.type.primitive {
+  color: #a626a4;
+}
+.storage.modifier.package,
+.storage.modifier.import {
+  color: #383a42;
+}
+.constant {
+  color: #986801;
+}
+.constant.variable {
+  color: #986801;
+}
+.constant.character.escape {
+  color: #0184bc;
+}
+.constant.numeric {
+  color: #986801;
+}
+.constant.other.color {
+  color: #0184bc;
+}
+.constant.other.symbol {
+  color: #0184bc;
+}
+.variable {
+  color: #e45649;
+}
+.variable.interpolation {
+  color: #ca1243;
+}
+.variable.parameter {
+  color: #383a42;
+}
+.string {
+  color: #50a14f;
+}
+.string.regexp {
+  color: #0184bc;
+}
+.string.regexp .source.ruby.embedded {
+  color: #c18401;
+}
+.string.other.link {
+  color: #e45649;
+}
+.punctuation.definition.comment {
+  color: #a0a1a7;
+}
+.punctuation.definition.method-parameters,
+.punctuation.definition.function-parameters,
+.punctuation.definition.parameters,
+.punctuation.definition.separator,
+.punctuation.definition.seperator,
+.punctuation.definition.array {
+  color: #383a42;
+}
+.punctuation.definition.heading,
+.punctuation.definition.identity {
+  color: #4078f2;
+}
+.punctuation.definition.bold {
+  color: #c18401;
+  font-weight: bold;
+}
+.punctuation.definition.italic {
+  color: #a626a4;
+  font-style: italic;
+}
+.punctuation.section.embedded {
+  color: #ca1243;
+}
+.punctuation.section.method,
+.punctuation.section.class,
+.punctuation.section.inner-class {
+  color: #383a42;
+}
+.support.class {
+  color: #c18401;
+}
+.support.type {
+  color: #0184bc;
+}
+.support.function {
+  color: #0184bc;
+}
+.support.function.any-method {
+  color: #4078f2;
+}
+.entity.name.function {
+  color: #4078f2;
+}
+.entity.name.class,
+.entity.name.type.class {
+  color: #c18401;
+}
+.entity.name.section {
+  color: #4078f2;
+}
+.entity.name.tag {
+  color: #e45649;
+}
+.entity.other.attribute-name {
+  color: #986801;
+}
+.entity.other.attribute-name.id {
+  color: #4078f2;
+}
+.meta.class {
+  color: #c18401;
+}
+.meta.class.body {
+  color: #383a42;
+}
+.meta.method-call,
+.meta.method {
+  color: #383a42;
+}
+.meta.definition.variable {
+  color: #e45649;
+}
+.meta.link {
+  color: #986801;
+}
+.meta.require {
+  color: #4078f2;
+}
+.meta.selector {
+  color: #a626a4;
+}
+.meta.separator {
+  background-color: #373b41;
+  color: #383a42;
+}
+.meta.tag {
+  color: #383a42;
+}
+.none {
+  color: #383a42;
+}
+.invalid.deprecated {
+  color: #000000 !important;
+  background-color: #f2a60d !important;
+}
+.invalid.illegal {
+  color: #ffffff !important;
+  background-color: #ff1414 !important;
+}
+.markup.bold {
+  color: #986801;
+  font-weight: bold;
+}
+.markup.changed {
+  color: #a626a4;
+}
+.markup.deleted {
+  color: #e45649;
+}
+.markup.italic {
+  color: #a626a4;
+  font-style: italic;
+}
+.markup.heading .punctuation.definition.heading {
+  color: #4078f2;
+}
+.markup.inserted {
+  color: #50a14f;
+}
+.markup.list {
+  color: #e45649;
+}
+.markup.quote {
+  color: #986801;
+}
+.markup.raw {
+  color: #50a14f;
+}
+.source.cs .keyword.operator {
+  color: #a626a4;
+}
+.source.css .property-name,
+.source.css .property-value {
+  color: #696c77;
+}
+.source.css .property-name.support,
+.source.css .property-value.support {
+  color: #383a42;
+}
+.source.gfm .markup {
+  -webkit-font-smoothing: auto;
+}
+.source.gfm .markup.heading {
+  color: #e45649;
+}
+.source.gfm .markup.link {
+  color: #a626a4;
+}
+.source.gfm .link .entity {
+  color: #4078f2;
+}
+.source.ini .keyword.other.definition.ini {
+  color: #e45649;
+}
+.source.java .storage.modifier.import {
+  color: #c18401;
+}
+.source.java .storage.type {
+  color: #c18401;
+}
+.source.java-properties .meta.key-pair {
+  color: #e45649;
+}
+.source.java-properties .meta.key-pair > .punctuation {
+  color: #383a42;
+}
+.source.json .meta.structure.dictionary.json > .string.quoted.json {
+  color: #e45649;
+}
+.source.json .meta.structure.dictionary.json > .string.quoted.json > .punctuation.string {
+  color: #e45649;
+}
+.source.json .meta.structure.dictionary.json > .value.json > .string.quoted.json,
+.source.json .meta.structure.array.json > .value.json > .string.quoted.json,
+.source.json .meta.structure.dictionary.json > .value.json > .string.quoted.json > .punctuation,
+.source.json .meta.structure.array.json > .value.json > .string.quoted.json > .punctuation {
+  color: #50a14f;
+}
+.source.json .meta.structure.dictionary.json > .constant.language.json,
+.source.json .meta.structure.array.json > .constant.language.json {
+  color: #0184bc;
+}
+.source.ruby .constant.other.symbol > .punctuation {
+  color: inherit;
+}
+.source.python .keyword.operator.logical.python {
+  color: #a626a4;
+}
+.source.python .variable.parameter {
+  color: #986801;
+}
+</style>
+  </head>
+  <body class='markdown-preview'><h1 id="powerauth-2-0-specification">PowerAuth 2.0 Specification</h1>
 <p>PowerAuth 2.0 is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or identity management applications. It defines all items that are required for a complete security solution: a used cryptography, a security scheme and standard RESTful API end-points.</p>
-
-<p>A typical use-case for PowerAuth 2.0 protocol would be assuring the security of a mobile banking application. User usually downloads a "blank" (non-personalized) mobile banking app from the mobile application market. Then, user activates (personalizes, using a key-exchange algorithm) the mobile banking using some application that is assumed secure, for example via the internet banking or via the branch kiosk system. Finally, user can use activated mobile banking application to create signed requests - to log in to mobile banking, send a payment, certify contracts, etc.</p>
-
-<h1>Group PowerAuth Activation</h1>
-
-<p>In PowerAuth 2.0, both client and server must first share the same shared master secret <code>KEY_MASTER_SECRET</code>. The <code>KEY_MASTER_SECRET</code> is a symetric key that is used as a base for deriving the further purpose specific shared secret keys. These derived keys are then used for an HTTP request signing. In order to establish this shared master secret, a secure key exchange (or "activation") must take a place.</p>
-
-<h2>Activation Actors</h2>
-
-<p>Following components play role in activation:</p>
-
+<p>A typical use-case for PowerAuth 2.0 protocol would be assuring the security of a mobile banking application. User usually downloads a &quot;blank&quot; (non-personalized) mobile banking app from the mobile application market. Then, user activates (personalizes, using a key-exchange algorithm) the mobile banking using some application that is assumed secure, for example via the internet banking or via the branch kiosk system. Finally, user can use activated mobile banking application to create signed requests - to log in to mobile banking, send a payment, certify contracts, etc.</p>
+<h2 id="basic-definitions">Basic definitions</h2>
+<h3 id="cryptographic-functions">Cryptographic functions</h3>
+<p>Following basic cryptography algorithms and parameters are used in the PowerAuth 2.0 cryptography description:</p>
 <ul>
-<li><strong>PowerAuth 2.0 Client</strong> - A client "to be activated" application, that implements PowerAuth 2.0 protocol. A good example of a typical PowerAuth 2.0 Client can be a mobile banking application.</li>
+<li><strong>AES</strong> - A symmetric key encryption algorithm, uses CBC mode and PKCS5 padding. It defines two operations:<ul>
+<li><code>byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key)</code> - encrypt bytes using symmetric key with given initialization vector.</li>
+<li><code>byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key)</code> - decrypt bytes using symmetric key with given initialization vector.</li>
+</ul>
+</li>
+<li><strong>PBKDF2</strong> - An algorithm for key stretching, converts a short password into long key by performing repeated hash iteration on the original data, HMAC-SHA1 algorithm is used for a pseudo-random function. Implementations must make sure resulting key is converted in format usable by AES algorithm. One method is defined for this algorithm:<ul>
+<li><code>SharedKey expandedKey = PBKDF2.expand(char[] password, byte[] salt, long iterations, long lengthInBits)</code> - stretch the password using given number of iterations to achieve key of given length in bits, use given salt.</li>
+</ul>
+</li>
+<li><strong>ECDSA</strong> - An algorithm for elliptic curve based signatures, uses SHA256 hash algorithm. It defines two operations:<ul>
+<li><code>byte[] signature = ECDSA.sign(byte[] data, PrivateKey privateKey)</code> - compute signature of given data and private key.</li>
+<li><code>boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKey)</code> - verify the signature for given data using a given public key.</li>
+</ul>
+</li>
+<li><strong>ECDH</strong> - An algorithm for elliptic curve with Diffie-Helman key exchange, uses P256r1 curve. We define single operation on ECDH, a symmetric key deduction between parties A and B:<ul>
+<li><code>SecretKey secretKey = ECDH.phase(PrivateKey privateKeyA, PublicKey publicKeyB)</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="helper-functions">Helper functions</h3>
+<p>These functions are used in the pseudo-codes:</p>
+<ul>
+<li>Key generators and utilities<ul>
+<li><strong>KeyPair keyPair = KeyGenerator.randomKeyPair()</strong> - Generate a new ECDH key pair using P256r1 elliptic curve.</li>
+<li><strong>byte[] privateKeyBytes = KeyConversion.getBytes(PrivateKey privKey)</strong> - Get bytes from the ECDH key pair private key by encoding the Q value (the number defining the ECDH private key).</li>
+<li><strong>byte[] publicKeyBytes = KeyConversion.getBytes(PublicKey pubKey)</strong> - Get bytes from the ECDH key pair public key by encoding the D value (the point defining the ECDH public key).</li>
+<li><strong>byte[] secretKeyBytes = KeyConversion.getBytes(SecretKey secretKey)</strong> - Get bytes from the symmetric key (using getEncoded).</li>
+<li><strong>PrivateKey privateKey = KeyConversion.privateKeyFromBytes(byte[] privKeyBytes)</strong> - Get ECDH key pair private key by decoding the bytes into the original Q value (the number defining the ECDH private key).</li>
+<li><strong>PublicKey publicKey = KeyConversion.publicKeyFromBytes(byte[] pubKeyBytes)</strong> - Get ECDH key pair public key by decoding the bytes into the original D value (the point defining the ECDH public key).</li>
+<li><strong>SecretKey secretKey = KeyConversion.secretKeyFromBytes(byte[] secretKeyBytes)</strong> - Create a symmetric key using provided bytes.</li>
+</ul>
+</li>
+<li>Random data generators<ul>
+<li><strong>byte[] randomBytes = Generator.randomBytes(int N)</strong> - Generate N random bytes using a secure random generator.</li>
+<li><strong>String randomBase32 Generator.randomBase32String(int N)</strong> - Generate string in Base32 encoding with N characters using a secure random generator.</li>
+<li><strong>String uuid = Generator.randomUUUD()</strong> - Generate a new UUID level 4 and return it in string representation.</li>
+</ul>
+</li>
+<li>Hashing and MAC functions.<ul>
+<li><strong>byte[] signature = Mac.hmacSha256(SharedKey key, byte[] message)</strong> - Compute HMAC-SHA256 signature for given message using provided symmetric key.</li>
+<li><strong>byte[] hash = Hash.sha256(byte[] original)</strong> - Compute SHA256 hash of a given input.</li>
+</ul>
+</li>
+<li>Utility functions<ul>
+<li><strong>byte[] truncatedBytes = ByteUtils.truncate(byte[] bytes, int N)</strong> - Get last N bytes of given byte array.</li>
+<li><strong>int integer = ByteUtils.getInt(byte[4] bytes)</strong> - Get integer from 4 byte long byte array.</li>
+</ul>
+</li>
+</ul>
+<h1 id="powerauth-activation">PowerAuth Activation</h1>
+<p>In PowerAuth 2.0, both client and server must first share the same shared master secret <code>KEY_MASTER_SECRET</code>. The <code>KEY_MASTER_SECRET</code> is a symmetric key that is used as a base for deriving the further purpose specific shared secret keys. These derived keys are then used for an HTTP request signing. In order to establish this shared master secret, a secure key exchange (or &quot;activation&quot;) must take a place.</p>
+<h2 id="activation-actors">Activation Actors</h2>
+<p>Following components play role in activation:</p>
+<ul>
+<li><strong>PowerAuth 2.0 Client</strong> - A client &quot;to be activated&quot; application, that implements PowerAuth 2.0 protocol. A good example of a typical PowerAuth 2.0 Client can be a mobile banking application.</li>
 <li><strong>Master Front-End Application</strong> - An application that initiates the activation process and helps the PowerAuth 2.0 Client start the key exchange algorithm. Example of Master Front-End Application can be an Internet banking.</li>
-<li><strong>Intermediate Server Application</strong> - A front-end facing server application (or a set of applications, that we currently view as a single unified system, for the sake of simplicity) that is deployed in demilitarized zone in order to accomodate a communication between PowerAuth 2.0 Client, Master Front-End Application and PowerAuth 2.0 Server. A good example of Intermediate Server Application is a mobile banking RESTful API server.</li>
+<li><strong>Intermediate Server Application</strong> - A front-end facing server application (or a set of applications, that we currently view as a single unified system, for the sake of simplicity) that is deployed in demilitarized zone in order to accommodate a communication between PowerAuth 2.0 Client, Master Front-End Application and PowerAuth 2.0 Server. A good example of Intermediate Server Application is a mobile banking RESTful API server.</li>
 <li><strong>PowerAuth 2.0 Server</strong> - A server application hidden deep in secure infrastructure, stores activation records, or verifies the request signatures. This application provides services for Intermediate Server Application to implement the PowerAuth 2.0 protocol. An example of a PowerAuth 2.0 Server is a bank identity management system.</li>
 </ul>
-
-<p><img src="api-big-picture.png" width="100%"/></p>
-
-<h2>Activation States</h2>
-
-<p>Record associated with given PowerAuth 2.0 keys transits between following states during it's lifecycle:</p>
-
+<p><img src="./api-big-picture.png" width="100%"></p>
+<h2 id="activation-states">Activation States</h2>
+<p>Record associated with given PowerAuth 2.0 keys transits between following states during it&#39;s lifecycle:</p>
 <ul>
 <li><strong>CREATED</strong> - The activation record is created but it was not activated yet.</li>
 <li><strong>OTP_USED</strong> - The activation record is created and activation OTP was already used, but the activation record was not activated yet.</li>
@@ -32,637 +534,415 @@
 <li><strong>BLOCKED</strong> - The activation record is blocked and cannot be used for generating signatures. It can be renewed and activated again.</li>
 <li><strong>REMOVED</strong> - The activation record is permanently blocked - cannot be used for generating signatures or renewed.</li>
 </ul>
-
 <p>After the key exchange is initiated, an activation record is created in the database in the CREATED state. In subsequent requests, client application must complete the activation. The system that initiated the activation (such as the web interface) must push the status of the token to the ACTIVE state before it can be used.</p>
-
 <p>Following diagram shows transitions between activation states in more detail:</p>
-
-<p><img src="./powerauth-lifecycle.png" width="100%"/></p>
-
-<h2>Activation User Flow</h2>
-
+<p><img src="./powerauth-lifecycle.png" width="100%"></p>
+<h2 id="activation-user-flow">Activation User Flow</h2>
 <p>From the user perspective, PowerAuth 2.0 activation is performed as a sequence of steps in PowerAuth 2.0 Client and Master Front-End Application. Following steps (with possible UI / UX alterations) must be performed:</p>
-
-<h3>Master Front-End Application</h3>
-
+<h3 id="master-front-end-application">Master Front-End Application</h3>
 <p>Following diagram shows example steps in Master Front-End Application - imagine the Internet banking as an example application.</p>
-
-<p><img src="./powerauth-master-frontend-activation.png" width="100%"/></p>
-
-<h3>PowerAuth 2.0 Client</h3>
-
+<p><img src="./powerauth-master-frontend-activation.png" width="100%"></p>
+<h3 id="powerauth-2-0-client">PowerAuth 2.0 Client</h3>
 <p>Following diagram shows example steps in PowerAuth 2.0 Client - imagine the Mobile banking as an example application.</p>
-
-<p><img src="./powerauth-client-activation.png" width="100%"/></p>
-
-<h2>Activation Flow - Sequence Diagram</h2>
-
+<p><img src="./powerauth-client-activation.png" width="100%"></p>
+<h2 id="activation-flow-sequence-diagram">Activation Flow - Sequence Diagram</h2>
 <p>The sequence diagram below explains the PowerAuth 2.0 key exchange. It shows how PowerAuth 2.0 Client, Intermediate Server Application, Master Front-End Application and PowerAuth 2.0 Server play together in order to establish a shared secret between the client application and PowerAuth Server.</p>
-
 <p>//TODO: Review the diagram
-<img src="./powerauth.png" width="100%"/></p>
-
-<h2>Activation Flow - Description</h2>
-
+<img src="./powerauth.png" width="100%"></p>
+<h2 id="activation-flow-description">Activation Flow - Description</h2>
 <p>To describe the steps more precisely, the activation process is performed in following steps:</p>
-
 <ol>
-<li><p>Master Front-End Application requests a new activation for a given user.</p></li>
+<li><p>Master Front-End Application requests a new activation for a given user.</p>
+</li>
 <li><p>PowerAuth 2.0 Server generates an <code>ACTIVATION_ID</code>, <code>ACTIVATION_ID_SHORT</code>, a key pair <code>(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC)</code> and <code>ACTIVATION_OTP</code>. Server also optionally computes a signature <code>ACTIVATION_SIGNATURE</code> of <code>ACTIVATION_ID_SHORT</code> and <code>ACTIVATION_OTP</code> using servers master private key <code>KEY_SERVER_MASTER_PRIVATE</code>.</p>
-
 <ul>
-<li><code>ACTIVATION_ID = UUID4_GEN()</code></li>
-<li><code>ACTIVATION_ID_SHORT = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)</code> (must be unique among records in CREATED and OTP_USED states)</li>
-<li><code>ACTIVATION_OTP = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)</code></li>
-<li><code>(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC) = KEY_GEN("ECDH", "secp256r1")</code></li>
-<li><code>ACTIVATION_SIGNATURE = ECDSA(ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP, KEY_SERVER_MASTER_PRIVATE)</code></li>
-</ul></li>
-<li><p>Record associated with given <code>ACTIVATION_ID</code> is now in <code>CREATED</code> state.</p></li>
-<li><p>Master Front-End Application receives an <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_OTP</code> and <code>ACTIVATION_SIGNATURE</code> (optional) and displays these information visually in the front-end so that a user can rewrite them in PowerAuth 2.0 Client.</p></li>
-<li><p>User enters <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_OTP</code> and <code>ACTIVATION_SIGNATURE</code> (optional) in the PowerAuth 2.0 Client.</p></li>
+<li><code>String ACTIVATION_ID = Generator.randomUUID()</code></li>
+<li><code>String ACTIVATION_ID_SHORT = Generator.randomBase32String(5) + &quot;-&quot; + Generator.randomBase32String(5)</code> (must be unique among records in CREATED and OTP_USED states)</li>
+<li><code>String ACTIVATION_OTP = Generator.randomBase32String(5) + &quot;-&quot; + Generator.randomBase32String(5)</code></li>
+<li><code>KeyPair keyPair = KeyGenerator.randomKeyPair()</code></li>
+<li><code>PrivateKey KEY_SERVER_PRIVATE = keyPair.getPrivate()</code></li>
+<li><code>PublicKey KEY_SERVER_PUBLIC = keyPair.getPublic()</code></li>
+<li><code>byte[] DATA = (ACTIVATION_ID_SHORT + &quot;-&quot; + ACTIVATION_OTP).getBytes(&quot;UTF-8&quot;)</code></li>
+<li><code>byte[] ACTIVATION_SIGNATURE = ECDSA.sign(DATA, KEY_SERVER_MASTER_PRIVATE)</code></li>
+</ul>
+</li>
+<li><p>Record associated with given <code>ACTIVATION_ID</code> is now in <code>CREATED</code> state.</p>
+</li>
+<li><p>Master Front-End Application receives an <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_OTP</code> and <code>ACTIVATION_SIGNATURE</code> (optional) and displays these information visually in the front-end so that a user can rewrite them in PowerAuth 2.0 Client.</p>
+</li>
+<li><p>User enters <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_OTP</code> and <code>ACTIVATION_SIGNATURE</code> (optional) in the PowerAuth 2.0 Client, for example using manual entry or by scanning a QR code with activation data.</p>
+</li>
 <li><p>(optional) PowerAuth 2.0 Client verifies <code>ACTIVATION_SIGNATURE</code> against <code>ACTIVATION_ID_SHORT</code> and <code>ACTIVATION_OTP</code> using <code>KEY_SERVER_MASTER_PUBLIC</code> and if the signature matches, it proceeds.</p>
-
 <ul>
-<li><code>isSignatureOK = ECDSA^inverse(ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP, KEY_SERVER_MASTER_PUBLIC)</code></li>
-</ul></li>
+<li><code>byte[] DATA = (ACTIVATION_ID_SHORT + &quot;-&quot; + ACTIVATION_OTP).getBytes(&quot;UTF-8&quot;)</code></li>
+<li><code>boolean isOK = ECDSA.verify(DATA, KEY_SERVER_MASTER_PUBLIC)</code></li>
+</ul>
+</li>
 <li><p>PowerAuth 2.0 Client generates its key pair <code>(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC)</code>.</p>
-
 <ul>
-<li><code>(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC) = KEY_GEN("ECDH", "secp256r1")</code></li>
-</ul></li>
-<li><p>PowerAuth 2.0 Client sends a request with an <code>ACTIVATION_ID_SHORT</code> and <code>C_KEY_DEVICE_PUBLIC</code> to the PowerAuth 2.0 Server (via Intermediate Server Application).</p>
-
+<li><code>KeyPair keyPair = KeyGenerator.randomKeyPair()</code></li>
+<li><code>PrivateKey KEY_DEVICE_PRIVATE = keyPair.getPrivate()</code></li>
+<li><code>PublicKey KEY_DEVICE_PUBLIC = keyPair.getPublic()</code></li>
+</ul>
+</li>
+<li><p>PowerAuth 2.0 Client sends a request with an <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_NONCE</code> (used as an initialization vector for AES encryption) and <code>C_KEY_DEVICE_PUBLIC</code> to the PowerAuth 2.0 Server (via Intermediate Server Application).</p>
 <ul>
-<li><code>C_KEY_DEVICE_PUBLIC = BASE64(AES(KEY_DEVICE_PUBLIC, ACTIVATION_OTP), "UTF-8")</code></li>
-</ul></li>
-<li><p>PowerAuth 2.0 Server changes the record status to <code>OTP_USED</code></p></li>
+<li><code>SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes(&quot;UTF-8&quot;), 10 000)</code></li>
+<li><code>byte[] ACTIVATION_NONCE = Generator.randomBytes(16)</code></li>
+<li><code>byte[] keyPublicBytes = KeyConversion.getBytes(KEY_DEVICE_PUBLIC)</code></li>
+<li><code>byte[] C_KEY_DEVICE_PUBLIC = AES.encrypt(, ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)</code></li>
+</ul>
+</li>
+<li><p>PowerAuth 2.0 Server decrypts and stores the public key at given record.</p>
+<ul>
+<li><code>SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes(&quot;UTF-8&quot;), 10 000)</code></li>
+<li><code>byte[] keyPublicBytes = AES.decrypt(C_KEY_DEVICE_PUBLIC, ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)</code></li>
+<li><code>PublicKey KEY_DEVICE_PUBLIC = KeyConversion.publicKeyFromBytes(keyPublicBytes)</code></li>
+</ul>
+</li>
+<li><p>PowerAuth 2.0 Server changes the record status to <code>OTP_USED</code></p>
+</li>
 <li><p>PowerAuth 2.0 Server responds with <code>ACTIVATION_ID</code>, <code>C_KEY_SERVER_PUBLIC</code>, <code>KEY_EPHEMERAL_PUBLIC</code> and <code>C_KEY_SERVER_PUBLIC_SIGNATURE</code>.</p>
-
 <ul>
-<li><code>(KEY_EPHEMERAL_PRIVATE,KEY_EPHEMERAL_PUBLIC) = KEY_GEN("ECDH", "secp256r1")</code></li>
-<li><code>EPH_KEY = ECDH(KEY_EPHEMERAL_PRIVATE, KEY_DEVICE_PUBLIC)</code></li>
-<li><code>C_KEY_SERVER_PUBLIC = AES(AES(KEY_SERVER_PUBLIC, ACTIVATION_OTP), EPH_KEY)</code></li>
-<li><code>C_KEY_SERVER_PUBLIC_SIGNATURE = ECDSA(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)</code></li>
-</ul></li>
+<li><code>SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes(&quot;UTF-8&quot;), 10 000)</code></li>
+<li><code>KeyPair keyPair = KeyGenerator.randomKeyPair()</code></li>
+<li><code>PrivateKey KEY_EPHEMERAL_PRIVATE = keyPair.getPrivate()</code></li>
+<li><code>PublicKey KEY_EPHEMERAL_PUBLIC = keyPair.getPublic()</code></li>
+<li><code>SecretKey EPH_KEY = ECDH.phase(KEY_EPHEMERAL_PRIVATE, KEY_DEVICE_PUBLIC)</code></li>
+<li><code>byte[] EPHEMERAL_NONCE = Generator.randomBytes(16)</code></li>
+<li><code>byte[] keyPublicBytes = KeyConversion.getBytes(KEY_SERVER_PUBLIC)</code></li>
+<li><code>byte[] C_KEY_SERVER_PUBLIC = AES.encrypt(AES.encrypt(keyPublicBytes, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, EPH_KEY)</code></li>
+<li><code>byte[] C_KEY_SERVER_PUBLIC_SIGNATURE = ECDSA.sign(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)</code></li>
+</ul>
+</li>
 <li><p>PowerAuth 2.0 Client receives an <code>ACTIVATION_ID</code>, <code>C_KEY_SERVER_PUBLIC</code>, <code>KEY_EPHEMERAL_PUBLIC</code> and <code>C_KEY_SERVER_PUBLIC_SIGNATURE</code> and if the signature matches the data, it retrieves <code>KEY_SERVER_PUBLIC</code>.</p>
-
 <ul>
-<li><code>isSignatureOK = ECDSA^inverse(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)</code></li>
-<li><code>EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)</code></li>
-<li><code>KEY_SERVER_PUBLIC = AES^inverse(AES^inverse(C_KEY_SERVER_PUBLIC, ACTIVATION_OTP), EPH_KEY)</code></li>
-</ul></li>
-<li><p>Both PowerAuth 2.0 Client and PowerAuth 2.0 Server set <code>CTR = 0</code> for given <code>ACTIVATION_ID</code>.</p></li>
+<li><code>SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes(&quot;UTF-8&quot;), 10 000)</code></li>
+<li><code>boolean isSignatureOK = ECDSA.verify(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)</code></li>
+<li><code>SecretKey EPH_KEY = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)</code></li>
+<li><code>byte[] keyPublicBytes = AES.decrypt(AES.decrypt(C_KEY_SERVER_PUBLIC, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, PH_KEY)</code></li>
+<li><code>PublicKey KEY_SERVER_PUBLIC = KeyConversion.publicKeyFromBytes(keyPublicBytes)</code></li>
+</ul>
+</li>
+<li><p>Both PowerAuth 2.0 Client and PowerAuth 2.0 Server set <code>CTR = 0</code> for given <code>ACTIVATION_ID</code>.</p>
+</li>
 <li><p>(optional) PowerAuth 2.0 Client displays <code>H_K_DEVICE_PUBLIC</code>, so that a user can verify the device public key correctness by entering <code>H_K_DEVICE_PUBLIC</code> in the Master Front-End Application (Master Front-End Application sends <code>H_K_DEVICE_PUBLIC</code> for verification to PowerAuth 2.0 Server via Intermediate Server Application).</p>
-
 <ul>
-<li><code>H_K_DEVICE_PUBLIC = (TRUNCATE(SHA256(K_DEVICE_PUBLIC), 4) &amp; 0x7FFFFFFF) % (10 ^ 8)</code></li>
-<li><em>Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack. (Displaying fingerprint of the server key is not necessary, since the server's public key is signed using server's private master key and encrypted with activation OTP and server public key).</em></li>
-</ul></li>
+<li><code>byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(KeyConversion.getBytes(K_DEVICE_PUBLIC_BYTES), 4)</code></li>
+<li><code>int H_K_DEVICE_PUBLIC = ByteUtils.getInt(truncatedBytes) &amp; 0x7FFFFFFF) % (10 ^ 8)</code></li>
+<li><em>Note: Client and server should check the client&#39;s public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack. (Displaying fingerprint of the server key is not necessary, since the server&#39;s public key is signed using server&#39;s private master key and encrypted with activation OTP and server public key).</em></li>
+</ul>
+</li>
 <li><p>PowerAuth 2.0 Client uses <code>KEY_DEVICE_PRIVATE</code> and <code>KEY_SERVER_PUBLIC</code> to deduce <code>KEY_MASTER_SECRET</code> using ECDH.</p>
-
 <ul>
-<li><code>KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)</code></li>
-</ul></li>
-<li><p>Master Front-End Application allows completion of the activation - for example, it may ask user to enter a code delivered via an SMS message. Master Front-End Application technically commits the activation by calling PowerAuth 2.0 Server (via Intermediate Server Application).</p></li>
-<li><p>Record associated with given <code>ACTIVATION_ID</code> is now in <code>ACTIVE</code> state.</p></li>
+<li><code>KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)</code></li>
+</ul>
+</li>
+<li><p>PowerAuth 2.0 Server uses <code>KEY_DEVICE_PUBLIC</code> and <code>KEY_SERVER_PRIVATE</code> to deduce <code>KEY_MASTER_SECRET</code> using ECDH.</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;</span><span class="meta paragraph text"><span>-&nbsp;`KEY_MASTER_SECRET&nbsp;=&nbsp;ECDH.phase(KEY_SERVER_PRIVATE,&nbsp;KEY_DEVICE_PUBLIC)`</span></span></span></div></pre></li>
+<li><p>Master Front-End Application allows completion of the activation - for example, it may ask user to enter a code delivered via an SMS message. Master Front-End Application technically commits the activation by calling PowerAuth 2.0 Server (via Intermediate Server Application).</p>
+</li>
+<li><p>Record associated with given <code>ACTIVATION_ID</code> is now in <code>ACTIVE</code> state.</p>
+</li>
 </ol>
-
-<h1>Group PowerAuth Key Derivation</h1>
-
+<h1 id="powerauth-key-derivation">PowerAuth Key Derivation</h1>
 <p>As an outcome of the previous activation steps, a single shared secret <code>KEY_MASTER_SECRET</code> is established for PowerAuth 2.0 Client and PowerAuth 2.0 Server. While additional shared secrets could be established by repeating the activation process, this may not be very handy in all situations, since the activation process is quite complex and not very user-friendly.</p>
-
-<p>For this reason, PowerAuth 2.0 establishes the concept of derived keys. Each derived key is computed using the KDF algorithm (see "Implementation details" section for the definition):</p>
-
+<p>For this reason, PowerAuth 2.0 establishes the concept of derived keys. Each derived key is computed using the KDF algorithm (see &quot;Implementation details&quot; section for the definition):</p>
 <ul>
 <li><code>KEY_DERIVED = KDF(KEY_MASTER_SECRET, INDEX)</code></li>
 </ul>
-
-<h2>Reserved derived keys</h2>
-
+<h2 id="reserved-derived-keys">Reserved derived keys</h2>
 <p>Following specific derived keys are reserved for the PowerAuth 2.0:</p>
-
 <ul>
 <li>Request signing key: <code>KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)</code></li>
 <li>Data transport key: <code>KEY_TRANSPORT = KDF(KEY_MASTER_SECRET, 2)</code></li>
 </ul>
-
 <p>Client application may use these defined keys to deduce additional derived shared keys in order to get more fine-graned control over the security domain. For example, it may use <code>KEY_SIGNATURE</code> as a signature master key and deduce different security domains for signatures:</p>
-
 <ul>
 <li>Weakly stored request signing key: <code>KEY_SIGNATURE_WEAK = KDF(KEY_SIGNATURE, 1)</code></li>
 <li>Strongly stored request signing key: <code>KEY_SIGNATURE_STRONG = KDF(KEY_SIGNATURE, 2)</code></li>
 </ul>
-
 <p>This, however, is not covered in PowerAuth 2.0 specification - for this version, only shared secrets for domains mentioned above are defined (request signing key, data transport key).</p>
-
-<h1>Group PowerAuth Signature</h1>
-
+<h1 id="powerauth-signature">PowerAuth Signature</h1>
 <p>While PowerAuth 2.0 can be used for signing any type of data, the main objective of the protocol is to allow signing of HTTP requests sent to the server in order to prove consistency, authenticity and integrity (CIA) of the data that were sent in the request.</p>
-
 <p>In practical deployment, Intermediate Server Application is responsible for building the normalized data for the purpose of computing the signature and passing it to PowerAuth 2.0 Server, since it knows details about the networking operation (for example, it knows what endpoint is being signed, what HTTP method it uses, etc.). PowerAuth 2.0 Server can then just simply accept any data and signature and perform signature validation - in ideal world, PowerAuth 2.0 Server should know nothing about the business domain it is used in.</p>
-
-<h2>Computing the signature</h2>
-
+<h2 id="computing-the-signature">Computing the signature</h2>
 <p>The PowerAuth 2.0 signature is a number with 10 digits that is obtained in following manner:</p>
-
 <ul>
-<li><code>KEY_DERIVED = HMAC_SHA256(KEY_SIGNATURE, CTR)</code></li>
-<li><code>SIGNATURE_LONG = HMAC_SHA256(DATA, KEY_DERIVED)</code></li>
-<li><code>SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) &amp; 0x7FFFFFFF) % (10^10)</code></li>
+<li><code>byte[] KEY_DERIVED = Mac.HMAC_SHA256(KEY_SIGNATURE, CTR)</code></li>
+<li><code>byte[] SIGNATURE_LONG = Mac.HMAC_SHA256(DATA, KEY_DERIVED)</code></li>
+<li><code>int SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) &amp; 0x7FFFFFFF) % (10^10)</code></li>
 </ul>
-
-<p>PowerAuth 2.0 Client sents the signature in the HTTP <code>X-PowerAuth-Authorization</code> header:</p>
-
-<p><code>http
-X-PowerAuth-Authorization: PowerAuth
-    pa_activationId="hbG9duZ19gyYaW5kb521fYWN0aXZhdGlvbl9JRaA",
-    pa_applicationId="Z19gyYaW5kb521fYWN0aXZhdGlvbl9JRaAhbG9du", 
-    pa_nonce="kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg", 
-    pa_signature="1234567890",
-    pa_version="2.0"
-</code></p>
-
-<h2>Normalized data for HTTP requests</h2>
-
+<p>PowerAuth 2.0 Client sends the signature in the HTTP <code>X-PowerAuth-Authorization</code> header:</p>
+<pre class="editor-colors lang-http"><div class="line"><span class="text plain null-grammar"><span>X-PowerAuth-Authorization:&nbsp;PowerAuth</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;&nbsp;&nbsp;&nbsp;pa_activationId=&quot;hbG9duZ19gyYaW5kb521fYWN0aXZhdGlvbl9JRaA&quot;,</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;&nbsp;&nbsp;&nbsp;pa_applicationId=&quot;Z19gyYaW5kb521fYWN0aXZhdGlvbl9JRaAhbG9du&quot;,</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;&nbsp;&nbsp;&nbsp;pa_nonce=&quot;kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg&quot;,</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;&nbsp;&nbsp;&nbsp;pa_signature=&quot;1234567890&quot;,</span></span></div><div class="line"><span class="text plain null-grammar"><span>&nbsp;&nbsp;&nbsp;&nbsp;pa_version=&quot;2.0&quot;</span></span></div></pre>
+<h2 id="normalized-data-for-http-requests">Normalized data for HTTP requests</h2>
 <p>Normalized data to be signed are built using the following procedure:</p>
-
-<p><code>
-DATA = ${REQUEST_METHOD}&amp;${REQUEST_URI_IDENTIFIER_HASH}&amp;${APPLICATION_SECRET}&amp;${NONCE}&amp;${REQUEST_DATA}
-</code></p>
-
-<p>... where:</p>
-
-<p>//TODO: Design better way of normalizing request data and URI</p>
-
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>DATA&nbsp;=&nbsp;${REQUEST_METHOD}&amp;${REQUEST_URI_IDENTIFIER_HASH}&amp;${APPLICATION_SECRET}&amp;${NONCE}&amp;${REQUEST_DATA}</span></span></span></div></pre><p>... where:</p>
+<p><strong>//TODO: Design better way of normalizing request data and URI</strong></p>
 <ul>
 <li><code>${REQUEST_METHOD}</code> - HTTP method written in upper-case, such as GET or POST.</li>
-<li><code>${REQUEST_URI_IDENTIFIER_HASH}</code> - SHA256 hashed identifier of given URI of the resource (hexadecimal format), for example SHA256("/api/payment"). The hashed value (in the example before, the "/api/payment" stirng) should be uniquely chosen for each URI, but can be of an arbitrary format.</li>
+<li><code>${REQUEST_URI_IDENTIFIER_HASH}</code> - SHA256 hashed identifier of given URI of the resource (hexadecimal format), for example SHA256(&quot;/api/payment&quot;). The hashed value (in the example before, the &quot;/api/payment&quot; stirng) should be uniquely chosen for each URI, but can be of an arbitrary format.</li>
 <li><code>${APPLICATION_SECRET}</code> - An application secret key, used to bind an application identification in the signature explicitly.</li>
 <li><code>${NONCE}</code> - Random 16 bytes encoded as Base64 using UTF-8 encoding, serving as a cryptographic nonce.</li>
-<li><code>${REQUEST_DATA}</code> - Request data
-<ul>
-<li>In case of request without body (such as GET and DELETE requests), the request data is constructed from the URL query parameters (for example, GET request parameters) in a following way:
-<ol>
-<li>Take all URL query parameters as key-value pairs:
-<ul>
+<li><code>${REQUEST_DATA}</code> - Request data<ul>
+<li>In case of request without body (such as GET and DELETE requests), the request data is constructed from the URL query parameters (for example, GET request parameters) in a following way:<ol>
+<li>Take all URL query parameters as key-value pairs:<ul>
 <li><code>PARAM[i] = (KEY[i], VALUE[i]), i = 0 .. N</code></li>
-</ul></li>
-<li>Sort all these key-value pairs according to <code>KEY[i]</code> first, then sort duplicate keys according to the <code>VALUE[i]</code></li>
-<li>Construct data as concatenation of the sorted key-value pairs, key is separated from value using "=" character, individual key-value pairs are separated using "&amp;" character:
-<ul>
-<li><code>REQUEST_DATA = BASE64(CONCAT_ALL(CONCAT(KEY[j], VALUE[j], "="), "&amp;", j = 0 .. N))</code> (let's assume that <code>j</code> are sorted indexes)</li>
-</ul></li>
-</ol></li>
-<li>In case of request with body (such as POST and PUT requests), data from the resource body (bytes) are encoded using Base64 with UTF-8 encoding and appended:
-<ul>
-<li><code>REQUEST_DATA = BASE64(HTTP['body'])</code></li>
-</ul></li>
-</ul></li>
 </ul>
-
-<h2>Validating the signature</h2>
-
+</li>
+<li>Sort all these key-value pairs according to <code>KEY[i]</code> first, then sort duplicate keys according to the <code>VALUE[i]</code></li>
+<li>Construct data as concatenation of the sorted key-value pairs, key is separated from value using &quot;=&quot; character, individual key-value pairs are separated using &quot;&amp;&quot; character:<ul>
+<li><code>REQUEST_DATA = BASE64(CONCAT_ALL(CONCAT(KEY[j], VALUE[j], &quot;=&quot;), &quot;&amp;&quot;, j = 0 .. N))</code> (let&#39;s assume that <code>j</code> are sorted indexes)</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>In case of request with body (such as POST and PUT requests), data from the resource body (bytes) are encoded using Base64 with UTF-8 encoding and appended:<ul>
+<li><code>REQUEST_DATA = BASE64(HTTP[&#39;body&#39;])</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="validating-the-signature">Validating the signature</h2>
 <p>PowerAuth 2.0 Server can validate the signature using the following mechanism:</p>
-
 <ol>
 <li>Find the activation record using activation ID</li>
 <li>Check the record state - if it is other than <code>ACTIVE</code>, terminate the validation.</li>
 <li>Obtain <code>KEY_SERVER_PRIV</code> and <code>KEY_DEVICE_PUB</code> from the record.</li>
-<li>Compute <code>KEY_MASTER_SECRET</code>.
-<ul>
+<li>Compute <code>KEY_MASTER_SECRET</code>.<ul>
 <li><code>KEY_MASTER_SECRET = ECDH(KEY_SERVER_PRIV, KEY_DEVICE_PUB)</code></li>
-</ul></li>
-<li>Compute <code>KEY_SIGNATURE</code>.
-<ul>
-<li><code>KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)</code></li>
-</ul></li>
-<li><p>Compute the expected signature for obtained data and check if the expected signature matches the one sent with the client. Since the PowerAuth 2.0 Client may be ahead with counter from PowerAuth 2.0 Server, server should try couple extra indexes ahead:</p>
-
-<pre><code>VERIFIED = false
-for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER &lt; CRT + TOLERANCE) {
-    KEY_DERIVED = HMAC_SHA256(KEY_SIGNATURE, CTR_ITER)
-    SIGNATURE_LONG = HMAC_SHA256(DATA, KEY_DERIVED)
-    SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) &amp; 0x7FFFFFFF) % (10^10)
-    if (SIGNATURE == SIGNATURE_PROVIDED &amp;&amp; !VERIFIED) {
-        VERIFIED = true
-        CTR = CTR_ITER
-    }
-}
-return VERIFIED
-</code></pre></li>
-</ol>
-
-<h1>Group PowerAuth Standard API</h1>
-
-<p>In order to assure a standard behavior of various PowerAuth 2.0 implementations, fixed endpoint and request/response structure between PowerAuth 2.0 Client and Intermediate Server Application is specified for the key exchange algorithm. </p>
-
-<p>While the PowerAuth 2.0 Client technically communicates with an Intermediate Server Application, all response data are actually built in PowerAuth 2.0 Server and Intermediate Server Application just forwards data back and forth. Therefore, we will further assume that the phrase "PowerAuth 2.0 Server responds to PowerAuth 2.0 Client" is a shortcut for "Intermediate Server Application requests a response from PowerAuth 2.0 Server and forwards the response to PowerAuth 2.0 Client".</p>
-
-<p>Each PowerAuth 2.0 implementation that is located on a specific base URL then has <code>/pa/</code> prefixed endpoints by convention.</p>
-
-<h2>Initiate activation</h2>
-
-<ul>
-<li>HTTP Method: POST</li>
-<li>Resource URI: /pa/activation/create</li>
 </ul>
-
-<p>Application activation is a process of key exchange between a PowerAuth 2.0 Client and a PowerAuth 2.0 Server. During this process, an "activation record" is created on the PowerAuth 2.0 Server and related keys are stored on a PowerAuth 2.0 Client.</p>
-
+</li>
+<li>Compute <code>KEY_SIGNATURE</code>.<ul>
+<li><code>KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)</code></li>
+</ul>
+</li>
+<li>Compute the expected signature for obtained data and check if the expected signature matches the one sent with the client. Since the PowerAuth 2.0 Client may be ahead with counter from PowerAuth 2.0 Server, server should try couple extra indexes ahead:</li>
+</ol>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>VERIFIED&nbsp;=&nbsp;false</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(CRT_ITER&nbsp;=&nbsp;CTR;&nbsp;CTR_ITER++;&nbsp;CRT_ITER&nbsp;&lt;&nbsp;CRT&nbsp;+&nbsp;TOLERANCE)&nbsp;{</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>KEY_DERIVED&nbsp;=&nbsp;HMAC_SHA256(KEY_SIGNATURE,&nbsp;CTR_ITER)</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SIGNATURE_LONG&nbsp;=&nbsp;HMAC_SHA256(DATA,&nbsp;KEY_DERIVED)</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SIGNATURE&nbsp;=&nbsp;(TRUNCATE(SIGNATURE_LONG,&nbsp;4)&nbsp;&amp;&nbsp;0x7FFFFFFF)&nbsp;%&nbsp;(10^10)</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(SIGNATURE&nbsp;==&nbsp;SIGNATURE_PROVIDED&nbsp;&amp;&amp;&nbsp;!VERIFIED)&nbsp;{</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>VERIFIED&nbsp;=&nbsp;true</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CTR&nbsp;=&nbsp;CTR_ITER</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>}</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>}</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;VERIFIED</span></span></span></div></pre><h1 id="powerauth-standard-api">PowerAuth Standard API</h1>
+<p>In order to assure a standard behavior of various PowerAuth 2.0 implementations, fixed endpoint and request/response structure between PowerAuth 2.0 Client and Intermediate Server Application is specified for the key exchange algorithm.</p>
+<p>While the PowerAuth 2.0 Client technically communicates with an Intermediate Server Application, all response data are actually built in PowerAuth 2.0 Server and Intermediate Server Application just forwards data back and forth. Therefore, we will further assume that the phrase &quot;PowerAuth 2.0 Server responds to PowerAuth 2.0 Client&quot; is a shortcut for &quot;Intermediate Server Application requests a response from PowerAuth 2.0 Server and forwards the response to PowerAuth 2.0 Client&quot;.</p>
+<p>Each PowerAuth 2.0 implementation that is located on a specific base URL then has <code>/pa/</code> prefixed endpoints by convention.</p>
+<h2 id="initiate-activation">Initiate activation</h2>
+<p>Application activation is a process of key exchange between a PowerAuth 2.0 Client and a PowerAuth 2.0 Server. During this process, an &quot;activation record&quot; is created on the PowerAuth 2.0 Server and related keys are stored on a PowerAuth 2.0 Client.</p>
 <p>Exchange the public keys between PowerAuth 2.0 Client and PowerAuth 2.0 Server.</p>
-
-<p>PowerAuth 2.0 Client sends a short activation ID, it's public key encrypted using activation OTP and a visual identification (or a "client name"):</p>
-
+<p>PowerAuth 2.0 Client sends a short activation ID, it&#39;s public key encrypted using activation OTP and a visual identification (or a &quot;client name&quot;):</p>
 <ul>
 <li><code>id</code> - Represents an <code>ACTIVATION_ID_SHORT</code> value (first half of an activation code).</li>
-<li><code>cDevicePubKey</code> - Represents a public key <code>KEY_DEVICE_PUBLIC</code> AES encrypted with <code>ACTIVATION_OTP</code>
-<ul>
-<li><code>cDevicePubKey = AES(KEY_DEVICE_PUBLIC, ACTIVATION_OTP)</code></li>
-</ul></li>
-<li><code>clientName</code> - Visual representation of the device, for example "Johnny's iPhone" or "Samsung Galaxy S".</li>
+<li><code>activationNonce</code> - Represents an activation nonce, used as an IV for AES encryption.</li>
+<li><code>cDevicePublicKey</code> - Represents a public key <code>KEY_DEVICE_PUBLIC</code> AES encrypted with <code>ACTIVATION_OTP</code><ul>
+<li><code>cDevicePublicKey = AES(KEY_DEVICE_PUBLIC, activationNonce, ACTIVATION_OTP)</code></li>
 </ul>
-
-<p>PowerAuth 2.0 Server responds with an activation ID, public key encrypted using the activation OTP and device public key (for technical reasons, an ephemeral key is used here), and signature of this encrypted key created with the server's private master key:</p>
-
+</li>
+<li><code>clientName</code> - Visual representation of the device, for example &quot;Johnny&#39;s iPhone&quot; or &quot;Samsung Galaxy S&quot;.</li>
+</ul>
+<p>PowerAuth 2.0 Server responds with an activation ID, public key encrypted using the activation OTP and device public key (for technical reasons, an ephemeral key is used here), and signature of this encrypted key created with the server&#39;s private master key:</p>
 <ul>
 <li><code>activationId</code> - Represents a long <code>ACTIVATION_ID</code> that uniquely identifies given activation records.</li>
-<li><code>ephemeralPubKey</code> - A technical component for AES encryption - a public component of the on-the-fly generated keypair.</li>
-<li><code>cServerPubKey</code> - Encrypted public key <code>KEY_SERVER_PUBLIC</code> of the server.
-<ul>
-<li><code>EPH_KEY = ECDH(ephemeralPrivKey, KEY_DEVICE_PUBLIC)</code></li>
-<li><code>cServerPubKey = AES(AES(KEY_SERVER_PUBLIC, ACTIVATION_OTP), EPH_KEY)</code></li>
-</ul></li>
-<li><code>cServerPubKeySignature = ECDSA(cServerPubKey, KEY_SERVER_MASTER_PRIVATE)</code></li>
+<li><code>ephemeralPublicKey</code> - A technical component for AES encryption - a public component of the on-the-fly generated key pair.</li>
+<li><code>activationNonce</code> - Represents an activation nonce, used as an IV for AES encryption.</li>
+<li><code>cServerPublicKey</code> - Encrypted public key <code>KEY_SERVER_PUBLIC</code> of the server.<ul>
+<li><code>EPH_KEY = ECDH(ephemeralPrivateKey, KEY_DEVICE_PUBLIC)</code></li>
+<li><code>cServerPublicKey = AES(AES(KEY_SERVER_PUBLIC, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)</code></li>
 </ul>
-
-<p>After receiving the response, PowerAuth 2.0 Client verifies cSeverPubKeySignature using server's public master key <code>KEY_SERVER_MASTER_PUBLIC</code> (optional) and decrypts server public key using it's private <code>ACTIVATION_OTP</code>.</p>
-
-<ul>
-<li><code>signatureOK = ECDSA^inverse(cServerPubKey, KEY_SERVER_MASTER_PUBLIC)</code></li>
-<li><code>EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, ephemeralPubKey)</code></li>
-<li><code>serverPubKey = AES^inverse(AES^inverse(cServerPubKey, ACTIVATION_OTP), EPH_KEY)</code></li>
+</li>
+<li><code>cServerPublicKeySignature = ECDSA(cServerPublicKey, KEY_SERVER_MASTER_PRIVATE)</code></li>
 </ul>
-
+<p>After receiving the response, PowerAuth 2.0 Client verifies cSeverPublicKeySignature using server&#39;s public master key <code>KEY_SERVER_MASTER_PUBLIC</code> (optional) and decrypts server public key using it&#39;s private <code>ACTIVATION_OTP</code>.</p>
+<ul>
+<li><code>signatureOK = ECDSA^inverse(cServerPublicKey, KEY_SERVER_MASTER_PUBLIC)</code></li>
+<li><code>EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, ephemeralPublicKey)</code></li>
+<li><code>serverPublicKey = AES^inverse(AES^inverse(cServerPublicKey, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)</code></li>
+</ul>
 <p>Then, PowerAuth 2.0 Client deduces <code>KEY_MASTER_SECRET</code>:</p>
-
 <ul>
-<li><code>KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, serverPubKey)</code></li>
+<li><code>KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, serverPublicKey)</code></li>
 </ul>
-
-<h3>Request</h3>
-
+<p>| Method | <code>POST</code> |
+| Resource URI | <code>/pa/activation/create</code> |</p>
+<h3 id="request">Request</h3>
 <ul>
-<li><p>MIME-type: application/json</p>
-
-<pre><code>{
-    "requestObject": {
-        "id": "XDA57-24TBC",
-        "cDevicePubKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-        "clientName": "My iPhone"
-    }
-}
-</code></pre></li>
+<li>Headers:<ul>
+<li>Content-Type: application/json</li>
 </ul>
-
-<h3>Response</h3>
-
+</li>
+</ul>
+<pre class="editor-colors lang-json"><div class="line"><span class="source json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>requestObject</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>activationIdShort</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>XDA57-24TBC</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>activationNonce</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>hbmRvbQRUNESF9QVUJMSUNfS0VZX3J==</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>cDevicePublicKey</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>clientName</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>My&nbsp;iPhone</span><span class="punctuation definition string end json"><span>&quot;</span></span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></div></pre>
+<h3 id="response">Response</h3>
 <ul>
-<li>MIME-type: application/json</li>
-<li><p>Status Code: 200</p>
-
-<pre><code>{
-    "status": "OK",
-    "responseObject": {
-        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-        "ephemeralPubKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
-        "cServerPubKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-        "cServerPubKeySignature": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
-    }
-}
-</code></pre></li>
+<li>Status Code: 200</li>
+<li>Headers:<ul>
+<li>Content-Type: application/json</li>
 </ul>
-
-<h2>Activation status</h2>
-
-<ul>
-<li>HTTP Method: POST</li>
-<li>Resource URI: /pa/activation/status</li>
+</li>
 </ul>
-
+<pre class="editor-colors lang-json"><div class="line"><span class="source json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>status</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>OK</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>responseObject</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>activationId</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>c564e700-7e86-4a87-b6c8-a5a0cc89683f</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>activationNonce</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>vbQRUNESF9hbmRQVUJMSUNfS0VZX3J==</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>ephemeralPublicKey</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>cServerPublicKey</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>cServerPublicKeySignature</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>QNESF9QVUJMSUNfS0VZX3JhbmRvbQ==</span><span class="punctuation definition string end json"><span>&quot;</span></span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></div></pre>
+<h2 id="activation-status">Activation status</h2>
 <p>Get the status of an activation with given activation ID. The PowerAuth 2.0 Server response contains an activation status blob that is AES encrypted with <code>KEY_TRANSPORT</code>.</p>
-
 <ul>
 <li><code>cStatusBlob = AES(statusBlob, KEY_TRANSPORT)</code></li>
 </ul>
-
 <p>PowerAuth 2.0 Client can later trivially decrypt the original status blob:</p>
-
 <ul>
 <li><code>statusBlob = AES^inverse(cStatusBlob, KEY_TRANSPORT)</code></li>
 </ul>
-
 <p>Structure of the status blob is following:</p>
-
-<pre><code>0xDE 0xAD 0xBE 0xEF 1B:${STATUS} 4B:${CTR} 7B:${RANDOM_NOISE}
-</code></pre>
-
-<p>where:</p>
-
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>0xDE&nbsp;0xAD&nbsp;0xBE&nbsp;0xEF&nbsp;1B:${STATUS}&nbsp;4B:${CTR}&nbsp;7B:${RANDOM_NOISE}</span></span></span></div></pre><p>where:</p>
 <ul>
 <li>The first 4 bytes (0xDE 0xAD 0xBE 0xEF) are basically a fixed prefix.</li>
-<li>${STATUS} - A status of the activation record, it can be one of following values:
-<ul>
+<li>${STATUS} - A status of the activation record, it can be one of following values:<ul>
 <li>0x01 - CREATED</li>
 <li>0x02 - OTP_USED</li>
 <li>0x03 - ACTIVE</li>
 <li>0x04 - BLOCKED</li>
 <li>0x05 - REMOVED</li>
-</ul></li>
+</ul>
+</li>
 <li>${CTR} - 4 bytes representing information of the server counter (CTR value, as defined in PowerAuth 2.0 specification).</li>
-<li>${RANDOM_NOISE} - Random 7 byte padding, a complement to the total length of 16B. These bytes also serve as a source of entrophy for the transport (AES encrypted cStatusBlob will be different each time an endpoint is called).</li>
+<li>${RANDOM_NOISE} - Random 7 byte padding, a complement to the total length of 16B. These bytes also serve as a source of entropy for the transport (AES encrypted cStatusBlob will be different each time an endpoint is called).</li>
 </ul>
-
-<h3>Request</h3>
-
+<p>| Method | <code>POST</code> |
+| Resource URI | <code>/pa/activation/status</code> |</p>
+<h3 id="request">Request</h3>
 <ul>
-<li><p>MIME-type: application/json</p>
-
-<pre><code>{
-    "requestObject": {
-        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
-    }
-}
-</code></pre></li>
+<li>Headers<ul>
+<li>Content-Type: application/json</li>
 </ul>
-
-<h3>Response</h3>
-
+</li>
+</ul>
+<pre class="editor-colors lang-json"><div class="line"><span class="source json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>requestObject</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>activationId</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>c564e700-7e86-4a87-b6c8-a5a0cc89683f</span><span class="punctuation definition string end json"><span>&quot;</span></span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></div></pre>
+<h3 id="response">Response</h3>
 <ul>
-<li>MIME-type: application/json</li>
-<li><p>Status code: 200</p>
-
-<pre><code>{
-    "status": "OK",
-    "responseObject": {
-        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-        "cStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ=="
-    }
-}
-</code></pre></li>
+<li>Status code: 200</li>
+<li>Headers<ul>
+<li>Content-Type: application/json</li>
 </ul>
-
-<h2>Activation remove</h2>
-
+</li>
+</ul>
+<pre class="editor-colors lang-json"><div class="line"><span class="source json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>status</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>OK</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>responseObject</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>activationId</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>c564e700-7e86-4a87-b6c8-a5a0cc89683f</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="punctuation separator dictionary pair json"><span>,</span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>cStatusBlob</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==</span><span class="punctuation definition string end json"><span>&quot;</span></span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></div></pre>
+<h2 id="activation-remove">Activation remove</h2>
+<p>Remove an activation with given ID, set it&#39;s status to REMOVED. Activation can be removed only after successful verification of the signature.</p>
+<p>| Method | <code>POST</code> |
+| Resource URI | <code>/pa/activation/remove</code> |</p>
+<h3 id="request">Request</h3>
 <ul>
-<li>HTTP Method: POST</li>
-<li>Resource URI: /pa/activation/remove</li>
+<li>Headers<ul>
+<li>Content-Type: application/json</li>
+<li>X-PowerAuth-Authorization: PowerAuth ...</li>
 </ul>
-
-<p>Remove an activation with given ID, set it's status to REMOVED. Activation can be removed only after successful verification of the signature.</p>
-
-<h3>Request</h3>
-
+</li>
+</ul>
+<pre class="editor-colors lang-json"><div class="line"><span class="source json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>requestObject</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>activationId</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>c564e700-7e86-4a87-b6c8-a5a0cc89683f</span><span class="punctuation definition string end json"><span>&quot;</span></span></span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></div></pre>
+<h4 id="response">Response</h4>
 <ul>
-<li>MIME-type: application/json</li>
-<li><p>X-PowerAuth-Authorization: PowerAuth ...</p>
-
-<pre><code>    {
-        "requestObject": {
-            "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
-        }
-    }
-</code></pre></li>
+<li>Status code: 200</li>
+<li>Headers<ul>
+<li>Content-Type: application/json</li>
 </ul>
-
-<h4>Response</h4>
-
-<ul>
-<li>MIME-type: application/json</li>
-<li><p>Status code: 200</p>
-
-<pre><code>{
-    "status": "OK"
-}
-</code></pre></li>
+</li>
 </ul>
-
-<h1>Group Implementation Details</h1>
-
-<h2>Used Cryptography</h2>
-
-<p>A PowerAuth 2.0 key exchange mechanism is based on <strong>ECDH</strong> key exchange agorithm with <strong>P256r1 curve</strong>. Additionally, an <strong>ECDSA</strong> (more specifically, <strong>SHA256withECDSA</strong> algorighm) is used for signing data sent from the service provider using a provider's Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0 (later on, each signature attempt increments this counter). The PowerAuth 2.0 signature is computed using data, shared master secret and counter using the <strong>HMAC</strong> algorithm.</p>
-
-<h2>KDF Algorithm</h2>
-
+<pre class="editor-colors lang-json"><div class="line"><span class="source json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta structure dictionary json"><span class="punctuation definition dictionary begin json"><span>{</span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>status</span><span class="punctuation definition string end json"><span>&quot;</span></span></span><span class="meta structure dictionary value json"><span class="punctuation separator dictionary key-value json"><span>:</span></span><span>&nbsp;</span><span class="string quoted double json"><span class="punctuation definition string begin json"><span>&quot;</span></span><span>OK</span><span class="punctuation definition string end json"><span>&quot;</span></span></span></span></span></span></div><div class="line"><span class="source json"><span class="meta structure dictionary json"><span class="meta structure dictionary value json"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="punctuation definition dictionary end json"><span>}</span></span></span></span></div></pre>
+<h1 id="implementation-details">Implementation Details</h1>
+<h2 id="used-cryptography">Used Cryptography</h2>
+<p>A PowerAuth 2.0 key exchange mechanism is based on <strong>ECDH</strong> key exchange algorithm with <strong>P256r1 curve</strong>. Additionally, an <strong>ECDSA</strong> (more specifically, <strong>SHA256withECDSA</strong> algorighm) is used for signing data sent from the service provider using a provider&#39;s Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0 (later on, each signature attempt increments this counter). The PowerAuth 2.0 signature is computed using data, shared master secret and counter using the <strong>HMAC</strong> algorithm.</p>
+<h2 id="kdf-algorithm">KDF Algorithm</h2>
 <p>KDF (Key Derivation Function) is an algorithm used for deriving a secret key from a master secret key using a pseudo-random function. In case of PowerAuth 2.0 protocol, following implementation is used:</p>
-
 <ul>
 <li><code>KEY_SECRET[INDEX] = KDF(KEY_MASTER, INDEX) = AES(INDEX ⊕ 0x0000..., KEY_MASTER)</code></li>
 </ul>
-
-<h2>Activation ID</h2>
-
+<h2 id="activation-id">Activation ID</h2>
 <p>The <code>ACTIVATION_ID</code> must be in principle long, universally unique, random and with a temporary validity. UUID level 4 is therefore the selected format of this ID.</p>
-
-<pre><code>DO {
-    ACTIVATION_ID = UUID_GEN()
-    COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE ACTIVATION.ID = ACTIVATION_ID
-} WHILE (COUNT &gt; 0);
-</code></pre>
-
-<p>Example of activation ID:</p>
-
-<pre><code>c564e700-7e86-4a87-b6c8-a5a0cc89683f
-</code></pre>
-
-<p><em>Note: A single UUID for an activation in CREATED state must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most).</em></p>
-
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>DO&nbsp;{</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>ACTIVATION_ID&nbsp;=&nbsp;UUID_GEN()</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;COUNT&nbsp;=&nbsp;SELECT&nbsp;COUNT(*)&nbsp;FROM&nbsp;ACTIVATION&nbsp;WHERE&nbsp;ACTIVATION.ID&nbsp;=&nbsp;ACTIVATION_ID</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>}&nbsp;WHILE&nbsp;(COUNT&nbsp;&gt;&nbsp;0);</span></span></span></div></pre><p>Example of activation ID:</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>c564e700-7e86-4a87-b6c8-a5a0cc89683f</span></span></span></div></pre><p><em>Note: A single UUID for an activation in CREATED state must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most).</em></p>
 <p>Since the UUID is too long and inconvenient for practical applications, <code>ACTIVATION_ID</code> is exchanged between client and server automatically, using <code>ACTIVATION_ID_SHORT</code> - a shorter and more convenient identifier of an activation. This is the identifier user can rewrite or scan via the QR code.  <code>ACTIVATION_ID_SHORT</code> is a Base32 string, 2x 5 characters:</p>
-
-<pre><code>DO {
-    ACTIVATION_ID_SHORT = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
-    COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.ID_SHORT = ACTIVATION_ID_SHORT
-} WHILE (COUNT &gt; 0);
-</code></pre>
-
-<p>Example of short activation ID:</p>
-
-<pre><code>XDA57-24TBC
-</code></pre>
-
-<h2>Application ID and Application Secret</h2>
-
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>DO&nbsp;{</span></span></span></div><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>ACTIVATION_ID_SHORT&nbsp;=&nbsp;BASE32_RANDOM_STRING(5)&nbsp;+&nbsp;&quot;-&quot;&nbsp;+&nbsp;BASE32_RANDOM_STRING(5)</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;COUNT&nbsp;=&nbsp;SELECT&nbsp;COUNT(*)&nbsp;FROM&nbsp;ACTIVATION&nbsp;WHERE&nbsp;(ACTIVATION.STATE&nbsp;=&nbsp;&#39;CREATED&#39;&nbsp;OR&nbsp;ACTIVATION.STATE&nbsp;=&nbsp;&#39;OTP_USED&#39;)&nbsp;AND&nbsp;ACTIVATION.ID_SHORT&nbsp;=&nbsp;ACTIVATION_ID_SHORT</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>}&nbsp;WHILE&nbsp;(COUNT&nbsp;&gt;&nbsp;0);</span></span></span></div></pre><p>Example of short activation ID:</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>XDA57-24TBC</span></span></span></div></pre><h2 id="application-id-and-application-secret">Application ID and Application Secret</h2>
 <p>In order to explicitly bind a client application with the cryptography, an application ID and application secret are introduced. Both values follow the same format - 16B encoded as Base64, application ID must be unique.</p>
-
 <p>Both identifiers are embedded in the PowerAuth 2.0 Client application (for example, defined as a constants in the source code).</p>
-
 <p>Application ID is sent with every PowerAuth Signature as <code>pa_applicationId</code>.</p>
-
 <p>Application secret is a part of the PowerAuth signature (sent in <code>pa_signature</code>), it enters the algorithm in final HMAC_SHA256 as a part of the DATA.</p>
-
-<h2>Activation OTP</h2>
-
+<h2 id="activation-otp">Activation OTP</h2>
 <p>The <code>ACTIVATION_OTP</code> is a Base32 string, 2 x 5 characters:</p>
-
-<pre><code>ACTIVATION_OTP = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
-</code></pre>
-
-<p>Example of activation OTP:</p>
-
-<pre><code>TB24C-A57XD
-</code></pre>
-
-<p>This format matches the <code>ACTIVATION_ID_SHORT</code> format.</p>
-
-<p>Note: A single <code>ACTIVATION_OTP</code> must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most). Also, the activation OTP can be used only once - the moment client application sends and receives the encrypted public keys, it must be marked as "already used".</p>
-
-<h2>Entering values in client applications</h2>
-
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>ACTIVATION_OTP&nbsp;=&nbsp;BASE32_RANDOM_STRING(5)&nbsp;+&nbsp;&quot;-&quot;&nbsp;+&nbsp;BASE32_RANDOM_STRING(5)</span></span></span></div></pre><p>Example of activation OTP:</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>TB24C-A57XD</span></span></span></div></pre><p>This format matches the <code>ACTIVATION_ID_SHORT</code> format.</p>
+<p>Note: A single <code>ACTIVATION_OTP</code> must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most). Also, the activation OTP can be used only once - the moment client application sends and receives the encrypted public keys, it must be marked as &quot;already used&quot;.</p>
+<h2 id="entering-values-in-client-applications">Entering values in client applications</h2>
 <p>Entering <code>ACTIVATION_ID_SHORT</code>, <code>ACTIVATION_OTP</code> and <code>ACTIVATION_SIGNATURE</code> can be expedited for example by using QR code for the storage. PowerAuth 2.0 defines using following format of information:</p>
-
-<pre><code>${ACTIVATION_ID_SHORT}-${ACTIVATION_OTP}#${ACTIVATION_SIGNATURE}
-</code></pre>
-
-<p>Example concatenated string:</p>
-
-<pre><code>XDA57-24TBC-TB24C-A57XD#1234567890
-</code></pre>
-
-<h2>Generating Keypairs</h2>
-
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>${ACTIVATION_ID_SHORT}-${ACTIVATION_OTP}#${ACTIVATION_SIGNATURE}</span></span></span></div></pre><p>Example concatenated string:</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span class="meta paragraph text"><span>XDA57-24TBC-TB24C-A57XD#1234567890</span></span></span></div></pre><h2 id="generating-key-pairs">Generating Key Pairs</h2>
 <p>The device and server keys are generated using ECDH algorithm with P256 curve:</p>
-
-<p><code>java
-public KeyPair generateKeyPair() {
-    try {
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", "BC"); // we assume BouncyCastle provider
-        kpg.initialize(new ECGenParameterSpec("secp256r1"));
-        KeyPair kp = kpg.generateKeyPair();
-        return kp;
-    } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
-        Logger.getLogger(AirBondKeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    return null;
-}
-</code></p>
-
-<h2>Shared Key Derivation (ECDH)</h2>
-
+<pre class="editor-colors lang-java"><div class="line"><span class="source java"><span class="storage modifier java"><span>public</span></span><span>&nbsp;</span><span class="storage type java"><span>KeyPair</span></span><span>&nbsp;</span><span class="meta method-call java"><span class="meta method java"><span>generateKeyPair</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span>&nbsp;</span><span class="punctuation section block begin java"><span>{</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage type java"><span>KeyPairGenerator</span></span><span>&nbsp;kpg&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;</span><span class="storage type java"><span>KeyPairGenerator</span></span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>getInstance</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>ECDH</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>BC</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span><span>&nbsp;</span><span class="comment line double-slash java"><span class="punctuation definition comment java"><span>//</span></span><span>&nbsp;we&nbsp;assume&nbsp;BouncyCastle&nbsp;provider</span><span>&nbsp;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;kpg</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>initialize</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="keyword control new java"><span>new</span></span><span>&nbsp;</span><span class="storage type java"><span>ECGenParameterSpec</span></span><span>(</span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>secp256r1</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span>)</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage type java"><span>KeyPair</span></span><span>&nbsp;kp&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;kpg</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>generateKeyPair</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="keyword control java"><span>return</span></span><span>&nbsp;kp</span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span class="punctuation section block end java"><span>}</span></span></span></div></pre>
+<h2 id="shared-key-derivation-ecdh-">Shared Key Derivation (ECDH)</h2>
 <p>Shared key <code>KEY_MASTER_SECRET</code> is generated using following algorithm (ECDH):</p>
-
-<p><code>java
-public SecretKey generateSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
-    try {
-        KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", "BC"); // we assume BouncyCastle provider
-        keyAgreement.init((Key) privateKey, new ECGenParameterSpec("secp256r1"));
-        keyAgreement.doPhase(publicKey, true);
-        final byte[] sharedSecret = keyAgreement.generateSecret();
-        byte[] resultSecret = new byte[16];
-        for (int i = 0; i &lt; 16; i++) {
-            resultSecret[i] = (byte) (sharedSecret[i] ^ sharedSecret[i + 16]);
-        }
-        return keyConversionUtilities.convertBytesToSharedSecretKey(resultSecret);
-    } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
-        Logger.getLogger(AirBondKeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    return null;
-}
-</code></p>
-
-<h2>Secure Network Communication</h2>
-
+<pre class="editor-colors lang-java"><div class="line"><span class="source java"><span class="storage modifier java"><span>public</span></span><span>&nbsp;</span><span class="storage type java"><span>SecretKey</span></span><span>&nbsp;</span><span class="meta method-call java"><span class="meta method java"><span>generateSharedKey</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="storage type java"><span>PrivateKey</span></span><span>&nbsp;privateKey</span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="storage type java"><span>PublicKey</span></span><span>&nbsp;publicKey</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span>&nbsp;throws&nbsp;</span><span class="storage type java"><span>InvalidKeyException</span></span><span>&nbsp;</span><span class="punctuation section block begin java"><span>{</span></span></span></div><div class="line"><span class="source java"><span class="punctuation whitespace comment leading java"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span class="comment line double-slash java"><span class="punctuation definition comment java"><span>//</span></span><span>&nbsp;we&nbsp;assume&nbsp;BouncyCastle&nbsp;provider</span><span>&nbsp;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage type java"><span>KeyAgreement</span></span><span>&nbsp;keyAgreement&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;</span><span class="storage type java"><span>KeyAgreement</span></span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>getInstance</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>ECDH</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>BC</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;keyAgreement</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>init</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span>(</span><span class="storage type java"><span>Key</span></span><span>)</span><span>&nbsp;privateKey</span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="keyword control new java"><span>new</span></span><span>&nbsp;</span><span class="storage type java"><span>ECGenParameterSpec</span></span><span>(</span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>secp256r1</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span>)</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;keyAgreement</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>doPhase</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span>publicKey</span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="constant language java"><span>true</span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage modifier java"><span>final</span></span><span>&nbsp;</span><span class="storage type primitive array java"><span>byte</span></span><span>[]&nbsp;sharedSecret&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;keyAgreement</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>generateSecret</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage type primitive array java"><span>byte</span></span><span>[]&nbsp;resultSecret&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;</span><span class="keyword control new java"><span>new</span></span><span>&nbsp;</span><span class="storage type java"><span>byte</span></span><span>[</span><span class="constant numeric java"><span>16</span></span><span>]</span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="keyword control java"><span>for</span></span><span>&nbsp;</span><span>(</span><span class="storage type primitive array java"><span>int</span></span><span>&nbsp;i&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;</span><span class="constant numeric java"><span>0</span></span><span class="punctuation terminator java"><span>;</span></span><span>&nbsp;i&nbsp;</span><span class="keyword operator comparison java"><span>&lt;</span></span><span>&nbsp;</span><span class="constant numeric java"><span>16</span></span><span class="punctuation terminator java"><span>;</span></span><span>&nbsp;i</span><span class="keyword operator increment-decrement java"><span>++</span></span><span>)</span><span>&nbsp;</span><span class="punctuation section block begin java"><span>{</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resultSecret[i]&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;</span><span>(</span><span class="storage type primitive array java"><span>byte</span></span><span>)</span><span>&nbsp;</span><span>(</span><span>sharedSecret[i]&nbsp;</span><span class="keyword operator bitwise java"><span>^</span></span><span>&nbsp;sharedSecret[i&nbsp;</span><span class="keyword operator arithmetic java"><span>+</span></span><span>&nbsp;</span><span class="constant numeric java"><span>16</span></span><span>]</span><span>)</span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="punctuation section block end java"><span>}</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="keyword control java"><span>return</span></span><span>&nbsp;</span><span class="meta method-call java"><span class="meta method java"><span>convertBytesToSharedSecretKey</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span>resultSecret</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span class="punctuation section block end java"><span>}</span></span></span></div></pre>
+<h2 id="secure-network-communication">Secure Network Communication</h2>
 <p>All communication should be carried over a properly secured channel, such as HTTPS with correct server configuration and certificate issued with a trusted certificate authority. Client may implement certificate pinning to achieve better transport level security.</p>
-
-<h2>Lifecycle of the "Master keypair"</h2>
-
-<p>Server sends it's encrypted public key <code>C_KEY_SERVER_PUBLIC</code> to the client with a signature <code>C_KEY_SERVER_PUBLIC</code>. This signature is created using the server's "Master Private Key" <code>KEY_SERVER_MASTER_PRIVATE</code>. Since the same key is used for all activations, the "latent private key fingerprints" may accumulate over the time, making it simpler to attack the private key. Therefore, it is important to select the proper trusted certification authority to issue the keys and renew the key after certain time period. Usually, this also requires timely update of the clients that bundle the "Master Public Key".</p>
-
-<h2>Signing Data Using Master Private Key</h2>
-
-<p>The master keypair is generated using the same algorithm as above (with P256 curve).</p>
-
-<p>In order to generate the signature for given bytes, following code is used:</p>
-
-<p><code>java
-public byte[] signatureForBytes(byte[] bytes, PrivateKey privateKey) {
-    Signature ecdsaSign = Signature.getInstance("SHA256withECDSA", "BC");
-    ecdsaSign.initSign(privateKey);
-    ecdsaSign.update(bytes);
-    byte[] signature = ecdsaSign.sign();
-    return signature;
-}
-</code></p>
-
+<h2 id="lifecycle-of-the-master-key-pair-">Lifecycle of the &quot;Master key pair&quot;</h2>
+<p>Server sends it&#39;s encrypted public key <code>C_KEY_SERVER_PUBLIC</code> to the client with a signature <code>C_KEY_SERVER_PUBLIC</code>. This signature is created using the server&#39;s &quot;Master Private Key&quot; <code>KEY_SERVER_MASTER_PRIVATE</code>. Since the same key is used for all activations, the &quot;latent private key fingerprints&quot; may accumulate over the time, making it simpler to attack the private key. Therefore, it is important to select the proper trusted certification authority to issue the keys and renew the key after certain time period. Usually, this also requires timely update of the clients that bundle the &quot;Master Public Key&quot;.</p>
+<h2 id="signing-data-using-master-private-key">Signing Data Using Master Private Key</h2>
+<p>The master key pair is generated using the same algorithm as normal key pair, see above (with P256 curve).</p>
+<p>In order to generate the signature for given bytes (obtained from string by conversion using UTF-8 encoding), following code is used:</p>
+<pre class="editor-colors lang-java"><div class="line"><span class="source java"><span class="storage modifier java"><span>public</span></span><span>&nbsp;</span><span class="storage type primitive array java"><span>byte</span></span><span>[]&nbsp;</span><span class="meta method-call java"><span class="meta method java"><span>signatureForBytes</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="storage type primitive array java"><span>byte</span></span><span>[]&nbsp;bytes</span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="storage type java"><span>PrivateKey</span></span><span>&nbsp;privateKey</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span>&nbsp;</span><span class="punctuation section block begin java"><span>{</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage type java"><span>Signature</span></span><span>&nbsp;ecdsaSign&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;</span><span class="storage type java"><span>Signature</span></span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>getInstance</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>SHA256withECDSA</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>BC</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;ecdsaSign</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>initSign</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span>privateKey</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;ecdsaSign</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>update</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span>bytes</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage type primitive array java"><span>byte</span></span><span>[]&nbsp;signature&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;ecdsaSign</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>sign</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="keyword control java"><span>return</span></span><span>&nbsp;signature</span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span class="punctuation section block end java"><span>}</span></span></span></div></pre>
 <p>To verify the signature, following code is used:</p>
-
-<p><code>java
-public boolean isSignatureCorrectForBytes(byte[] bytes, byte[] signature, PublicKey publicKey)
-    Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC");
-    ecdsaVerify.initVerify(publicKey);
-    ecdsaVerify.update(bytes);
-    boolean result = ecdsaVerify.verify(signature);
-    return result;
-}
-</code></p>
-
-<h2>List of Keys Used in the Process</h2>
-
+<pre class="editor-colors lang-java"><div class="line"><span class="source java"><span class="storage modifier java"><span>public</span></span><span>&nbsp;</span><span class="storage type primitive array java"><span>boolean</span></span><span>&nbsp;</span><span class="meta method-call java"><span class="meta method java"><span>isSignatureCorrectForBytes</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="storage type primitive array java"><span>byte</span></span><span>[]&nbsp;bytes</span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="storage type primitive array java"><span>byte</span></span><span>[]&nbsp;signature</span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="storage type java"><span>PublicKey</span></span><span>&nbsp;publicKey</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage type java"><span>Signature</span></span><span>&nbsp;ecdsaVerify&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;</span><span class="storage type java"><span>Signature</span></span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>getInstance</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>SHA256withECDSA</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span class="punctuation definition seperator parameter java"><span>,</span></span><span>&nbsp;</span><span class="string quoted double java"><span class="punctuation definition string begin java"><span>&quot;</span></span><span>BC</span><span class="punctuation definition string end java"><span>&quot;</span></span></span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;ecdsaVerify</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>initVerify</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span>publicKey</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;ecdsaVerify</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>update</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span>bytes</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="storage type primitive array java"><span>boolean</span></span><span>&nbsp;result&nbsp;</span><span class="keyword operator assignment java"><span>=</span></span><span>&nbsp;ecdsaVerify</span><span class="keyword operator dereference java"><span>.</span></span><span class="meta method-call java"><span class="meta method java"><span>verify</span></span><span class="punctuation definition method-parameters begin java"><span>(</span></span><span>signature</span><span class="punctuation definition method-parameters end java"><span>)</span></span></span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="keyword control java"><span>return</span></span><span>&nbsp;result</span><span class="punctuation terminator java"><span>;</span></span></span></div><div class="line"><span class="source java"><span>}</span></span></div></pre>
+<h2 id="list-of-keys-used-in-the-process">List of Keys Used in the Process</h2>
 <p>Following keys are used for the PowerAuth cryptography scheme.</p>
-
 <table>
     <tr>
         <th>name</th>
         <th>created as</th>
-        <th>purpose<th>
+        <th>purpose</th>
     </tr>
     <tr>
-        <td>`KEY_DEVICE_PRIVATE`</td>
+        <td><code>KEY_DEVICE_PRIVATE</code></td>
         <td>ECDH - private key</td>
-        <td>Generated on client to allow construction of `KEY_MASTER_SECRET`</td>
+        <td>Generated on client to allow construction of <code>KEY_MASTER_SECRET</code></td>
     </tr>
     <tr>
-        <td>`KEY_DEVICE_PUBLIC`</td>
+        <td><code>KEY_DEVICE_PUBLIC</code></td>
         <td>ECDH - public key</td>
-        <td>Generated on client to allow construction of `KEY_MASTER_SECRET`</td>
+        <td>Generated on client to allow construction of <code>KEY_MASTER_SECRET</code></td>
     </tr>
     <tr>
-        <td>`KEY_SERVER_PRIVATE`</td>
+        <td><code>KEY_SERVER_PRIVATE</code></td>
         <td>ECDH - private key</td>
-        <td>Generated on server to allow construction of `KEY_MASTER_SECRET`</td>
+        <td>Generated on server to allow construction of <code>KEY_MASTER_SECRET</code></td>
     </tr>
     <tr>
-        <td>`KEY_SERVER_PUBLIC`</td>
+        <td><code>KEY_SERVER_PUBLIC</code></td>
         <td>ECDH - public key</td>
-        <td>Generated on server to allow construction of `KEY_MASTER_SECRET`</td>
+        <td>Generated on server to allow construction of <code>KEY_MASTER_SECRET</code></td>
     </tr>
     <tr>
-        <td>`KEY_SERVER_MASTER_PRIVATE`</td>
+        <td><code>KEY_SERVER_MASTER_PRIVATE</code></td>
         <td>ECDH - private key</td>
-        <td>Stored on server, used to assure authenticity of `KEY_DEVICE_PUBLIC` while transfering from server to client</td>
+        <td>Stored on server, used to assure authenticity of <code>KEY_DEVICE_PUBLIC</code> while transferring from server to client</td>
     </tr>
     <tr>
-        <td>`KEY_SERVER_MASTER_PUBLIC`</td>
+        <td><code>KEY_SERVER_MASTER_PUBLIC</code></td>
         <td>ECDH - public key</td>
-        <td>Stored on client, used to assure authenticity of `KEY_DEVICE_PUBLIC` while transfering from server to client</td>
+        <td>Stored on client, used to assure authenticity of <code>KEY_DEVICE_PUBLIC</code> while transferring from server to client</td>
     </tr>
     <tr>
-        <td>`ACTIVATION_OTP`</td>
+        <td><code>ACTIVATION_OTP</code></td>
         <td>Random OTP</td>
         <td>A 16b random OTP generated during activation, AES encrypts/decrypts data sent from server to client and vice versa</td>
     </tr>
     <tr>
-        <td>`KEY_MASTER_SECRET`</td>
+        <td><code>KEY_MASTER_SECRET</code></td>
         <td>ECDH - pre-shared</td>
-        <td>A key deduced using ECDH derivation, `KEY_MASTER_SECRET` = (`KEY_DEVICE_PRIVATE`,`KEY_SERVER_PUBLIC`) = (`KEY_SERVER_PRIVATE`,`KEY_DEVICE_PUBLIC`)</td>
+        <td>A key deduced using ECDH derivation, <code>KEY_MASTER_SECRET</code> = (<code>KEY_DEVICE_PRIVATE</code>,<code>KEY_SERVER_PUBLIC</code>) = (<code>KEY_SERVER_PRIVATE</code>,<code>KEY_DEVICE_PUBLIC</code>)</td>
     </tr>
     <tr>
-        <td>`KEY_SIGNATURE`</td>
-        <td>KDF derived key from `KEY_MASTER_SECRET`</td>
-        <td>A key deduced using KDF derivation with INDEX = 1, `KEY_SIGNATURE` = KDF(`KEY_MASTER_SECRET`, 1), used for subsequent request signing</td>
+        <td><code>KEY_SIGNATURE</code></td>
+        <td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
+        <td>A key deduced using KDF derivation with INDEX = 1, <code>KEY_SIGNATURE</code> = KDF(<code>KEY_MASTER_SECRET</code>, 1), used for subsequent request signing</td>
     </tr>
     <tr>
-        <td>`KEY_TRANSPORT`</td>
-        <td>KDF derived key from `KEY_MASTER_SECRET`</td>
-        <td>A key deduced using KDF derivation with INDEX = 2, `KEY_TRANSPORT` = KDF(`KEY_MASTER_SECRET`, 2), used for encrypted data transport</td>
+        <td><code>KEY_TRANSPORT</code></td>
+        <td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
+        <td>A key deduced using KDF derivation with INDEX = 2, <code>KEY_TRANSPORT</code> = KDF(<code>KEY_MASTER_SECRET</code>, 2), used for encrypted data transport</td>
     </tr>
-</table>
+</table></body>
+</html>
