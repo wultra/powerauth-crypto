@@ -12,16 +12,11 @@
 	<description>PowerAuth 2.0 Server</description>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.7.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<groupId>io.getlime.security</groupId>
+		<artifactId>powerauth-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.7</java.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
