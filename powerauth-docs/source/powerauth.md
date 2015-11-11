@@ -468,7 +468,8 @@ A PowerAuth 2.0 key exchange mechanism is based on **ECDH** key exchange algorit
 
 KDF (Key Derivation Function) is an algorithm used for deriving a secret key from a master secret key using a pseudo-random function. In case of PowerAuth 2.0 protocol, following implementation is used:
 
-- `KEY_SECRET[INDEX] = KDF(KEY_MASTER, INDEX) = AES(INDEX ⊕ 0x0000..., KEY_MASTER)`
+- `// KDF(KEY_MASTER, INDEX) => KEY_SECRET_index`
+- `byte[] KEY_SECRET_index = AES(index ⊕ 0x0000..., KEY_MASTER)`
 
 ## Activation ID
 
@@ -476,7 +477,7 @@ The `ACTIVATION_ID` must be in principle long, universally unique, random and wi
 
 	DO {
 		ACTIVATION_ID = UUID_GEN()
-		COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE ACTIVATION.ID = ACTIVATION_ID
+		COUNT = SELECT COUNT(\*) FROM ACTIVATION WHERE ACTIVATION.ID = ACTIVATION_ID
 	} WHILE (COUNT > 0);
 
 Example of activation ID:
@@ -489,7 +490,7 @@ Since the UUID is too long and inconvenient for practical applications, `ACTIVAT
 
 	DO {
 		ACTIVATION_ID_SHORT = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
-		COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.ID_SHORT = ACTIVATION_ID_SHORT
+		COUNT = SELECT COUNT(\*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.ID_SHORT = ACTIVATION_ID_SHORT
 	} WHILE (COUNT > 0);
 
 
