@@ -74,6 +74,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			throws Exception {
 		try {
 			String userId = request.getUserId();
+			
 			List<ActivationRecordEntity> activationsList = powerAuthRepository.findByUserId(userId);
 
 			GetActivationListForUserResponse response = new GetActivationListForUserResponse();
@@ -100,6 +101,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception {
 		try {
 			String activationId = request.getActivationId();
+			
 			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 
 			// Handle the case with incorrect activation instance first here
@@ -322,7 +324,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					// return the data
 					VerifySignatureResponse response = new VerifySignatureResponse();
 					response.setActivationId(activationId);
-					response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
+					response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.ACTIVE));
 					response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
 					response.setSignatureValid(true);
 					response.setUserId(activation.getUserId());
