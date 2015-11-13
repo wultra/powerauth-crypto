@@ -63,9 +63,10 @@ public class PowerAuthClientActivation {
     public KeyPair generateDeviceKeyPair() {
         return new KeyGenerator().generateKeyPair();
     }
-    
+
     /**
      * Generate a new activation nonce.
+     *
      * @return A new activation nonce.
      */
     public byte[] generateActivationNonce() {
@@ -185,7 +186,7 @@ public class PowerAuthClientActivation {
                 throw new IndexOutOfBoundsException();
             }
             int index = hash.length - 4;
-            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int)(Math.pow(10, PowerAuthConstants.FINGERPRINT_LENGTH));
+            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConstants.FINGERPRINT_LENGTH));
             return number;
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);

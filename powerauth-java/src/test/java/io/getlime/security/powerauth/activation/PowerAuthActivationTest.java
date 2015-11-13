@@ -46,7 +46,7 @@ public class PowerAuthActivationTest {
     @After
     public void tearDown() {
     }
-    
+
     @Test
     public void testGenerateKeys() throws Exception {
         KeyConversionUtils keyConversion = new KeyConversionUtils();
@@ -81,7 +81,7 @@ public class PowerAuthActivationTest {
 
             // SERVER: Generate data for activation
             @SuppressWarnings("unused")
-			String activationId = serverActivation.generateActivationId();
+            String activationId = serverActivation.generateActivationId();
             String activationIdShort = serverActivation.generateActivationIdShort();
             String activationOTP = serverActivation.generateActivationOTP();
             byte[] activationSignature = serverActivation.generateActivationSignature(activationIdShort, activationOTP, masterPrivateKey);

@@ -26,7 +26,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class KeyGenerator {
-    
+
     private final SecureRandom random = new SecureRandom();
 
     /**
@@ -72,9 +72,10 @@ public class KeyGenerator {
         }
         return null;
     }
-    
+
     /**
      * Generate a new random byte array with given length.
+     *
      * @param len Number of random bytes to be generated.
      * @return An array with len random bytes.
      */
@@ -120,6 +121,7 @@ public class KeyGenerator {
     /**
      * Derive a long AES suitable key from a password and salt. Uses PBKDF with
      * 10 000 iterations.
+     *
      * @param password A password used for key derivation
      * @param salt A salt used for key derivation
      * @return A new secret key derived from the password.

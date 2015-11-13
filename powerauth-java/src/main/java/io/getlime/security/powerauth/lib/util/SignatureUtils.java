@@ -20,11 +20,12 @@ public class SignatureUtils {
 
     /**
      * Compute ECDSA signature of given bytes with a private key.
+     *
      * @param bytes Bytes to be signed.
      * @param masterPrivateKey Private key for computing the signature.
      * @return Signature for given data.
      * @throws InvalidKeyException
-     * @throws SignatureException 
+     * @throws SignatureException
      */
     public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, SignatureException {
         try {
@@ -41,12 +42,13 @@ public class SignatureUtils {
 
     /**
      * Validate an ECDSA signature against given data using a public key.
+     *
      * @param signedBytes Bytes that are signed.
      * @param signature Signature of the bytes.
      * @param masterPublicKey Public key for validating the signature.
      * @return Returns "true" if signature matches, "false" otherwise.
      * @throws InvalidKeyException
-     * @throws SignatureException 
+     * @throws SignatureException
      */
     public boolean validateECDSASignature(byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, SignatureException {
         try {
@@ -60,15 +62,16 @@ public class SignatureUtils {
         }
         return false;
     }
-    
+
     /**
      * Compute PowerAuth 2.0 signature for given data using a secret signature
      * key and counter.
+     *
      * @param data Data to be signed.
      * @param signatureKey Key for computing the signature.
      * @param counter Counter / derived key index.
      * @return PowerAuth 2.0 signature for given data.
-     * @throws InvalidKeyException 
+     * @throws InvalidKeyException
      */
     public String computePowerAuthSignature(byte[] data, SecretKey signatureKey, long counter) throws InvalidKeyException {
         try {
@@ -82,7 +85,7 @@ public class SignatureUtils {
                 throw new IndexOutOfBoundsException();
             }
             int index = signatureLong.length - 4;
-            int number = (ByteBuffer.wrap(signatureLong).getInt(index) & 0x7FFFFFFF) % (int)(Math.pow(10, PowerAuthConstants.SIGNATURE_LENGTH));
+            int number = (ByteBuffer.wrap(signatureLong).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConstants.SIGNATURE_LENGTH));
             String signature = String.format("%0" + PowerAuthConstants.SIGNATURE_LENGTH + "d", number);
             return signature;
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
@@ -90,15 +93,16 @@ public class SignatureUtils {
         }
         return null;
     }
-    
+
     /**
      * Validate the PowerAuth 2.0 signature for given data.
+     *
      * @param data Data that were signed.
      * @param signature Data signature.
      * @param signatureKey Key for signature validation.
      * @param counter Counter.
      * @return Return "true" if signature matches, "false" otherwise.
-     * @throws InvalidKeyException 
+     * @throws InvalidKeyException
      */
     public boolean validatePowerAuthSignature(byte[] data, String signature, SecretKey signatureKey, long counter) throws InvalidKeyException {
         return signature.equals(computePowerAuthSignature(data, signatureKey, counter));

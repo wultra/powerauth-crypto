@@ -25,24 +25,24 @@ import static org.junit.Assert.*;
  * @author petrdvorak
  */
 public class KeyConversionUtilsTest {
-    
+
     public KeyConversionUtilsTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -56,14 +56,14 @@ public class KeyConversionUtilsTest {
         KeyGenerator keyGenerator = new KeyGenerator();
         KeyPair kp = keyGenerator.generateKeyPair();
         KeyConversionUtils instance = new KeyConversionUtils();
-        
+
         PublicKey publicKey = kp.getPublic();
         byte[] originalBytes = instance.convertPublicKeyToBytes(publicKey);
         String originalBase64 = BaseEncoding.base64().encode(originalBytes);
         byte[] decodedBytes = BaseEncoding.base64().decode(originalBase64);
         PublicKey decodedPublicKey = instance.convertBytesToPublicKey(decodedBytes);
         assertEquals(publicKey, decodedPublicKey);
-        
+
         PrivateKey privateKey = kp.getPrivate();
         byte[] originalPrivateBytes = instance.convertPrivateKeyToBytes(privateKey);
         String originalPrivateBase64 = BaseEncoding.base64().encode(originalPrivateBytes);
@@ -71,5 +71,5 @@ public class KeyConversionUtilsTest {
         PrivateKey decodedPrivateKey = instance.convertBytesToPrivateKey(decodedPrivateBytes);
         assertEquals(privateKey, decodedPrivateKey);
     }
-    
+
 }

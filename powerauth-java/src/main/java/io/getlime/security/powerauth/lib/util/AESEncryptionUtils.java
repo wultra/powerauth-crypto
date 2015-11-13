@@ -18,13 +18,14 @@ public class AESEncryptionUtils {
     /**
      * Encrypt given data using AES/CBC/PKCS5Padding with given initialization
      * vector and secret key.
+     *
      * @param bytes Bytes to be encrypted.
      * @param iv Initialization vector.
      * @param secret Secret signature key.
      * @return Encrypted bytes.
-     * @throws InvalidKeyException 
+     * @throws InvalidKeyException
      * @throws IllegalBlockSizeException
-     * @throws BadPaddingException 
+     * @throws BadPaddingException
      */
     public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         try {
@@ -37,17 +38,18 @@ public class AESEncryptionUtils {
         }
         return null;
     }
-    
+
     /**
      * Decrypt given data using AES/CBC/PKCS5Padding with given initialization
      * vector and secret key.
+     *
      * @param bytes Encrypted bytes to be decrypted.
      * @param iv Initialization vector.
      * @param secret Secret signature key.
      * @return Original decrypted bytes.
-     * @throws InvalidKeyException 
+     * @throws InvalidKeyException
      * @throws IllegalBlockSizeException
-     * @throws BadPaddingException 
+     * @throws BadPaddingException
      */
     public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         try {
