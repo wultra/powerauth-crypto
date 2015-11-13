@@ -290,10 +290,41 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 						devicePublicKey);
 				SecretKey signatureKey = powerAuthServerSignature.generateServerSignatureKey(masterSecretKey);
 
-				// Verify the signature
-				boolean signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKey,
-						activation.getCounter());
-				if (!signatureValid) {
+				// Verify the signature with given lookahead
+				boolean signatureValid = false;
+				long ctr = activation.getCounter();
+				long lowestValidCounter = ctr;
+				for (long iterCtr = ctr; iterCtr < ctr + PowerAuthConstants.SIGNATURE_VALIDATION_LOOKAHEAD; iterCtr++) {
+					signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKey, iterCtr);
+					if (signatureValid) {
+						// set the lowest valid counter and break at the lowest counter where signature validates
+						lowestValidCounter = iterCtr;
+						break;
+					}
+				}
+				if (signatureValid) {
+					
+					// Set the activation record counter to the lowest counter
+					activation.setCounter(lowestValidCounter);
+					
+					// Reset failed attempt count
+					activation.setFailedAttempts(0L);
+					powerAuthRepository.save(activation);
+
+					// return the data
+					VerifySignatureResponse response = new VerifySignatureResponse();
+					response.setActivationId(activationId);
+					response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.ACTIVE));
+					response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
+					response.setSignatureValid(true);
+					response.setUserId(activation.getUserId());
+
+					return response;
+
+				} else {
+					
+					// Increment the activation record counter
+					activation.setCounter(activation.getCounter() + 1);
 
 					// Update failed attempts and block the activation, if
 					// necessary
@@ -315,21 +346,6 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
 					return response;
 
-				} else {
-
-					// Reset failed attempt count
-					activation.setFailedAttempts(0L);
-					powerAuthRepository.save(activation);
-
-					// return the data
-					VerifySignatureResponse response = new VerifySignatureResponse();
-					response.setActivationId(activationId);
-					response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.ACTIVE));
-					response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
-					response.setSignatureValid(true);
-					response.setUserId(activation.getUserId());
-
-					return response;
 				}
 
 			} else {

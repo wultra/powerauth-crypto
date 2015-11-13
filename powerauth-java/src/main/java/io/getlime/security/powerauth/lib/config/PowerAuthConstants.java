@@ -23,6 +23,11 @@ public class PowerAuthConstants {
     public static final long SIGNATURE_MAX_FAILED_ATTEMPTS = 5L;
     
     /**
+     * When validating the signature, how many iterations ahead too look
+     */
+    public static final long SIGNATURE_VALIDATION_LOOKAHEAD = 20L;
+    
+    /**
      * Index of the signature key KEY_SIGNATURE.
      */
     public static final int KEY_DERIVED_KEY_SIGNATURE = 1;
