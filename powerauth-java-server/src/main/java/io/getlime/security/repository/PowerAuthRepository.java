@@ -10,12 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public interface PowerAuthRepository extends CrudRepository<ActivationRecordEntity, String> {
 
-    ActivationRecordEntity findFirstByActivationId(String activationId);
-    
-    List<ActivationRecordEntity> findByUserId(String userId);
-    
-    ActivationRecordEntity findFirstByActivationIdShortAndActivationStatusIn(String activationIdShort, Collection<ActivationStatus> states);
+	ActivationRecordEntity findFirstByActivationId(String activationId);
 
-    List<ActivationRecordEntity> findByActivationIdShortAndActivationStatusIn(String activationIdShort, Collection<ActivationStatus> states);
-    
+	List<ActivationRecordEntity> findByUserId(String userId);
+
+	ActivationRecordEntity findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(
+			String activationIdShort, Collection<ActivationStatus> states, Long timestampCreated);
+
 }
