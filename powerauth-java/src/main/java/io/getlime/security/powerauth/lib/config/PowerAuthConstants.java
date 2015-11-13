@@ -33,7 +33,7 @@ public class PowerAuthConstants {
     /**
      * Signature length (number of decimal numbers representing signature)
      */
-    public static final int SIGNATURE_LENGTH = 8;
+    public static final int SIGNATURE_LENGTH = 10;
 
     /**
      * How many failed signatures cause activation record blocking
