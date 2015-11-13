@@ -15,17 +15,17 @@ import io.getlime.security.service.exceptions.GenericServiceException;
 
 @ControllerAdvice
 public class RESTControllerAdvice {
-		
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(value = GenericServiceException.class)
-	public @ResponseBody RESTResponseWrapper<List<RESTErrorModel>> returnGenericError(HttpServletRequest req, GenericServiceException e) {
-		RESTErrorModel error = new RESTErrorModel();
-		error.setCode(e.getCode());
-		error.setMessage(e.getMessage());
-		error.setLocalizedMessage(e.getLocalizedMessage());
-		List<RESTErrorModel> errorList = new LinkedList<RESTErrorModel>();
-		errorList.add(error);
-		return new RESTResponseWrapper<List<RESTErrorModel>>("ERROR", errorList);
-	}
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = GenericServiceException.class)
+    public @ResponseBody RESTResponseWrapper<List<RESTErrorModel>> returnGenericError(HttpServletRequest req, GenericServiceException e) {
+        RESTErrorModel error = new RESTErrorModel();
+        error.setCode(e.getCode());
+        error.setMessage(e.getMessage());
+        error.setLocalizedMessage(e.getLocalizedMessage());
+        List<RESTErrorModel> errorList = new LinkedList<>();
+        errorList.add(error);
+        return new RESTResponseWrapper<>("ERROR", errorList);
+    }
 
 }

@@ -15,18 +15,19 @@ import io.getlime.security.service.controller.RESTResponseExceptionResolver;
 
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
-    
-	@Override
-	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
-	    super.configureHandlerExceptionResolvers(exceptionResolvers);
-	    exceptionResolvers.add(new RESTResponseExceptionResolver());
-	    exceptionResolvers.add(new ExceptionHandlerExceptionResolver());
-	    exceptionResolvers.add(new ResponseStatusExceptionResolver());
-	}
-	
+
+    @Override
+    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
+        super.configureHandlerExceptionResolvers(exceptionResolvers);
+        exceptionResolvers.add(new RESTResponseExceptionResolver());
+        exceptionResolvers.add(new ExceptionHandlerExceptionResolver());
+        exceptionResolvers.add(new ResponseStatusExceptionResolver());
+    }
+
     @Bean
     /**
      * Custom error page filter to disable default spring error handling.
+     *
      * @return ErrorPageFilter instance
      */
     public ErrorPageFilter errorPageFilter() {
@@ -35,7 +36,9 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     /**
-     * Register a custom error page filter to disable default spring error handling.
+     * Register a custom error page filter to disable default spring error
+     * handling.
+     *
      * @param filter ErrorPageFilter to be used.
      * @return Filter registration bean.
      */
@@ -45,5 +48,5 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
         filterRegistrationBean.setEnabled(false);
         return filterRegistrationBean;
     }
-    
+
 }

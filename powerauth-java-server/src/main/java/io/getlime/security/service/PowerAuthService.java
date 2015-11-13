@@ -20,23 +20,23 @@ import io.getlime.security.powerauth.VerifySignatureRequest;
 import io.getlime.security.powerauth.VerifySignatureResponse;
 
 public interface PowerAuthService {
-	
-	public GetActivationListForUserResponse getActivatioListForUser(GetActivationListForUserRequest request) throws Exception;
-	
-	public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception;
-    
+
+    public GetActivationListForUserResponse getActivatioListForUser(GetActivationListForUserRequest request) throws Exception;
+
+    public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception;
+
     public InitActivationResponse initActivation(InitActivationRequest request) throws Exception;
-    
+
     public PrepareActivationResponse prepareActivation(PrepareActivationRequest request) throws Exception;
-    
+
     public VerifySignatureResponse verifySignature(VerifySignatureRequest request) throws Exception;
-    
+
     public CommitActivationResponse commitActivation(CommitActivationRequest request) throws Exception;
-    
+
     public RemoveActivationResponse removeActivation(RemoveActivationRequest request) throws Exception;
-    
+
     public BlockActivationResponse blockActivation(BlockActivationRequest request) throws Exception;
-    
+
     public UnblockActivationResponse unblockActivation(UnblockActivationRequest request) throws Exception;
-    
+
 }

@@ -12,9 +12,9 @@ import javax.persistence.ManyToOne;
 @Entity(name = "pa_activation")
 public class ActivationRecordEntity implements Serializable {
 
-	private static final long serialVersionUID = 7512286634644851705L;
+    private static final long serialVersionUID = 7512286634644851705L;
 
-	@Id
+    @Id
     @Column(length = 37)
     private String activationId;
 

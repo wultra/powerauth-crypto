@@ -11,9 +11,9 @@ import javax.persistence.Id;
 @Entity(name = "pa_master_keypair")
 public class MasterKeyPairEntity implements Serializable {
 
-	private static final long serialVersionUID = 1507932260603647825L;
+    private static final long serialVersionUID = 1507932260603647825L;
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
