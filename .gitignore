@@ -6,6 +6,9 @@
 /powerauth-java-server/src/main/java/generated/
 
 ### Eclipse template
+powerauth-java/.classpath
+powerauth-java/.settings
+powerauth-java/.project
 powerauth-java-server/.classpath
 powerauth-java-server/.settings
 powerauth-java-server/.project
