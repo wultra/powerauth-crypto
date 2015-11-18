@@ -1,6 +1,8 @@
-## Basic definitions
+# Basic definitions
 
-### Cryptographic functions
+The goal of this chapter is to define used functions related to cryptography and data manipulation. The definitions crafted in this chapter are then used in pseudo-codes in documentation.
+
+## Cryptographic functions
 
 Following basic cryptography algorithms and parameters are used in the PowerAuth 2.0 cryptography description:
 
@@ -15,7 +17,7 @@ Following basic cryptography algorithms and parameters are used in the PowerAuth
 - **ECDH** - An algorithm for elliptic curve with Diffie-Helman key exchange, uses P256r1 curve. We define single operation on ECDH, a symmetric key deduction between parties A and B:
 	- `SecretKey secretKey = ECDH.phase(PrivateKey privateKeyA, PublicKey publicKeyB)`
 
-### Helper functions
+## Helper functions
 
 These functions are used in the pseudo-codes:
 
