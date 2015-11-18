@@ -6,6 +6,8 @@ import io.getlime.security.powerauth.lib.util.SignatureUtils;
 import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.List;
+
 import javax.crypto.SecretKey;
 
 public class PowerAuthServerSignature {
@@ -29,17 +31,47 @@ public class PowerAuthServerSignature {
     }
 
     /**
-     * Generate a signature key KEY_SIGNATURE from master secret key
+     * Generate a signature key KEY_SIGNATURE_POSSESSION from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
      * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
-     * @return An instance of signature key KEY_SIGNATURE.
+     * @return An instance of signature key KEY_SIGNATURE_POSSESSION.
      */
-    public SecretKey generateServerSignatureKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerSignaturePossessionKey(SecretKey masterSecretKey) {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
-                PowerAuthConstants.KEY_DERIVED_KEY_SIGNATURE
+                PowerAuthConstants.KEY_DERIVED.SIGNATURE_POSSESSION
+        );
+    }
+    
+    /**
+     * Generate a signature key KEY_SIGNATURE_KNOWLEDGE from master secret key
+     * KEY_MASTER_SECRET using KDF.
+     *
+     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+     * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
+     * @return An instance of signature key KEY_SIGNATURE_KNOWLEDGE.
+     */
+    public SecretKey generateServerSignatureKnowledgeKey(SecretKey masterSecretKey) {
+        return keyGenerator.deriveSecretKey(
+                masterSecretKey,
+                PowerAuthConstants.KEY_DERIVED.SIGNATURE_KNOWLEDGE
+        );
+    }
+    
+    /**
+     * Generate a signature key KEY_SIGNATURE_BIOMETRY from master secret key
+     * KEY_MASTER_SECRET using KDF.
+     *
+     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+     * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
+     * @return An instance of signature key KEY_SIGNATURE_BIOMETRY.
+     */
+    public SecretKey generateServerSignatureBiometryKey(SecretKey masterSecretKey) {
+        return keyGenerator.deriveSecretKey(
+                masterSecretKey,
+                PowerAuthConstants.KEY_DERIVED.SIGNATURE_BIOMETRY
         );
     }
 
@@ -54,17 +86,32 @@ public class PowerAuthServerSignature {
     public SecretKey generateServerTransportKey(SecretKey masterSecretKey) {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
-                PowerAuthConstants.KEY_DERIVED_KEY_TRANSPORT
+                PowerAuthConstants.KEY_DERIVED.TRANSPORT
+        );
+    }
+    
+    /**
+     * Generate a transport key KEY_ENCRYPTED_VAULT from master secret key
+     * KEY_MASTER_SECRET using KDF.
+     *
+     * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+     * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
+     * @return An instance of signature key KEY_ENCRYPTED_VAULT.
+     */
+    public SecretKey generateServerEndryptedVaultKey(SecretKey masterSecretKey) {
+        return keyGenerator.deriveSecretKey(
+                masterSecretKey,
+                PowerAuthConstants.KEY_DERIVED.ENCRYPTED_VAULT
         );
     }
 
     /**
-     * Verify a PowerAuth 2.0 signature against data using signature key and
+     * Verify a PowerAuth 2.0 signature against data using signature key list and
      * counter.
      *
      * @param data Signed data.
      * @param signature Signature for the data.
-     * @param signatureKey Key used for signature.
+     * @param signatureKeys Keys used for signature.
      * @param ctr Counter / derived signing key index.
      * @return Returns "true" if the signature matches, "false" otherwise.
      * @throws InvalidKeyException
@@ -72,9 +119,9 @@ public class PowerAuthServerSignature {
     public boolean verifySignatureForData(
             byte[] data,
             String signature,
-            SecretKey signatureKey,
+            List<SecretKey> signatureKeys,
             long ctr) throws InvalidKeyException {
-        return signatureUtils.validatePowerAuthSignature(data, signature, signatureKey, ctr);
+        return signatureUtils.validatePowerAuthSignature(data, signature, signatureKeys, ctr);
     }
 
 }
