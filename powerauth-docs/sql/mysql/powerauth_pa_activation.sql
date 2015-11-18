@@ -29,12 +29,12 @@ CREATE TABLE `pa_activation` (
   `activation_status` int(11) NOT NULL,
   `client_name` varchar(255) DEFAULT NULL,
   `counter` bigint(20) NOT NULL,
-  `device_public_key` tinyblob,
+  `device_public_key_base64` text,
   `failed_attempts` bigint(20) DEFAULT NULL,
-  `server_private_key` tinyblob NOT NULL,
-  `server_public_key` tinyblob NOT NULL,
-  `timestamp_created` bigint(20) NOT NULL,
-  `timestamp_last_used` bigint(20) NOT NULL,
+  `server_private_key_base64` text NOT NULL,
+  `server_public_key_base64` text NOT NULL,
+  `timestamp_created` datetime NOT NULL,
+  `timestamp_last_used` datetime NOT NULL,
   `user_id` varchar(255) NOT NULL,
   `master_keypair_id` bigint(20) NOT NULL,
   PRIMARY KEY (`activation_id`),
@@ -52,4 +52,4 @@ CREATE TABLE `pa_activation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-10 15:26:18
+-- Dump completed on 2015-11-18 23:28:42

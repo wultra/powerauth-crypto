@@ -42,6 +42,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -121,13 +122,12 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
                 // Get the server private and device public keys to compute the
                 // transport key
-                PrivateKey serverPrivateKey = keyConversionUtilities
-                        .convertBytesToPrivateKey(activation.getServerPrivateKey());
-                PublicKey devicePublicKey = keyConversionUtilities
-                        .convertBytesToPublicKey(activation.getDevicePublicKey());
+            	String serverPrivateKeyBase64 = activation.getServerPrivateKeyBase64();
+            	String devicePublicKeyBase64 = activation.getDevicePublicKeyBase64();
+                PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(BaseEncoding.base64().decode(serverPrivateKeyBase64));
+                PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(BaseEncoding.base64().decode(devicePublicKeyBase64));
 
-                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey,
-                        devicePublicKey);
+                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
                 SecretKey transportKey = powerAuthServerSignature.generateServerTransportKey(masterSecretKey);
 
                 // Encrypt the status blob
@@ -159,7 +159,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             String userId = request.getUserId();
 
             // Generate timestamp in advance
-            Long timestamp = (System.currentTimeMillis() / 1000L);
+            Date timestamp = new Date();
 
             // Fetch the latest master private key
             MasterKeyPairEntity masterKeyPair = masterKeyPairRepository.findFirstByOrderByTimestampCreatedDesc();
@@ -186,8 +186,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                 ActivationRecordEntity record = powerAuthRepository.findFirstByActivationId(tmpActivationId);
                 // this activation ID has a collision, reset it and find another
                 // one
-                if (record == null || (timestamp
-                        - record.getTimestampCreated()) > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+                if (record == null || (timestamp.getTime() - record.getTimestampCreated().getTime()) > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
                     activationId = tmpActivationId;
                     break;
                 }
@@ -204,8 +203,11 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             for (int i = 0; i < PowerAuthConstants.ACTIVATION_GENERATE_ACTIVATION_SHORT_ID_ITERATIONS; i++) {
                 String tmpActivationIdShort = powerAuthServerActivation.generateActivationIdShort();
                 ActivationRecordEntity record = powerAuthRepository
-                        .findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(tmpActivationIdShort,
-                                states, timestamp - PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE);
+                        .findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(
+                        		tmpActivationIdShort,
+                        		states, 
+                        		new Date(timestamp.getTime() - PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE)
+                        );
                 // this activation short ID has a collision, reset it and find
                 // another one
                 if (record == null) {
@@ -214,27 +216,38 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                 }
             }
             if (activationIdShort == null) {
-                throw new GenericServiceException("ERROR_GENERIC_ACTIVATION_ID_SHORT",
-                        "Too many failed attempts to generate short activation ID.");
+                throw new GenericServiceException("ERROR_GENERIC_ACTIVATION_ID_SHORT", "Too many failed attempts to generate short activation ID.");
             }
 
             // Generate activation OTP
             String activationOtp = powerAuthServerActivation.generateActivationOTP();
 
             // Compute activation signature
-            byte[] activationSignature = powerAuthServerActivation.generateActivationSignature(activationIdShort,
-                    activationOtp, masterPrivateKey);
+            byte[] activationSignature = powerAuthServerActivation.generateActivationSignature(activationIdShort,activationOtp, masterPrivateKey);
             String activationSignatureBase64 = BaseEncoding.base64().encode(activationSignature);
 
             // Generate server key pair
             KeyPair serverKeyPair = powerAuthServerActivation.generateServerKeyPair();
+            byte[] serverKeyPrivateBytes = keyConversionUtilities.convertPrivateKeyToBytes(serverKeyPair.getPrivate());
+            byte[] serverKeyPublicBytes = keyConversionUtilities.convertPublicKeyToBytes(serverKeyPair.getPublic());
 
             // Store the new activation
-            ActivationRecordEntity activation = new ActivationRecordEntity(activationId, activationIdShort,
-                    activationOtp, userId, null,
-                    keyConversionUtilities.convertPrivateKeyToBytes(serverKeyPair.getPrivate()),
-                    keyConversionUtilities.convertPublicKeyToBytes(serverKeyPair.getPublic()), null, new Long(0),
-                    new Long(0), timestamp, timestamp, ActivationStatus.CREATED, masterKeyPair);
+            ActivationRecordEntity activation = new ActivationRecordEntity(
+            		activationId,
+            		activationIdShort,
+                    activationOtp,
+                    userId,
+                    null,
+                    BaseEncoding.base64().encode(serverKeyPrivateBytes),
+                    BaseEncoding.base64().encode(serverKeyPublicBytes),
+                    null,
+                    new Long(0),
+                    new Long(0),
+                    timestamp,
+                    timestamp,
+                    ActivationStatus.CREATED,
+                    masterKeyPair
+            );
 
             powerAuthRepository.save(activation);
 
@@ -264,13 +277,16 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             String clientName = request.getClientName();
 
             // Get current timestamp
-            Long timestamp = (System.currentTimeMillis() / 1000L);
+            Date timestamp = new Date();
 
             // Fetch the current activation by short activation ID
             Set<ActivationStatus> states = ImmutableSet.of(ActivationStatus.CREATED);
             ActivationRecordEntity activation = powerAuthRepository
-                    .findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(activationIdShort,
-                            states, timestamp - PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE);
+                    .findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(
+                    		activationIdShort,
+                            states, 
+                            new Date(timestamp.getTime() - PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE)
+                    );
 
             if (activation == null) {
                 throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
@@ -284,29 +300,35 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
             // Update and persist the activation record
             activation.setActivationStatus(ActivationStatus.OTP_USED);
-            activation.setDevicePublicKey(devicePublicKey.getEncoded());
+            activation.setDevicePublicKey(BaseEncoding.base64().encode(devicePublicKey.getEncoded()));
             activation.setClientName(clientName);
             powerAuthRepository.save(activation);
 
             // Generate response data
             byte[] activationNonceServer = powerAuthServerActivation.generateActivationNonce();
-            PublicKey serverPublicKey = keyConversionUtilities.convertBytesToPublicKey(activation.getServerPublicKey());
+            String serverPublicKeyBase64 = activation.getServerPublicKeyBase64();
+            PublicKey serverPublicKey = keyConversionUtilities.convertBytesToPublicKey(BaseEncoding.base64().decode(serverPublicKeyBase64));
             KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
             PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
             PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
             byte[] ephemeralPublicKeyBytes = keyConversionUtilities.convertPublicKeyToBytes(ephemeralPublicKey);
-            byte[] masterPrivateKeyBytes = BaseEncoding.base64()
-                    .decode(activation.getMasterKeypair().getMasterKeyPrivateBase64());
+            String masterPrivateKeyBase64 = activation.getMasterKeypair().getMasterKeyPrivateBase64();
+            byte[] masterPrivateKeyBytes = BaseEncoding.base64().decode(masterPrivateKeyBase64);
             PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes);
             String activationOtp = activation.getActivationOTP();
 
             // Encrypt the public key
-            byte[] C_serverPublicKey = powerAuthServerActivation.encryptServerPublicKey(serverPublicKey,
-                    devicePublicKey, ephemeralPrivateKey, activationOtp, activationIdShort, activationNonceServer);
+            byte[] C_serverPublicKey = powerAuthServerActivation.encryptServerPublicKey(
+            		serverPublicKey,
+                    devicePublicKey,
+                    ephemeralPrivateKey,
+                    activationOtp, 
+                    activationIdShort, 
+                    activationNonceServer
+            );
 
             // Get encrypted public key signature
-            byte[] C_serverPubKeySignature = powerAuthServerActivation
-                    .computeServerPublicKeySignature(C_serverPublicKey, masterPrivateKey);
+            byte[] C_serverPubKeySignature = powerAuthServerActivation.computeServerPublicKeySignature(C_serverPublicKey, masterPrivateKey);
 
             // Compute the response
             PrepareActivationResponse response = new PrepareActivationResponse();
@@ -317,6 +339,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             response.setEphemeralPublicKey(BaseEncoding.base64().encode(ephemeralPublicKeyBytes));
 
             return response;
+            
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new GenericServiceException("Unknown exception has occurred");
@@ -340,8 +363,10 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             if (activation != null && activation.getActivationStatus() == ActivationStatus.ACTIVE) {
 
                 // Get the server private and device public keys
-                PrivateKey serverPrivateKey = keyConversionUtilities .convertBytesToPrivateKey(activation.getServerPrivateKey());
-                PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(activation.getDevicePublicKey());
+            	byte[] serverPrivateKeyBytes = BaseEncoding.base64().decode(activation.getServerPrivateKeyBase64());
+            	byte[] devicePublicKeyBytes = BaseEncoding.base64().decode(activation.getDevicePublicKeyBase64());
+                PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(serverPrivateKeyBytes);
+                PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(devicePublicKeyBytes);
 
                 // Compute the master secret key
                 SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
@@ -388,8 +413,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                     // Update failed attempts and block the activation, if
                     // necessary
                     activation.setFailedAttempts(activation.getFailedAttempts() + 1);
-                    Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS
-                            - activation.getFailedAttempts());
+                    Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts());
                     if (remainingAttempts <= 0) {
                         activation.setActivationStatus(ActivationStatus.BLOCKED);
                     }
@@ -433,9 +457,8 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             String activationId = request.getActivationId();
             ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
             // Get current timestamp
-            Long timestamp = (System.currentTimeMillis() / 1000L);
-            if (activation == null || (timestamp
-                    - activation.getTimestampCreated()) < PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+            Date timestamp = new Date();
+            if (activation == null || (timestamp.getTime() - activation.getTimestampCreated().getTime()) < PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
                 activation.setActivationStatus(ActivationStatus.REMOVED);
                 powerAuthRepository.save(activation);
                 throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");

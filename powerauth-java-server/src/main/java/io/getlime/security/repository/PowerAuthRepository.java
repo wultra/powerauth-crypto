@@ -3,6 +3,7 @@ package io.getlime.security.repository;
 import io.getlime.security.repository.model.ActivationRecordEntity;
 import io.getlime.security.repository.model.ActivationStatus;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,6 @@ public interface PowerAuthRepository extends CrudRepository<ActivationRecordEnti
 
     List<ActivationRecordEntity> findByUserId(String userId);
 
-    ActivationRecordEntity findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(
-            String activationIdShort, Collection<ActivationStatus> states, Long timestampCreated);
+    ActivationRecordEntity findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(String activationIdShort, Collection<ActivationStatus> states, Date timestampCreated);
 
 }

@@ -1,7 +1,7 @@
 package io.getlime.security.repository.model;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,13 +31,13 @@ public class ActivationRecordEntity implements Serializable {
     private String clientName;
 
     @Column(nullable = false)
-    private byte[] serverPrivateKey;
+    private String serverPrivateKeyBase64;
 
     @Column(nullable = false)
-    private byte[] serverPublicKey;
+    private String serverPublicKeyBase64;
 
     @Column(nullable = true)
-    private byte[] devicePublicKey;
+    private String devicePublicKeyBase64;
 
     @Column(nullable = false)
     private Long counter;
@@ -46,10 +46,10 @@ public class ActivationRecordEntity implements Serializable {
     private Long failedAttempts;
 
     @Column(nullable = false)
-    private Long timestampCreated;
+    private Date timestampCreated;
 
     @Column(nullable = false)
-    private Long timestampLastUsed;
+    private Date timestampLastUsed;
 
     @Column(nullable = false)
     private ActivationStatus activationStatus;
@@ -67,13 +67,13 @@ public class ActivationRecordEntity implements Serializable {
             String activationOTP,
             String userId,
             String clientName,
-            byte[] serverPrivateKey,
-            byte[] serverPublicKey,
-            byte[] devicePublicKey,
+            String serverPrivateKeyBase64,
+            String serverPublicKeyBase64,
+            String devicePublicKeyBase64,
             Long counter,
             Long failedAttempts,
-            Long timestampCreated,
-            Long timestampLastUsed,
+            Date timestampCreated,
+            Date timestampLastUsed,
             ActivationStatus status,
             MasterKeyPairEntity masterKeypair) {
         this.activationId = activationId;
@@ -81,9 +81,9 @@ public class ActivationRecordEntity implements Serializable {
         this.activationOTP = activationOTP;
         this.userId = userId;
         this.clientName = clientName;
-        this.serverPrivateKey = serverPrivateKey;
-        this.serverPublicKey = serverPublicKey;
-        this.devicePublicKey = devicePublicKey;
+        this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
+        this.serverPublicKeyBase64 = serverPublicKeyBase64;
+        this.devicePublicKeyBase64 = devicePublicKeyBase64;
         this.counter = counter;
         this.failedAttempts = failedAttempts;
         this.timestampCreated = timestampCreated;
@@ -132,28 +132,28 @@ public class ActivationRecordEntity implements Serializable {
         this.clientName = clientName;
     }
 
-    public byte[] getServerPrivateKey() {
-        return serverPrivateKey;
+    public String getServerPrivateKeyBase64() {
+        return serverPrivateKeyBase64;
     }
 
-    public void setServerPrivateKey(byte[] serverPrivateKey) {
-        this.serverPrivateKey = serverPrivateKey;
+    public void setServerPrivateKeyBase64(String serverPrivateKeyBase64) {
+        this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
     }
 
-    public byte[] getServerPublicKey() {
-        return serverPublicKey;
+    public String getServerPublicKeyBase64() {
+        return serverPublicKeyBase64;
     }
 
-    public void setServerPublicKey(byte[] serverPublicKey) {
-        this.serverPublicKey = serverPublicKey;
+    public void setServerPublicKeyBase64(String serverPublicKeyBase64) {
+        this.serverPublicKeyBase64 = serverPublicKeyBase64;
     }
 
-    public byte[] getDevicePublicKey() {
-        return devicePublicKey;
+    public String getDevicePublicKeyBase64() {
+        return devicePublicKeyBase64;
     }
 
-    public void setDevicePublicKey(byte[] devicePublicKey) {
-        this.devicePublicKey = devicePublicKey;
+    public void setDevicePublicKey(String devicePublicKeyBase64) {
+        this.devicePublicKeyBase64 = devicePublicKeyBase64;
     }
 
     public Long getCounter() {
@@ -172,19 +172,19 @@ public class ActivationRecordEntity implements Serializable {
         this.failedAttempts = failedAttempts;
     }
 
-    public Long getTimestampCreated() {
+    public Date getTimestampCreated() {
         return timestampCreated;
     }
 
-    public void setTimestampCreated(Long timestampCreated) {
+    public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
     }
 
-    public Long getTimestampLastUsed() {
+    public Date getTimestampLastUsed() {
         return timestampLastUsed;
     }
 
-    public void setTimestampLastUsed(Long timestampLastUsed) {
+    public void setTimestampLastUsed(Date timestampLastUsed) {
         this.timestampLastUsed = timestampLastUsed;
     }
 
@@ -212,9 +212,9 @@ public class ActivationRecordEntity implements Serializable {
         hash = 71 * hash + Objects.hashCode(this.activationOTP);
         hash = 71 * hash + Objects.hashCode(this.userId);
         hash = 71 * hash + Objects.hashCode(this.clientName);
-        hash = 71 * hash + Arrays.hashCode(this.serverPrivateKey);
-        hash = 71 * hash + Arrays.hashCode(this.serverPublicKey);
-        hash = 71 * hash + Arrays.hashCode(this.devicePublicKey);
+        hash = 71 * hash + Objects.hashCode(this.serverPrivateKeyBase64);
+        hash = 71 * hash + Objects.hashCode(this.serverPublicKeyBase64);
+        hash = 71 * hash + Objects.hashCode(this.devicePublicKeyBase64);
         hash = 71 * hash + Objects.hashCode(this.counter);
         hash = 71 * hash + Objects.hashCode(this.failedAttempts);
         hash = 71 * hash + Objects.hashCode(this.timestampCreated);
@@ -251,13 +251,13 @@ public class ActivationRecordEntity implements Serializable {
         if (!Objects.equals(this.activationId, other.activationId)) {
             return false;
         }
-        if (!Arrays.equals(this.serverPrivateKey, other.serverPrivateKey)) {
+        if (!Objects.equals(this.serverPrivateKeyBase64, other.serverPrivateKeyBase64)) {
             return false;
         }
-        if (!Arrays.equals(this.serverPublicKey, other.serverPublicKey)) {
+        if (!Objects.equals(this.serverPublicKeyBase64, other.serverPublicKeyBase64)) {
             return false;
         }
-        if (!Arrays.equals(this.devicePublicKey, other.devicePublicKey)) {
+        if (!Objects.equals(this.devicePublicKeyBase64, other.devicePublicKeyBase64)) {
             return false;
         }
         if (!Objects.equals(this.counter, other.counter)) {
@@ -289,9 +289,9 @@ public class ActivationRecordEntity implements Serializable {
                 + ", activationOTP=" + activationOTP
                 + ", userId=" + userId
                 + ", clientName=" + clientName
-                + ", serverPrivateKey=" + Arrays.toString(serverPrivateKey)
-                + ", serverPublicKey=" + Arrays.toString(serverPublicKey)
-                + ", devicePublicKey=" + Arrays.toString(devicePublicKey)
+                + ", serverPrivateKeyBase64=" + serverPrivateKeyBase64
+                + ", serverPublicKeyBase64=" + serverPublicKeyBase64
+                + ", devicePublicKeyBase64=" + devicePublicKeyBase64
                 + ", counter=" + counter
                 + ", failedAttempts=" + failedAttempts
                 + ", timestampCreated=" + timestampCreated
