@@ -46,7 +46,7 @@ These functions are used in the pseudo-codes:
 	- `byte[] hash = Hash.sha256(byte[] original)` - Compute SHA256 hash of a given input.
 
 - Utility functions.
-  - `byte[] zeroBytes = ByteUtils.zeroBytes(int N)` - Generate buffer with N zero bytes.
+	- `byte[] zeroBytes = ByteUtils.zeroBytes(int N)` - Generate buffer with N zero bytes.
 	- `byte[] truncatedBytes = ByteUtils.truncate(byte[] bytes, int N)` - Get last N bytes of given byte array.
 	- `int integer = ByteUtils.getInt(byte[4] bytes)` - Get integer from 4 byte long byte array.
 
