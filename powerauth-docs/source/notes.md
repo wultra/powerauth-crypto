@@ -150,53 +150,58 @@ Following keys are used for the PowerAuth cryptography scheme.
 		<th>purpose</th>
 	</tr>
 	<tr>
-		<td>`KEY_DEVICE_PRIVATE`</td>
+		<td><code>KEY_DEVICE_PRIVATE</code></td>
 		<td>ECDH - private key</td>
-		<td>Generated on client to allow construction of `KEY_MASTER_SECRET`</td>
+		<td>Generated on client to allow construction of <code>KEY_MASTER_SECRET</code></td>
 	</tr>
 	<tr>
-		<td>`KEY_DEVICE_PUBLIC`</td>
+		<td><code>KEY_DEVICE_PUBLIC</code></td>
 		<td>ECDH - public key</td>
-		<td>Generated on client to allow construction of `KEY_MASTER_SECRET`</td>
+		<td>Generated on client to allow construction of <code>KEY_MASTER_SECRET</code></td>
 	</tr>
 	<tr>
-		<td>`KEY_SERVER_PRIVATE`</td>
+		<td><code>KEY_SERVER_PRIVATE</code></td>
 		<td>ECDH - private key</td>
-		<td>Generated on server to allow construction of `KEY_MASTER_SECRET`</td>
+		<td>Generated on server to allow construction of <code>KEY_MASTER_SECRET</code></td>
 	</tr>
 	<tr>
-		<td>`KEY_SERVER_PUBLIC`</td>
+		<td><code>KEY_SERVER_PUBLIC</code></td>
 		<td>ECDH - public key</td>
-		<td>Generated on server to allow construction of `KEY_MASTER_SECRET`</td>
+		<td>Generated on server to allow construction of <code>KEY_MASTER_SECRET</code></td>
 	</tr>
 	<tr>
-		<td>`KEY_SERVER_MASTER_PRIVATE`</td>
+		<td><code>KEY_SERVER_MASTER_PRIVATE</code></td>
 		<td>ECDH - private key</td>
-		<td>Stored on server, used to assure authenticity of `KEY_DEVICE_PUBLIC` while transferring from server to client</td>
+		<td>Stored on server, used to assure authenticity of <code>KEY_DEVICE_PUBLIC</code> while transferring from server to client</td>
 	</tr>
 	<tr>
-		<td>`KEY_SERVER_MASTER_PUBLIC`</td>
+		<td><code>KEY_SERVER_MASTER_PUBLIC</code></td>
 		<td>ECDH - public key</td>
-		<td>Stored on client, used to assure authenticity of `KEY_DEVICE_PUBLIC` while transferring from server to client</td>
+		<td>Stored on client, used to assure authenticity of <code>KEY_DEVICE_PUBLIC</code> while transferring from server to client</td>
 	</tr>
 	<tr>
-		<td>`ACTIVATION_OTP`</td>
+		<td><code>ACTIVATION_OTP</code></td>
 		<td>Random OTP</td>
 		<td>A 16b random OTP generated during activation, AES encrypts/decrypts data sent from server to client and vice versa</td>
 	</tr>
 	<tr>
-		<td>`KEY_MASTER_SECRET`</td>
+		<td><code>KEY_MASTER_SECRET</code></td>
 		<td>ECDH - pre-shared</td>
-		<td>A key deduced using ECDH derivation, `KEY_MASTER_SECRET` = (`KEY_DEVICE_PRIVATE`,`KEY_SERVER_PUBLIC`) = (`KEY_SERVER_PRIVATE`,`KEY_DEVICE_PUBLIC`)</td>
+		<td>A key deduced using ECDH derivation, <code>KEY_MASTER_SECRET = (KEY_DEVICE_PRIVATE,KEY_SERVER_PUBLIC) = (KEY_SERVER_PRIVATE,KEY_DEVICE_PUBLIC)</code></td>
 	</tr>
 	<tr>
-		<td>`KEY_SIGNATURE`</td>
-		<td>KDF derived key from `KEY_MASTER_SECRET`</td>
-		<td>A key deduced using KDF derivation with INDEX = 1, `KEY_SIGNATURE` = KDF(`KEY_MASTER_SECRET`, 1), used for subsequent request signing</td>
+		<td><code>KEY_SIGNATURE</code></td>
+		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
+		<td>A key deduced using KDF derivation with <code>INDEX = 1</code>, <code>KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)</code>, used for subsequent request signing</td>
 	</tr>
 	<tr>
-		<td>`KEY_TRANSPORT`</td>
-		<td>KDF derived key from `KEY_MASTER_SECRET`</td>
-		<td>A key deduced using KDF derivation with INDEX = 2, `KEY_TRANSPORT` = KDF(`KEY_MASTER_SECRET`, 2), used for encrypted data transport</td>
+		<td><code>KEY_TRANSPORT</code></td>
+		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
+		<td>A key deduced using KDF derivation with <code>INDEX = 1000</code>, <code>KEY_TRANSPORT = KDF(KEY_MASTER_SECRET, 1000)</code>, used for encrypted data transport</td>
+	</tr>
+	<tr>
+		<td><code>KEY_ENCRYPTION_VAULT</code></td>
+		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
+		<td>A key deduced using KDF derivation with <code>INDEX = 2000</code>, <code>KEY_ENCRYPTION_VAULT = KDF(KEY_MASTER_SECRET, 2000)</code>, used for encrypted data transport</td>
 	</tr>
 </table>

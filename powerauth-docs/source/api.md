@@ -8,9 +8,9 @@ Each PowerAuth 2.0 implementation that is located on a specific base URL then ha
 
 ## Initiate activation
 
-Application activation is a process of key exchange between a PowerAuth 2.0 Client and a PowerAuth 2.0 Server. During this process, an "activation record" is created on the PowerAuth 2.0 Server and related keys are stored on a PowerAuth 2.0 Client.
-
 Exchange the public keys between PowerAuth 2.0 Client and PowerAuth 2.0 Server.
+
+Application activation is a process of key exchange between a PowerAuth 2.0 Client and a PowerAuth 2.0 Server. During this process, an "activation record" is created on the PowerAuth 2.0 Server and related keys are stored on a PowerAuth 2.0 Client.
 
 PowerAuth 2.0 Client sends a short activation ID, it's public key encrypted using activation OTP and a visual identification (or a "client name"):
 
@@ -43,11 +43,11 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 <table>
 	<tr>
 		<td>Method</td>
-		<td>`POST`</td>
+		<td><code>POST</code></td>
 	</tr>
 	<tr>
 		<td>Resource URI</td>
-		<td>`/pa/activation/create`</td>
+		<td><code>/pa/activation/create</code></td>
 	</tr>
 </table>
 
@@ -115,11 +115,11 @@ where:
 <table>
 	<tr>
 		<td>Method</td>
-		<td>`POST`</td>
+		<td><code>POST</code></td>
 	</tr>
 	<tr>
 		<td>Resource URI</td>
-		<td>`/pa/activation/status`</td>
+		<td><code>/pa/activation/status</code></td>
 	</tr>
 </table>
 
@@ -159,11 +159,11 @@ Remove an activation with given ID, set it's status to REMOVED. Activation can b
 <table>
 	<tr>
 		<td>Method</td>
-		<td>`POST`</td>
+		<td><code>POST</code></td>
 	</tr>
 	<tr>
 		<td>Resource URI</td>
-		<td>`/pa/activation/remove`</td>
+		<td><code>/pa/activation/remove</code></td>
 	</tr>
 </table>
 
