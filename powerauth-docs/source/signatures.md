@@ -24,11 +24,11 @@ When using more than one factor / key, the keys are added additively in the sign
  * @param signatureKey - array of symmetric keys used for signature
  * @param CTR - counter
  */
-public String computeSignature(byte[] data, Array<SecretKey> signatureKeys, int CTR) {
+public String computeSignature(byte[] data, List<SecretKey> signatureKeys, int CTR) {
 
 	// ... compute signature components
-	String[] signatureComponents = new String[signatureKeys.count()];
-	for (int i = 0; i < signatureKeys.count(); i++) {
+	String[] signatureComponents = new String[signatureKeys.size()];
+	for (int i = 0; i < signatureKeys.size(); i++) {
 		byte[] KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(0));
 		byte[] KEY_DERIVED = Mac.HMAC_SHA256(KEY_SIGNATURE, CTR);
 
@@ -103,7 +103,7 @@ PowerAuth 2.0 Server can validate the signature using the following mechanism:
 	- see "PowerAuth Key Derivation" section.
 1. Compute the expected signature for obtained data and check if the expected signature matches the one sent with the client. Since the PowerAuth 2.0 Client may be ahead with counter from PowerAuth 2.0 Server, server should try couple extra indexes ahead:
 
-```
+```java
 		// input: CTR, TOLERANCE, data and signatureKeys
 		boolean VERIFIED = false
 		for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER < CRT + TOLERANCE) {
