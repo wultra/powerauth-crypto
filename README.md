@@ -4,4 +4,4 @@ PowerAuth 2.0 is a protocol for a key exchange and for subsequent request signin
 
 You can read the specification export here:
 
-https://dl.dropboxusercontent.com/u/6405782/powerauth/index.html
+https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/powerauth.md
