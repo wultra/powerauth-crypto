@@ -239,7 +239,7 @@ Transport key used for transferring an encryption key for vault encryption `KEY_
 
 An encryption key used for storing the original private key `KEY_DEVICE_PRIVATE`, deduced as:
 
-`KEY_ENCRYPTION_VAULT = KDF(KEY_MASTER_SECRET, 1)`
+`KEY_ENCRYPTION_VAULT = KDF(KEY_MASTER_SECRET, 2000)`
 
 This key must not be stored on the PowerAuth 2.0 Client at all. It must be sent upon successful authentication from PowerAuth 2.0 Server. The `KEY_ENCRYPTION_VAULT` is sent from the server encrypted using one-time transport key `KEY_ENCRYPTION_VAULT_TRANSPORT` key (see above):
 
