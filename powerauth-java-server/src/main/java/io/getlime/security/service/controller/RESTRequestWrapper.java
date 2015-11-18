@@ -42,7 +42,8 @@ public class RESTRequestWrapper<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        RESTRequestWrapper other = (RESTRequestWrapper) obj;
+        @SuppressWarnings("rawtypes")
+		RESTRequestWrapper other = (RESTRequestWrapper) obj;
         if (requestObject == null) {
             if (other.requestObject != null) {
                 return false;

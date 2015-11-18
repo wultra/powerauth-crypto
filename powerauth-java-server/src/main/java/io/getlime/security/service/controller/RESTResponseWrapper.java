@@ -54,7 +54,8 @@ public class RESTResponseWrapper<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        RESTResponseWrapper other = (RESTResponseWrapper) obj;
+        @SuppressWarnings("rawtypes")
+		RESTResponseWrapper other = (RESTResponseWrapper) obj;
         if (responseObject == null) {
             if (other.responseObject != null) {
                 return false;
