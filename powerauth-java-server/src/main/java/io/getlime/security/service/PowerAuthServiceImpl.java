@@ -32,6 +32,7 @@ import io.getlime.security.repository.model.ActivationRecordEntity;
 import io.getlime.security.repository.model.ActivationStatus;
 import io.getlime.security.repository.model.MasterKeyPairEntity;
 import io.getlime.security.service.exceptions.GenericServiceException;
+import io.getlime.security.service.util.KeyUtil;
 import io.getlime.security.service.util.ModelUtil;
 
 import java.math.BigInteger;
@@ -41,6 +42,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -330,6 +332,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             String activationId = request.getActivationId();
             byte[] data = BaseEncoding.base64().decode(request.getData());
             String signature = request.getSignature();
+            String signatureType = request.getSignatureType().toLowerCase();
 
             // Fetch related activation
             ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
@@ -337,27 +340,24 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             // Only validate signature for existing ACTIVE activation records
             if (activation != null && activation.getActivationStatus() == ActivationStatus.ACTIVE) {
 
-                // Get the server private and device public keys to compute the
-                // signing key
-                PrivateKey serverPrivateKey = keyConversionUtilities
-                        .convertBytesToPrivateKey(activation.getServerPrivateKey());
-                PublicKey devicePublicKey = keyConversionUtilities
-                        .convertBytesToPublicKey(activation.getDevicePublicKey());
+                // Get the server private and device public keys
+                PrivateKey serverPrivateKey = keyConversionUtilities .convertBytesToPrivateKey(activation.getServerPrivateKey());
+                PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(activation.getDevicePublicKey());
 
-                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey,
-                        devicePublicKey);
-                SecretKey signatureKey = powerAuthServerSignature.generateServerSignatureKey(masterSecretKey);
+                // Compute the master secret key
+                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+
+                // Get the signature keys according to the signature type
+                List<SecretKey> signatureKeys = new KeyUtil().keysForSignatureType(signatureType, masterSecretKey, powerAuthServerSignature);
 
                 // Verify the signature with given lookahead
                 boolean signatureValid = false;
                 long ctr = activation.getCounter();
                 long lowestValidCounter = ctr;
                 for (long iterCtr = ctr; iterCtr < ctr + PowerAuthConstants.SIGNATURE_VALIDATION_LOOKAHEAD; iterCtr++) {
-                    signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKey,
-                            iterCtr);
+                    signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKeys, iterCtr);
                     if (signatureValid) {
-                        // set the lowest valid counter and break at the lowest
-                        // counter where signature validates
+                        // set the lowest valid counter and break at the lowest counter where signature validates
                         lowestValidCounter = iterCtr;
                         break;
                     }
