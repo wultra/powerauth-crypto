@@ -41,6 +41,7 @@ These functions are used in the pseudo-codes:
 	- **byte[] signature = Mac.hmacSha256(SharedKey key, byte[] message)** - Compute HMAC-SHA256 signature for given message using provided symmetric key.
 	- **byte[] hash = Hash.sha256(byte[] original)** - Compute SHA256 hash of a given input.
 - Utility functions
+  - **byte[] zeroBytes = ByteUtils.zeroBytes(int N)** - Generate buffer with N zero bytes.
 	- **byte[] truncatedBytes = ByteUtils.truncate(byte[] bytes, int N)** - Get last N bytes of given byte array.
 	- **int integer = ByteUtils.getInt(byte[4] bytes)** - Get integer from 4 byte long byte array.
 
@@ -57,7 +58,7 @@ Following components play role in activation:
 - **Intermediate Server Application** - A front-end facing server application (or a set of applications, that we currently view as a single unified system, for the sake of simplicity) that is deployed in demilitarized zone in order to accommodate a communication between PowerAuth 2.0 Client, Master Front-End Application and PowerAuth 2.0 Server. A good example of Intermediate Server Application is a mobile banking RESTful API server.
 - **PowerAuth 2.0 Server** - A server application hidden deep in secure infrastructure, stores activation records, or verifies the request signatures. This application provides services for Intermediate Server Application to implement the PowerAuth 2.0 protocol. An example of a PowerAuth 2.0 Server is a bank identity management system.
 
-<img src="api-big-picture.png" width="100%"/>
+<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/api-big-picture.png" width="100%"/>
 
 ## Activation States
 
@@ -73,7 +74,7 @@ After the key exchange is initiated, an activation record is created in the data
 
 Following diagram shows transitions between activation states in more detail:
 
-<img src="./powerauth-lifecycle.png" width="100%"/>
+<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth-lifecycle.png" width="100%"/>
 
 ## Activation User Flow
 
@@ -83,13 +84,13 @@ From the user perspective, PowerAuth 2.0 activation is performed as a sequence o
 
 Following diagram shows example steps in Master Front-End Application - imagine the Internet banking as an example application.
 
-<img src="./powerauth-master-frontend-activation.png" width="100%"/>
+<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth-master-frontend-activation.png" width="100%"/>
 
 ### PowerAuth 2.0 Client
 
 Following diagram shows example steps in PowerAuth 2.0 Client - imagine the Mobile banking as an example application.
 
-<img src="./powerauth-client-activation.png" width="100%"/>
+<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth-client-activation.png" width="100%"/>
 
 
 ## Activation Flow - Sequence Diagram
@@ -97,7 +98,7 @@ Following diagram shows example steps in PowerAuth 2.0 Client - imagine the Mobi
 The sequence diagram below explains the PowerAuth 2.0 key exchange. It shows how PowerAuth 2.0 Client, Intermediate Server Application, Master Front-End Application and PowerAuth 2.0 Server play together in order to establish a shared secret between the client application and PowerAuth Server.
 
 //TODO: Review the diagram
-<img src="./powerauth.png" width="100%"/>
+<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth.png" width="100%"/>
 
 ## Activation Flow - Description
 
@@ -200,15 +201,49 @@ For this reason, PowerAuth 2.0 establishes the concept of derived keys. Each der
 
 Following specific derived keys are reserved for the PowerAuth 2.0:
 
-- Request signing key: `KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)`
-- Data transport key: `KEY_TRANSPORT = KDF(KEY_MASTER_SECRET, 2)`
+### Request signing keys
 
-Client application may use these defined keys to deduce additional derived shared keys in order to get more fine-graned control over the security domain. For example, it may use `KEY_SIGNATURE` as a signature master key and deduce different security domains for signatures:
+#### Related to "possession factor"
 
-- Weakly stored request signing key: `KEY_SIGNATURE_WEAK = KDF(KEY_SIGNATURE, 1)`
-- Strongly stored request signing key: `KEY_SIGNATURE_STRONG = KDF(KEY_SIGNATURE, 2)`
+First key used for signature computing, related to the "possession factor" in M-FA, deduced as:
 
-This, however, is not covered in PowerAuth 2.0 specification - for this version, only shared secrets for domains mentioned above are defined (request signing key, data transport key).
+`KEY_SIGNATURE_POSSESSION = KDF(KEY_MASTER_SECRET, 1)`
+
+#### Related to "knowledge factor"
+
+Second key used for signature computing, related to the "knowledge factor" in M-FA, deduced as:
+
+`KEY_SIGNATURE_KNOWLEDGE = KDF(KEY_MASTER_SECRET, 2)`
+
+#### Related to "biometry factor"
+
+First key used for signature computing, related to the "inherence factor" in M-FA, deduced as:
+
+`KEY_SIGNATURE_BIOMETRY = KDF(KEY_MASTER_SECRET, 3)`
+
+### Master transport key
+
+Key used for transferring an activation record status blob, deduced as:
+
+`KEY_TRANSPORT = KDF(KEY_MASTER_SECRET, 1000)`
+
+### Encrypted vault
+
+#### Vault encryption key transport key
+
+Transport key used for transferring an encryption key for vault encryption `KEY_ENCRYPTION_VAULT`. It is deduced using the master transport key and counter (same one as the one used for authentication of the request that unlocks the key).
+
+`KEY_ENCRYPTION_VAULT_TRANSPORT = KDF(KEY_TRANSPORT, CTR)`
+
+#### Vault encryption key
+
+An encryption key used for storing the original private key `KEY_DEVICE_PRIVATE`, deduced as:
+
+`KEY_ENCRYPTION_VAULT = KDF(KEY_MASTER_SECRET, 1)`
+
+This key must not be stored on the PowerAuth 2.0 Client at all. It must be sent upon successful authentication from PowerAuth 2.0 Server. The `KEY_ENCRYPTION_VAULT` is sent from the server encrypted using one-time transport key `KEY_ENCRYPTION_VAULT_TRANSPORT` key (see above):
+
+`C_KEY_ENCRYPTION_VAULT = AES.encrypt(KEY_ENCRYPTION_VAULT, ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
 
 # PowerAuth Signature
 
@@ -218,11 +253,52 @@ In practical deployment, Intermediate Server Application is responsible for buil
 
 ## Computing the signature
 
-The PowerAuth 2.0 signature is a number with 10 digits that is obtained in following manner:
+PowerAuth 2.0 signature is in principle multi-factor - it uses all keys as defined in "PowerAuth Key Derivation" chapter. The signature may include one, two or three factors, therefore achieving 1FA, 2FA or 3FA. In order to determine the type of the signature, following constants are used:
 
-- `byte[] KEY_DERIVED = Mac.HMAC_SHA256(KEY_SIGNATURE, CTR)`
-- `byte[] SIGNATURE_LONG = Mac.HMAC_SHA256(DATA, KEY_DERIVED)`
-- `int SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) & 0x7FFFFFFF) % (10^10)`
+- `possession` - Signature uses only possession related key KEY_SIGNATURE_POSSESSION.
+- `knowledge` - Signature uses only knowledge related key KEY_SIGNATURE_KNOWLEDGE.
+- `biometry` - Signature uses only biometry related key KEY_SIGNATURE_BIOMETRY.
+- `possession_knowledge` - Signature uses two keys: a possession related key KEY_SIGNATURE_POSSESSION and then knowledge related key KEY_SIGNATURE_KNOWLEDGE.
+- `possession_biometry` - Signature uses two keys: a possession related key KEY_SIGNATURE_POSSESSION and then biometry related key KEY_SIGNATURE_BIOMETRY.
+- `possession_knowledge_biometry` - Signature uses three keys: a possession related key KEY_SIGNATURE_POSSESSION, then knowledge related key KEY_SIGNATURE_KNOWLEDGE, and finally biometry related key KEY_SIGNATURE_BIOMETRY.
+
+When using more than one factor / key, the keys are added additively in the signature algorithm, so that the factors can be validated individually. The resulting PowerAuth 2.0 signature is a sequence of one to three numeric strings with 8 digits (each sequence is separated by "-" character) that is obtained in following manner:
+
+```java
+/**
+ * Compute the signature for given data using provided keys and current counter.
+ * @param data - data to be signed
+ * @param signatureKey - array of symmetric keys used for signature
+ * @param CTR - counter
+ */
+public String computeSignature(byte[] data, Array<SecretKey> signatureKeys, int CTR) {
+
+	// ... compute signature components
+	String[] signatureComponents = new String[signatureKeys.count()];
+	for (int i = 0; i < signatureKeys.count(); i++) {
+		byte[] KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(0));
+		byte[] KEY_DERIVED = Mac.HMAC_SHA256(KEY_SIGNATURE, CTR);
+
+		// ... compute signature key using more than one keys, at most 2 extra keys
+		// ... this skips the key with index 0 when i == 0
+		for (int j = 0; j < i; j++) {
+			KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(j + 1));
+			KEY_DERIVED_CURRENT = Mac.HMAC_SHA256(KEY_SIGNATURE, CTR);
+			KEY_DERIVED = Mac.HMAC_SHA256(KEY_DERIVED, KEY_DERIVED_CURRENT);
+		}
+
+		// ... sign the data
+		byte[] SIGNATURE_LONG = Mac.HMAC_SHA256(DATA, KEY_DERIVED);
+
+		// ... decimalize the signature component
+		int signComponent = (TRUNCATE(SIGNATURE_LONG, 4) & 0x7FFFFFFF) % Math.pow(10,8);
+		signatureComponents[i] = String.valueOf(signComponent);
+	}
+
+	// ... join the signature component using "-" character.
+	return String.join("-", signatureComponents);
+}
+```
 
 PowerAuth 2.0 Client sends the signature in the HTTP `X-PowerAuth-Authorization` header:
 
@@ -231,7 +307,8 @@ X-PowerAuth-Authorization: PowerAuth
 	pa_activationId="hbG9duZ19gyYaW5kb521fYWN0aXZhdGlvbl9JRaA",
 	pa_applicationId="Z19gyYaW5kb521fYWN0aXZhdGlvbl9JRaAhbG9du",
 	pa_nonce="kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
-	pa_signature="1234567890",
+	pa_signature_type="possession_knowledge_biometry"
+	pa_signature="12345678-12345678-12345678",
 	pa_version="2.0"
 ```
 ## Normalized data for HTTP requests
@@ -269,23 +346,25 @@ PowerAuth 2.0 Server can validate the signature using the following mechanism:
 1. Obtain `KEY_SERVER_PRIV` and `KEY_DEVICE_PUB` from the record.
 1. Compute `KEY_MASTER_SECRET`.
 	- `KEY_MASTER_SECRET = ECDH(KEY_SERVER_PRIV, KEY_DEVICE_PUB)`
-1. Compute `KEY_SIGNATURE`.
-	- `KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)`
+1. Compute required signature keys (`KEY_SIGNATURE_POSSESSION`, `KEY_SIGNATURE_KNOWLEDGE` or `KEY_SIGNATURE_BIOMETRY`).
+	- see "PowerAuth Key Derivation" section.
 1. Compute the expected signature for obtained data and check if the expected signature matches the one sent with the client. Since the PowerAuth 2.0 Client may be ahead with counter from PowerAuth 2.0 Server, server should try couple extra indexes ahead:
 
 ```
-		VERIFIED = false
+		// input: CTR, TOLERANCE, data and signatureKeys
+		boolean VERIFIED = false
 		for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER < CRT + TOLERANCE) {
-			KEY_DERIVED = HMAC_SHA256(KEY_SIGNATURE, CTR_ITER)
-			SIGNATURE_LONG = HMAC_SHA256(DATA, KEY_DERIVED)
-			SIGNATURE = (TRUNCATE(SIGNATURE_LONG, 4) & 0x7FFFFFFF) % (10^10)
-			if (SIGNATURE == SIGNATURE_PROVIDED && !VERIFIED) {
+			//... compute signature for given CTR_ITER, data and signature keys (see the algorithm above)
+			String SIGNATURE = computeSignature(data, signatureKeys, CTR_ITER);
+			if (SIGNATURE.equals(SIGNATURE_PROVIDED) && !VERIFIED) {
 				VERIFIED = true
 				CTR = CTR_ITER
 			}
 		}
-		return VERIFIED
+		return VERIFIED;
 ```
+
+Additionally, server may implement partial signature validation - basically evaluate each signature component separately. This may be used to determine if failed attempt counter should be decremented or not (since this allows distinguishing attacker who has a physical access to the PowerAuth 2.0 Client from attacker who randomly guesses signature).
 
 # PowerAuth Standard API
 
