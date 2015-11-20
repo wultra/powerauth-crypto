@@ -1,4 +1,4 @@
-# PowerAuth 2.0 Specification
+# PowerAuth 2.0
 
 PowerAuth 2.0 is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or identity management applications. It defines all items that are required for a complete security solution: a used cryptography, a security scheme and standard RESTful API end-points.
 
