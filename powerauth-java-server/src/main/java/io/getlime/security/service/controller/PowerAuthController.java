@@ -49,7 +49,7 @@ public class PowerAuthController {
         return new RESTResponseWrapper<>("OK", powerAuthService.commitActivation(request.getRequestObject()));
     }
 
-    @RequestMapping(value = "activation/status", method = RequestMethod.GET)
+    @RequestMapping(value = "activation/status", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<GetActivationStatusResponse> getActivationStatus(@RequestBody RESTRequestWrapper<GetActivationStatusRequest> request) throws Exception {
         return new RESTResponseWrapper<>("OK", powerAuthService.getActivationStatus(request.getRequestObject()));
     }
@@ -59,7 +59,7 @@ public class PowerAuthController {
         return new RESTResponseWrapper<>("OK", powerAuthService.removeActivation(request.getRequestObject()));
     }
 
-    @RequestMapping(value = "activation/list", method = RequestMethod.GET)
+    @RequestMapping(value = "activation/list", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<GetActivationListForUserResponse> getActivatioListForUser(@RequestBody RESTRequestWrapper<GetActivationListForUserRequest> request) throws Exception {
         return new RESTResponseWrapper<>("OK", powerAuthService.getActivatioListForUser(request.getRequestObject()));
     }
