@@ -1,5 +1,7 @@
 # Implementation Notes
 
+Following implementation notes use simplified Java code with definitions from the "Definitions" section or a simple pseudo-code to get the point across quicker.
+
 ## Used Cryptography
 
 A PowerAuth 2.0 key exchange mechanism is based on **ECDH** key exchange algorithm with **P256r1 curve**. Additionally, an **ECDSA** (more specifically, **SHA256withECDSA** algorighm) is used for signing data sent from the service provider using a provider's Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0 (later on, each signature attempt increments this counter). The PowerAuth 2.0 signature is computed using data, shared master secret and counter using the **HMAC** algorithm.
@@ -8,35 +10,48 @@ A PowerAuth 2.0 key exchange mechanism is based on **ECDH** key exchange algorit
 
 KDF (Key Derivation Function) is an algorithm used for deriving a secret key from a master secret key using a pseudo-random function. In case of PowerAuth 2.0 protocol, following implementation is used:
 
-- `// KDF(KEY_MASTER, INDEX) => KEY_SECRET_index`
-- `byte[] KEY_SECRET_index = AES(index ⊕ 0x0000..., KEY_MASTER)`
+```java
+public SecretKey kdfDeriveSecretKey(SecretKey secret, long index) {
+    byte[] bytes = ByteBuffer.allocate(16).putLong(index).array();
+    byte[] iv = new byte[16];
+    byte[] encryptedBytes = AES.encrypt(bytes, iv, secret);
+    return new KeyConversion.secretKeyFromBytes(encryptedBytes);
+}
+```
 
 ## Activation ID
 
 The `ACTIVATION_ID` must be in principle long, universally unique, random and with a temporary validity. UUID level 4 is therefore the selected format of this ID.
 
-	DO {
-		ACTIVATION_ID = UUID_GEN()
-		COUNT = SELECT COUNT(\*) FROM ACTIVATION WHERE ACTIVATION.ID = ACTIVATION_ID
-	} WHILE (COUNT > 0);
+```sql
+DO {
+    ACTIVATION_ID = UUID_GEN()
+		COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE ACTIVATION.ID = ACTIVATION_ID
+} WHILE (COUNT > 0);
+```
 
 Example of activation ID:
 
-	c564e700-7e86-4a87-b6c8-a5a0cc89683f
+```
+c564e700-7e86-4a87-b6c8-a5a0cc89683f
+```
 
 _Note: A single UUID for an activation in CREATED state must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most)._
 
 Since the UUID is too long and inconvenient for practical applications, `ACTIVATION_ID` is exchanged between client and server automatically, using `ACTIVATION_ID_SHORT` - a shorter and more convenient identifier of an activation. This is the identifier user can rewrite or scan via the QR code.  `ACTIVATION_ID_SHORT` is a Base32 string, 2x 5 characters:
 
-	DO {
+```sql
+DO {
 		ACTIVATION_ID_SHORT = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
-		COUNT = SELECT COUNT(\*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.ID_SHORT = ACTIVATION_ID_SHORT
-	} WHILE (COUNT > 0);
-
+		COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.ID_SHORT = ACTIVATION_ID_SHORT
+} WHILE (COUNT > 0);
+```
 
 Example of short activation ID:
 
-	XDA57-24TBC
+```
+XDA57-24TBC
+```
 
 ## Application ID and Application Secret
 
@@ -52,11 +67,15 @@ Application secret is a part of the PowerAuth signature (sent in `pa_signature`)
 
 The `ACTIVATION_OTP` is a Base32 string, 2 x 5 characters:
 
-	ACTIVATION_OTP = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
+```
+ACTIVATION_OTP = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
+```
 
 Example of activation OTP:
 
-	TB24C-A57XD
+```
+TB24C-A57XD
+```
 
 This format matches the `ACTIVATION_ID_SHORT` format.
 
@@ -66,11 +85,15 @@ _Note: A single `ACTIVATION_OTP` must be valid only for a limited period of time
 
 Entering `ACTIVATION_ID_SHORT`, `ACTIVATION_OTP` and `ACTIVATION_SIGNATURE` can be expedited for example by using QR code for the storage. PowerAuth 2.0 defines using following format of information:
 
-	${ACTIVATION_ID_SHORT}-${ACTIVATION_OTP}#${ACTIVATION_SIGNATURE}
+```
+${ACTIVATION_ID_SHORT}-${ACTIVATION_OTP}#${ACTIVATION_SIGNATURE}
+```
 
 Example concatenated string:
 
-	XDA57-24TBC-TB24C-A57XD#1234567890
+```
+XDA57-24TBC-TB24C-A57XD#1234567890
+```
 
 ## Generating Key Pairs
 

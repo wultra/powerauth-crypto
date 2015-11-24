@@ -1,6 +1,6 @@
 # Basic definitions
 
-The goal of this chapter is to define used functions related to cryptography and data manipulation. The definitions crafted in this chapter are then used in pseudo-codes in documentation.
+The goal of this chapter is to define used functions related to cryptography and data manipulation. The definitions crafted in this chapter are then used in pseudo-codes in documentation. You can learn more about actual implementation of following functions in the "Implementation Notes" section.
 
 ## Cryptographic functions
 
@@ -16,6 +16,8 @@ Following basic cryptography algorithms and parameters are used in the PowerAuth
 	- `boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKey)` - verify the signature for given data using a given public key.
 - **ECDH** - An algorithm for elliptic curve with Diffie-Helman key exchange, uses P256r1 curve. We define single operation on ECDH, a symmetric key deduction between parties A and B:
 	- `SecretKey secretKey = ECDH.phase(PrivateKey privateKeyA, PublicKey publicKeyB)`
+- **KDF** - A key derivation function used to derive a symmetric key with specific "index" from a given master key. Uses AES algorithm with zero initialization vector to derive the new key in following way: `index` is converted to bytes, XORed with a 16 byte long zero array (to get 16 byte long array with bytes from the index) and AES encrypted using provided symmetric key `masterKey`.
+	- `SecretKey derivedKey = KDF.derive(SecretKey masterKey, long index)`
 
 ## Helper functions
 
