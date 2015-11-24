@@ -27,7 +27,7 @@ CREATE TABLE `pa_master_keypair` (
   `master_key_private_base64` varchar(255) NOT NULL,
   `master_key_public_base64` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
-  `timestamp_created` bigint(20) NOT NULL,
+  `timestamp_created` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -41,4 +41,4 @@ CREATE TABLE `pa_master_keypair` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-10 15:26:19
+-- Dump completed on 2015-11-24 22:44:12

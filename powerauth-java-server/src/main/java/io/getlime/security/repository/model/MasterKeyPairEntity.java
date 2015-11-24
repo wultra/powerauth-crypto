@@ -16,6 +16,7 @@
 package io.getlime.security.repository.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,12 +43,12 @@ public class MasterKeyPairEntity implements Serializable {
     private String masterKeyPublicBase64;
 
     @Column(nullable = false)
-    private Long timestampCreated;
+    private Date timestampCreated;
 
     protected MasterKeyPairEntity() {
     }
 
-    public MasterKeyPairEntity(Long id, String name, String masterKeyPrivateBase64, String masterKeyPublicBase64, Long timestampCreated) {
+    public MasterKeyPairEntity(Long id, String name, String masterKeyPrivateBase64, String masterKeyPublicBase64, Date timestampCreated) {
         this.id = id;
         this.name = name;
         this.masterKeyPrivateBase64 = masterKeyPrivateBase64;
@@ -87,11 +88,11 @@ public class MasterKeyPairEntity implements Serializable {
         this.masterKeyPublicBase64 = masterKeyPublicBase64;
     }
 
-    public Long getTimestampCreated() {
+    public Date getTimestampCreated() {
         return timestampCreated;
     }
 
-    public void setTimestampCreated(Long timestampCreated) {
+    public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
     }
 
