@@ -17,7 +17,7 @@ PowerAuth 2.0 Client sends a short activation ID, it's public key encrypted usin
 - `id` - Represents an `ACTIVATION_ID_SHORT` value (first half of an activation code).
 - `activationNonce` - Represents an activation nonce, used as an IV for AES encryption.
 - `cDevicePublicKey` - Represents a public key `KEY_DEVICE_PUBLIC` AES encrypted with `ACTIVATION_OTP`
-	- `cDevicePublicKey = AES(KEY_DEVICE_PUBLIC, activationNonce, ACTIVATION_OTP)`
+	- `cDevicePublicKey = AES.encrypt(KEY_DEVICE_PUBLIC, activationNonce, ACTIVATION_OTP)`
 - `clientName` - Visual representation of the device, for example "Johnny's iPhone" or "Samsung Galaxy S".
 
 PowerAuth 2.0 Server responds with an activation ID, public key encrypted using the activation OTP and device public key (for technical reasons, an ephemeral key is used here), and signature of this encrypted key created with the server's private master key:
@@ -26,19 +26,19 @@ PowerAuth 2.0 Server responds with an activation ID, public key encrypted using 
 - `ephemeralPublicKey` - A technical component for AES encryption - a public component of the on-the-fly generated key pair.
 - `activationNonce` - Represents an activation nonce, used as an IV for AES encryption.
 - `cServerPublicKey` - Encrypted public key `KEY_SERVER_PUBLIC` of the server.
-	- `EPH_KEY = ECDH(ephemeralPrivateKey, KEY_DEVICE_PUBLIC)`
-	- `cServerPublicKey = AES(AES(KEY_SERVER_PUBLIC, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
-- `cServerPublicKeySignature = ECDSA(cServerPublicKey, KEY_SERVER_MASTER_PRIVATE)`
+	- `SharedKey EPH_KEY = ECDH.phase(ephemeralPrivateKey, KEY_DEVICE_PUBLIC)`
+	- `byte[] cServerPublicKey = AES.encrypt(AES.encrypt(KEY_SERVER_PUBLIC, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
+- `byte[] cServerPublicKeySignature = ECDSA.sign(cServerPublicKey, KEY_SERVER_MASTER_PRIVATE)`
 
 After receiving the response, PowerAuth 2.0 Client verifies cSeverPublicKeySignature using server's public master key `KEY_SERVER_MASTER_PUBLIC` (optional) and decrypts server public key using it's private `ACTIVATION_OTP`.
 
-- `signatureOK = ECDSA^inverse(cServerPublicKey, KEY_SERVER_MASTER_PUBLIC)`
-- `EPH_KEY = ECDH(KEY_DEVICE_PRIVATE, ephemeralPublicKey)`
-- `serverPublicKey = AES^inverse(AES^inverse(cServerPublicKey, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
+- `signatureOK = ECDSA.verify(cServerPublicKey, cServerPublicKeySignature, KEY_SERVER_MASTER_PUBLIC)`
+- `EPH_KEY = ECDH.phase(KEY_DEVICE_PRIVATE, ephemeralPublicKey)`
+- `serverPublicKey = AES.decrypt(AES.decrypt(cServerPublicKey, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
 
 Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 
-- `KEY_MASTER_SECRET = ECDH(KEY_DEVICE_PRIVATE, serverPublicKey)`
+- `KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE, serverPublicKey)`
 
 <table>
 	<tr>
@@ -90,27 +90,29 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 
 Get the status of an activation with given activation ID. The PowerAuth 2.0 Server response contains an activation status blob that is AES encrypted with `KEY_TRANSPORT`.
 
-- `cStatusBlob = AES(statusBlob, KEY_TRANSPORT)`
+- `cStatusBlob = AES.encrypt(statusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT)`
 
 PowerAuth 2.0 Client can later trivially decrypt the original status blob:
 
-- `statusBlob = AES^inverse(cStatusBlob, KEY_TRANSPORT)`
+- `statusBlob = AES.decrypt(cStatusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT)`
 
 Structure of the status blob is following:
 
+```java
 	0xDE 0xAD 0xBE 0xEF 1B:${STATUS} 4B:${CTR} 7B:${RANDOM_NOISE}
+```
 
 where:
 
-- The first 4 bytes (0xDE 0xAD 0xBE 0xEF) are basically a fixed prefix.
-- ${STATUS} - A status of the activation record, it can be one of following values:
-	- 0x01 - CREATED
-	- 0x02 - OTP_USED
-	- 0x03 - ACTIVE
-	- 0x04 - BLOCKED
-	- 0x05 - REMOVED
-- ${CTR} - 4 bytes representing information of the server counter (CTR value, as defined in PowerAuth 2.0 specification).
-- ${RANDOM_NOISE} - Random 7 byte padding, a complement to the total length of 16B. These bytes also serve as a source of entropy for the transport (AES encrypted cStatusBlob will be different each time an endpoint is called).
+- The first 4 bytes (`0xDE 0xAD 0xBE 0xEF`) are basically a fixed prefix.
+- `${STATUS}` - A status of the activation record, it can be one of following values:
+	- `0x01 - CREATED`
+	- `0x02 - OTP_USED`
+	- `0x03 - ACTIVE`
+	- `0x04 - BLOCKED`
+	- `0x05 - REMOVED`
+- `${CTR}` - 4 bytes representing information of the server counter (CTR value, as defined in PowerAuth 2.0 specification).
+- `${RANDOM_NOISE}` - Random 7 byte padding, a complement to the total length of 16B. These bytes also serve as a source of entropy for the transport (AES encrypted cStatusBlob will be different each time an endpoint is called).
 
 <table>
 	<tr>
@@ -190,5 +192,62 @@ Remove an activation with given ID, set it's status to REMOVED. Activation can b
 ```json
 		{
 			"status": "OK"
+		}
+```
+
+## Vault unlock
+
+Get the vault unlock key in order to decrypt data stored in the vault, for example the original `KEY_DEVICE_PRIVATE`.
+
+PowerAuth 2.0 Client sends an authenticated request using a short activation ID - authentication is carried around using the standard PowerAuth 2.0 signature.
+
+In response, PowerAuth 2.0 Server sends a `KEY_ENCRYPTION_VAULT` key encrypted using `KEY_ENCRYPTION_VAULT_TRANSPORT` key associated with given counter (derived from the `KEY_TRANSPORT` master key, see the `PowerAuth Key Derivation` chapter for details).
+
+- `cVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
+
+PowerAuth 2.0 Client can later decrypt the key using the inverse mechanism:
+
+- `cVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
+
+_Note: Both the signature calculation / validation and `KEY_ENCRYPTION_VAULT_TRANSPORT` key derivation should increase the counter `CTR`! In other words, if signature uses value of `CTR = N`, key derivation should use `CTR = N + 1`. For technical reason, the client should compute the `KEY_ENCRYPTION_VAULT_TRANSPORT` ahead - we need to assure that only server may be behind the client with a `CTR` value, not vice versa._
+
+<table>
+	<tr>
+		<td>Method</td>
+		<td><code>POST</code></td>
+	</tr>
+	<tr>
+		<td>Resource URI</td>
+		<td><code>/pa/vault/unlock</code></td>
+	</tr>
+</table>
+
+### Request
+
+- Headers:
+	- Content-Type: application/json
+	- X-PowerAuth-Authorization: PowerAuth ...
+
+```json
+		{
+			"requestObject": {
+				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+			}
+		}
+```
+
+### Response
+
+- Status Code: 200
+- Headers:
+	- Content-Type: application/json
+
+```json
+		{
+			"status": "OK",
+			"responseObject": {
+				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+				"cVaultEncryptionKey": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+			}
 		}
 ```
