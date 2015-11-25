@@ -92,3 +92,11 @@ This key must not be stored on the PowerAuth 2.0 Client at all. It must be sent 
 ```java
 byte[] C_KEY_ENCRYPTION_VAULT = AES.encrypt(KEY_ENCRYPTION_VAULT, ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)
 ```
+
+The primary use-case for having an encrypted vault is storage of the original device primary key `KEY_DEVICE_PRIVATE`. This key should be stored on the device in a following way just after the activation:
+
+```java
+byte[] C_KEY_DEVICE_PRIVATE = AES.encrypt(KEY_DEVICE_PRIVATE, ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT)
+```
+
+Since `KEY_ENCRYPTION_VAULT` is not stored on the client side, it must be fetched using authenticated request on server for decryption. Once server verifies the authentication status (signature matches) and returns encrypted `C_KEY_ENCRYPTION_VAULT` key, client can decrypt it using `KEY_ENCRYPTION_VAULT_TRANSPORT` and then decrypt `KEY_DEVICE_PRIVATE`.
