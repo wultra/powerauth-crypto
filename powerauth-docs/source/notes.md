@@ -210,21 +210,36 @@ Following keys are used for the PowerAuth cryptography scheme.
 	<tr>
 		<td><code>KEY_MASTER_SECRET</code></td>
 		<td>ECDH - pre-shared</td>
-		<td>A key deduced using ECDH derivation, <code>KEY_MASTER_SECRET = (KEY_DEVICE_PRIVATE,KEY_SERVER_PUBLIC) = (KEY_SERVER_PRIVATE,KEY_DEVICE_PUBLIC)</code></td>
+		<td>A key deduced using ECDH derivation, <code>KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE,KEY_SERVER_PUBLIC) = ECDH.phase(KEY_SERVER_PRIVATE,KEY_DEVICE_PUBLIC)</code></td>
 	</tr>
 	<tr>
-		<td><code>KEY_SIGNATURE</code></td>
+		<td><code>KEY_SIGNATURE_POSSESSION</code></td>
 		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
-		<td>A key deduced using KDF derivation with <code>INDEX = 1</code>, <code>KEY_SIGNATURE = KDF(KEY_MASTER_SECRET, 1)</code>, used for subsequent request signing</td>
+		<td>A signing key associated with the possession, factor deduced using KDF derivation with <code>INDEX = 1</code>, <code>KEY_SIGNATURE_POSSESSION = KDF.expand(KEY_MASTER_SECRET, 1)</code>, used for subsequent request signing</td>
+	</tr>
+  <tr>
+		<td><code>KEY_SIGNATURE_KNOWLEDGE</code></td>
+		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
+		<td>A key associated with the knowledge factor, deduced using KDF derivation with <code>INDEX = 2</code>, <code>KEY_SIGNATURE_KNOWLEDGE = KDF.expand(KEY_MASTER_SECRET, 2)</code>, used for subsequent request signing</td>
+	</tr>
+  <tr>
+		<td><code>KEY_SIGNATURE_BIOMETRY</code></td>
+		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
+		<td>A key associated with the biometry factor, deduced using KDF derivation with <code>INDEX = 3</code>, <code>KEY_SIGNATURE_BIOMETRY = KDF.expand(KEY_MASTER_SECRET, 3)</code>, used for subsequent request signing</td>
 	</tr>
 	<tr>
 		<td><code>KEY_TRANSPORT</code></td>
 		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
-		<td>A key deduced using KDF derivation with <code>INDEX = 1000</code>, <code>KEY_TRANSPORT = KDF(KEY_MASTER_SECRET, 1000)</code>, used for encrypted data transport</td>
+		<td>A key deduced using KDF derivation with <code>INDEX = 1000</code>, <code>KEY_TRANSPORT = KDF.expand(KEY_MASTER_SECRET, 1000)</code>, used for encrypted data transport</td>
 	</tr>
 	<tr>
 		<td><code>KEY_ENCRYPTION_VAULT</code></td>
 		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
-		<td>A key deduced using KDF derivation with <code>INDEX = 2000</code>, <code>KEY_ENCRYPTION_VAULT = KDF(KEY_MASTER_SECRET, 2000)</code>, used for encrypted data transport</td>
+		<td>A key deduced using KDF derivation with <code>INDEX = 2000</code>, <code>KEY_ENCRYPTION_VAULT = KDF.expand(KEY_MASTER_SECRET, 2000)</code>, used for encrypting a vault that stores the secret data, such as <code>KEY_DEVICE_PRIVATE</code>.</td>
+	</tr>
+  <tr>
+		<td><code>KEY_ENCRYPTION_VAULT_TRANSPORT</code></td>
+		<td>KDF derived key from <code>KEY_TRANSPORT</code> using <code>CTR</code> as index.</td>
+		<td>A one-time key used for encrypted transport of the key vault encryption, deduced using KDF derivation with <code>INDEX = CTR</code>, <code>KEY_TRANSPORT = KDF.expand(KEY_MASTER_SECRET, CTR)</code></td>
 	</tr>
 </table>

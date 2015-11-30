@@ -199,7 +199,7 @@ Remove an activation with given ID, set it's status to REMOVED. Activation can b
 
 Get the vault unlock key in order to decrypt data stored in the vault, for example the original `KEY_DEVICE_PRIVATE`.
 
-PowerAuth 2.0 Client sends an authenticated request using a short activation ID - authentication is carried around using the standard PowerAuth 2.0 signature.
+PowerAuth 2.0 Client sends an authenticated request using an activation ID - authentication is carried around using the standard PowerAuth 2.0 signature with at least 2 factors (2FA).
 
 In response, PowerAuth 2.0 Server sends a `KEY_ENCRYPTION_VAULT` key encrypted using `KEY_ENCRYPTION_VAULT_TRANSPORT` key associated with given counter (derived from the `KEY_TRANSPORT` master key, see the `PowerAuth Key Derivation` chapter for details).
 

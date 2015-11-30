@@ -141,3 +141,5 @@ To describe the steps more precisely, the activation process is performed in fol
 1. Master Front-End Application allows completion of the activation - for example, it may ask user to enter a code delivered via an SMS message. Master Front-End Application technically commits the activation by calling PowerAuth 2.0 Server (via Intermediate Server Application).
 
 1. Record associated with given `ACTIVATION_ID` is now in `ACTIVE` state.
+
+After completing the activation, client must store derived keys and throw away unencrypted device private key and key master secret. Only the derived keys should be stored on the device according to the description in "PowerAuth Key Derivation" chapter.

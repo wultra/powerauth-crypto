@@ -8,6 +8,8 @@ For this reason, PowerAuth 2.0 establishes the concept of derived keys. Each der
 SecretKey KEY_DERIVED = KDF.derive(KEY_MASTER_SECRET, INDEX)
 ```
 
+PowerAuth 2.0 Client is supposed to store only these derived keys and a server public key. Saying the same information more explicitly, PowerAuth 2.0 Client must not store `KEY_MASTER_SECRET` or `KEY_DEVICE_PRIVATE` unencrypted. The `KEY_DEVICE_PRIVATE` is stored in encrypted vault - see the "Encrypted vault" section of this chapter. As a result, storing `KEY_MASTER_SECRET` is not necessary.
+
 ## Reserved derived keys
 
 Following specific derived keys are reserved for the PowerAuth 2.0:
@@ -87,7 +89,7 @@ An encryption key used for storing the original private key `KEY_DEVICE_PRIVATE`
 SecretKey KEY_ENCRYPTION_VAULT = KDF.derive(KEY_MASTER_SECRET, 2000)
 ```
 
-This key must not be stored on the PowerAuth 2.0 Client at all. It must be sent upon successful authentication from PowerAuth 2.0 Server. The `KEY_ENCRYPTION_VAULT` is sent from the server encrypted using one-time transport key `KEY_ENCRYPTION_VAULT_TRANSPORT` key (see above):
+This key must not be stored on the PowerAuth 2.0 Client at all. It must be sent upon successful 2FA or 3FA authentication from PowerAuth 2.0 Server. The `KEY_ENCRYPTION_VAULT` is sent from the server encrypted using one-time transport key `KEY_ENCRYPTION_VAULT_TRANSPORT` key (see above):
 
 ```java
 byte[] C_KEY_ENCRYPTION_VAULT = AES.encrypt(KEY_ENCRYPTION_VAULT, ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)

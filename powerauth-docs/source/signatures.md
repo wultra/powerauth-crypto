@@ -8,12 +8,15 @@ In practical deployment, Intermediate Server Application is responsible for buil
 
 PowerAuth 2.0 signature is in principle multi-factor - it uses all keys as defined in "PowerAuth Key Derivation" chapter. The signature may include one, two or three factors, therefore achieving 1FA, 2FA or 3FA. In order to determine the type of the signature, following constants are used:
 
-- `possession` - Signature uses only possession related key KEY_SIGNATURE_POSSESSION.
-- `knowledge` - Signature uses only knowledge related key KEY_SIGNATURE_KNOWLEDGE.
-- `biometry` - Signature uses only biometry related key KEY_SIGNATURE_BIOMETRY.
-- `possession_knowledge` - Signature uses two keys: a possession related key KEY_SIGNATURE_POSSESSION and then knowledge related key KEY_SIGNATURE_KNOWLEDGE.
-- `possession_biometry` - Signature uses two keys: a possession related key KEY_SIGNATURE_POSSESSION and then biometry related key KEY_SIGNATURE_BIOMETRY.
-- `possession_knowledge_biometry` - Signature uses three keys: a possession related key KEY_SIGNATURE_POSSESSION, then knowledge related key KEY_SIGNATURE_KNOWLEDGE, and finally biometry related key KEY_SIGNATURE_BIOMETRY.
+- **1FA** - only a single factor is used
+	- `possession` - Signature uses only possession related key `KEY_SIGNATURE_POSSESSION`.
+	- `knowledge` - Signature uses only knowledge related key `KEY_SIGNATURE_KNOWLEDGE`.
+	- `biometry` - Signature uses only biometry related key `KEY_SIGNATURE_BIOMETRY`.
+- **2FA** - possession and one another factor is used
+	- `possession_knowledge` - Signature uses two keys: a possession related key `KEY_SIGNATURE_POSSESSION` and then knowledge related key KEY_SIGNATURE_KNOWLEDGE.
+	- `possession_biometry` - Signature uses two keys: a possession related key `KEY_SIGNATURE_POSSESSION` and then biometry related key KEY_SIGNATURE_BIOMETRY.
+- **3FA** - all three factors are used
+	- `possession_knowledge_biometry` - Signature uses three keys: a possession related key `KEY_SIGNATURE_POSSESSION`, then knowledge related key `KEY_SIGNATURE_KNOWLEDGE`, and finally biometry related key `KEY_SIGNATURE_BIOMETRY`.
 
 When using more than one factor / key, the keys are added additively in the signature algorithm, so that the factors can be validated individually. The resulting PowerAuth 2.0 signature is a sequence of one to three numeric strings with 8 digits (each sequence is separated by "-" character) that is obtained in following manner:
 
