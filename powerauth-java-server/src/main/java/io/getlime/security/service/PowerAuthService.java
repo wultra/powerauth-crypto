@@ -31,6 +31,8 @@ import io.getlime.security.powerauth.RemoveActivationRequest;
 import io.getlime.security.powerauth.RemoveActivationResponse;
 import io.getlime.security.powerauth.UnblockActivationRequest;
 import io.getlime.security.powerauth.UnblockActivationResponse;
+import io.getlime.security.powerauth.VaultUnlockRequest;
+import io.getlime.security.powerauth.VaultUnlockResponse;
 import io.getlime.security.powerauth.VerifySignatureRequest;
 import io.getlime.security.powerauth.VerifySignatureResponse;
 
@@ -53,5 +55,7 @@ public interface PowerAuthService {
     public BlockActivationResponse blockActivation(BlockActivationRequest request) throws Exception;
 
     public UnblockActivationResponse unblockActivation(UnblockActivationRequest request) throws Exception;
+    
+    public VaultUnlockResponse vaultUnlock(VaultUnlockRequest request) throws Exception;
 
 }

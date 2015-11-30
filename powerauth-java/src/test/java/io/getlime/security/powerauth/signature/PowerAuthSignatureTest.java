@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.powerauth.client.signature;
+package io.getlime.security.powerauth.signature;
 
+import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 import io.getlime.security.powerauth.server.signature.PowerAuthServerSignature;

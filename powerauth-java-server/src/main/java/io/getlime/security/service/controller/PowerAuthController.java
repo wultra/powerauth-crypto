@@ -38,6 +38,8 @@ import io.getlime.security.powerauth.RemoveActivationRequest;
 import io.getlime.security.powerauth.RemoveActivationResponse;
 import io.getlime.security.powerauth.UnblockActivationRequest;
 import io.getlime.security.powerauth.UnblockActivationResponse;
+import io.getlime.security.powerauth.VaultUnlockRequest;
+import io.getlime.security.powerauth.VaultUnlockResponse;
 import io.getlime.security.powerauth.VerifySignatureRequest;
 import io.getlime.security.powerauth.VerifySignatureResponse;
 import io.getlime.security.service.PowerAuthService;
@@ -92,6 +94,11 @@ public class PowerAuthController {
     @RequestMapping(value = "activation/unblock", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<UnblockActivationResponse> unblockActivation(@RequestBody RESTRequestWrapper<UnblockActivationRequest> request) throws Exception {
         return new RESTResponseWrapper<>("OK", powerAuthService.unblockActivation(request.getRequestObject()));
+    }
+    
+    @RequestMapping(value = "vault/unlock", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<VaultUnlockResponse> vaultUnlock(@RequestBody RESTRequestWrapper<VaultUnlockRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.vaultUnlock(request.getRequestObject()));
     }
 
 }

@@ -128,7 +128,15 @@ public class KeyConversionUtils {
      * @return An instance of the secret key by decoding from provided bytes.
      */
     public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) {
-        return new SecretKeySpec(bytesSecretKey, "AES/CBC/PKCS5Padding");
+    	if (bytesSecretKey.length == 32) { // make sure to use 128 bit key
+    		byte[] resultSecret = new byte[16];
+            for (int i = 0; i < 16; i++) {
+                resultSecret[i] = (byte) (bytesSecretKey[i] ^ bytesSecretKey[i + 16]);
+            }
+            return new SecretKeySpec(resultSecret, "AES/CBC/PKCS5Padding");
+    	} else {
+    		return new SecretKeySpec(bytesSecretKey, "AES/CBC/PKCS5Padding");
+    	}
     }
 
 }
