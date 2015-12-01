@@ -60,7 +60,7 @@ PowerAuth 2.0 Client sends the signature in the HTTP `X-PowerAuth-Authorization`
 
 ```http
 X-PowerAuth-Authorization: PowerAuth
-	pa_activationId="hbG9duZ19gyYaW5kb521fYWN0aXZhdGlvbl9JRaA",
+	pa_activationId="7a24c6e9-48e9-43c2-ab4a-aed6270e924d",
 	pa_applicationId="Z19gyYaW5kb521fYWN0aXZhdGlvbl9JRaAhbG9du",
 	pa_nonce="kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
 	pa_signature_type="possession_knowledge_biometry"
