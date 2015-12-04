@@ -531,52 +531,52 @@ _Pro tip: You may speed up your development by reusing the example project (for 
 
 1. Create a new class `ApiAuthenticationEntryPoint` extending `AuthenticationEntryPoint` that represents your authentication entry point. Our implementation simply returns an error response whenever someone tries to visit our API unauthenticated (on classic web, this usually is a place to redirect user to the login page).
 
-```java
-package io.getlime.banking.security.config;
+	```java
+	package io.getlime.banking.security.config;
 
-import java.io.IOException;
+	import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+	import javax.servlet.ServletException;
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.stereotype.Service;
+	import org.slf4j.Logger;
+	import org.slf4j.LoggerFactory;
+	import org.springframework.security.core.AuthenticationException;
+	import org.springframework.security.web.AuthenticationEntryPoint;
+	import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+	import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.getlime.banking.model.PowerAuthAPIResponse;
+	import io.getlime.banking.model.PowerAuthAPIResponse;
 
-@Service
-public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
+	@Service
+	public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-	private final Logger logger = LoggerFactory.getLogger(ApiAuthenticationEntryPoint.class);
+		private final Logger logger = LoggerFactory.getLogger(ApiAuthenticationEntryPoint.class);
 
-	@Override
-	public void commence(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException, ServletException {
+		@Override
+		public void commence(HttpServletRequest request, HttpServletResponse response,
+				AuthenticationException authException) throws IOException, ServletException {
 
-		try {
-			logger.error("An authentication exception was thrown.", authException);
+			try {
+				logger.error("An authentication exception was thrown.", authException);
 
-			PowerAuthAPIResponse<String> errorResponse = new PowerAuthAPIResponse<String>("ERROR",
-					"Authentication failed");
+				PowerAuthAPIResponse<String> errorResponse = new PowerAuthAPIResponse<String>("ERROR",
+						"Authentication failed");
 
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getOutputStream().println(new ObjectMapper().writeValueAsString(errorResponse));
-			response.getOutputStream().flush();
-		} catch (Exception e) {
-			throw authException;
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				response.getOutputStream().println(new ObjectMapper().writeValueAsString(errorResponse));
+				response.getOutputStream().flush();
+			} catch (Exception e) {
+				throw authException;
+			}
 		}
-	}
 
-}
-```
+	}
+	```
 
 1. Create a security configuration class `SecurityConfig` extending `WebSecurityConfigurerAdapter` in a `security.config` sub-package. The configuration we will use:
 
@@ -585,32 +585,32 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	- register your authentication entry point (if someone tries to visit our API without prior authentication, show error)
 	- secures all REST endpoints with `/secured/` prefix
 
-```java
-package io.getlime.banking.security.config;
+	```java
+	package io.getlime.banking.security.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.context.annotation.Configuration;
+	import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+	import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+	import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+	@Configuration
+	@EnableWebSecurity
+	public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private ApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
+	    @Autowired
+	    private ApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-    	http.authorizeRequests().antMatchers("/secured/**").fullyAuthenticated();
-    	http.httpBasic().disable();
-    	http.csrf().disable();
-    	http.exceptionHandling().authenticationEntryPoint(apiAuthenticationEntryPoint);
-    }
+	    @Override
+	    protected void configure(HttpSecurity http) throws Exception {
+	    	http.authorizeRequests().antMatchers("/secured/**").fullyAuthenticated();
+	    	http.httpBasic().disable();
+	    	http.csrf().disable();
+	    	http.exceptionHandling().authenticationEntryPoint(apiAuthenticationEntryPoint);
+	    }
 
-}
-```
+	}
+	```
 
 ## Implementing signature validation
 
