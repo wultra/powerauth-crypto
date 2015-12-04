@@ -1,4 +1,4 @@
-# PowerAuth Standard API
+# Standard PowerAuth RESTful API
 
 In order to assure a standard behavior of various PowerAuth 2.0 implementations, fixed endpoint and request/response structure between PowerAuth 2.0 Client and Intermediate Server Application is specified for the key exchange algorithm.
 
