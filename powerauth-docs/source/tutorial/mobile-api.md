@@ -210,7 +210,7 @@ _Pro tip: You may speed up your development by reusing the example project (for 
 	}
 	```
 
-	1. Create classes `VaultUnlockRequest` and `VaultUnlockResponse` in a `model` sub-package.
+1. Create classes `VaultUnlockRequest` and `VaultUnlockResponse` in a `model` sub-package.
 
 	```java
 	package io.getlime.banking.model;
