@@ -1,5 +1,7 @@
 package io.getlime.rest.api.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +15,8 @@ import io.getlime.rest.api.model.PowerAuthAPIRequest;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.model.VaultUnlockRequest;
 import io.getlime.rest.api.model.VaultUnlockResponse;
+import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
+import io.getlime.rest.api.util.PowerAuthUtil;
 
 @Controller
 @RequestMapping(value = "/pa/vault")
@@ -24,21 +28,21 @@ public class SecureVaultController {
 	@RequestMapping(value = "unlock", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<VaultUnlockResponse> unlockVault(
 			@RequestBody PowerAuthAPIRequest<VaultUnlockRequest> request, 
-			@RequestHeader(name = "X-PowerAuth-Signature", required = true) String signature) {
-		String activationId = request.getRequestObject().getActivationId();
+			@RequestHeader(name = "X-PowerAuth-Signature", required = true) String signature) throws PowerAuthAuthenticationException {
+		
+		Map<String, String> map = PowerAuthUtil.parsePowerAuthSignatureHTTPHeader(signature);
+		String activationId = map.get("activation_id");
 		
 		io.getlime.powerauth.soap.VaultUnlockRequest soapRequest = new io.getlime.powerauth.soap.VaultUnlockRequest();
 		soapRequest.setActivationId(activationId);
 		soapRequest.setSignature(null);
 		soapRequest.setSignatureType(null);
-		powerAuthClient.unlockVault(soapRequest);
 		
-		io.getlime.powerauth.soap.VaultUnlockResponse soapResponse = new io.getlime.powerauth.soap.VaultUnlockResponse();
+		io.getlime.powerauth.soap.VaultUnlockResponse soapResponse = powerAuthClient.unlockVault(soapRequest);
 		
-		// ... validate the activation information here
-		// if (!soapResponse.isSignatureValid()) {
-		//    // return error
-		// }
+		if (!soapResponse.isSignatureValid()) {
+			throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
+		}
 		
 		VaultUnlockResponse response = new VaultUnlockResponse();
 		response.setActivationId(soapResponse.getActivationId());

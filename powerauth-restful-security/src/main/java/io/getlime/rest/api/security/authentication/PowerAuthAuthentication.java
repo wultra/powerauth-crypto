@@ -5,7 +5,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 public class PowerAuthAuthentication extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 6495166873663643144L;
-
+	
 	private String activationId;
 	private String applicationSecret;
 	private String signature;
