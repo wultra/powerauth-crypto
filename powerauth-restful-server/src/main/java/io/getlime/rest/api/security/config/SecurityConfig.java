@@ -6,12 +6,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import io.getlime.rest.api.security.entrypoint.PowerAuthApiAuthenticationEntryPoint;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Autowired
-    private ApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
+    private PowerAuthApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

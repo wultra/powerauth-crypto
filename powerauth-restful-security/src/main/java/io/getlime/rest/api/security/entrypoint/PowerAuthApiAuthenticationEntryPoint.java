@@ -1,4 +1,4 @@
-package io.getlime.rest.api.security.config;
+package io.getlime.rest.api.security.entrypoint;
 
 import java.io.IOException;
 
@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 
 @Service
-public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class PowerAuthApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-	private final Logger logger = LoggerFactory.getLogger(ApiAuthenticationEntryPoint.class);
+	private final Logger logger = LoggerFactory.getLogger(PowerAuthApiAuthenticationEntryPoint.class);
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -28,8 +28,7 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		try {
 			logger.error("An authentication exception was thrown.", authException);
 
-			PowerAuthAPIResponse<String> errorResponse = new PowerAuthAPIResponse<String>("ERROR",
-					"Authentication failed");
+			PowerAuthAPIResponse<String> errorResponse = new PowerAuthAPIResponse<String>("ERROR", "Authentication failed");
 
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");

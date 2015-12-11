@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import io.getlime.banking.soap.client.PowerAuthServiceClient;
 import io.getlime.powerauth.soap.VerifySignatureRequest;
 import io.getlime.powerauth.soap.VerifySignatureResponse;
-import io.getlime.rest.api.security.authentication.ApiAuthentication;
+import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.authentication.PowerAuthAuthentication;
 import io.getlime.rest.api.util.PowerAuthUtil;
 
@@ -46,7 +46,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 		VerifySignatureResponse soapResponse = powerAuthClient.verifySignature(soapRequest);
 
 		if (soapResponse.isSignatureValid()) {
-			ApiAuthentication apiAuthentication = new ApiAuthentication();
+			PowerAuthApiAuthentication apiAuthentication = new PowerAuthApiAuthentication();
 			apiAuthentication.setActivationId(soapResponse.getActivationId());
 			apiAuthentication.setUserId(soapResponse.getUserId());
 			apiAuthentication.setAuthenticated(true);
@@ -64,7 +64,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 		return false;
 	}
 	
-	public ApiAuthentication checkRequestSignature(
+	public PowerAuthApiAuthentication checkRequestSignature(
 			HttpServletRequest servletRequest,
 			String requestUriIdentifier,
 			String httpAuthorizationHeader) throws Exception {
@@ -87,7 +87,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 		powerAuthAuthentication.setRequestUri(requestUriIdentifier);
 		powerAuthAuthentication.setData(requestBodyBytes);
 
-		ApiAuthentication auth = (ApiAuthentication) this.authenticate(powerAuthAuthentication);
+		PowerAuthApiAuthentication auth = (PowerAuthApiAuthentication) this.authenticate(powerAuthAuthentication);
 		
 		if (auth == null) {
 			throw new Exception("POWER_AUTH_SIGNATURE_INVALID_VALUE");
