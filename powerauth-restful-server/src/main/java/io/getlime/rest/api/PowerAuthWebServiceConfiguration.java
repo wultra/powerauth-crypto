@@ -1,8 +1,10 @@
-package io.getlime.banking.soap.client;
+package io.getlime.rest.api;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+
+import io.getlime.banking.soap.client.PowerAuthServiceClient;
 
 @Configuration
 public class PowerAuthWebServiceConfiguration {
