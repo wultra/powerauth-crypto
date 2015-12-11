@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.getlime.security</groupId>
+	<artifactId>powerauth-java-soap-client</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>powerauth-java-client</name>
+	<description>PowerAuth 2.0 SOAP Client</description>
+
+	<parent>
+		<groupId>io.getlime.security</groupId>
+		<artifactId>powerauth-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ws</groupId>
+			<artifactId>spring-ws-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.getlime.security</groupId>
+			<artifactId>powerauth-java</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.11.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- tag::wsdl[] -->
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.12.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<schemaLanguage>WSDL</schemaLanguage>
+					<generatePackage>io.getlime.powerauth.soap</generatePackage>
+					<schemas>
+						<schema>
+							<fileset>
+								<directory>${basedir}/src/main/resources/soap/wsdl</directory>
+								<include>*.wsdl</include>
+							</fileset>
+						</schema>
+					</schemas>
+				</configuration>
+			</plugin>
+			<!-- end::wsdl[] -->
+		</plugins>
+	</build>
+
+</project>

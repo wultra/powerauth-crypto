@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://getlime.io/security/powerauth" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://getlime.io/security/powerauth" targetNamespace="http://getlime.io/security/powerauth">
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://getlime.io/security/powerauth" version="1.0" xmlns:tns="http://getlime.io/security/powerauth">
+    
+    <!-- Init activation //-->
+    
+    <xs:element name="InitActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="InitActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationIdShort" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationOTP" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationSignature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Exchange public keys //-->
+    
+    <xs:element name="PrepareActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationIdShort" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="cDevicePublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="clientName" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="PrepareActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="ephemeralPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="cServerPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="cServerPublicKeySignature" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Commit activation //-->
+    
+    <xs:element name="CommitActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="CommitActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activated" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Get Activation Status //-->
+    
+    <xs:element name="GetActivationStatusRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetActivationStatusResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="cStatusBlob" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Remove Activation //-->
+    
+    <xs:element name="RemoveActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="RemoveActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="removed" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Activations for user //-->
+    
+    <xs:element name="GetActivationListForUserRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetActivationListForUserResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="activations">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+                            <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="0" name="clientName" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Verify signature //-->
+    
+    <xs:element name="VerifySignatureRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="data" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="VerifySignatureResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="remainingAttempts" type="xs:integer"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Block Activation //-->
+    
+    <xs:element name="BlockActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="BlockActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Unblock Activation //-->
+    
+    <xs:element name="UnblockActivationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="UnblockActivationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Vault Unlock //-->
+    
+    <xs:element name="VaultUnlockRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="VaultUnlockResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="remainingAttempts" type="xs:integer"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="cVaultEncryptionKey" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- PowerAuth 2.0 Enumerations //-->
+    
+    <xs:simpleType name="ActivationStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CREATED"/>
+            <xs:enumeration value="OTP_USED"/>
+            <xs:enumeration value="ACTIVE"/>
+            <xs:enumeration value="BLOCKED"/>
+            <xs:enumeration value="REMOVED"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="VerifySignatureRequest">
+    <wsdl:part element="tns:VerifySignatureRequest" name="VerifySignatureRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RemoveActivationRequest">
+    <wsdl:part element="tns:RemoveActivationRequest" name="RemoveActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="InitActivationRequest">
+    <wsdl:part element="tns:InitActivationRequest" name="InitActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CommitActivationRequest">
+    <wsdl:part element="tns:CommitActivationRequest" name="CommitActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PrepareActivationResponse">
+    <wsdl:part element="tns:PrepareActivationResponse" name="PrepareActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VerifySignatureResponse">
+    <wsdl:part element="tns:VerifySignatureResponse" name="VerifySignatureResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActivationStatusResponse">
+    <wsdl:part element="tns:GetActivationStatusResponse" name="GetActivationStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VaultUnlockResponse">
+    <wsdl:part element="tns:VaultUnlockResponse" name="VaultUnlockResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CommitActivationResponse">
+    <wsdl:part element="tns:CommitActivationResponse" name="CommitActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RemoveActivationResponse">
+    <wsdl:part element="tns:RemoveActivationResponse" name="RemoveActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActivationListForUserRequest">
+    <wsdl:part element="tns:GetActivationListForUserRequest" name="GetActivationListForUserRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BlockActivationRequest">
+    <wsdl:part element="tns:BlockActivationRequest" name="BlockActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PrepareActivationRequest">
+    <wsdl:part element="tns:PrepareActivationRequest" name="PrepareActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UnblockActivationRequest">
+    <wsdl:part element="tns:UnblockActivationRequest" name="UnblockActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActivationListForUserResponse">
+    <wsdl:part element="tns:GetActivationListForUserResponse" name="GetActivationListForUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="InitActivationResponse">
+    <wsdl:part element="tns:InitActivationResponse" name="InitActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VaultUnlockRequest">
+    <wsdl:part element="tns:VaultUnlockRequest" name="VaultUnlockRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BlockActivationResponse">
+    <wsdl:part element="tns:BlockActivationResponse" name="BlockActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UnblockActivationResponse">
+    <wsdl:part element="tns:UnblockActivationResponse" name="UnblockActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActivationStatusRequest">
+    <wsdl:part element="tns:GetActivationStatusRequest" name="GetActivationStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="PowerAuthPort">
+    <wsdl:operation name="VerifySignature">
+      <wsdl:input message="tns:VerifySignatureRequest" name="VerifySignatureRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:VerifySignatureResponse" name="VerifySignatureResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveActivation">
+      <wsdl:input message="tns:RemoveActivationRequest" name="RemoveActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:RemoveActivationResponse" name="RemoveActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InitActivation">
+      <wsdl:input message="tns:InitActivationRequest" name="InitActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:InitActivationResponse" name="InitActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitActivation">
+      <wsdl:input message="tns:CommitActivationRequest" name="CommitActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:CommitActivationResponse" name="CommitActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PrepareActivation">
+      <wsdl:input message="tns:PrepareActivationRequest" name="PrepareActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:PrepareActivationResponse" name="PrepareActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActivationStatus">
+      <wsdl:input message="tns:GetActivationStatusRequest" name="GetActivationStatusRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetActivationStatusResponse" name="GetActivationStatusResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VaultUnlock">
+      <wsdl:input message="tns:VaultUnlockRequest" name="VaultUnlockRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:VaultUnlockResponse" name="VaultUnlockResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActivationListForUser">
+      <wsdl:input message="tns:GetActivationListForUserRequest" name="GetActivationListForUserRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetActivationListForUserResponse" name="GetActivationListForUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BlockActivation">
+      <wsdl:input message="tns:BlockActivationRequest" name="BlockActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:BlockActivationResponse" name="BlockActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UnblockActivation">
+      <wsdl:input message="tns:UnblockActivationRequest" name="UnblockActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:UnblockActivationResponse" name="UnblockActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PowerAuthPortSoap11" type="tns:PowerAuthPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="VerifySignature">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="VerifySignatureRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="VerifySignatureResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="RemoveActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="RemoveActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InitActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="InitActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="InitActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CommitActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CommitActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PrepareActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PrepareActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PrepareActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActivationStatus">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetActivationStatusRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetActivationStatusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VaultUnlock">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="VaultUnlockRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="VaultUnlockResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActivationListForUser">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetActivationListForUserRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetActivationListForUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BlockActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="BlockActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="BlockActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UnblockActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="UnblockActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="UnblockActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PowerAuthPortService">
+    <wsdl:port binding="tns:PowerAuthPortSoap11" name="PowerAuthPortSoap11">
+      <soap:address location="http://localhost:8080/powerauth-java-server/powerauth"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

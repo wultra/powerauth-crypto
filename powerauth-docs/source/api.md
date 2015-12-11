@@ -54,7 +54,7 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 ### Request
 
 - Headers:
-	- Content-Type: application/json
+	- `Content-Type: application/json`
 
 ```json
 		{
@@ -69,9 +69,9 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 
 ### Response
 
-- Status Code: 200
+- Status Code: `200`
 - Headers:
-	- Content-Type: application/json
+	- `Content-Type: application/json`
 
 ```json
 		{
@@ -128,7 +128,7 @@ where:
 ### Request
 
 - Headers
-	- Content-Type: application/json
+	- `Content-Type: application/json`
 
 ```json
 		{
@@ -140,9 +140,9 @@ where:
 
 ### Response
 
-- Status code: 200
+- Status code: `200`
 - Headers
-	- Content-Type: application/json
+	- `Content-Type: application/json`
 
 ```json
 		{
@@ -172,8 +172,8 @@ Remove an activation with given ID, set it's status to REMOVED. Activation can b
 ### Request
 
 - Headers
-	- Content-Type: application/json
-	- X-PowerAuth-Authorization: PowerAuth ...
+	- `Content-Type: application/json`
+	- `X-PowerAuth-Authorization: PowerAuth ...`
 
 ```json
 			{
@@ -185,9 +185,9 @@ Remove an activation with given ID, set it's status to REMOVED. Activation can b
 
 #### Response
 
-- Status code: 200
+- Status code: `200`
 - Headers
-	- Content-Type: application/json
+	- `Content-Type: application/json`
 
 ```json
 		{
@@ -225,22 +225,14 @@ _Note: Both the signature calculation / validation and `KEY_ENCRYPTION_VAULT_TRA
 ### Request
 
 - Headers:
-	- Content-Type: application/json
-	- X-PowerAuth-Authorization: PowerAuth ...
-
-```json
-		{
-			"requestObject": {
-				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
-			}
-		}
-```
+	- `Content-Type: application/json`
+	- `X-PowerAuth-Authorization: PowerAuth ...`
 
 ### Response
 
-- Status Code: 200
+- Status Code: `200`
 - Headers:
-	- Content-Type: application/json
+	- `Content-Type: application/json`
 
 ```json
 		{
