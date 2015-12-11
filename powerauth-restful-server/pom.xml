@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.getlime</groupId>
-	<artifactId>mobile-banking-api-java</artifactId>
+	<artifactId>powerauth-restful-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>mobile-banking-api-java</name>
+	<name>powerauth-restful-server</name>
 	<description>Mobile Banking API Template</description>
 
 	<parent>
@@ -67,7 +67,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
-			<artifactId>powerauth-restapi-model</artifactId>
+			<artifactId>powerauth-restful-model</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

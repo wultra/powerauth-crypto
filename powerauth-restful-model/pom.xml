@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   
   <groupId>io.getlime.security</groupId>
-  <artifactId>powerauth-restapi-model</artifactId>
+  <artifactId>powerauth-restful-model</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>powerauth-restapi-model</name>
+  <name>powerauth-restful-model</name>
   <description>PowerAuth 2.0 RESTful API model classes</description>
   
   <parent>
