@@ -17,7 +17,6 @@ import io.getlime.rest.api.model.VaultUnlockRequest;
 import io.getlime.rest.api.model.VaultUnlockResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.http.PowerAuthSignatureHeader;
-import io.getlime.rest.api.util.PowerAuthUtil;
 
 @Controller
 @RequestMapping(value = "/pa/vault")
