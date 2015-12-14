@@ -87,10 +87,10 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
 Create a security configuration class `SecurityConfig` extending `WebSecurityConfigurerAdapter`. The configuration we will use:
 
-	- disable default Basic HTTP authentication
-	- disables CSRF (we don't need it for REST)
-	- register your authentication entry point (if someone tries to visit our API without prior authentication, show error)
-	- secures all REST endpoints with `/secured/` prefix
+- disable default Basic HTTP authentication
+- disables CSRF (we don't need it for REST)
+- register your authentication entry point (if someone tries to visit our API without prior authentication, show error)
+- secures all REST endpoints with `/secured/` prefix
 
 
 ```java
