@@ -83,6 +83,28 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 }
 ```
 
+### Register a PowerAuth application registry
+
+PowerAuth uses the concept of `application ID` and `application secret`. While `applicationId` attribute is transmitted with requests in `X-PowerAuth-Signature` header, `applicationSecret` is shared implicitly between client and server and is a part of the actual signature value. As a result, `PowerAuthAuthenticationProvider` component must be able to lookup `applicationSecret` based on `applicationId`. To achieve this, you need to register an instance of `PowerAuthApplicationConfiguration`, for example like this:
+
+```java
+@Configuration
+public class ApplicationConfiguration implements PowerAuthApplicationConfiguration {
+
+	private static final String expectedApplicationId = "a1c97807-795a-466e-87bf-230d8ac1451e";
+	private static final String expectedApplicationSecret = "d358e78a-8d12-4595-bf69-6eff2c2afc04";
+
+	@Override
+	public String getApplicationSecretForApplicationId(String applicationId) {
+		if (applicationId.equals(ApplicationConfiguration.expectedApplicationId)) {
+			return expectedApplicationSecret;
+		}
+		return null;
+	}
+
+}
+```
+
 ### Set up Spring Security
 
 Create a security configuration class `SecurityConfig` extending `WebSecurityConfigurerAdapter`. The configuration we will use:
