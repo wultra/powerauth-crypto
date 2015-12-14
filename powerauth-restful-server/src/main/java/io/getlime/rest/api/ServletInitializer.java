@@ -22,7 +22,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(MobileBankingApiJavaApplication.class);
+        return application.sources(PowerAuthApiJavaApplication.class);
     }
 
 }

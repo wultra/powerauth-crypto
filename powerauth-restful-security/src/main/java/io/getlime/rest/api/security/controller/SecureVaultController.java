@@ -1,4 +1,4 @@
-package io.getlime.rest.api.controller;
+package io.getlime.rest.api.security.controller;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public class SecureVaultController {
 	@RequestMapping(value = "unlock", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<VaultUnlockResponse> unlockVault(
 			@RequestBody PowerAuthAPIRequest<VaultUnlockRequest> request, 
-			@RequestHeader(name = "X-PowerAuth-Signature", required = true) String signature) throws PowerAuthAuthenticationException {
+			@RequestHeader(value = "X-PowerAuth-Signature", required = true, defaultValue = "unknown") String signature) throws PowerAuthAuthenticationException {
 		
 		Map<String, String> map = PowerAuthUtil.parsePowerAuthSignatureHTTPHeader(signature);
 		String activationId = map.get("activation_id");

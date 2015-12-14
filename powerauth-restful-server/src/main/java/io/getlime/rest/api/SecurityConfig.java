@@ -1,4 +1,4 @@
-package io.getlime.rest.api.security.config;
+package io.getlime.rest.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

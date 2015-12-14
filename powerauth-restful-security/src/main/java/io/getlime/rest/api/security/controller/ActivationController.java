@@ -1,4 +1,4 @@
-package io.getlime.rest.api.controller;
+package io.getlime.rest.api.security.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

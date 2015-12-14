@@ -7,7 +7,7 @@
 	</configSuffixes>
 	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
-		<config>java:io.getlime.rest.api.MobileBankingApiJavaApplication</config>
+		<config>java:io.getlime.rest.api.PowerAuthApiJavaApplication</config>
 	</configs>
 	<autoconfigs>
 	</autoconfigs>
