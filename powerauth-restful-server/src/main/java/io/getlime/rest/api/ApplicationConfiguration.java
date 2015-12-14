@@ -13,7 +13,7 @@ public class ApplicationConfiguration implements PowerAuthApplicationConfigurati
 	@Override
 	public String getApplicationSecretForApplicationId(String applicationId) {
 		if (applicationId.equals(ApplicationConfiguration.expectedApplicationId)) {
-			return expectedApplicationSecret;
+			return ApplicationConfiguration.expectedApplicationSecret;
 		}
 		return null;
 	}
