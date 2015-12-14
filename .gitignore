@@ -1,19 +1,16 @@
-.DS_Store
-/powerauth-java/nbproject/private/
-/powerauth-java/target/
-/powerauth-java/nbproject/
-/powerauth-java-server/target/
-/powerauth-java-server/src/main/java/generated/
+**/.DS_Store
+**/target/
+**/src/main/java/generated/
+**/src/main/webapp/
+
+### NetBeans template
+**/nbproject/private/
+**/nbproject/
 
 ### Eclipse template
-.settings
-.project
-powerauth-java/.classpath
-powerauth-java/.settings
-powerauth-java/.project
-powerauth-java-server/.classpath
-powerauth-java-server/.settings
-powerauth-java-server/.project
+**/.settings
+**/.project
+**/.classpath
 
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio
@@ -21,4 +18,3 @@ powerauth-java-server/.project
 ## Directory-based project format:
 .idea/
 .mvn
-/powerauth-java-server/src/main/webapp/
