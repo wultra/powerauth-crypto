@@ -85,7 +85,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 
 		byte[] requestBodyBytes = ((String)servletRequest.getAttribute(PowerAuthRequestFilter.HTTP_BODY)).getBytes();
 
-		Map<String, String> httpHeaderInfo = PowerAuthUtil.parsePowerAuthSignatureHTTPHeader(httpAuthorizationHeader);
+		Map<String, String> httpHeaderInfo = PowerAuthSignatureHeader.parsePowerAuthSignatureHTTPHeader(httpAuthorizationHeader);
 		
 		PowerAuthAuthentication powerAuthAuthentication = new PowerAuthAuthentication();
 		powerAuthAuthentication.setActivationId(httpHeaderInfo.get(PowerAuthSignatureHeader.ACTIVATION_ID));

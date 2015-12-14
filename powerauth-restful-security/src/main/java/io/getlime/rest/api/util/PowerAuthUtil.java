@@ -3,27 +3,12 @@ package io.getlime.rest.api.util;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
 import org.springframework.security.crypto.codec.Hex;
 
-import com.google.common.base.Splitter;
 import com.google.common.io.BaseEncoding;
 
 public class PowerAuthUtil {
-
-	private static final String POWERAUTH_PREFIX = "PowerAuth ";
-
-	public static Map<String, String> parsePowerAuthSignatureHTTPHeader(String xPowerAuthSignatureHeader) {
-		xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.trim();
-		if (!xPowerAuthSignatureHeader.startsWith(POWERAUTH_PREFIX)) {
-			return null;
-		}
-		xPowerAuthSignatureHeader.substring(POWERAUTH_PREFIX.length());
-		Map<String, String> result = Splitter.onPattern("\\s(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)")
-				.withKeyValueSeparator(Splitter.onPattern("=")).split(xPowerAuthSignatureHeader);
-		return result;
-	}
 
 	public static String getSignatureBaseString(String httpMethod, String requestUri, String applicationSecret, String nonce, byte[] data)
 			throws UnsupportedEncodingException, NoSuchAlgorithmException {
