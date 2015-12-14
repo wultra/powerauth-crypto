@@ -24,7 +24,7 @@ Name the project for example `mobile-banking-api-java` and configure your projec
 
 Select `Core > Security`, `Web > Web` and `Web > WS`. Click `Finish` and wait for Maven to do all the necessary setup work.
 
-## Add a Maven dependency
+### Add a Maven dependency
 
 To add PowerAuth support in your RESTful API, add Maven dependency for PowerAuth RESTful Security module in your `pom.xml` file:
 
@@ -36,7 +36,7 @@ To add PowerAuth support in your RESTful API, add Maven dependency for PowerAuth
 </dependency>
 ```
 
-## Configure PowerAuth SOAP Service
+### Configure PowerAuth SOAP Service
 
 In order to connect to the correct PowerAuth 2.0 Server, you need add following configuration:
 
@@ -63,7 +63,7 @@ public class PowerAuthWebServiceConfiguration {
 }
 ```
 
-## Register a PowerAuth reqest filter
+### Register a PowerAuth reqest filter
 
 In order to pass the original request body as an attribute of `HttpServletRequest`, you need to register following filter:
 
