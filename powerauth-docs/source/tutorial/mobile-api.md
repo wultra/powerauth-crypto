@@ -6,8 +6,6 @@ This tutorial shows the way mobile API developers integrate with PowerAuth 2.0 S
 - **Vault unlocking** - Mobile API must publish secure vault unlocking endpoints for standard PowerAuth 2.0 API, so that client is able to unlock vault and retrieve original device private key.
 - **Request signing** - Mobile API must call PowerAuth 2.0 Server for all endpoints that should validate the signature.
 
-_Pro tip: You may speed up your development by reusing the example project (for example the model classes)._
-
 ## Prerequisites for the tutorial
 
 - Running PowerAuth 2.0 Server with available SOAP interface.
