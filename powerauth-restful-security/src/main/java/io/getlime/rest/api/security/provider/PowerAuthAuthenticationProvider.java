@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import io.getlime.banking.soap.client.PowerAuthServiceClient;
 import io.getlime.powerauth.soap.VerifySignatureRequest;
 import io.getlime.powerauth.soap.VerifySignatureResponse;
+import io.getlime.rest.api.security.application.PowerAuthApplicationConfiguration;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.authentication.PowerAuthAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
@@ -29,6 +30,9 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 
 	@Autowired
 	private PowerAuthServiceClient powerAuthClient;
+	
+	@Autowired
+	private PowerAuthApplicationConfiguration applicationConfiguration;
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -79,18 +83,28 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 			String requestUriIdentifier,
 			String httpAuthorizationHeader) throws Exception {
 
+		// Check for HTTP PowerAuth signature header
 		if (httpAuthorizationHeader == null || httpAuthorizationHeader.equals("undefined")) {
 			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
 		}
 
-		byte[] requestBodyBytes = ((String)servletRequest.getAttribute(PowerAuthRequestFilter.HTTP_BODY)).getBytes();
+		// Get HTTP body bytes
+		byte[] requestBodyBytes = ((String)servletRequest.getAttribute(PowerAuthRequestFilter.HTTP_BODY)).getBytes("UTF-8");
 
+		// Parse HTTP header
 		Map<String, String> httpHeaderInfo = PowerAuthSignatureHeader.parsePowerAuthSignatureHTTPHeader(httpAuthorizationHeader);
 		
+		// Fetch application secret, throw exception in case application secret is null
+		String applicationId = httpHeaderInfo.get(PowerAuthSignatureHeader.APPLICATION_ID);
+		String applicationSecret = applicationConfiguration.getApplicationSecretForApplicationId(applicationId);
+		if (applicationSecret == null) {
+			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_APPLICATION_ID");
+		}
+		
+		// Configure PowerAuth authentication object
 		PowerAuthAuthentication powerAuthAuthentication = new PowerAuthAuthentication();
 		powerAuthAuthentication.setActivationId(httpHeaderInfo.get(PowerAuthSignatureHeader.ACTIVATION_ID));
-		//TODO: here should be the lookup!!!!
-		powerAuthAuthentication.setApplicationSecret(httpHeaderInfo.get(PowerAuthSignatureHeader.APPLICATION_ID));
+		powerAuthAuthentication.setApplicationSecret(applicationSecret);
 		powerAuthAuthentication.setNonce(httpHeaderInfo.get(PowerAuthSignatureHeader.NONCE));
 		powerAuthAuthentication.setSignatureType(httpHeaderInfo.get(PowerAuthSignatureHeader.SIGNATURE_TYPE));
 		powerAuthAuthentication.setSignature(httpHeaderInfo.get(PowerAuthSignatureHeader.SIGNATURE));
@@ -98,8 +112,10 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 		powerAuthAuthentication.setRequestUri(requestUriIdentifier);
 		powerAuthAuthentication.setData(requestBodyBytes);
 
+		// Call the authentication
 		PowerAuthApiAuthentication auth = (PowerAuthApiAuthentication) this.authenticate(powerAuthAuthentication);
 		
+		// In case authentication is null, throw PowerAuth exception
 		if (auth == null) {
 			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_VALUE");
 		}
