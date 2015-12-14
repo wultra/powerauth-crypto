@@ -3,6 +3,8 @@ package io.getlime.rest.api.security.provider;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -38,11 +40,16 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 		soapRequest.setSignature(powerAuthAuthentication.getSignature());
 		soapRequest.setSignatureType(powerAuthAuthentication.getSignatureType());
 		try {
-			String payload = PowerAuthUtil.getSignatureBaseString(powerAuthAuthentication.getHttpMethod(),
-					powerAuthAuthentication.getRequestUri(), powerAuthAuthentication.getApplicationSecret(),
-					powerAuthAuthentication.getNonce(), powerAuthAuthentication.getData());
+			String payload = PowerAuthUtil.getSignatureBaseString(
+					powerAuthAuthentication.getHttpMethod(),
+					powerAuthAuthentication.getRequestUri(), 
+					powerAuthAuthentication.getApplicationSecret(),
+					powerAuthAuthentication.getNonce(), 
+					powerAuthAuthentication.getData()
+			);
 			soapRequest.setData(payload);
-		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+		} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+			Logger.getLogger(PowerAuthAuthenticationProvider.class.getName()).log(Level.SEVERE, null, ex);
 			return null;
 		}
 
@@ -73,7 +80,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 			String httpAuthorizationHeader) throws Exception {
 
 		if (httpAuthorizationHeader == null || httpAuthorizationHeader.equals("undefined")) {
-			throw new Exception("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
+			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
 		}
 
 		byte[] requestBodyBytes = ((String)servletRequest.getAttribute(PowerAuthRequestFilter.HTTP_BODY)).getBytes();
