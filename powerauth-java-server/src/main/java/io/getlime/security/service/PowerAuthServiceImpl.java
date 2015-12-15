@@ -317,12 +317,11 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             // Decrypt the device public key
             byte[] C_devicePublicKey = BaseEncoding.base64().decode(cDevicePublicKeyBase64);
             byte[] activationNonce = BaseEncoding.base64().decode(activationNonceBase64);
-            PublicKey devicePublicKey = powerAuthServerActivation.decryptDevicePublicKey(C_devicePublicKey,
-                    activationIdShort, activation.getActivationOTP(), activationNonce);
+            PublicKey devicePublicKey = powerAuthServerActivation.decryptDevicePublicKey(C_devicePublicKey, activationIdShort, activation.getActivationOTP(), activationNonce);
 
             // Update and persist the activation record
             activation.setActivationStatus(ActivationStatus.OTP_USED);
-            activation.setDevicePublicKey(BaseEncoding.base64().encode(devicePublicKey.getEncoded()));
+            activation.setDevicePublicKey(BaseEncoding.base64().encode(keyConversionUtilities.convertPublicKeyToBytes(devicePublicKey)));
             activation.setClientName(clientName);
             powerAuthRepository.save(activation);
 
