@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.google.common.io.BaseEncoding;
 
+import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.client.vault.PowerAuthClientVault;
 import io.getlime.security.powerauth.server.vault.PowerAuthServerVault;
 import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
@@ -33,6 +34,9 @@ public class VaultTest {
 		
 		System.out.println("# PowerAuth 2.0 Signature");
         System.out.println();
+        
+        //TODO: Fix with issue #22
+        PowerAuthClientSignature signature = new PowerAuthClientSignature();
 
         // Prepare test data
         KeyGenerator keyGenerator = new KeyGenerator();
@@ -51,7 +55,7 @@ public class VaultTest {
         System.out.println("## Master Secret Key: " + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(deviceMasterKey)));
         
         // Deduce client vault encryption key and client / server master transport key
-        SecretKey clientVaultEncryptionKey = clientVault.deriveVaultEncryptionKey(deviceMasterKey);
+        SecretKey clientVaultEncryptionKey = signature.generateServerEncryptedVaultKey(deviceMasterKey);
         System.out.println("## Vault Encryption Key: " + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
         
         SecretKey clientTransportKey = keyGenerator.deriveSecretKey(deviceMasterKey, PowerAuthConstants.KEY_DERIVED.TRANSPORT);

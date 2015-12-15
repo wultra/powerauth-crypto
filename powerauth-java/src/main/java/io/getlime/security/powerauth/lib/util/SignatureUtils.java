@@ -94,7 +94,7 @@ public class SignatureUtils {
     	HMACHashUtilities hmac = new HMACHashUtilities();
     	
     	// Prepare a counter
-        byte[] ctr = ByteBuffer.allocate(16).putLong(counter).array();
+        byte[] ctr = ByteBuffer.allocate(16).putLong(8, counter).array();
 
         // Prepare holder for signature components
         String[] signatureComponents = new String[signatureKeys.size()];

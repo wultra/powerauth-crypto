@@ -194,16 +194,24 @@ public class PowerAuthServerActivation {
         return null;
     }
 
+    /**
+     * Returns an encrypted status blob as described in PowerAuth 2.0 Specification.
+     * @param statusByte Byte determining the status of the activation.
+     * @param counter Bytes with a counter information.
+     * @param transportKey A key used to protect the transport.
+     * @return Encrypted status blob
+     * @throws InvalidKeyException
+     */
     public byte[] encryptedStatusBlob(byte statusByte, long counter, SecretKey transportKey)
             throws InvalidKeyException {
         try {
             byte[] padding = new KeyGenerator().generateRandomBytes(7);
-            byte[] zeroIv = new KeyGenerator().generateRandomBytes(16);
+            byte[] zeroIv = new byte[16];
             byte[] statusBlob = ByteBuffer.allocate(16)
-                    .putInt(0xDEADBEEF) // 4 bytes
-                    .put(statusByte) // 1 byte
+                    .putInt(0xDEADBEEF)    // 4 bytes
+                    .put(statusByte)       // 1 byte
                     .putInt((int) counter) // 4 bytes
-                    .put(padding) // 7 bytes
+                    .put(padding)          // 7 bytes
                     .array();
             AESEncryptionUtils aes = new AESEncryptionUtils();
             byte[] C_statusBlob = aes.encrypt(statusBlob, zeroIv, transportKey);
@@ -250,8 +258,7 @@ public class PowerAuthServerActivation {
                 throw new IndexOutOfBoundsException();
             }
             int index = hash.length - 4;
-            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF)
-                    % (int) (Math.pow(10, PowerAuthConstants.FINGERPRINT_LENGTH));
+            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConstants.FINGERPRINT_LENGTH));
             return number;
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);

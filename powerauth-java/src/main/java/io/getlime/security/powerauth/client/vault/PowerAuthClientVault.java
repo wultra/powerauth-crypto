@@ -10,23 +10,11 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 
 public class PowerAuthClientVault {
-	
-	/**
-	 * Derive a vault encryption key KEY_ENCRYPTION_VAULT used for storing
-	 * records in secure vault.
-	 * @param keyMasterSecret Master secret key KEY_MASTER_SECRET.
-	 * @return A new derived transport key.
-	 */
-	public SecretKey deriveVaultEncryptionKey(SecretKey keyMasterSecret) {
-		KeyGenerator keyGen = new KeyGenerator();
-		return keyGen.deriveSecretKey(keyMasterSecret, PowerAuthConstants.KEY_DERIVED.ENCRYPTED_VAULT);
-	}
 	
 	/**
 	 * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using a transport key

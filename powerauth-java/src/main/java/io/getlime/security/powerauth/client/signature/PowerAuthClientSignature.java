@@ -113,7 +113,7 @@ public class PowerAuthClientSignature {
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_ENCRYPTED_VAULT.
      */
-    public SecretKey generateServerEndryptedVaultKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerEncryptedVaultKey(SecretKey masterSecretKey) {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
                 PowerAuthConstants.KEY_DERIVED.ENCRYPTED_VAULT

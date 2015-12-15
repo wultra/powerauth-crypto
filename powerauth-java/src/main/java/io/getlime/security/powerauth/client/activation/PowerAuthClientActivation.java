@@ -17,6 +17,7 @@ package io.getlime.security.powerauth.client.activation;
 
 import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 import io.getlime.security.powerauth.lib.util.SignatureUtils;
@@ -207,6 +208,44 @@ public class PowerAuthClientActivation {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
+    }
+    
+    /**
+     * Returns an activation status from the encrypted activation blob as described in PowerAuth 2.0 Specification.
+     * @param cStatusBlob Encrypted activation status blob
+     * @param transportKey A key used to protect the transport.
+     * @return Status information from the status blob
+     * @throws InvalidKeyException
+     */
+    public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, SecretKey transportKey)
+            throws InvalidKeyException {
+        try {
+        	
+        	// Decrypt the status blob
+        	AESEncryptionUtils aes = new AESEncryptionUtils();
+        	byte[] zeroIv = new byte[16];
+            byte[] statusBlob = aes.decrypt(cStatusBlob, zeroIv, transportKey);
+        	
+            // Prepare objects to read status info into
+        	ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
+        	ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
+        	
+        	// check if the prefix is OK
+        	int prefix = buffer.getInt(0);
+        	statusInfo.setValid(prefix == 0xDEADBEEF);
+        	
+        	// fetch the activation status byte
+        	statusInfo.setActivationStatus(buffer.get(4));
+        	
+        	// fetch the counter info
+        	statusInfo.setCounter(buffer.getInt(5));
+        	
+        	return statusInfo;
+        } catch (IllegalBlockSizeException | BadPaddingException ex) {
+            // Cryptography should be set correctly at this point
+            Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
 }
