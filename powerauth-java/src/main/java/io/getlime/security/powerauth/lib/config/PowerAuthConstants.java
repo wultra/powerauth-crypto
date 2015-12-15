@@ -35,10 +35,10 @@ public class PowerAuthConstants {
     public static final int ACTIVATION_GENERATE_ACTIVATION_SHORT_ID_ITERATIONS = 10;
 
     /**
-     * How many seconds should be CREATED or OTP_USED record usable for
+     * How many milliseconds should be CREATED or OTP_USED record usable for
      * completing the activation.
      */
-    public static final int ACTIVATION_VALIDITY_BEFORE_ACTIVE = 2 * 60;
+    public static final int ACTIVATION_VALIDITY_BEFORE_ACTIVE = 2 * 60 * 1000;
 
     /**
      * Length of device public key fingerprint.
