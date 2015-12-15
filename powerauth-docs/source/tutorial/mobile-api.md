@@ -146,7 +146,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public @ResponseBody PowerAuthAPIResponse<String> login(
-            @RequestHeader(name = "X-PowerAuth-Signature", required = true) String signatureHeader,
+            @RequestHeader(value = "X-PowerAuth-Signature", required = true) String signatureHeader,
             HttpServletRequest servletRequest) throws Exception {
 
         PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(

@@ -80,7 +80,7 @@ DATA = ${REQUEST_METHOD}&${REQUEST_URI_IDENTIFIER_HASH}&${APPLICATION_SECRET}&${
 **//TODO: Design better way of normalizing request data and URI**
 
 - `${REQUEST_METHOD}` - HTTP method written in upper-case, such as GET or POST.
-- `${REQUEST_URI_IDENTIFIER_HASH}` - SHA256 hashed identifier of given URI of the resource (hexadecimal format), for example SHA256("/api/payment"). The hashed value (in the example before, the "/api/payment" stirng) should be uniquely chosen for each URI, but can be of an arbitrary format.
+- `${REQUEST_URI_IDENTIFIER_HASH}` - SHA256 hashed identifier of given URI of the resource (hexadecimal format), for example SHA256("/api/payment"). The hashed value (in the example before, the "/api/payment" stirng) should be uniquely chosen for each URI, but can be of an arbitrary format (if not specified otherwise).
 - `${APPLICATION_SECRET}` - An application secret key, used to bind an application identification in the signature explicitly.
 - `${NONCE}` - Random 16 bytes encoded as Base64 using UTF-8 encoding, serving as a cryptographic nonce.
 - `${REQUEST_DATA}` - Request data

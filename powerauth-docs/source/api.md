@@ -158,6 +158,8 @@ where:
 
 Remove an activation with given ID, set it's status to REMOVED. Activation can be removed only after successful verification of the signature.
 
+In order to construct the PowerAuth 2.0 Client signature, use `/pa/activation/remove` as URI identifier part of the signature data.
+
 <table>
 	<tr>
 		<td>Method</td>

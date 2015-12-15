@@ -5,6 +5,9 @@ public class PowerAuthAPIResponse<T> {
 	private String status;
 	private T responseObject;
 	
+	public PowerAuthAPIResponse() {
+    }
+	
 	public PowerAuthAPIResponse(String status, T responseObject) {
 		this.status = status;
 		this.responseObject = responseObject;

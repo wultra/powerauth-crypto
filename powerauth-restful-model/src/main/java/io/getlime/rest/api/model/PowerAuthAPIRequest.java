@@ -4,6 +4,13 @@ public class PowerAuthAPIRequest<T> {
 	
 	private T requestObject;
 	
+	public PowerAuthAPIRequest() {
+    }
+	
+	public PowerAuthAPIRequest(T requestObject) {
+		this.requestObject = requestObject;
+	}
+	
 	public T getRequestObject() {
 		return requestObject;
 	}

@@ -16,7 +16,7 @@ import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.model.VaultUnlockRequest;
 import io.getlime.rest.api.model.VaultUnlockResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
-import io.getlime.rest.api.security.http.PowerAuthSignatureHeader;
+import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 
 @Controller
 @RequestMapping(value = "/pa/vault")
@@ -30,7 +30,7 @@ public class SecureVaultController {
 			@RequestBody PowerAuthAPIRequest<VaultUnlockRequest> request, 
 			@RequestHeader(value = "X-PowerAuth-Signature", required = true, defaultValue = "unknown") String signature) throws PowerAuthAuthenticationException {
 		
-		Map<String, String> map = PowerAuthSignatureHeader.parsePowerAuthSignatureHTTPHeader(signature);
+		Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signature);
 		String activationId = map.get("activation_id");
 		
 		io.getlime.powerauth.soap.VaultUnlockRequest soapRequest = new io.getlime.powerauth.soap.VaultUnlockRequest();
