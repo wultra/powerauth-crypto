@@ -151,7 +151,10 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
                 // Encrypt the status blob
                 byte[] C_statusBlob = powerAuthServerActivation.encryptedStatusBlob(
-                        activation.getActivationStatus().getByte(), activation.getCounter(), transportKey);
+                		activation.getActivationStatus().getByte(), 
+                		activation.getCounter(), 
+                		transportKey
+                );
 
                 // return the data
                 GetActivationStatusResponse response = new GetActivationStatusResponse();
