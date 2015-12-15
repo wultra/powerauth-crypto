@@ -62,7 +62,8 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 				"activationIdShort": "XDA57-24TBC",
 				"activationNonce": "hbmRvbQRUNESF9QVUJMSUNfS0VZX3J==",
 				"cDevicePublicKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-				"clientName": "My iPhone"
+				"clientName": "My iPhone",
+				"extras": "Any data in any format (XML, JSON, ...) for application specific purposes"
 			}
 		}
 ```

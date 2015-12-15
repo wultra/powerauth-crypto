@@ -35,6 +35,7 @@
                 <xs:element name="activationNonce" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="cDevicePublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="clientName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="extras" type="xs:string" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

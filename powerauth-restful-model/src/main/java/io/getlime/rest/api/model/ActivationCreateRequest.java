@@ -6,6 +6,7 @@ public class ActivationCreateRequest {
 	private String activationNonce;
 	private String cDevicePublicKey;
 	private String clientName;
+	private String extras;
 	
 	public String getActivationIdShort() {
 		return activationIdShort;
@@ -37,6 +38,14 @@ public class ActivationCreateRequest {
 	
 	public void setClientName(String clientName) {
 		this.clientName = clientName;
+	}
+	
+	public String getExtras() {
+		return extras;
+	}
+	
+	public void setExtras(String extras) {
+		this.extras = extras;
 	}
 	
 }

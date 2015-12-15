@@ -44,6 +44,9 @@ public class ActivationRecordEntity implements Serializable {
 
     @Column(nullable = true)
     private String clientName;
+    
+    @Column(nullable = true)
+    private String extras;
 
     @Column(nullable = false)
     private String serverPrivateKeyBase64;
@@ -82,6 +85,7 @@ public class ActivationRecordEntity implements Serializable {
             String activationOTP,
             String userId,
             String clientName,
+            String extras,
             String serverPrivateKeyBase64,
             String serverPublicKeyBase64,
             String devicePublicKeyBase64,
@@ -96,6 +100,7 @@ public class ActivationRecordEntity implements Serializable {
         this.activationOTP = activationOTP;
         this.userId = userId;
         this.clientName = clientName;
+        this.extras = extras;
         this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
         this.serverPublicKeyBase64 = serverPublicKeyBase64;
         this.devicePublicKeyBase64 = devicePublicKeyBase64;
@@ -146,6 +151,14 @@ public class ActivationRecordEntity implements Serializable {
     public void setClientName(String clientName) {
         this.clientName = clientName;
     }
+    
+    public String getExtras() {
+		return extras;
+	}
+    
+    public void setExtras(String extras) {
+		this.extras = extras;
+	}
 
     public String getServerPrivateKeyBase64() {
         return serverPrivateKeyBase64;
@@ -167,7 +180,7 @@ public class ActivationRecordEntity implements Serializable {
         return devicePublicKeyBase64;
     }
 
-    public void setDevicePublicKey(String devicePublicKeyBase64) {
+    public void setDevicePublicKeyBase64(String devicePublicKeyBase64) {
         this.devicePublicKeyBase64 = devicePublicKeyBase64;
     }
 

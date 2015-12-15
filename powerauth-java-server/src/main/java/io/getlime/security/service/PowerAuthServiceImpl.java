@@ -260,6 +260,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                     activationOtp,
                     userId,
                     null,
+                    null,
                     BaseEncoding.base64().encode(serverKeyPrivateBytes),
                     BaseEncoding.base64().encode(serverKeyPublicBytes),
                     null,
@@ -297,6 +298,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             String activationNonceBase64 = request.getActivationNonce();
             String cDevicePublicKeyBase64 = request.getCDevicePublicKey();
             String clientName = request.getClientName();
+            String extras = request.getExtras();
 
             // Get current timestamp
             Date timestamp = new Date();
@@ -321,8 +323,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
             // Update and persist the activation record
             activation.setActivationStatus(ActivationStatus.OTP_USED);
-            activation.setDevicePublicKey(BaseEncoding.base64().encode(keyConversionUtilities.convertPublicKeyToBytes(devicePublicKey)));
+            activation.setDevicePublicKeyBase64(BaseEncoding.base64().encode(keyConversionUtilities.convertPublicKeyToBytes(devicePublicKey)));
             activation.setClientName(clientName);
+            activation.setExtras(extras);
             powerAuthRepository.save(activation);
 
             // Generate response data

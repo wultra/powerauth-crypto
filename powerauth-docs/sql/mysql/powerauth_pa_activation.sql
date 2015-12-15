@@ -28,6 +28,7 @@ CREATE TABLE `pa_activation` (
   `activationotp` varchar(255) NOT NULL,
   `activation_status` int(11) NOT NULL,
   `client_name` varchar(255) DEFAULT NULL,
+  `extras` text DEFAULT NULL,
   `counter` bigint(20) NOT NULL,
   `device_public_key_base64` text,
   `failed_attempts` bigint(20) DEFAULT NULL,
