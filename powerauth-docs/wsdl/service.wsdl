@@ -15,6 +15,7 @@
     <xs:element name="InitActivationResponse">
         <xs:complexType>
             <xs:sequence>
+            	<xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationIdShort" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationOTP" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationSignature" type="xs:string"/>
@@ -29,10 +30,10 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationIdShort" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="cDevicePublicKey" type="xs:string"/>
-                <xs:element maxOccurs="1" minOccurs="1" name="clientName" type="xs:string"/>
-                <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -82,6 +83,11 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:date"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="timestampLastUsed" type="xs:date"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="cStatusBlob" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
@@ -125,8 +131,11 @@
                         <xs:sequence>
                             <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
                             <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
-                            <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                            <xs:element maxOccurs="1" minOccurs="0" name="clientName" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:date"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="timestampLastUsed" type="xs:date"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
