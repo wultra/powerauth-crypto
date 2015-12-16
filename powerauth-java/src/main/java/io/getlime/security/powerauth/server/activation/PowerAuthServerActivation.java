@@ -202,19 +202,20 @@ public class PowerAuthServerActivation {
      * @return Encrypted status blob
      * @throws InvalidKeyException
      */
-    public byte[] encryptedStatusBlob(byte statusByte, long counter, SecretKey transportKey)
+    public byte[] encryptedStatusBlob(byte statusByte, long counter, byte failedAttempts, SecretKey transportKey)
             throws InvalidKeyException {
         try {
-            byte[] padding = new KeyGenerator().generateRandomBytes(7);
+            byte[] padding = new KeyGenerator().generateRandomBytes(6);
             byte[] zeroIv = new byte[16];
             byte[] statusBlob = ByteBuffer.allocate(16)
                     .putInt(0xDEADBEEF)    // 4 bytes
                     .put(statusByte)       // 1 byte
                     .putInt((int) counter) // 4 bytes
-                    .put(padding)          // 7 bytes
+                    .put(failedAttempts)   // 1 byte
+                    .put(padding)          // 6 bytes
                     .array();
             AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] C_statusBlob = aes.encrypt(statusBlob, zeroIv, transportKey);
+            byte[] C_statusBlob = aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
             return C_statusBlob;
         } catch (IllegalBlockSizeException | BadPaddingException ex) {
             // Cryptography should be set correctly at this point

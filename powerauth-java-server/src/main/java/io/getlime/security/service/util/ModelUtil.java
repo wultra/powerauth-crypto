@@ -15,6 +15,13 @@
  */
 package io.getlime.security.service.util;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
 public class ModelUtil {
 
     public static io.getlime.security.powerauth.ActivationStatus toServiceStatus(
@@ -32,6 +39,13 @@ public class ModelUtil {
                 return io.getlime.security.powerauth.ActivationStatus.REMOVED;
         }
         return io.getlime.security.powerauth.ActivationStatus.REMOVED;
+    }
+    
+    public static XMLGregorianCalendar calendarWithDate(Date date) throws DatatypeConfigurationException {
+    	GregorianCalendar c = new GregorianCalendar();
+    	c.setTime(date);
+    	XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+    	return date2;
     }
 
 }

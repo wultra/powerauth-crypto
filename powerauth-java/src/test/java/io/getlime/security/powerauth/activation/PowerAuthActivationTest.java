@@ -87,7 +87,7 @@ public class PowerAuthActivationTest {
         PrivateKey masterPrivateKey = masterKeyPair.getPrivate();
         PublicKey masterPublicKey = masterKeyPair.getPublic();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
 
             // SERVER: Generate data for activation
             @SuppressWarnings("unused")
@@ -107,26 +107,26 @@ public class PowerAuthActivationTest {
             KeyPair deviceKeyPair = clientActivation.generateDeviceKeyPair();
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
             PublicKey devicePublicKey = deviceKeyPair.getPublic();
-            byte[] activationNonceClient = clientActivation.generateActivationNonce();
-            byte[] c_devicePublicKey = clientActivation.encryptDevicePublicKey(devicePublicKey, activationOTP, activationIdShort, activationNonceClient);
+            byte[] clientNonce = clientActivation.generateActivationNonce();
+            byte[] c_devicePublicKey = clientActivation.encryptDevicePublicKey(devicePublicKey, activationOTP, activationIdShort, clientNonce);
 
             // SERVER: Decrypt device public key
-            PublicKey decryptedDevicePublicKey = serverActivation.decryptDevicePublicKey(c_devicePublicKey, activationIdShort, activationOTP, activationNonceClient);
+            PublicKey decryptedDevicePublicKey = serverActivation.decryptDevicePublicKey(c_devicePublicKey, activationIdShort, activationOTP, clientNonce);
             assertEquals(devicePublicKey, decryptedDevicePublicKey);
 
             // SERVER: Encrypt and send encrypted server public and it's signature
             KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
             PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
             PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
-            byte[] activationNonceServer = serverActivation.generateActivationNonce();
-            byte[] c_serverPublicKey = serverActivation.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonceServer);
+            byte[] serverNonce = serverActivation.generateActivationNonce();
+            byte[] c_serverPublicKey = serverActivation.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, serverNonce);
             byte[] c_serverPublicKeySignature = serverActivation.computeServerPublicKeySignature(c_serverPublicKey, masterPrivateKey);
 
             // CLIENT: Validate server public key signature and decrypt server public key
             boolean serverPublicKeySignatureOK = clientActivation.verifyServerPublicKeySignature(c_serverPublicKey, c_serverPublicKeySignature, masterPublicKey);
             assertTrue(serverPublicKeySignatureOK);
 
-            PublicKey decryptedServerPublicKey = clientActivation.decryptServerPublicKey(c_serverPublicKey, devicePrivateKey, ephemeralPublicKey, activationOTP, activationIdShort, activationNonceServer);
+            PublicKey decryptedServerPublicKey = clientActivation.decryptServerPublicKey(c_serverPublicKey, devicePrivateKey, ephemeralPublicKey, activationOTP, activationIdShort, serverNonce);
             assertEquals(serverPublicKey, decryptedServerPublicKey);
 
             // CLIENT and SERVER: Compute device public key fingerprint

@@ -9,14 +9,14 @@ import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
 
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
-    
-    @Bean
-    public FilterRegistrationBean powerAuthFilterRegistration () {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setFilter(new PowerAuthRequestFilter());
-        registrationBean.setMatchAfter(true);
-        registrationBean.addUrlPatterns("/secured/");
-        return registrationBean;
-    }
-    
+
+	@Bean
+	public FilterRegistrationBean powerAuthFilterRegistration() {
+		FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+		registrationBean.setFilter(new PowerAuthRequestFilter());
+		registrationBean.setMatchAfter(true);
+		registrationBean.addUrlPatterns("/secured/");
+		return registrationBean;
+	}
+
 }

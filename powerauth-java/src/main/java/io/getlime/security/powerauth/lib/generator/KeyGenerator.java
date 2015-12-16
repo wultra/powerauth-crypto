@@ -30,6 +30,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -123,10 +124,10 @@ public class KeyGenerator {
     public SecretKey deriveSecretKey(SecretKey secret, long index) {
         try {
             AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] bytes = ByteBuffer.allocate(16).putLong(index).array();
+            byte[] bytes = ByteBuffer.allocate(16).putLong(0L).putLong(index).array();
             byte[] iv = new byte[16];
             byte[] encryptedBytes = aes.encrypt(bytes, iv, secret);
-            return new KeyConversionUtils().convertBytesToSharedSecretKey(encryptedBytes);
+            return new KeyConversionUtils().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -145,7 +146,8 @@ public class KeyGenerator {
         try {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PowerAuthConstants.PBKDF_ITERATIONS, 128);
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            SecretKey encryptionKey = new SecretKeySpec(skf.generateSecret(spec).getEncoded(), "AES/CBC/PKCS5Padding");
+            byte[] keyBytes = skf.generateSecret(spec).getEncoded();
+            SecretKey encryptionKey = new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");
             return encryptionKey;
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);

@@ -6,16 +6,22 @@ The goal of this chapter is to define used functions related to cryptography and
 
 Following basic cryptography algorithms and parameters are used in the PowerAuth 2.0 cryptography description:
 
-- **AES** - A symmetric key encryption algorithm, uses CBC mode and PKCS5 padding. It defines two operations:
-	- `byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key)` - encrypt bytes using symmetric key with given initialization vector.
-	- `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key)` - decrypt bytes using symmetric key with given initialization vector.
+- **AES** - A symmetric key encryption algorithm, uses CBC mode of operation. It defines four methods:
+	- `byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key)` - encrypt bytes using symmetric key with given initialization vector and PKCS7 padding.
+	- `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key)` - decrypt bytes using symmetric key with given initialization vector and PKCS7 padding.
+	- `byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key, String padding)` - encrypt bytes using symmetric key with given initialization vector and given padding.
+	- `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key, String padding)` - decrypt bytes using symmetric key with given initialization vector and given padding.
+
 - **PBKDF2** - An algorithm for key stretching, converts a short password into long key by performing repeated hash iteration on the original data, HMAC-SHA1 algorithm is used for a pseudo-random function. Implementations must make sure resulting key is converted in format usable by AES algorithm. One method is defined for this algorithm:
 	- `SharedKey expandedKey = PBKDF2.expand(char[] password, byte[] salt, long iterations, long lengthInBits)` - stretch the password using given number of iterations to achieve key of given length in bits, use given salt.
+
 - **ECDSA** - An algorithm for elliptic curve based signatures, uses SHA256 hash algorithm. It defines two operations:
 	- `byte[] signature = ECDSA.sign(byte[] data, PrivateKey privateKey)` - compute signature of given data and private key.
 	- `boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKey)` - verify the signature for given data using a given public key.
+
 - **ECDH** - An algorithm for elliptic curve with Diffie-Helman key exchange, uses P256r1 curve. We define single operation on ECDH, a symmetric key deduction between parties A and B:
 	- `SecretKey secretKey = ECDH.phase(PrivateKey privateKeyA, PublicKey publicKeyB)`
+
 - **KDF** - A key derivation function used to derive a symmetric key with specific "index" from a given master key. Uses AES algorithm with zero initialization vector to derive the new key in following way: `index` is converted to bytes, XORed with a 16 byte long zero array (to get 16 byte long array with bytes from the index) and AES encrypted using provided symmetric key `masterKey`.
 	- `SecretKey derivedKey = KDF.derive(SecretKey masterKey, long index)`
 

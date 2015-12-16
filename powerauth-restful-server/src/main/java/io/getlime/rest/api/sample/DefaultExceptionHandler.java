@@ -36,13 +36,15 @@ public class DefaultExceptionHandler {
 	@ExceptionHandler(value = PowerAuthAuthenticationException.class)
 	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public @ResponseBody PowerAuthAPIResponse<ErrorBody> handleUnauthorizedException(HttpServletRequest request, Exception exception) {
-		return new PowerAuthAPIResponse<DefaultExceptionHandler.ErrorBody>("ERROR", new ErrorBody(exception.getLocalizedMessage()));
+		exception.printStackTrace();
+		return new PowerAuthAPIResponse<DefaultExceptionHandler.ErrorBody>("ERROR", new ErrorBody(exception.getMessage()));
 	}
 	
 	@ExceptionHandler(value = Exception.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody PowerAuthAPIResponse<ErrorBody> handleException(HttpServletRequest request, Exception exception) {
-		return new PowerAuthAPIResponse<DefaultExceptionHandler.ErrorBody>("ERROR", new ErrorBody(exception.getLocalizedMessage()));
+		exception.printStackTrace();
+		return new PowerAuthAPIResponse<DefaultExceptionHandler.ErrorBody>("ERROR", new ErrorBody(exception.getMessage()));
 	}
 
 }

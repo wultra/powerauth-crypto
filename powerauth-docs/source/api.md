@@ -91,16 +91,16 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 
 Get the status of an activation with given activation ID. The PowerAuth 2.0 Server response contains an activation status blob that is AES encrypted with `KEY_TRANSPORT`.
 
-- `cStatusBlob = AES.encrypt(statusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT)`
+- `cStatusBlob = AES.encrypt(statusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT, "AES/CBC/NoPadding")`
 
 PowerAuth 2.0 Client can later trivially decrypt the original status blob:
 
-- `statusBlob = AES.decrypt(cStatusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT)`
+- `statusBlob = AES.decrypt(cStatusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT, "AES/CBC/NoPadding")`
 
-Structure of the status blob is following:
+Structure of the 16B long status blob is following:
 
 ```java
-	0xDE 0xAD 0xBE 0xEF 1B:${STATUS} 4B:${CTR} 7B:${RANDOM_NOISE}
+	0xDE 0xAD 0xBE 0xEF 1B:${STATUS} 4B:${CTR} 1B:${FAIL_COUNT} 6B:${RANDOM_NOISE}
 ```
 
 where:
@@ -113,7 +113,8 @@ where:
 	- `0x04 - BLOCKED`
 	- `0x05 - REMOVED`
 - `${CTR}` - 4 bytes representing information of the server counter (CTR value, as defined in PowerAuth 2.0 specification).
-- `${RANDOM_NOISE}` - Random 7 byte padding, a complement to the total length of 16B. These bytes also serve as a source of entropy for the transport (AES encrypted cStatusBlob will be different each time an endpoint is called).
+- `${FAIL_COUNT}` - 1 byte representing information about the number of failed attempts at the moment.
+- `${RANDOM_NOISE}` - Random 6 byte padding (a complement to the total length of 16B). These bytes also serve as a source of entropy for the transport (AES encrypted cStatusBlob will be different each time an endpoint is called).
 
 <table>
 	<tr>

@@ -41,9 +41,10 @@ char[] password = "1234".toCharArray();
 byte[] salt = Generator.randomBytes(16);
 int iterations = 10000;
 int lengthInBits = 128;
-SharedKey encryptionKey = PBKDF2.expand(password, salt, iterations, lengthInBits)
+SharedKey encryptionKey = PBKDF2.expand(password, salt, iterations, lengthInBits);
 byte[] iv = Generator.zeroBytes(16);
-byte[] C_KEY_SIGNATURE_KNOWLEDGE = AES.encrypt(KEY_SIGNATURE_KNOWLEDGE, iv, encryptionKey);
+byte[] keyKnowledgeBytes = KeyConversion.getBytes(KEY_SIGNATURE_KNOWLEDGE);
+byte[] C_KEY_SIGNATURE_KNOWLEDGE = AES.encrypt(keyKnowledgeBytes, iv, encryptionKey, "AES/CBC/NoPadding");
 
 // Store `C_KEY_SIGNATURE_KNOWLEDGE` and `salt`.
 ```

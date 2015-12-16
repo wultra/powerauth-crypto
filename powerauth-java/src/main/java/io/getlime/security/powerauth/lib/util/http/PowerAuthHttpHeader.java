@@ -1,8 +1,9 @@
 package io.getlime.security.powerauth.lib.util.http;
 
+import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.base.Splitter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PowerAuthHttpHeader {
 	
@@ -20,9 +21,16 @@ public class PowerAuthHttpHeader {
 		if (!xPowerAuthSignatureHeader.startsWith(POWERAUTH_PREFIX)) {
 			return null;
 		}
-		xPowerAuthSignatureHeader.substring(POWERAUTH_PREFIX.length());
-		Map<String, String> result = Splitter.onPattern("\\s(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)")
-				.withKeyValueSeparator(Splitter.onPattern("=")).split(xPowerAuthSignatureHeader);
+		xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.substring(POWERAUTH_PREFIX.length());
+		
+		// Parse the key / value pairs
+		Map<String, String> result = new HashMap<>();
+		Pattern p = Pattern.compile("(\\w+)=\"*((?<=\")[^\"]+(?=\")|([^\\s]+)),*\"*");
+		Matcher m = p.matcher(xPowerAuthSignatureHeader);
+		while(m.find()){
+		    result.put(m.group(1), m.group(2));
+		}
+
 		return result;
 	}
 	
@@ -32,11 +40,11 @@ public class PowerAuthHttpHeader {
 	
 	public static String getPowerAuthSignatureHTTPHeader(String activationId, String applicationId, String nonce, String signatureType, String signature, String version) {
 		String result = POWERAUTH_PREFIX
-				+ headerField(ACTIVATION_ID, activationId)
-				+ headerField(APPLICATION_ID, applicationId)
-				+ headerField(NONCE, nonce)
-				+ headerField(SIGNATURE_TYPE, signatureType)
-				+ headerField(SIGNATURE, signature)
+				+ headerField(ACTIVATION_ID, activationId) + ", "
+				+ headerField(APPLICATION_ID, applicationId) + ", "
+				+ headerField(NONCE, nonce) + ", "
+				+ headerField(SIGNATURE_TYPE, signatureType) + ", "
+				+ headerField(SIGNATURE, signature) + ", "
 				+ headerField(VERSION, version);
 		return result;
 	}

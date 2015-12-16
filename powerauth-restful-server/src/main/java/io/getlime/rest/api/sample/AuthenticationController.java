@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import io.getlime.banking.soap.client.PowerAuthServiceClient;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
@@ -23,7 +24,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "validate", method = RequestMethod.POST)
     public @ResponseBody PowerAuthAPIResponse<String> login(
-            @RequestHeader(value = "X-PowerAuth-Signature", required = true) String signatureHeader,
+            @RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader,
             HttpServletRequest servletRequest) throws Exception {
 
         PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(

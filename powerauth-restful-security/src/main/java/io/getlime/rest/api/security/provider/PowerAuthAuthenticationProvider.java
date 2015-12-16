@@ -89,7 +89,8 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 		}
 
 		// Get HTTP body bytes
-		byte[] requestBodyBytes = ((String)servletRequest.getAttribute(PowerAuthRequestFilter.HTTP_BODY)).getBytes("UTF-8");
+		String requestBodyString = ((String)servletRequest.getAttribute(PowerAuthRequestFilter.HTTP_BODY));
+		byte[] requestBodyBytes = requestBodyString == null ? null : requestBodyString.getBytes("UTF-8");
 
 		// Parse HTTP header
 		Map<String, String> httpHeaderInfo = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(httpAuthorizationHeader);

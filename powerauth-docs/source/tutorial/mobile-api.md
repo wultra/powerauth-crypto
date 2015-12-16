@@ -83,7 +83,7 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
 ### Register a PowerAuth application registry
 
-PowerAuth uses the concept of `application ID` and `application secret`. While `applicationId` attribute is transmitted with requests in `X-PowerAuth-Signature` header, `applicationSecret` is shared implicitly between client and server and is a part of the actual signature value. As a result, `PowerAuthAuthenticationProvider` component must be able to lookup `applicationSecret` based on `applicationId`. To achieve this, you need to register an instance of `PowerAuthApplicationConfiguration`, for example like this:
+PowerAuth uses the concept of `application ID` and `application secret`. While `applicationId` attribute is transmitted with requests in `X-PowerAuth-Authorization` header, `applicationSecret` is shared implicitly between client and server and is a part of the actual signature value. As a result, `PowerAuthAuthenticationProvider` component must be able to lookup `applicationSecret` based on `applicationId`. To achieve this, you need to register an instance of `PowerAuthApplicationConfiguration`, for example like this:
 
 ```java
 @Configuration
@@ -146,7 +146,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public @ResponseBody PowerAuthAPIResponse<String> login(
-            @RequestHeader(value = "X-PowerAuth-Signature", required = true) String signatureHeader,
+            @RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader,
             HttpServletRequest servletRequest) throws Exception {
 
         PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(

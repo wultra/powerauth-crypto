@@ -224,7 +224,7 @@ public class PowerAuthClientActivation {
         	// Decrypt the status blob
         	AESEncryptionUtils aes = new AESEncryptionUtils();
         	byte[] zeroIv = new byte[16];
-            byte[] statusBlob = aes.decrypt(cStatusBlob, zeroIv, transportKey);
+            byte[] statusBlob = aes.decrypt(cStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         	
             // Prepare objects to read status info into
         	ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
@@ -239,6 +239,9 @@ public class PowerAuthClientActivation {
         	
         	// fetch the counter info
         	statusInfo.setCounter(buffer.getInt(5));
+        	
+        	// fetch the failed attempt count
+        	statusInfo.setFailedAttempts(buffer.get(9));
         	
         	return statusInfo;
         } catch (IllegalBlockSizeException | BadPaddingException ex) {

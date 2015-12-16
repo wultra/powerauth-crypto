@@ -28,7 +28,7 @@ public class SecureVaultController {
 	@RequestMapping(value = "unlock", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<VaultUnlockResponse> unlockVault(
 			@RequestBody PowerAuthAPIRequest<VaultUnlockRequest> request, 
-			@RequestHeader(value = "X-PowerAuth-Signature", required = true, defaultValue = "unknown") String signature) throws PowerAuthAuthenticationException {
+			@RequestHeader(value = "X-PowerAuth-Authorization", required = true, defaultValue = "unknown") String signature) throws PowerAuthAuthenticationException {
 		
 		Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signature);
 		String activationId = map.get("activation_id");

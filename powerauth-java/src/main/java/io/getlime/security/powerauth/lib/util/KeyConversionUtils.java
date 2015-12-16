@@ -16,12 +16,14 @@
 package io.getlime.security.powerauth.lib.util;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
@@ -44,8 +46,7 @@ public class KeyConversionUtils {
      * @return A byte array representation of the EC public key.
      */
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) {
-        ECPublicKey ecpk = (ECPublicKey) publicKey;
-        return ecpk.getQ().getEncoded(false);
+        return ((ECPublicKey)publicKey).getQ().getEncoded(false);
     }
 
     /**
@@ -80,8 +81,11 @@ public class KeyConversionUtils {
      * @return A byte array containing the representation of the EC private key.
      */
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
-        ECPrivateKey ecpk = (ECPrivateKey) privateKey;
-        return ecpk.getD().toByteArray();
+        byte[] pkBytes = ((ECPrivateKey) privateKey).getD().toByteArray();
+        return ByteBuffer.allocate(64)
+        		.put(new byte[64 - pkBytes.length])
+        		.put(pkBytes)
+        		.array();
     }
 
     /**
@@ -96,7 +100,6 @@ public class KeyConversionUtils {
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException {
         try {
             KeyFactory kf = KeyFactory.getInstance("ECDH", "BC");
-
             BigInteger keyInteger = new BigInteger(keyBytes);
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
             ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);
@@ -128,15 +131,7 @@ public class KeyConversionUtils {
      * @return An instance of the secret key by decoding from provided bytes.
      */
     public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) {
-    	if (bytesSecretKey.length == 32) { // make sure to use 128 bit key
-    		byte[] resultSecret = new byte[16];
-            for (int i = 0; i < 16; i++) {
-                resultSecret[i] = (byte) (bytesSecretKey[i] ^ bytesSecretKey[i + 16]);
-            }
-            return new SecretKeySpec(resultSecret, "AES/CBC/PKCS5Padding");
-    	} else {
-    		return new SecretKeySpec(bytesSecretKey, "AES/CBC/PKCS5Padding");
-    	}
+    	return new SecretKeySpec(bytesSecretKey, "AES/ECB/NoPadding");
     }
 
 }

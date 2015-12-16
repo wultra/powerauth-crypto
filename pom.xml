@@ -21,7 +21,7 @@
         <module>powerauth-java</module>
         <module>powerauth-java-server</module>
         <module>powerauth-java-soap-client</module>
-        <module>powerauth-java-client-app</module>
+        <module>powerauth-java-cmd</module>
         <module>powerauth-restful-model</module>
         <module>powerauth-restful-security</module>
         <module>powerauth-restful-server</module>

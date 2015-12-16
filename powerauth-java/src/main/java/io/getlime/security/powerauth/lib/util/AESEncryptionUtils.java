@@ -29,9 +29,34 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 public class AESEncryptionUtils {
+	
+	/**
+     * Encrypt given data using given padding with given initialization
+     * vector and secret key.
+     *
+     * @param bytes Bytes to be encrypted.
+     * @param iv Initialization vector.
+     * @param secret Secret signature key.
+     * @param padding Padding to be used, for example "AES/CBC/PKCS7Padding".
+     * @return Encrypted bytes.
+     * @throws InvalidKeyException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
+    public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        try {
+            Cipher cipherForCryptoResponse = Cipher.getInstance(padding, "BC");
+            cipherForCryptoResponse.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(iv));
+            byte[] cryptoResponseData = cipherForCryptoResponse.doFinal(bytes);
+            return cryptoResponseData;
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | InvalidAlgorithmParameterException ex) {
+            Logger.getLogger(AESEncryptionUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
     /**
-     * Encrypt given data using AES/CBC/PKCS5Padding with given initialization
+     * Encrypt given data using AES/CBC/PKCS7Padding with given initialization
      * vector and secret key.
      *
      * @param bytes Bytes to be encrypted.
@@ -43,9 +68,26 @@ public class AESEncryptionUtils {
      * @throws BadPaddingException
      */
     public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        return this.encrypt(bytes, iv, secret, "AES/CBC/PKCS7Padding");
+    }
+    
+    /**
+     * Decrypt given data using give padding with given initialization
+     * vector and secret key.
+     *
+     * @param bytes Encrypted bytes to be decrypted.
+     * @param iv Initialization vector.
+     * @param secret Secret signature key.
+     * @param padding Padding to be used, for example "AES/CBC/PKCS7Padding".
+     * @return Original decrypted bytes.
+     * @throws InvalidKeyException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
+    public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         try {
-            Cipher cipherForCryptoResponse = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
-            cipherForCryptoResponse.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(iv));
+            Cipher cipherForCryptoResponse = Cipher.getInstance(padding, "BC");
+            cipherForCryptoResponse.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
             byte[] cryptoResponseData = cipherForCryptoResponse.doFinal(bytes);
             return cryptoResponseData;
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | InvalidAlgorithmParameterException ex) {
@@ -53,9 +95,9 @@ public class AESEncryptionUtils {
         }
         return null;
     }
-
+    
     /**
-     * Decrypt given data using AES/CBC/PKCS5Padding with given initialization
+     * Decrypt given data using AES/CBC/PKCS7Padding with given initialization
      * vector and secret key.
      *
      * @param bytes Encrypted bytes to be decrypted.
@@ -67,15 +109,7 @@ public class AESEncryptionUtils {
      * @throws BadPaddingException
      */
     public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        try {
-            Cipher cipherForCryptoResponse = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
-            cipherForCryptoResponse.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
-            byte[] cryptoResponseData = cipherForCryptoResponse.doFinal(bytes);
-            return cryptoResponseData;
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | InvalidAlgorithmParameterException ex) {
-            Logger.getLogger(AESEncryptionUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        return this.decrypt(bytes, iv, secret, "AES/CBC/PKCS7Padding");
     }
 
 }

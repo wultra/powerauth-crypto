@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -43,7 +44,7 @@ public class ActivationRecordEntity implements Serializable {
     private String userId;
 
     @Column(nullable = true)
-    private String clientName;
+    private String activationName;
     
     @Column(nullable = true)
     private String extras;
@@ -70,6 +71,7 @@ public class ActivationRecordEntity implements Serializable {
     private Date timestampLastUsed;
 
     @Column(nullable = false)
+    @Convert(converter = ActivationStatusConverter.class)
     private ActivationStatus activationStatus;
 
     @ManyToOne
@@ -84,7 +86,7 @@ public class ActivationRecordEntity implements Serializable {
             String activationIdShort,
             String activationOTP,
             String userId,
-            String clientName,
+            String activationName,
             String extras,
             String serverPrivateKeyBase64,
             String serverPublicKeyBase64,
@@ -99,7 +101,7 @@ public class ActivationRecordEntity implements Serializable {
         this.activationIdShort = activationIdShort;
         this.activationOTP = activationOTP;
         this.userId = userId;
-        this.clientName = clientName;
+        this.activationName = activationName;
         this.extras = extras;
         this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
         this.serverPublicKeyBase64 = serverPublicKeyBase64;
@@ -144,13 +146,13 @@ public class ActivationRecordEntity implements Serializable {
         this.userId = userId;
     }
 
-    public String getClientName() {
-        return clientName;
-    }
-
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
+    public String getActivationName() {
+		return activationName;
+	}
+    
+    public void setActivationName(String activationName) {
+		this.activationName = activationName;
+	}
     
     public String getExtras() {
 		return extras;
@@ -239,7 +241,7 @@ public class ActivationRecordEntity implements Serializable {
         hash = 71 * hash + Objects.hashCode(this.activationIdShort);
         hash = 71 * hash + Objects.hashCode(this.activationOTP);
         hash = 71 * hash + Objects.hashCode(this.userId);
-        hash = 71 * hash + Objects.hashCode(this.clientName);
+        hash = 71 * hash + Objects.hashCode(this.activationName);
         hash = 71 * hash + Objects.hashCode(this.serverPrivateKeyBase64);
         hash = 71 * hash + Objects.hashCode(this.serverPublicKeyBase64);
         hash = 71 * hash + Objects.hashCode(this.devicePublicKeyBase64);
@@ -273,7 +275,7 @@ public class ActivationRecordEntity implements Serializable {
         if (!Objects.equals(this.userId, other.userId)) {
             return false;
         }
-        if (!Objects.equals(this.clientName, other.clientName)) {
+        if (!Objects.equals(this.activationName, other.activationName)) {
             return false;
         }
         if (!Objects.equals(this.activationId, other.activationId)) {
@@ -316,7 +318,7 @@ public class ActivationRecordEntity implements Serializable {
                 + ", activationIdShort=" + activationIdShort
                 + ", activationOTP=" + activationOTP
                 + ", userId=" + userId
-                + ", clientName=" + clientName
+                + ", clientName=" + activationName
                 + ", serverPrivateKeyBase64=" + serverPrivateKeyBase64
                 + ", serverPublicKeyBase64=" + serverPublicKeyBase64
                 + ", devicePublicKeyBase64=" + devicePublicKeyBase64
