@@ -41,7 +41,7 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 		return (GetActivationStatusResponse) getWebServiceTemplate().marshalSendAndReceive(request);
 	}
 	
-	public GetActivationListForUserResponse blockActivation(GetActivationListForUserRequest request) {
+	public GetActivationListForUserResponse getActivationListForUser(GetActivationListForUserRequest request) {
 		return (GetActivationListForUserResponse) getWebServiceTemplate().marshalSendAndReceive(request);
 	}
 	
