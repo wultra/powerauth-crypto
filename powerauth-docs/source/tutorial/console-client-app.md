@@ -13,7 +13,7 @@ _____                   _____     _   _      ___   ___
 |__|  |___|_____|___|_| |__|__|___|_| |_|_|  |___|_|___|
 
 
-usage: java -jar powerauth-java-client-app.jar
+usage: java -jar powerauth-java-cmd.jar
  -a,--activation-code <arg>   In case a specified method is 'prepare',
                               this field contains the activation key (a
                               concatenation of a short activation ID and
