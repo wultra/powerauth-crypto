@@ -1,5 +1,7 @@
 package io.getlime.banking.soap.client;
 
+import java.util.List;
+
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import io.getlime.powerauth.soap.BlockActivationRequest;
@@ -8,6 +10,7 @@ import io.getlime.powerauth.soap.CommitActivationRequest;
 import io.getlime.powerauth.soap.CommitActivationResponse;
 import io.getlime.powerauth.soap.GetActivationListForUserRequest;
 import io.getlime.powerauth.soap.GetActivationListForUserResponse;
+import io.getlime.powerauth.soap.GetActivationListForUserResponse.Activations;
 import io.getlime.powerauth.soap.GetActivationStatusRequest;
 import io.getlime.powerauth.soap.GetActivationStatusResponse;
 import io.getlime.powerauth.soap.InitActivationRequest;
@@ -73,10 +76,10 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 		return (GetActivationListForUserResponse) getWebServiceTemplate().marshalSendAndReceive(request);
 	}
 	
-	public GetActivationListForUserResponse getActivationListForUser(String userId) {
+	public List<Activations> getActivationListForUser(String userId) {
 		GetActivationListForUserRequest request = new GetActivationListForUserRequest();
 		request.setUserId(userId);
-		return this.getActivationListForUser(request);
+		return this.getActivationListForUser(request).getActivations();
 	}
 	
 	public RemoveActivationResponse removeActivation(RemoveActivationRequest request) {
