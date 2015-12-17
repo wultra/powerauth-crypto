@@ -3,7 +3,7 @@
 
 	<include resource="org/springframework/boot/logging/logback/base.xml" />
 
-	<root level="DEBUG">
+	<root level="WARN">
 		<appender-ref ref="FILE" />
 	</root>
 

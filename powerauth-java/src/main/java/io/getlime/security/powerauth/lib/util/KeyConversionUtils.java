@@ -23,7 +23,6 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
@@ -82,10 +81,7 @@ public class KeyConversionUtils {
      */
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
         byte[] pkBytes = ((ECPrivateKey) privateKey).getD().toByteArray();
-        return ByteBuffer.allocate(64)
-        		.put(new byte[64 - pkBytes.length])
-        		.put(pkBytes)
-        		.array();
+        return pkBytes;
     }
 
     /**

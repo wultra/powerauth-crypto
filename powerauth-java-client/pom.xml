@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.getlime.security</groupId>
-	<artifactId>powerauth-java-soap-client</artifactId>
+	<artifactId>powerauth-java-client</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<name>powerauth-java-client</name>
-	<description>PowerAuth 2.0 SOAP Client</description>
+	<description>PowerAuth 2.0 Service Client</description>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
