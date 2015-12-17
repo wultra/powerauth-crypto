@@ -55,6 +55,12 @@ public class PowerAuthWebServiceConfiguration {
 
 ### Getting the new activation data
 
+//TODO:
+
 ### Getting the list and detail for the given activation
 
+//TODO:
+
 ### Blocking, unblocking and removing activation
+
+//TODO:
