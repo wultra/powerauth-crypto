@@ -16,7 +16,6 @@
 package io.getlime.security.powerauth.lib.util;
 
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
