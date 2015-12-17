@@ -1,12 +1,12 @@
 
 ```bash
-java -jar powerauth-java-cmd-0.0.1-SNAPSHOT.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/Users/petrdvorak/pa_status.json" --method "prepare" --master-key-file "/Users/petrdvorak/pamk.txt" --activation-code "F3CCT-FNOUS-GEVJF-O3HMV"
+java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/Users/petrdvorak/pa_status.json" --method "prepare" --master-key-file "/Users/petrdvorak/pamk.txt" --activation-code "F3CCT-FNOUS-GEVJF-O3HMV"
 ```
 
 ```bash
-java -jar powerauth-java-cmd-0.0.1-SNAPSHOT.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/Users/petrdvorak/pa_status.json" --method "status" --master-key-file "/Users/petrdvorak/pamk.txt"
+java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/Users/petrdvorak/pa_status.json" --method "status" --master-key-file "/Users/petrdvorak/pamk.txt"
 ```
 
 ```bash
-java -jar powerauth-java-cmd-0.0.1-SNAPSHOT.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/Users/petrdvorak/pa_status.json" --method "remove" --master-key-file "/Users/petrdvorak/pamk.txt"
+java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/Users/petrdvorak/pa_status.json" --method "remove" --master-key-file "/Users/petrdvorak/pamk.txt"
 ```
