@@ -28,17 +28,14 @@ public class SecureVaultController {
 	@RequestMapping(value = "unlock", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<VaultUnlockResponse> unlockVault(
 			@RequestBody PowerAuthAPIRequest<VaultUnlockRequest> request, 
-			@RequestHeader(value = "X-PowerAuth-Authorization", required = true, defaultValue = "unknown") String signature) throws PowerAuthAuthenticationException {
+			@RequestHeader(value = "X-PowerAuth-Authorization", required = true, defaultValue = "unknown") String signatureHeader) throws PowerAuthAuthenticationException {
 		
-		Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signature);
-		String activationId = map.get("activation_id");
+		Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signatureHeader);
+		String activationId = map.get(PowerAuthHttpHeader.ACTIVATION_ID);
+		String signature = map.get(PowerAuthHttpHeader.SIGNATURE);
+		String signatureType = map.get(PowerAuthHttpHeader.SIGNATURE_TYPE);
 		
-		io.getlime.powerauth.soap.VaultUnlockRequest soapRequest = new io.getlime.powerauth.soap.VaultUnlockRequest();
-		soapRequest.setActivationId(activationId);
-		soapRequest.setSignature(null);
-		soapRequest.setSignatureType(null);
-		
-		io.getlime.powerauth.soap.VaultUnlockResponse soapResponse = powerAuthClient.unlockVault(soapRequest);
+		io.getlime.powerauth.soap.VaultUnlockResponse soapResponse = powerAuthClient.unlockVault(activationId, signature, signatureType);
 		
 		if (!soapResponse.isSignatureValid()) {
 			throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");

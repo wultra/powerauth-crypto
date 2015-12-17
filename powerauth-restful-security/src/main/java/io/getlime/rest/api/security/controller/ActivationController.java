@@ -11,11 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.getlime.banking.soap.client.PowerAuthServiceClient;
-import io.getlime.powerauth.soap.GetActivationStatusRequest;
 import io.getlime.powerauth.soap.GetActivationStatusResponse;
-import io.getlime.powerauth.soap.PrepareActivationRequest;
 import io.getlime.powerauth.soap.PrepareActivationResponse;
-import io.getlime.powerauth.soap.RemoveActivationRequest;
 import io.getlime.powerauth.soap.RemoveActivationResponse;
 import io.getlime.rest.api.model.ActivationCreateRequest;
 import io.getlime.rest.api.model.ActivationCreateResponse;
@@ -45,15 +42,16 @@ public class ActivationController {
 		String activationIDShort = request.getRequestObject().getActivationIdShort();
 		String activationNonce = request.getRequestObject().getActivationNonce();
 		String cDevicePublicKey = request.getRequestObject().getcDevicePublicKey();
-		String clientActivationName = request.getRequestObject().getClientName();
-
-		PrepareActivationRequest soapRequest = new PrepareActivationRequest();
-		soapRequest.setActivationIdShort(activationIDShort);
-		soapRequest.setActivationNonce(activationNonce);
-		soapRequest.setCDevicePublicKey(cDevicePublicKey);
-		soapRequest.setActivationName(clientActivationName);
-
-		PrepareActivationResponse soapResponse = powerAuthClient.prepareActivation(soapRequest);
+		String activationName = request.getRequestObject().getActivationName();
+		String extras = request.getRequestObject().getExtras();
+		
+		PrepareActivationResponse soapResponse = powerAuthClient.prepareActivation(
+				activationIDShort,
+				activationName,
+				activationNonce,
+				cDevicePublicKey,
+				extras
+		);
 
 		ActivationCreateResponse response = new ActivationCreateResponse();
 		response.setActivationId(soapResponse.getActivationId());
@@ -71,10 +69,7 @@ public class ActivationController {
 		
 		String activationId = request.getRequestObject().getActivationId();
 
-		GetActivationStatusRequest soapRequest = new GetActivationStatusRequest();
-		soapRequest.setActivationId(activationId);
-
-		GetActivationStatusResponse soapResponse = powerAuthClient.getActivationStatus(soapRequest);
+		GetActivationStatusResponse soapResponse = powerAuthClient.getActivationStatus(activationId);
 
 		ActivationStatusResponse response = new ActivationStatusResponse();
 		response.setActivationId(soapResponse.getActivationId());
@@ -91,10 +86,7 @@ public class ActivationController {
 		
 		if (apiAuthentication != null && apiAuthentication.getActivationId() != null) {
 
-			RemoveActivationRequest soapRequest = new RemoveActivationRequest();
-			soapRequest.setActivationId(apiAuthentication.getActivationId());
-
-			RemoveActivationResponse soapResponse = powerAuthClient.removeActivation(soapRequest);
+			RemoveActivationResponse soapResponse = powerAuthClient.removeActivation(apiAuthentication.getActivationId());
 
 			ActivationRemoveResponse response = new ActivationRemoveResponse();
 			response.setActivationId(soapResponse.getActivationId());

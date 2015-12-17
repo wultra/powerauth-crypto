@@ -654,11 +654,11 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                 if (signatureValid) {
                 	
                 	// Compute encrypted vault encryption key using incremented counter
-                	lowestValidCounter++;
+                	lowestValidCounter += 1;
                     byte[] cKeyBytes = powerAuthServerVault.encryptVaultEncryptionKey(serverPrivateKey, devicePublicKey, lowestValidCounter);
 
-                    // Set the activation record counter to the lowest counter
-                    activation.setCounter(lowestValidCounter);
+                    // Set the activation record counter to the lowest counter (+1, since client will also increment the counter)
+                    activation.setCounter(lowestValidCounter + 1);
 
                     // Reset failed attempt count
                     activation.setFailedAttempts(0L);
