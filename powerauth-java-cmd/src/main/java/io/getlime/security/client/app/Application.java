@@ -167,7 +167,7 @@ public class Application implements CommandLineRunner {
 			// Prepare the server request
 			ActivationCreateRequest requestObject = new ActivationCreateRequest();
 			requestObject.setActivationIdShort(activationIdShort);
-			requestObject.setClientName("PowerAuth 2.0 Reference Client");
+			requestObject.setActivationName("PowerAuth 2.0 Reference Client");
 			requestObject.setActivationNonce(BaseEncoding.base64().encode(nonceDeviceBytes));
 			requestObject.setcDevicePublicKey(BaseEncoding.base64().encode(cDevicePublicKeyBytes));
 			PowerAuthAPIRequest<ActivationCreateRequest> body = new PowerAuthAPIRequest<>();
