@@ -55,6 +55,7 @@ import io.getlime.rest.api.model.ActivationStatusResponse;
 import io.getlime.rest.api.model.PowerAuthAPIRequest;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
+import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.client.vault.PowerAuthClientVault;
 import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
@@ -70,6 +71,23 @@ public class Application implements CommandLineRunner {
 
 	private static final String expectedApplicationId = "a1c97807-795a-466e-87bf-230d8ac1451e";
 	private static final String expectedApplicationSecret = "d358e78a-8d12-4595-bf69-6eff2c2afc04";
+	private JSONObject clientConfigObject = null;
+
+	private String getApplicationId() {
+		if (clientConfigObject.get("applicationId") != null) {
+			return (String) clientConfigObject.get("applicationId");
+		} else {
+			return expectedApplicationId;
+		}
+	}
+
+	private String getApplicationSecret() {
+		if (clientConfigObject.get("applicationSecret") != null) {
+			return (String) clientConfigObject.get("applicationSecret");
+		} else {
+			return expectedApplicationSecret;
+		}
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -87,13 +105,13 @@ public class Application implements CommandLineRunner {
 		options.addOption("h", "help", false, "Print this help manual");
 		options.addOption("u", "url", true, "Base URL of the PowerAuth 2.0 Standard RESTful API");
 		options.addOption("m", "method", true, "What API method to call, available names are 'prepare', 'status', 'remove', 'sign' and 'unlock'");
-		options.addOption("k", "master-key-file", true, "Specifies a path to the file with Base64 encoded server master public key");
+		options.addOption("c", "config-file", true, "Specifies a path to the config file with Base64 encoded server master public key, application ID and application secret");
 		options.addOption("s", "status-file", true, "Path to the file with the activation status, serving as the data persistence.");
 		options.addOption("a", "activation-code", true, "In case a specified method is 'prepare', this field contains the activation key (a concatenation of a short activation ID and activation OTP)");
-		options.addOption("i", "input-file", true, "In case a specified method is 'sign', this field specifies a file with the input data to be signed and verified with the server, as specified in PowerAuth signature process.");
-		options.addOption("e", "endpoint", true, "In case a specified method is 'sign', this field specifies a URI identifier, as specified in PowerAuth signature process.");
 		options.addOption("h", "http-method", true, "In case a specified method is 'sign', this field specifies a HTTP method, as specified in PowerAuth signature process.");
-		options.addOption("l", "application-id", true, "In case a specified method is 'sign', this field specifies an application ID, as specified in PowerAuth signature process.");
+		options.addOption("e", "endpoint", true, "In case a specified method is 'sign', this field specifies a URI identifier, as specified in PowerAuth signature process.");
+		options.addOption("l", "signature-type", true, "In case a specified method is 'sign', this field specifies a signature type, as specified in PowerAuth signature process.");
+		options.addOption("d", "data-file", true, "In case a specified method is 'sign', this field specifies a file with the input data to be signed and verified with the server, as specified in PowerAuth signature process.");
 
 		// Options parsing
 		CommandLineParser parser = new DefaultParser();
@@ -124,17 +142,27 @@ public class Application implements CommandLineRunner {
 		PowerAuthClientSignature signature = new PowerAuthClientSignature();
 		PowerAuthClientVault vault = new PowerAuthClientVault();
 		PowerAuthClientActivation activation = new PowerAuthClientActivation();
+		PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
 
 		// Read values
 		String statusFileName = cmd.getOptionValue("s");
 		String method = cmd.getOptionValue("m");
 		String uriString = cmd.getOptionValue("u");
-		String masterKeyFileName = cmd.getOptionValue("k");
+		String configFileName = cmd.getOptionValue("c");
 
 		// Read master public key
-		List<String> lines = Files.readAllLines(Paths.get(masterKeyFileName), Charset.forName("UTF-8"));
-		byte[] masterKeyBytes = BaseEncoding.base64().decode(lines.get(0));
-		PublicKey masterPublicKey = keyConversion.convertBytesToPublicKey(masterKeyBytes);
+		PublicKey masterPublicKey = null;
+		if (Files.exists(Paths.get(configFileName))) {
+			byte[] statusFileBytes = Files.readAllBytes(Paths.get(configFileName));
+			clientConfigObject = (JSONObject) JSONValue.parse(new String(statusFileBytes));
+			byte[] masterKeyBytes = BaseEncoding.base64().decode((String) clientConfigObject.get("masterPublicKey"));
+			masterPublicKey = keyConversion.convertBytesToPublicKey(masterKeyBytes);
+		} else {
+			System.out.println("Unable to read client config file");
+			System.out.println();
+			System.out.println("### Failed.");
+			System.out.println();
+		}
 
 		// Read current activation state from the activation state file or
 		// create an empty state
@@ -205,15 +233,15 @@ public class Application implements CommandLineRunner {
 					PublicKey serverPublicKey = activation.decryptServerPublicKey(cServerPubKeyBytes, deviceKeyPair.getPrivate(), ephemeralPublicKey, activationOTP, activationIdShort, nonceServerBytes);
 
 					// Compute master secret key
-					SecretKey masterSecretKey = signature.generateClientMasterSecretKey(deviceKeyPair.getPrivate(), serverPublicKey);
+					SecretKey masterSecretKey = keyFactory.generateClientMasterSecretKey(deviceKeyPair.getPrivate(), serverPublicKey);
 
 					// Derive PowerAuth keys from master secret key
-					SecretKey signaturePossessionSecretKey = signature.generateClientSignaturePossessionKey(masterSecretKey);
-					SecretKey signatureKnoweldgeSecretKey = signature.generateClientSignatureKnowledgeKey(masterSecretKey);
-					SecretKey signatureBiometrySecretKey = signature.generateClientSignatureBiometryKey(masterSecretKey);
-					SecretKey transportMasterKey = signature.generateServerTransportKey(masterSecretKey);
+					SecretKey signaturePossessionSecretKey = keyFactory.generateClientSignaturePossessionKey(masterSecretKey);
+					SecretKey signatureKnoweldgeSecretKey = keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey);
+					SecretKey signatureBiometrySecretKey = keyFactory.generateClientSignatureBiometryKey(masterSecretKey);
+					SecretKey transportMasterKey = keyFactory.generateServerTransportKey(masterSecretKey);
 					// DO NOT EVER STORE ...
-					SecretKey vaultUnlockMasterKey = signature.generateServerEncryptedVaultKey(masterSecretKey);
+					SecretKey vaultUnlockMasterKey = keyFactory.generateServerEncryptedVaultKey(masterSecretKey);
 
 					// Encrypt the original device private key using the vault
 					// unlock key
@@ -284,7 +312,7 @@ public class Application implements CommandLineRunner {
 
 		} else if (method.equals("status")) {
 
-			System.out.println("### PowerAuth 2.0 Client Activation Started");
+			System.out.println("### PowerAuth 2.0 Client Activation Status Check Started");
 			System.out.println();
 
 			// Prepare the activation URI
@@ -351,7 +379,7 @@ public class Application implements CommandLineRunner {
 
 		} else if (method.equals("remove")) {
 
-			System.out.println("### PowerAuth 2.0 Client Activation Started");
+			System.out.println("### PowerAuth 2.0 Client Activation Removal Started");
 			System.out.println();
 
 			// Prepare the activation URI
@@ -378,9 +406,9 @@ public class Application implements CommandLineRunner {
 
 			// Compute the current PowerAuth 2.0 signature for possession and
 			// knowledge factor
-			String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString("POST", "/pa/activation/remove", Application.expectedApplicationSecret, pa_nonce, null);
+			String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString("POST", "/pa/activation/remove", getApplicationSecret(), pa_nonce, null);
 			String pa_signature = signature.signatureForData(signatureBaseString.getBytes("UTF-8"), Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), counter);
-			String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, Application.expectedApplicationId, pa_nonce, PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_KNOWLEDGE, pa_signature, "2.0");
+			String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, getApplicationId(), pa_nonce, PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_KNOWLEDGE, pa_signature, "2.0");
 			System.out.println("Coomputed X-PowerAuth-Authorization header: " + httpAuhtorizationHeader);
 			System.out.println();
 
@@ -447,6 +475,113 @@ public class Application implements CommandLineRunner {
 			}
 
 		} else if (method.equals("sign")) {
+
+			System.out.println("### PowerAuth 2.0 Client Signature Verification");
+			System.out.println();
+
+			// Prepare the activation URI
+			String fullURIString = uriString + "/pa/signature/validate";
+			URI uri = new URI(fullURIString);
+
+			// Get data from status
+			String activationId = (String) resultStatusObject.get("activationId");
+			long counter = (long) resultStatusObject.get("counter");
+			byte[] signaturePossessionKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signaturePossessionKey"));
+			byte[] signatureBiometryKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureBiometryKey"));
+			byte[] signatureKnowledgeKeySalt = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureKnowledgeKeySalt"));
+			byte[] signatureKnowledgeKeyEncryptedBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureKnowledgeKeyEncrypted"));
+
+			// Ask for the password to unlock knowledge factor key
+			Console console = System.console();
+			char[] password = console.readPassword("Enter your password to unlock the knowledge related key: ");
+
+			// Get the signature keys
+			SecretKey signaturePossessionKey = keyConversion.convertBytesToSharedSecretKey(signaturePossessionKeyBytes);
+			SecretKey signatureKnowledgeKey = this.getSignatureKnowledgeKey(password, signatureKnowledgeKeyEncryptedBytes, signatureKnowledgeKeySalt, keyGenerator);
+			SecretKey signatureBiometryKey = keyConversion.convertBytesToSharedSecretKey(signatureBiometryKeyBytes);
+
+			// Generate nonce
+			String pa_nonce = BaseEncoding.base64().encode(keyGenerator.generateRandomBytes(16));
+
+			// Read input files
+			String dataFileName = cmd.getOptionValue("d");
+			byte[] statusFileBytes = null;
+			if (Files.exists(Paths.get(dataFileName))) {
+				statusFileBytes = Files.readAllBytes(Paths.get(dataFileName));
+			} else {
+				System.out.println("[WARN] Data file was not found!");
+				System.out.println();
+			}
+			
+			// Read the endpoint options
+			String httpMethod = cmd.getOptionValue("h");
+			String endpoint = cmd.getOptionValue("e");
+			String signatureType = cmd.getOptionValue("l");
+
+			// Compute the current PowerAuth 2.0 signature for possession and
+			// knowledge factor
+			String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(httpMethod, endpoint, getApplicationSecret(), pa_nonce, statusFileBytes);
+			String pa_signature = signature.signatureForData(
+					signatureBaseString.getBytes("UTF-8"), 
+					keyFactory.keysForSignatureType(signatureType, signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey),
+					counter
+			);
+			String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, getApplicationId(), pa_nonce, PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_KNOWLEDGE, pa_signature, "2.0");
+			System.out.println("Coomputed X-PowerAuth-Authorization header: " + httpAuhtorizationHeader);
+			System.out.println();
+
+			// Increment the counter
+			counter += 1;
+			resultStatusObject.put("counter", new Long(counter));
+
+			// Store the activation status (updated counter)
+			String formatted = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultStatusObject);
+			try (FileWriter file = new FileWriter(statusFileName)) {
+				file.write(formatted);
+			}
+
+			// Prepare HTTP headers
+			MultiValueMap<String, String> headers = new HttpHeaders();
+			headers.add("X-PowerAuth-Authorization", httpAuhtorizationHeader);
+
+			RequestEntity<byte[]> request = new RequestEntity<byte[]>(statusFileBytes, headers, HttpMethod.POST, uri);
+
+			// Call the server with activation data
+			System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + fullURIString + " ...");
+			try {
+				template.exchange(request, new ParameterizedTypeReference<PowerAuthAPIResponse<String>>() {
+				});
+				System.out.println("Done.");
+				System.out.println();
+
+				// Print the results
+				System.out.println("Activation ID: " + activationId);
+				System.out.println();
+				System.out.println("Signature verification complete.");
+				System.out.println("### Done.");
+				System.out.println();
+			} catch (HttpClientErrorException exception) {
+				String responseString = exception.getResponseBodyAsString();
+				try {
+					Map<String, Object> errorMap = mapper.readValue(responseString, Map.class);
+					System.out.println(((Map<String, Object>) errorMap.get("error")).get("message"));
+				} catch (Exception e) {
+					System.out.println("Service error - HTTP " + exception.getStatusCode().toString() + ": " + exception.getStatusText());
+				}
+				System.out.println();
+				System.out.println("### Failed.");
+				System.out.println();
+			} catch (ResourceAccessException exception) {
+				System.out.println("Connection error - connection refused");
+				System.out.println();
+				System.out.println("### Failed.");
+				System.out.println();
+			} catch (Exception exception) {
+				System.out.println("Unknown error - " + exception.getLocalizedMessage());
+				System.out.println();
+				System.out.println("### Failed.");
+				System.out.println();
+			}
 
 		} else if (method.equals("unlock")) {
 

@@ -15,9 +15,11 @@
  */
 package io.getlime.security.powerauth.signature;
 
+import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
+import io.getlime.security.powerauth.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.server.signature.PowerAuthServerSignature;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -91,6 +93,9 @@ public class PowerAuthSignatureTest {
 
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
+        
+        PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
+        PowerAuthServerKeyFactory serverKeyFactory = new PowerAuthServerKeyFactory();
 
         for (int i = 0; i < 5; i++) {
 
@@ -109,9 +114,9 @@ public class PowerAuthSignatureTest {
 
                 // compute data signature
                 System.out.println("## Client Signature Key Derivation");
-                SecretKey masterClientKey = clientSignature.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
                 System.out.println("### Client Master Secret Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(masterClientKey)));
-                SecretKey signatureClientKey = clientSignature.generateClientSignaturePossessionKey(masterClientKey);
+                SecretKey signatureClientKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
                 System.out.println("### Client Signature Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureClientKey)));
 
                 String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKey), ctr);
@@ -121,11 +126,11 @@ public class PowerAuthSignatureTest {
                 // validate data signature
                 System.out.println("## Server Signature Key Derivation");
 
-                SecretKey masterServerKey = serverSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+                SecretKey masterServerKey = serverKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
                 System.out.println("### Server Master Secret Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(masterServerKey)));
                 assertEquals(masterClientKey, masterServerKey);
 
-                SecretKey signatureServerKey = serverSignature.generateServerSignaturePossessionKey(masterServerKey);
+                SecretKey signatureServerKey = serverKeyFactory.generateServerSignaturePossessionKey(masterServerKey);
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureServerKey)));
                 assertEquals(signatureClientKey, signatureServerKey);
 
@@ -147,11 +152,11 @@ public class PowerAuthSignatureTest {
 
                 // compute data signature
                 System.out.println("## Client Signature Key Derivation");
-                SecretKey masterClientKey = clientSignature.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
                 System.out.println("### Client Master Secret Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(masterClientKey)));
-                SecretKey signatureClientKeyPossession = clientSignature.generateClientSignaturePossessionKey(masterClientKey);
+                SecretKey signatureClientKeyPossession = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
                 System.out.println("### Client Signature Key - Possession: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureClientKeyPossession)));
-                SecretKey signatureClientKeyKnowledge = clientSignature.generateClientSignatureKnowledgeKey(masterClientKey);
+                SecretKey signatureClientKeyKnowledge = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
                 System.out.println("### Client Signature Key - Knowledge:  " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureClientKeyKnowledge)));
 
                 String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctr);
@@ -161,14 +166,14 @@ public class PowerAuthSignatureTest {
                 // validate data signature
                 System.out.println("## Server Signature Key Derivation");
 
-                SecretKey masterServerKey = serverSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+                SecretKey masterServerKey = serverKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
                 System.out.println("### Server Master Secret Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(masterServerKey)));
                 assertEquals(masterClientKey, masterServerKey);
                 
-                SecretKey signatureServerKeyPossession = serverSignature.generateServerSignaturePossessionKey(masterServerKey);
+                SecretKey signatureServerKeyPossession = serverKeyFactory.generateServerSignaturePossessionKey(masterServerKey);
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureServerKeyPossession)));
                 assertEquals(signatureClientKeyPossession, signatureServerKeyPossession);
-                SecretKey signatureServerKeyKnowledge = serverSignature.generateServerSignatureKnowledgeKey(masterServerKey);
+                SecretKey signatureServerKeyKnowledge = serverKeyFactory.generateServerSignatureKnowledgeKey(masterServerKey);
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureServerKeyKnowledge)));
                 assertEquals(signatureClientKeyKnowledge, signatureServerKeyKnowledge);
 

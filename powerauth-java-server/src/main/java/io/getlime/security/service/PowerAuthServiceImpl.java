@@ -42,6 +42,7 @@ import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
+import io.getlime.security.powerauth.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.server.signature.PowerAuthServerSignature;
 import io.getlime.security.powerauth.server.vault.PowerAuthServerVault;
 import io.getlime.security.repository.MasterKeyPairRepository;
@@ -50,7 +51,6 @@ import io.getlime.security.repository.model.ActivationRecordEntity;
 import io.getlime.security.repository.model.ActivationStatus;
 import io.getlime.security.repository.model.MasterKeyPairEntity;
 import io.getlime.security.service.exceptions.GenericServiceException;
-import io.getlime.security.service.util.KeyUtil;
 import io.getlime.security.service.util.ModelUtil;
 
 import java.math.BigInteger;
@@ -84,6 +84,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
     private final PowerAuthServerActivation powerAuthServerActivation = new PowerAuthServerActivation();
     private final PowerAuthServerSignature powerAuthServerSignature = new PowerAuthServerSignature();
+    private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
     private final PowerAuthServerVault powerAuthServerVault = new PowerAuthServerVault();
     private final KeyConversionUtils keyConversionUtilities = new KeyConversionUtils();
 
@@ -149,8 +150,8 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                 PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(BaseEncoding.base64().decode(serverPrivateKeyBase64));
                 PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(BaseEncoding.base64().decode(devicePublicKeyBase64));
 
-                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
-                SecretKey transportKey = powerAuthServerSignature.generateServerTransportKey(masterSecretKey);
+                SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+                SecretKey transportKey = powerAuthServerKeyFactory.generateServerTransportKey(masterSecretKey);
 
                 // Encrypt the status blob
                 byte[] C_statusBlob = powerAuthServerActivation.encryptedStatusBlob(
@@ -399,10 +400,10 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                 PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(devicePublicKeyBytes);
 
                 // Compute the master secret key
-                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+                SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
 
                 // Get the signature keys according to the signature type
-                List<SecretKey> signatureKeys = new KeyUtil().keysForSignatureType(signatureType, masterSecretKey, powerAuthServerSignature);
+                List<SecretKey> signatureKeys = powerAuthServerKeyFactory.keysForSignatureType(signatureType, masterSecretKey);
 
                 // Verify the signature with given lookahead
                 boolean signatureValid = false;

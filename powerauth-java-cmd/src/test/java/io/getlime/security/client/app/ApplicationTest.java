@@ -11,6 +11,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 
@@ -32,7 +33,7 @@ public class ApplicationTest {
 			KeyPair kps = new KeyGenerator().generateKeyPair();
 			SecretKey secret = new KeyGenerator().computeSharedKey(kpd.getPrivate(), kps.getPublic());
 
-			SecretKey knowledgeSecret = new PowerAuthClientSignature().generateClientSignatureKnowledgeKey(secret);
+			SecretKey knowledgeSecret = new PowerAuthClientKeyFactory().generateClientSignatureKnowledgeKey(secret);
 			byte[] salt = new KeyGenerator().generateRandomBytes(16);
 
 			byte[] encrypted = app.storeSignatureKnowledgeKey("1234".toCharArray(), knowledgeSecret, salt, new KeyGenerator());
