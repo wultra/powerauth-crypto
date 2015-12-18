@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `pa_activation`;
 CREATE TABLE `pa_activation` (
   `activation_id` varchar(37) NOT NULL,
   `activation_id_short` varchar(255) NOT NULL,
-  `activationotp` varchar(255) NOT NULL,
+  `activation_otp` varchar(255) NOT NULL,
   `activation_status` int(11) NOT NULL,
   `activation_name` varchar(255) DEFAULT NULL,
   `extras` text DEFAULT NULL,

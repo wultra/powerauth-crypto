@@ -31,46 +31,46 @@ public class ActivationRecordEntity implements Serializable {
     private static final long serialVersionUID = 7512286634644851705L;
 
     @Id
-    @Column(length = 37)
+    @Column(name = "activation_id", length = 37)
     private String activationId;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "activation_id_short", nullable = false, updatable = false)
     private String activationIdShort;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "activation_otp", nullable = false, updatable = false)
     private String activationOTP;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "user_id", nullable = false, updatable = false)
     private String userId;
 
-    @Column(nullable = true)
+    @Column(name = "activation_name", nullable = true)
     private String activationName;
     
-    @Column(nullable = true)
+    @Column(name = "extras", nullable = true)
     private String extras;
 
-    @Column(nullable = false)
+    @Column(name = "server_private_key_base64", nullable = false)
     private String serverPrivateKeyBase64;
 
-    @Column(nullable = false)
+    @Column(name = "server_public_key_base64", nullable = false)
     private String serverPublicKeyBase64;
 
-    @Column(nullable = true)
+    @Column(name = "device_public_key_base64", nullable = true)
     private String devicePublicKeyBase64;
 
-    @Column(nullable = false)
+    @Column(name = "counter", nullable = false)
     private Long counter;
 
-    @Column
+    @Column(name = "failed_attempts", nullable = false)
     private Long failedAttempts;
 
-    @Column(nullable = false)
+    @Column(name = "timestamp_created", nullable = false)
     private Date timestampCreated;
 
-    @Column(nullable = false)
+    @Column(name = "timestamp_last_used", nullable = false)
     private Date timestampLastUsed;
 
-    @Column(nullable = false)
+    @Column(name = "activation_status", nullable = false)
     @Convert(converter = ActivationStatusConverter.class)
     private ActivationStatus activationStatus;
 

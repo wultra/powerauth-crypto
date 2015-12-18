@@ -513,7 +513,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
             // Get current timestamp
             Date timestamp = new Date();
-            if (activation == null || (timestamp.getTime() - activation.getTimestampCreated().getTime()) < PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+            if (activation == null || (timestamp.getTime() - activation.getTimestampCreated().getTime()) > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
                 activation.setActivationStatus(ActivationStatus.REMOVED);
                 powerAuthRepository.save(activation);
                 throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");

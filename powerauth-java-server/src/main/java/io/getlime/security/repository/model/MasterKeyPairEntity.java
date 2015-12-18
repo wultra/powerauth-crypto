@@ -33,16 +33,16 @@ public class MasterKeyPairEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "master_key_private_base64", nullable = false)
     private String masterKeyPrivateBase64;
 
-    @Column(nullable = false)
+    @Column(name = "master_key_public_base64", nullable = false)
     private String masterKeyPublicBase64;
 
-    @Column(nullable = false)
+    @Column(name = "timestamp_created", nullable = false)
     private Date timestampCreated;
 
     protected MasterKeyPairEntity() {
