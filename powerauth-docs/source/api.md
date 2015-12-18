@@ -8,10 +8,10 @@ Each PowerAuth 2.0 implementation that is located on a specific base URL then ha
 
 Following endpoints are published in PowerAuth 2.0 Standard RESTful API:
 
-- [`/pa/activation/create`](#initiate-activation)
-- [`/pa/activation/status`](#activation-status)
-- [`/pa/activation/remove`](#activation-remove)
-- [`/pa/vault/unlock`](#vault-unlock)
+- [`/pa/activation/create`](#initiate-activation) - Create a new activation, perform a key exchange based on short activation ID.
+- [`/pa/activation/status`](#activation-status) - Query for an activation status.
+- [`/pa/activation/remove`](#activation-remove) - Remove an activation (requires authentication).
+- [`/pa/vault/unlock`](#vault-unlock) - Get a key to unlock secure vault (requires authentication).
 
 ## Initiate activation
 
