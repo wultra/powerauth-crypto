@@ -75,16 +75,51 @@ public class AuthenticationController {
 
 To generate a new activation data for a given user ID, call the `initActivation` method of the `PowerAuthServiceClient` instance.
 
-### Committing activation
+In response, you will obtain a new activation data. Your goal is to display `activationIdShort`, `activationOtp` and optionally `activationSignature` attributes in user interface so that a user can enter these information in his PowerAuth 2.0 Client application.
 
-To commit an activation with given `activationId`, call the `commitActivation` method of the `PowerAuthServiceClient` instance.
+Also, you will receive `activationId` in the response that you can use to query for activation status or to commit the activation. Finally, response contains the `userId` as a back-reference to your request data.
 
 ```java
+// your actual user identifier
+String userId = "1234";
+
+// Short way to read the activations
+InitActivationResponse activation = powerAuthServiceClient.initActivation(userId);
+
+// ... or using the original SOAP request-response notion ...
+InitActivationRequest request = new InitActivationRequest();
+request.setUserId(userId);
+InitActivationResponse response = powerAuthServiceClient.initActivation(request);
+```
+
+### Committing activation
+
+To commit an activation with given `activationId`, call the `commitActivation` method of the `PowerAuthServiceClient` instance. You should allow committing an activation as soon as it changes it's state from `CREATED` (initial state) to `OTP_USED` (state after the key exchange is complete).
+
+```java
+// your actual activation identifier
+String activationId = "509d4c95-ef0d-4338-ab3a-64e730921fd1";
+
+// Short way to block the activation
+CommitActivationResponse response = powerAuthServiceClient.commitActivation(activationId);
+
+// ... or using the original SOAP request-response notion ...
+CommitActivationRequest request = new CommitActivationRequest();
+request.setActivationId(activationId)
+CommitActivationResponse response = powerAuthServiceClient.commitActivation(request);
 ```
 
 ### Getting the list and detail for the given activation
 
-To get the list of activations for a given user ID, call the `getActivationListForUser` method of the `PowerAuthServiceClient` instance.
+To get the list of activations for a given user ID, call the `getActivationListForUser` method of the `PowerAuthServiceClient` instance. Use this method to display the list of activations in a user interface, for the purpose of activation management. Each activation contains following attributes:
+
+- `activationId` - Identifier of the activation.
+- `activationStatus` - Status of the activation: `CREATED`, `OTP_USED`, `ACTIVE`, `BLOCKED`, or `REMOVED`.
+- `activationName` - Name of the activation, as the user created it.
+- `userId` - Reference to the user to whom the activation belongs.
+- `timestampCreated` - Timestamp representing the moment an activation was created (milliseconds since the Unix epoch start).
+- `timestampLastUsed`  - Timestamp representing the moment an activation was last used for signature verification (milliseconds since the Unix epoch start).
+- `extras` - Extra data, content depends on application specific requirements.
 
 ```java
 // your actual user identifier
@@ -100,7 +135,7 @@ GetActivationListForUserResponse response = powerAuthServiceClient.getActivation
 List<Activations> activations = response.getActivations();
 ```
 
-You can also get a detail of an individual activation based on `activationId` by calling the `getActivationStatus` method of the `PowerAuthServiceClient`
+You can also get a detail of an individual activation based on `activationId` by calling the `getActivationStatus` method of the `PowerAuthServiceClient`.
 
 ```java
 // your actual activation identifier
@@ -117,7 +152,7 @@ GetActivationStatusResponse response = powerAuthServiceClient.getActivationStatu
 
 ### Blocking, unblocking and removing activation
 
-To block an activation with given `activationId`, call the `blockActivation` method of the `PowerAuthServiceClient` instance.
+To block an activation with given `activationId`, call the `blockActivation` method of the `PowerAuthServiceClient` instance. Only activations in `ACTIVE` state can be blocked.
 
 ```java
 // your actual activation identifier
@@ -132,7 +167,7 @@ request.setActivationId(activationId)
 BlockActivationResponse response = powerAuthServiceClient.blockActivation(request);
 ```
 
-To unblock an activation with given `activationId`, call the `unblockActivation` method of the `PowerAuthServiceClient` instance.
+To unblock an activation with given `activationId`, call the `unblockActivation` method of the `PowerAuthServiceClient` instance. Only activations in `BLOCKED` state can be unblocked.
 
 ```java
 // your actual activation identifier
@@ -147,7 +182,7 @@ request.setActivationId(activationId)
 UnblockActivationResponse response = powerAuthServiceClient.unblockActivation(request);
 ```
 
-To remove an activation with given `activationId`, call the `removeActivation` method of the `PowerAuthServiceClient` instance. Note that unlike with the PowerAuth 2.0 Standard RESTful API (usually called by PowerAuth 2.0 Client), this call does not require PowerAuth 2.0 authorization signature.
+To remove an activation with given `activationId`, call the `removeActivation` method of the `PowerAuthServiceClient` instance. Note that unlike with the PowerAuth 2.0 Standard RESTful API (usually called by PowerAuth 2.0 Client), this call does not require PowerAuth 2.0 authorization signature. You can remove activation in any activation state.
 
 ```java
 // your actual activation identifier
