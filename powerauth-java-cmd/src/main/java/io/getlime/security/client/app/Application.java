@@ -109,6 +109,7 @@ public class Application implements CommandLineRunner {
 		options.addOption("a", "activation-code", true, "In case a specified method is 'prepare', this field contains the activation key (a concatenation of a short activation ID and activation OTP)");
 		options.addOption("h", "http-method", true, "In case a specified method is 'sign', this field specifies a HTTP method, as specified in PowerAuth signature process.");
 		options.addOption("e", "endpoint", true, "In case a specified method is 'sign', this field specifies a URI identifier, as specified in PowerAuth signature process.");
+		options.addOption("b", "subpath", true, "In case a specified method is 'sign', this field specifies a URI component after the base URL in order to provide information on what method to call.");
 		options.addOption("l", "signature-type", true, "In case a specified method is 'sign', this field specifies a signature type, as specified in PowerAuth signature process.");
 		options.addOption("d", "data-file", true, "In case a specified method is 'sign', this field specifies a file with the input data to be signed and verified with the server, as specified in PowerAuth signature process.");
 
@@ -478,8 +479,14 @@ public class Application implements CommandLineRunner {
 			System.out.println("### PowerAuth 2.0 Client Signature Verification");
 			System.out.println();
 
+			// Read the endpoint options
+			String httpMethod = cmd.getOptionValue("h");
+			String endpoint = cmd.getOptionValue("e");
+			String signatureType = cmd.getOptionValue("l");
+			String subPath = cmd.getOptionValue("b");
+
 			// Prepare the activation URI
-			String fullURIString = uriString + "/pa/signature/validate";
+			String fullURIString = uriString + subPath;
 			URI uri = new URI(fullURIString);
 
 			// Get data from status
@@ -502,7 +509,7 @@ public class Application implements CommandLineRunner {
 			// Generate nonce
 			String pa_nonce = BaseEncoding.base64().encode(keyGenerator.generateRandomBytes(16));
 
-			// Read input files
+			// Read data input file
 			String dataFileName = cmd.getOptionValue("d");
 			byte[] statusFileBytes = null;
 			if (Files.exists(Paths.get(dataFileName))) {
@@ -511,21 +518,12 @@ public class Application implements CommandLineRunner {
 				System.out.println("[WARN] Data file was not found!");
 				System.out.println();
 			}
-			
-			// Read the endpoint options
-			String httpMethod = cmd.getOptionValue("h");
-			String endpoint = cmd.getOptionValue("e");
-			String signatureType = cmd.getOptionValue("l");
 
 			// Compute the current PowerAuth 2.0 signature for possession and
 			// knowledge factor
 			String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(httpMethod, endpoint, getApplicationSecret(), pa_nonce, statusFileBytes);
-			String pa_signature = signature.signatureForData(
-					signatureBaseString.getBytes("UTF-8"), 
-					keyFactory.keysForSignatureType(signatureType, signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey),
-					counter
-			);
-			String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, getApplicationId(), pa_nonce, PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_KNOWLEDGE, pa_signature, "2.0");
+			String pa_signature = signature.signatureForData(signatureBaseString.getBytes("UTF-8"), keyFactory.keysForSignatureType(signatureType, signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), counter);
+			String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, getApplicationId(), pa_nonce, signatureType, pa_signature, "2.0");
 			System.out.println("Coomputed X-PowerAuth-Authorization header: " + httpAuhtorizationHeader);
 			System.out.println();
 
@@ -543,18 +541,22 @@ public class Application implements CommandLineRunner {
 			MultiValueMap<String, String> headers = new HttpHeaders();
 			headers.add("X-PowerAuth-Authorization", httpAuhtorizationHeader);
 
-			RequestEntity<byte[]> request = new RequestEntity<byte[]>(statusFileBytes, headers, HttpMethod.POST, uri);
+			RequestEntity<byte[]> request = new RequestEntity<byte[]>(statusFileBytes, headers, HttpMethod.valueOf(httpMethod), uri);
 
 			// Call the server with activation data
 			System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + fullURIString + " ...");
 			try {
-				template.exchange(request, new ParameterizedTypeReference<PowerAuthAPIResponse<String>>() {
+				ResponseEntity<byte[]> response = template.exchange(request, new ParameterizedTypeReference<byte[]>() {
 				});
 				System.out.println("Done.");
 				System.out.println();
 
 				// Print the results
 				System.out.println("Activation ID: " + activationId);
+				System.out.println();
+				System.out.println("Response received");
+				System.out.println("Status code: " + response.getStatusCode());
+				System.out.println("Response body: " + new String(response.getBody(), "UTF-8"));
 				System.out.println();
 				System.out.println("Signature verification complete.");
 				System.out.println("### Done.");
