@@ -4,7 +4,7 @@ This tutorial shows the way internet banking (or other "master front-end applica
 
 - **Activation initialization** - Application must be able to generate a new activation data, in order to allow PowerAuth 2.0 Client to start the activation flow.
 - **Activation commit** - As soon as the PowerAuth 2.0 Client application finishes the key exchange and user authorizes the exchange in the master front-end application (for example by rewriting an SMS code or code from a HW token), master fromt-end application must commit the activation to make it active and useable for request signing.
-- **Activation overview tasks** - Application must be able to lookup and display activation records for given user in order to show what activations does the given user have and to allow performing the activation status management tasks.
+- **Activation record listing** - Application must be able to lookup and display activation records for given user in order to show what activations does the given user have and to allow performing the activation status management tasks.
 - **Activation status management tasks** - Application must be able to manage states of the given activation - to block, unblock or remove a given activation.
 
 ## Prerequisites for the tutorial
