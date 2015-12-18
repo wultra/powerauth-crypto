@@ -167,6 +167,8 @@ where:
 
 Remove an activation with given ID, set it's status to REMOVED. Activation can be removed only after successful verification of the signature.
 
+PowerAuth 2.0 Client sends an authenticated request using an activation ID - authentication is carried around using the standard PowerAuth 2.0 signature with at least 2 factors (2FA).
+
 In order to construct the PowerAuth 2.0 Client signature, use `/pa/activation/remove` as URI identifier part of the signature data.
 
 <table>
