@@ -34,6 +34,8 @@ To add PowerAuth support in your RESTful API, add Maven dependency for PowerAuth
 </dependency>
 ```
 
+To read about PowerAuth project Maven modules, visit [Maven modules](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/maven-modules.md) documentation.
+
 ### Configure PowerAuth SOAP Service
 
 In order to connect to the correct PowerAuth 2.0 Server, you need add following configuration:

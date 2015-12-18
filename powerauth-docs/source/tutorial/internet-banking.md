@@ -27,6 +27,8 @@ To add a PowerAuth support in your application, add Maven dependency for PowerAu
 </dependency>
 ```
 
+To read about PowerAuth project Maven modules, visit [Maven modules](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/maven-modules.md) documentation.
+
 ### Configure PowerAuth SOAP Service
 
 In order to connect to the correct PowerAuth 2.0 Server, you need add following configuration:
