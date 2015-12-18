@@ -1,10 +1,17 @@
-# Standard PowerAuth RESTful API
+# PowerAuth 2.0 Standard RESTful API
 
 In order to assure a standard behavior of various PowerAuth 2.0 implementations, fixed endpoint and request/response structure between PowerAuth 2.0 Client and Intermediate Server Application is specified for the key exchange algorithm.
 
 While the PowerAuth 2.0 Client technically communicates with an Intermediate Server Application, all response data are actually built in PowerAuth 2.0 Server and Intermediate Server Application just forwards data back and forth. Therefore, we will further assume that the phrase "PowerAuth 2.0 Server responds to PowerAuth 2.0 Client" is a shortcut for "Intermediate Server Application requests a response from PowerAuth 2.0 Server and forwards the response to PowerAuth 2.0 Client".
 
 Each PowerAuth 2.0 implementation that is located on a specific base URL then has `/pa/` prefixed endpoints by convention.
+
+Following endpoints are published in PowerAuth 2.0 Standard RESTful API:
+
+- [`/pa/activation/create`](#initiate-activation)
+- [`/pa/activation/status`](#activation-status)
+- [`/pa/activation/remove`](#activation-remove)
+- [`/pa/vault/unlock`](#vault-unlock)
 
 ## Initiate activation
 
