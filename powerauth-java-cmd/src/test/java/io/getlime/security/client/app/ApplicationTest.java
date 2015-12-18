@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
-import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 
 public class ApplicationTest {

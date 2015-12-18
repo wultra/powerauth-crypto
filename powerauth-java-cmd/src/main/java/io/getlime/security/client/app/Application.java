@@ -3,7 +3,6 @@ package io.getlime.security.client.app;
 import java.io.Console;
 import java.io.FileWriter;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;

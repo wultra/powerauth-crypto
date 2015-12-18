@@ -15,7 +15,6 @@
  */
 package io.getlime.security.powerauth.client.signature;
 
-import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.SignatureUtils;
 import java.security.InvalidKeyException;
 import java.util.List;
@@ -24,7 +23,6 @@ import javax.crypto.SecretKey;
 
 public class PowerAuthClientSignature {
 
-    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
 
     /**

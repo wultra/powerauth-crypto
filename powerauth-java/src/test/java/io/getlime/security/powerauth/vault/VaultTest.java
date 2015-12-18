@@ -13,7 +13,6 @@ import org.junit.Test;
 import com.google.common.io.BaseEncoding;
 
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
-import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.client.vault.PowerAuthClientVault;
 import io.getlime.security.powerauth.server.vault.PowerAuthServerVault;
 import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
@@ -36,7 +35,6 @@ public class VaultTest {
 		System.out.println("# PowerAuth 2.0 Signature");
         System.out.println();
         
-        PowerAuthClientSignature signature = new PowerAuthClientSignature();
         PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
 
         // Prepare test data
