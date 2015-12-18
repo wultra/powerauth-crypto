@@ -2,7 +2,6 @@ package io.getlime.security.client.app;
 
 import java.io.Console;
 import java.io.FileWriter;
-import java.net.ConnectException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -266,7 +265,7 @@ public class Application implements CommandLineRunner {
 					Map<String, Object> errorMap = mapper.readValue(responseString, Map.class);
 					System.out.println(((Map<String, Object>) errorMap.get("error")).get("message"));
 				} catch (Exception e) {
-					System.out.println("Service error - HTTP" + exception.getStatusCode().toString() + ": " + exception.getStatusText());
+					System.out.println("Service error - HTTP " + exception.getStatusCode().toString() + ": " + exception.getStatusText());
 				}
 				System.out.println();
 				System.out.println("### Failed.");
@@ -333,7 +332,7 @@ public class Application implements CommandLineRunner {
 					Map<String, Object> errorMap = mapper.readValue(responseString, Map.class);
 					System.out.println(((Map<String, Object>) errorMap.get("error")).get("message"));
 				} catch (Exception e) {
-					System.out.println("Service error - HTTP" + exception.getStatusCode().toString() + ": " + exception.getStatusText());
+					System.out.println("Service error - HTTP " + exception.getStatusCode().toString() + ": " + exception.getStatusText());
 				}
 				System.out.println();
 				System.out.println("### Failed.");
@@ -430,7 +429,7 @@ public class Application implements CommandLineRunner {
 					Map<String, Object> errorMap = mapper.readValue(responseString, Map.class);
 					System.out.println(((Map<String, Object>) errorMap.get("error")).get("message"));
 				} catch (Exception e) {
-					System.out.println("Service error - HTTP" + exception.getStatusCode().toString() + ": " + exception.getStatusText());
+					System.out.println("Service error - HTTP " + exception.getStatusCode().toString() + ": " + exception.getStatusText());
 				}
 				System.out.println();
 				System.out.println("### Failed.");

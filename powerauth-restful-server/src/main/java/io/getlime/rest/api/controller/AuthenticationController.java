@@ -1,4 +1,4 @@
-package io.getlime.rest.api.sample;
+package io.getlime.rest.api.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.getlime.banking.soap.client.PowerAuthServiceClient;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 
 @Controller
-@RequestMapping(value = "/pa/example")
+@RequestMapping(value = "/pa/signature")
 public class AuthenticationController {
 
     @Autowired
@@ -38,7 +37,7 @@ public class AuthenticationController {
             // ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
             return new PowerAuthAPIResponse<String>("OK", null);
         } else {
-            throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
+            throw new PowerAuthAuthenticationException("INCORRECT SIGNATURE");
         }
 
     }

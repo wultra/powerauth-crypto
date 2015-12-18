@@ -1,4 +1,4 @@
-package io.getlime.rest.api;
+package io.getlime.rest.api.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
