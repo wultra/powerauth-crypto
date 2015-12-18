@@ -377,113 +377,96 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             throw new GenericServiceException("Unknown exception has occurred");
         }
     }
+    
+    private VerifySignatureResponse verifySignatureImplNonTransaction(VerifySignatureRequest request) throws Exception {
+    	// Get request data
+        String activationId = request.getActivationId();
+        byte[] data = request.getData().getBytes("UTF-8");
+        String signature = request.getSignature();
+        String signatureType = request.getSignatureType().toLowerCase();
 
-    @Override
-    @Transactional
-    public VerifySignatureResponse verifySignature(VerifySignatureRequest request) throws Exception {
-        try {
-            // Get request data
-            String activationId = request.getActivationId();
-            byte[] data = request.getData().getBytes("UTF-8");
-            String signature = request.getSignature();
-            String signatureType = request.getSignatureType().toLowerCase();
+        // Fetch related activation
+        ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 
-            // Fetch related activation
-            ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+        // Only validate signature for existing ACTIVE activation records
+        if (activation != null) {
+        	if (activation.getActivationStatus() == ActivationStatus.ACTIVE) {
 
-            // Only validate signature for existing ACTIVE activation records
-            if (activation != null) {
-            	if (activation.getActivationStatus() == ActivationStatus.ACTIVE) {
+                // Get the server private and device public keys
+            	byte[] serverPrivateKeyBytes = BaseEncoding.base64().decode(activation.getServerPrivateKeyBase64());
+            	byte[] devicePublicKeyBytes = BaseEncoding.base64().decode(activation.getDevicePublicKeyBase64());
+                PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(serverPrivateKeyBytes);
+                PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(devicePublicKeyBytes);
 
-	                // Get the server private and device public keys
-	            	byte[] serverPrivateKeyBytes = BaseEncoding.base64().decode(activation.getServerPrivateKeyBase64());
-	            	byte[] devicePublicKeyBytes = BaseEncoding.base64().decode(activation.getDevicePublicKeyBase64());
-	                PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(serverPrivateKeyBytes);
-	                PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(devicePublicKeyBytes);
-	
-	                // Compute the master secret key
-	                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
-	
-	                // Get the signature keys according to the signature type
-	                List<SecretKey> signatureKeys = new KeyUtil().keysForSignatureType(signatureType, masterSecretKey, powerAuthServerSignature);
-	
-	                // Verify the signature with given lookahead
-	                boolean signatureValid = false;
-	                long ctr = activation.getCounter();
-	                long lowestValidCounter = ctr;
-	                for (long iterCtr = ctr; iterCtr < ctr + PowerAuthConstants.SIGNATURE_VALIDATION_LOOKAHEAD; iterCtr++) {
-	                    signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKeys, iterCtr);
-	                    if (signatureValid) {
-	                        // set the lowest valid counter and break at the lowest counter where signature validates
-	                        lowestValidCounter = iterCtr;
-	                        break;
-	                    }
-	                }
-	                if (signatureValid) {
-	
-	                    // Set the activation record counter to the lowest counter (+1, since the client has incremented the counter)
-	                    activation.setCounter(lowestValidCounter + 1);
-	
-	                    // Reset failed attempt count
-	                    activation.setFailedAttempts(0L);
-	                    powerAuthRepository.save(activation);
-	
-	                    // return the data
-	                    VerifySignatureResponse response = new VerifySignatureResponse();
-	                    response.setActivationId(activationId);
-	                    response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.ACTIVE));
-	                    response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
-	                    response.setSignatureValid(true);
-	                    response.setUserId(activation.getUserId());
-	
-	                    return response;
-	
-	                } else {
-	
-	                    // Increment the activation record counter
-	                    activation.setCounter(activation.getCounter() + 1);
-	
-	                    // Update failed attempts and block the activation, if
-	                    // necessary
-	                    activation.setFailedAttempts(activation.getFailedAttempts() + 1);
-	                    Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts());
-	                    if (remainingAttempts <= 0) {
-	                        activation.setActivationStatus(ActivationStatus.BLOCKED);
-	                    }
-	                    powerAuthRepository.save(activation);
-	
-	                    // return the data
-	                    VerifySignatureResponse response = new VerifySignatureResponse();
-	                    response.setActivationId(activationId);
-	                    response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-	                    response.setRemainingAttempts(BigInteger.valueOf(remainingAttempts));
-	                    response.setSignatureValid(false);
-	                    response.setUserId(activation.getUserId());
-	
-	                    return response;
-	
-	                }
-	                
-            	} else {
-            		
-            		// Despite the fact activation is not in active state, increase the counter
-                    activation.setCounter(activation.getCounter() + 1);
+                // Compute the master secret key
+                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+
+                // Get the signature keys according to the signature type
+                List<SecretKey> signatureKeys = new KeyUtil().keysForSignatureType(signatureType, masterSecretKey, powerAuthServerSignature);
+
+                // Verify the signature with given lookahead
+                boolean signatureValid = false;
+                long ctr = activation.getCounter();
+                long lowestValidCounter = ctr;
+                for (long iterCtr = ctr; iterCtr < ctr + PowerAuthConstants.SIGNATURE_VALIDATION_LOOKAHEAD; iterCtr++) {
+                    signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKeys, iterCtr);
+                    if (signatureValid) {
+                        // set the lowest valid counter and break at the lowest counter where signature validates
+                        lowestValidCounter = iterCtr;
+                        break;
+                    }
+                }
+                if (signatureValid) {
+
+                    // Set the activation record counter to the lowest counter (+1, since the client has incremented the counter)
+                    activation.setCounter(lowestValidCounter + 1);
+
+                    // Reset failed attempt count
+                    activation.setFailedAttempts(0L);
                     powerAuthRepository.save(activation);
-                    
+
                     // return the data
                     VerifySignatureResponse response = new VerifySignatureResponse();
                     response.setActivationId(activationId);
-                    response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
-                    response.setRemainingAttempts(BigInteger.valueOf(0));
-                    response.setSignatureValid(false);
-                    response.setUserId("UNKNOWN");
+                    response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.ACTIVE));
+                    response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
+                    response.setSignatureValid(true);
+                    response.setUserId(activation.getUserId());
 
                     return response;
-                    
-            	}
 
-            } else {
+                } else {
 
+                    // Increment the activation record counter
+                    activation.setCounter(activation.getCounter() + 1);
+
+                    // Update failed attempts and block the activation, if
+                    // necessary
+                    activation.setFailedAttempts(activation.getFailedAttempts() + 1);
+                    Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts());
+                    if (remainingAttempts <= 0) {
+                        activation.setActivationStatus(ActivationStatus.BLOCKED);
+                    }
+                    powerAuthRepository.save(activation);
+
+                    // return the data
+                    VerifySignatureResponse response = new VerifySignatureResponse();
+                    response.setActivationId(activationId);
+                    response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+                    response.setRemainingAttempts(BigInteger.valueOf(remainingAttempts));
+                    response.setSignatureValid(false);
+                    response.setUserId(activation.getUserId());
+
+                    return response;
+
+                }
+                
+        	} else {
+        		
+        		// Despite the fact activation is not in active state, increase the counter
+                activation.setCounter(activation.getCounter() + 1);
+                powerAuthRepository.save(activation);
+                
                 // return the data
                 VerifySignatureResponse response = new VerifySignatureResponse();
                 response.setActivationId(activationId);
@@ -493,8 +476,29 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                 response.setUserId("UNKNOWN");
 
                 return response;
+                
+        	}
 
-            }
+        } else {
+
+            // return the data
+            VerifySignatureResponse response = new VerifySignatureResponse();
+            response.setActivationId(activationId);
+            response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
+            response.setRemainingAttempts(BigInteger.valueOf(0));
+            response.setSignatureValid(false);
+            response.setUserId("UNKNOWN");
+
+            return response;
+
+        }
+    }
+
+    @Override
+    @Transactional
+    public VerifySignatureResponse verifySignature(VerifySignatureRequest request) throws Exception {
+        try {
+            return this.verifySignatureImplNonTransaction(request);
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new GenericServiceException("Unknown exception has occurred");
@@ -616,54 +620,40 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     @Transactional
     public VaultUnlockResponse vaultUnlock(VaultUnlockRequest request) throws Exception {
     	try {
-            // Get request data
+    		
+    		// Get request data
             String activationId = request.getActivationId();
             String signature = request.getSignature();
             String signatureType = request.getSignatureType().toLowerCase();
-            
-            // Fetch related activation
-            ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
-
-            // Only validate signature for existing ACTIVE activation records
+    		
+            // Verify the signature
+    		VerifySignatureRequest verifySignatureRequest = new VerifySignatureRequest();
+    		verifySignatureRequest.setActivationId(activationId);
+    		verifySignatureRequest.setData(null); // set null data
+    		verifySignatureRequest.setSignature(signature);
+    		verifySignatureRequest.setSignatureType(signatureType);
+    		VerifySignatureResponse verifySignatureResponse = this.verifySignatureImplNonTransaction(verifySignatureRequest);
+    		
+    		// Find related activation record
+    		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+                
             if (activation != null && activation.getActivationStatus() == ActivationStatus.ACTIVE) {
+                
+            	// Check if the signature is valid
+            	if (verifySignatureResponse.isSignatureValid()) {
 
-                // Get the server private and device public keys
-            	byte[] serverPrivateKeyBytes = BaseEncoding.base64().decode(activation.getServerPrivateKeyBase64());
-            	byte[] devicePublicKeyBytes = BaseEncoding.base64().decode(activation.getDevicePublicKeyBase64());
-                PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(serverPrivateKeyBytes);
-                PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(devicePublicKeyBytes);
-
-                // Compute the master secret key
-                SecretKey masterSecretKey = powerAuthServerSignature.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
-
-                // Get the signature keys according to the signature type
-                List<SecretKey> signatureKeys = new KeyUtil().keysForSignatureType(signatureType, masterSecretKey, powerAuthServerSignature);
-
-                // Verify the signature with given lookahead
-                boolean signatureValid = false;
-                long ctr = activation.getCounter();
-                long lowestValidCounter = ctr;
-                for (long iterCtr = ctr; iterCtr < ctr + PowerAuthConstants.SIGNATURE_VALIDATION_LOOKAHEAD; iterCtr++) {
-                    signatureValid = powerAuthServerSignature.verifySignatureForData(null, signature, signatureKeys, iterCtr);
-                    if (signatureValid) {
-                        // set the lowest valid counter and break at the lowest counter where signature validates
-                        lowestValidCounter = iterCtr;
-                        break;
-                    }
-                }
-                if (signatureValid) {
-                	
-                	// Compute encrypted vault encryption key using incremented counter
-                	lowestValidCounter += 1;
-                    byte[] cKeyBytes = powerAuthServerVault.encryptVaultEncryptionKey(serverPrivateKey, devicePublicKey, lowestValidCounter);
-
-                    // Set the activation record counter to the lowest counter (+1, since client will also increment the counter)
-                    activation.setCounter(lowestValidCounter + 1);
-
-                    // Reset failed attempt count
-                    activation.setFailedAttempts(0L);
+                    // Get the server private and device public keys
+                	byte[] serverPrivateKeyBytes = BaseEncoding.base64().decode(activation.getServerPrivateKeyBase64());
+                	byte[] devicePublicKeyBytes = BaseEncoding.base64().decode(activation.getDevicePublicKeyBase64());
+                    PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(serverPrivateKeyBytes);
+                    PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(devicePublicKeyBytes);
+                    
+                    // Get encrypted vault unlock key and increment the counter  
+                    Long counter = activation.getCounter();
+                    byte[] cKeyBytes = powerAuthServerVault.encryptVaultEncryptionKey(serverPrivateKey, devicePublicKey, counter);
+                    activation.setCounter(counter + 1);
                     powerAuthRepository.save(activation);
-
+                    
                     // return the data
                     VaultUnlockResponse response = new VaultUnlockResponse();
                     response.setActivationId(activationId);
@@ -675,36 +665,29 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
                     return response;
 
+                    
                 } else {
-
-                    // Increment the activation record counter
-                    activation.setCounter(activation.getCounter() + 1);
-
-                    // Update failed attempts and block the activation, if
-                    // necessary
-                    activation.setFailedAttempts(activation.getFailedAttempts() + 1);
-                    Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts());
-                    if (remainingAttempts <= 0) {
-                        activation.setActivationStatus(ActivationStatus.BLOCKED);
-                    }
+                	
+                	// Even if the signature is not valid, increment the counter
+                	Long counter = activation.getCounter();
+                    activation.setCounter(counter + 1);
                     powerAuthRepository.save(activation);
-
-                    // return the data
+                	
+                	// return the data
                     VaultUnlockResponse response = new VaultUnlockResponse();
                     response.setActivationId(activationId);
                     response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-                    response.setRemainingAttempts(BigInteger.valueOf(remainingAttempts));
+                    response.setRemainingAttempts(BigInteger.valueOf((PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts())));
                     response.setSignatureValid(false);
                     response.setUserId(activation.getUserId());
                     response.setCVaultEncryptionKey(null);
 
                     return response;
-
                 }
-
-            } else {
-
-                // return the data
+                
+    		} else {
+    			
+    			// return the data
             	VaultUnlockResponse response = new VaultUnlockResponse();
                 response.setActivationId(activationId);
                 response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
@@ -714,9 +697,8 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                 response.setCVaultEncryptionKey(null);
 
                 return response;
-
-            }
-            
+    		}
+                        
     	} catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new GenericServiceException("Unknown exception has occurred");
