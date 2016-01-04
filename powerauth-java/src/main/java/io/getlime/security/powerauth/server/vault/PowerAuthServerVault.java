@@ -10,7 +10,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
+import io.getlime.security.powerauth.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
@@ -30,9 +30,9 @@ public class PowerAuthServerVault {
 		try {
 			KeyGenerator keyGenerator = new KeyGenerator();
 			SecretKey keyMasterSecret = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
-			SecretKey keyMasterTransport = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthConstants.KEY_DERIVED.TRANSPORT);
+			SecretKey keyMasterTransport = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.TRANSPORT.getIndex());
 			SecretKey keyVaultEncryptionTransport = keyGenerator.deriveSecretKey(keyMasterTransport, ctr);
-			SecretKey keyVaultEncryption = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthConstants.KEY_DERIVED.ENCRYPTED_VAULT);
+			SecretKey keyVaultEncryption = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
 		
 			KeyConversionUtils keyConversion = new KeyConversionUtils();
 			byte[] keyVaultEncryptionBytes = keyConversion.convertSharedSecretKeyToBytes(keyVaultEncryption);

@@ -11,6 +11,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.getlime.security.client.app.util.EncryptedStorageUtil;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 
@@ -25,8 +26,6 @@ public class ApplicationTest {
 	@Test
 	public void testPasswordEncryption() throws Exception {
 
-		Application app = new Application();
-
 		for (int i = 0; i < 20; i++) {
 			KeyPair kpd = new KeyGenerator().generateKeyPair();
 			KeyPair kps = new KeyGenerator().generateKeyPair();
@@ -35,29 +34,29 @@ public class ApplicationTest {
 			SecretKey knowledgeSecret = new PowerAuthClientKeyFactory().generateClientSignatureKnowledgeKey(secret);
 			byte[] salt = new KeyGenerator().generateRandomBytes(16);
 
-			byte[] encrypted = app.storeSignatureKnowledgeKey("1234".toCharArray(), knowledgeSecret, salt, new KeyGenerator());
+			byte[] encrypted = EncryptedStorageUtil.storeSignatureKnowledgeKey("1234".toCharArray(), knowledgeSecret, salt, new KeyGenerator());
 
 			// Correct password
-			SecretKey knowledgeSecret2 = app.getSignatureKnowledgeKey("1234".toCharArray(), encrypted, salt, new KeyGenerator());
+			SecretKey knowledgeSecret2 = EncryptedStorageUtil.getSignatureKnowledgeKey("1234".toCharArray(), encrypted, salt, new KeyGenerator());
 			assertEquals(knowledgeSecret, knowledgeSecret2);
 
 			// Incorrect passwords
-			SecretKey knowledgeSecret3 = app.getSignatureKnowledgeKey("22".toCharArray(), encrypted, salt, new KeyGenerator());
+			SecretKey knowledgeSecret3 = EncryptedStorageUtil.getSignatureKnowledgeKey("22".toCharArray(), encrypted, salt, new KeyGenerator());
 			assertNotEquals(knowledgeSecret, knowledgeSecret3);
 			assertNotNull(knowledgeSecret3);
 			assertEquals(knowledgeSecret.getEncoded().length, knowledgeSecret3.getEncoded().length);
 			
-			knowledgeSecret3 = app.getSignatureKnowledgeKey("".toCharArray(), encrypted, salt, new KeyGenerator());
+			knowledgeSecret3 = EncryptedStorageUtil.getSignatureKnowledgeKey("".toCharArray(), encrypted, salt, new KeyGenerator());
 			assertNotEquals(knowledgeSecret, knowledgeSecret3);
 			assertNotNull(knowledgeSecret3);
 			assertEquals(knowledgeSecret.getEncoded().length, knowledgeSecret3.getEncoded().length);
 			
-			knowledgeSecret3 = app.getSignatureKnowledgeKey("X123456".toCharArray(), encrypted, salt, new KeyGenerator());
+			knowledgeSecret3 = EncryptedStorageUtil.getSignatureKnowledgeKey("X123456".toCharArray(), encrypted, salt, new KeyGenerator());
 			assertNotEquals(knowledgeSecret, knowledgeSecret3);
 			assertNotNull(knowledgeSecret3);
 			assertEquals(knowledgeSecret.getEncoded().length, knowledgeSecret3.getEncoded().length);
 			
-			knowledgeSecret3 = app.getSignatureKnowledgeKey("TestLongPasswordMore-Than 16BytesJustInCase".toCharArray(), encrypted, salt, new KeyGenerator());
+			knowledgeSecret3 = EncryptedStorageUtil.getSignatureKnowledgeKey("TestLongPasswordMore-Than 16BytesJustInCase".toCharArray(), encrypted, salt, new KeyGenerator());
 			assertNotEquals(knowledgeSecret, knowledgeSecret3);
 			assertNotNull(knowledgeSecret3);
 			assertEquals(knowledgeSecret.getEncoded().length, knowledgeSecret3.getEncoded().length);

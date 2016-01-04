@@ -187,14 +187,7 @@ In order to construct the PowerAuth 2.0 Client signature, use `/pa/activation/re
 - Headers
 	- `Content-Type: application/json`
 	- `X-PowerAuth-Authorization: PowerAuth ...`
-
-```json
-			{
-				"requestObject": {
-					"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
-				}
-			}
-```
+- Body: empty
 
 #### Response
 

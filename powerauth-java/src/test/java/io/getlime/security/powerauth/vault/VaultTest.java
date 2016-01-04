@@ -16,6 +16,8 @@ import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory
 import io.getlime.security.powerauth.client.vault.PowerAuthClientVault;
 import io.getlime.security.powerauth.server.vault.PowerAuthServerVault;
 import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
+import io.getlime.security.powerauth.lib.enums.PowerAuthDerivedKey;
+import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 
@@ -57,8 +59,8 @@ public class VaultTest {
         SecretKey clientVaultEncryptionKey = keyFactory.generateServerEncryptedVaultKey(deviceMasterKey);
         System.out.println("## Vault Encryption Key: " + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
         
-        SecretKey clientTransportKey = keyGenerator.deriveSecretKey(deviceMasterKey, PowerAuthConstants.KEY_DERIVED.TRANSPORT);
-        SecretKey serverTransportKey = keyGenerator.deriveSecretKey(serverMasterKey, PowerAuthConstants.KEY_DERIVED.TRANSPORT);
+        SecretKey clientTransportKey = keyGenerator.deriveSecretKey(deviceMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
+        SecretKey serverTransportKey = keyGenerator.deriveSecretKey(serverMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
         assertEquals(clientTransportKey, serverTransportKey);
         System.out.println("## Master Transport Key: " + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(clientTransportKey)));
         

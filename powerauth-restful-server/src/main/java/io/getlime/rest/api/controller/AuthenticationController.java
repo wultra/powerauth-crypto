@@ -28,14 +28,14 @@ public class AuthenticationController {
 
         PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(
                 servletRequest,
-                "/session/login",
+                "/pa/signature/validate",
                 signatureHeader
         );
 
         if (apiAuthentication != null && apiAuthentication.getUserId() != null) {
         	// ##EXAMPLE: Here, we could store the authentication in the session like this:
             // ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
-            return new PowerAuthAPIResponse<String>("OK", null);
+        	return new PowerAuthAPIResponse<String>("OK", null);
         } else {
             throw new PowerAuthAuthenticationException("INCORRECT SIGNATURE");
         }

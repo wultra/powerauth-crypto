@@ -23,7 +23,8 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
+import io.getlime.security.powerauth.lib.enums.PowerAuthDerivedKey;
+import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 
 public class PowerAuthClientKeyFactory {
@@ -42,29 +43,29 @@ public class PowerAuthClientKeyFactory {
 
 		List<SecretKey> signatureKeys = new ArrayList<>();
 
-		if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.POSSESSION)) {
+		if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION.toString())) {
 
 			signatureKeys.add(possessionSignatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.KNOWLEDGE)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.KNOWLEDGE.toString())) {
 
 			signatureKeys.add(knowledgeSignatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.BIOMETRY)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.BIOMETRY.toString())) {
 
 			signatureKeys.add(biometrySignatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_KNOWLEDGE)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE.toString())) {
 
 			signatureKeys.add(possessionSignatureKey);
 			signatureKeys.add(knowledgeSignatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_BIOMETRY)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_BIOMETRY.toString())) {
 
 			signatureKeys.add(possessionSignatureKey);
 			signatureKeys.add(biometrySignatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_KNOWLEDGE_BIOMETRY)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY.toString())) {
 
 			signatureKeys.add(possessionSignatureKey);
 			signatureKeys.add(knowledgeSignatureKey);
@@ -91,36 +92,36 @@ public class PowerAuthClientKeyFactory {
 
 		List<SecretKey> signatureKeys = new ArrayList<>();
 
-		if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.POSSESSION)) {
+		if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION.toString())) {
 
 			SecretKey signatureKey = generateClientSignaturePossessionKey(masterSecretKey);
 			signatureKeys.add(signatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.KNOWLEDGE)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.KNOWLEDGE.toString())) {
 
 			SecretKey signatureKey = generateClientSignatureKnowledgeKey(masterSecretKey);
 			signatureKeys.add(signatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.BIOMETRY)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.BIOMETRY.toString())) {
 
 			SecretKey signatureKey = generateClientSignatureBiometryKey(masterSecretKey);
 			signatureKeys.add(signatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_KNOWLEDGE)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE.toString())) {
 
 			SecretKey signatureKey = generateClientSignaturePossessionKey(masterSecretKey);
 			signatureKeys.add(signatureKey);
 			signatureKey = generateClientSignatureKnowledgeKey(masterSecretKey);
 			signatureKeys.add(signatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_BIOMETRY)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_BIOMETRY.toString())) {
 
 			SecretKey signatureKey = generateClientSignaturePossessionKey(masterSecretKey);
 			signatureKeys.add(signatureKey);
 			signatureKey = generateClientSignatureBiometryKey(masterSecretKey);
 			signatureKeys.add(signatureKey);
 
-		} else if (signatureType.equals(PowerAuthConstants.SIGNATURE_TYPES.POSSESSION_KNOWLEDGE_BIOMETRY)) {
+		} else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY.toString())) {
 
 			SecretKey signatureKey = generateClientSignaturePossessionKey(masterSecretKey);
 			signatureKeys.add(signatureKey);
@@ -161,7 +162,7 @@ public class PowerAuthClientKeyFactory {
 	 * @return An instance of signature key KEY_SIGNATURE_BIOMETRY.
 	 */
 	public SecretKey generateClientSignatureBiometryKey(SecretKey masterSecretKey) {
-		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthConstants.KEY_DERIVED.SIGNATURE_BIOMETRY);
+		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_BIOMETRY.getIndex());
 	}
 
 	/**
@@ -174,7 +175,7 @@ public class PowerAuthClientKeyFactory {
 	 * @return An instance of signature key KEY_SIGNATURE_KNOWLEDGE.
 	 */
 	public SecretKey generateClientSignatureKnowledgeKey(SecretKey masterSecretKey) {
-		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthConstants.KEY_DERIVED.SIGNATURE_KNOWLEDGE);
+		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_KNOWLEDGE.getIndex());
 	}
 
 	/**
@@ -187,7 +188,7 @@ public class PowerAuthClientKeyFactory {
 	 * @return An instance of signature key KEY_SIGNATURE_POSSESSION.
 	 */
 	public SecretKey generateClientSignaturePossessionKey(SecretKey masterSecretKey) {
-		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthConstants.KEY_DERIVED.SIGNATURE_POSSESSION);
+		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_POSSESSION.getIndex());
 	}
 
 	/**
@@ -200,7 +201,7 @@ public class PowerAuthClientKeyFactory {
 	 * @return An instance of signature key KEY_ENCRYPTED_VAULT.
 	 */
 	public SecretKey generateServerEncryptedVaultKey(SecretKey masterSecretKey) {
-		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthConstants.KEY_DERIVED.ENCRYPTED_VAULT);
+		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
 	}
 
 	/**
@@ -213,7 +214,7 @@ public class PowerAuthClientKeyFactory {
 	 * @return An instance of signature key KEY_TRANSPORT.
 	 */
 	public SecretKey generateServerTransportKey(SecretKey masterSecretKey) {
-		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthConstants.KEY_DERIVED.TRANSPORT);
+		return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
 	}
 
 }

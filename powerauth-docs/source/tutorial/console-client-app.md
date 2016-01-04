@@ -32,7 +32,7 @@ usage: java -jar powerauth-java-cmd.jar
  -e,--endpoint <arg>          In case a specified method is 'sign', this
                               field specifies a URI identifier, as
                               specified in PowerAuth signature process.
- -h,--http-method <arg>       In case a specified method is 'sign', this
+ -t,--http-method <arg>       In case a specified method is 'sign', this
                               field specifies a HTTP method, as specified
                               in PowerAuth signature process.
  -l,--signature-type <arg>    In case a specified method is 'sign', this
@@ -51,26 +51,35 @@ usage: java -jar powerauth-java-cmd.jar
 
 ### Prepare activation
 
-Use the `prepare` method to activate a PowerAuth 2.0 Reference client by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/create` hosted on root URL `http://localhost:8080/powerauth-restful-server` with activation code `F3CCT-FNOUS-GEVJF-O3HMV`. Read and store the client status from the `/tmp/pa_status.json` file. Use master public key stored in the `/tmp/pamk.txt` file.
+Use the `prepare` method to activate a PowerAuth 2.0 Reference client by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/create` hosted on root URL `http://localhost:8080/powerauth-restful-server` with activation code `F3CCT-FNOUS-GEVJF-O3HMV`. Read and store the client status from the `/tmp/pa_status.json` file. Use master public key stored in the `/tmp/pamk.json` file.
 
 ```bash
-java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.txt" --method "prepare" --activation-code "F3CCT-FNOUS-GEVJF-O3HMV"
+java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.json" --method "prepare" --activation-code "F3CCT-FNOUS-GEVJF-O3HMV"
 ```
 
 ### Get activation status
 
-Use the `status` method to get the activation status for the activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/status` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key stored in the `/tmp/pamk.txt` file.
+Use the `status` method to get the activation status for the activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/status` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key stored in the `/tmp/pamk.json` file.
 
 ```bash
-java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.txt" --method "status"
+java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.json" --method "status"
 ```
 
 ### Remove the activation
 
-Use the `remove` method to get the activation status for the activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/remove` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key stored in the `/tmp/pamk.txt` file.
+Use the `remove` method to remove activation with an activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/remove` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key stored in the `/tmp/pamk.json` file.
 
 This method requires interactive console input of the password, in order to unlock the knowledge related signature key.
 
 ```bash
-java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.txt" --method "remove"
+java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.json" --method "remove"
+```
+
+### Validate the signature
+
+Use the `sign` method to verify a signature for given data using activation record associated with an activation ID stored in the status file `/tmp/pa_status.json`. Call an authenticated endpoint `http://localhost:8080/powerauth-restful-server/pa/signature/validate` that is identified by an identifier `/pa/signature/validate` (the same as the endpoint name after the main context). Use master public key stored in the `/tmp/pamk.json` file. Use HTTP method `POST`, use `possession_knowledge` signature type and take the request data from a file `/tmp/request.json`.
+
+This method requires interactive console input of the password, in order to unlock the knowledge related signature key.
+```bash
+java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server/pa/signature/validate" --status-file "/Users/petrdvorak/pa_status.json" --config-file "/Users/petrdvorak/pamk.json" --method "sign" --http-method "POST"  --endpoint "/pa/signature/validate" --signature-type "possession_knowledge" --data-file "/tmp/request.json"
 ```

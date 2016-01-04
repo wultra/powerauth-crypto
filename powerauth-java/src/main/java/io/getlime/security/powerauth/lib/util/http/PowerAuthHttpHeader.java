@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
+
 public class PowerAuthHttpHeader {
 	
 	public static final String ACTIVATION_ID = "pa_activation_id";
@@ -35,15 +37,25 @@ public class PowerAuthHttpHeader {
 	}
 	
 	private static String headerField(String key, String value) {
-		return " " + key + "=\"" + value + "\"";
+		return key + "=\"" + value + "\"";
 	}
 	
-	public static String getPowerAuthSignatureHTTPHeader(String activationId, String applicationId, String nonce, String signatureType, String signature, String version) {
+	/**
+	 * Generate a valid PowerAuth Authorization header based on provided parameters.
+	 * @param activationId An ID of an activation.
+	 * @param applicationId An ID of an application.
+	 * @param nonce Random nonce.
+	 * @param signatureType Signature type.
+	 * @param signature Signature.
+	 * @param version PowerAuth protocol version.
+	 * @return Value to be used in <code>X-PowerAuth-Authorization</code> HTTP header.
+	 */
+	public static String getPowerAuthSignatureHTTPHeader(String activationId, String applicationId, String nonce, PowerAuthSignatureTypes signatureType, String signature, String version) {
 		String result = POWERAUTH_PREFIX
 				+ headerField(ACTIVATION_ID, activationId) + ", "
 				+ headerField(APPLICATION_ID, applicationId) + ", "
 				+ headerField(NONCE, nonce) + ", "
-				+ headerField(SIGNATURE_TYPE, signatureType) + ", "
+				+ headerField(SIGNATURE_TYPE, signatureType.toString()) + ", "
 				+ headerField(SIGNATURE, signature) + ", "
 				+ headerField(VERSION, version);
 		return result;
