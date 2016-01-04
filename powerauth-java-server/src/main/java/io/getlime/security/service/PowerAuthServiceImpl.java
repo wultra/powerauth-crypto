@@ -97,6 +97,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             throws Exception {
         try {
             String userId = request.getUserId();
+            
+            // Generate timestamp in advance
+            Date timestamp = new Date();
 
             List<ActivationRecordEntity> activationsList = powerAuthRepository.findByUserId(userId);
 
@@ -104,6 +107,15 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             response.setUserId(userId);
             if (activationsList != null) {
                 for (ActivationRecordEntity activation : activationsList) {
+                	
+                	// Deactivate old pending activations first
+                    if ((activation.getActivationStatus().equals(ActivationStatus.CREATED) || activation.getActivationStatus().equals(ActivationStatus.OTP_USED))
+                    		&& timestamp.getTime() - activation.getTimestampCreated().getTime() > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+                        activation.setActivationStatus(ActivationStatus.REMOVED);
+                        powerAuthRepository.save(activation);
+                    }
+                	
+                    // Map between repository object and service objects
                     Activations activationServiceItem = new Activations();
                     activationServiceItem.setActivationId(activation.getActivationId());
                     activationServiceItem.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
@@ -126,6 +138,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception {
         try {
             String activationId = request.getActivationId();
+            
+            // Generate timestamp in advance
+            Date timestamp = new Date();
 
             ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 
@@ -142,6 +157,13 @@ public class PowerAuthServiceImpl implements PowerAuthService {
                 return response;
 
             } else {
+            	
+            	// Deactivate old pending activations first
+                if ((activation.getActivationStatus().equals(ActivationStatus.CREATED) || activation.getActivationStatus().equals(ActivationStatus.OTP_USED))
+                		&& timestamp.getTime() - activation.getTimestampCreated().getTime() > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+                    activation.setActivationStatus(ActivationStatus.REMOVED);
+                    powerAuthRepository.save(activation);
+                }
 
                 // Get the server private and device public keys to compute the
                 // transport key
@@ -521,9 +543,13 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             }
             boolean activated = false;
             if (activation != null) { // does the record even exist?
-                activated = true;
-                activation.setActivationStatus(ActivationStatus.ACTIVE);
-                powerAuthRepository.save(activation);
+            	if (activation.getActivationStatus().equals(ActivationStatus.OTP_USED)) {
+            		activated = true;
+                	activation.setActivationStatus(ActivationStatus.ACTIVE);
+                	powerAuthRepository.save(activation);
+            	} else {
+            		throw new GenericServiceException("ERROR_ACTIVATION_COMMIT_STATE", "Only activations in OTP_USED state can be commited");
+            	}
             }
             CommitActivationResponse response = new CommitActivationResponse();
             response.setActivationId(activationId);

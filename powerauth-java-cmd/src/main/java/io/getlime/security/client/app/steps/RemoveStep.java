@@ -51,6 +51,7 @@ public class RemoveStep {
 		String statusFileName = (String)context.get("STATUS_FILENAME");
 		String applicationId = (String)context.get("APPLICATION_ID");
 		String applicationSecret = (String)context.get("APPLICATION_SECRET");
+		String passwordProvided = (String)context.get("PASSWORD");
 		
 		System.out.println("### PowerAuth 2.0 Client Activation Removal Started");
 		System.out.println();
@@ -67,8 +68,13 @@ public class RemoveStep {
 		byte[] signatureKnowledgeKeyEncryptedBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureKnowledgeKeyEncrypted"));
 
 		// Ask for the password to unlock knowledge factor key
-		Console console = System.console();
-		char[] password = console.readPassword("Enter your password to unlock the knowledge related key: ");
+		char[] password = null;
+		if (passwordProvided == null) {
+			Console console = System.console();
+			password = console.readPassword("Enter your password to unlock the knowledge related key: ");
+		} else {
+			password = passwordProvided.toCharArray();
+		}
 
 		// Get the signature keys
 		SecretKey signaturePossessionKey = keyConversion.convertBytesToSharedSecretKey(signaturePossessionKeyBytes);

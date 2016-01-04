@@ -54,6 +54,7 @@ public class VerifySignatureStep {
 		String endpoint = (String)context.get("ENDPOINT");
 		String signatureType = (String)context.get("SIGNATURE_TYPE");
 		String dataFileName = (String)context.get("DATA_FILE_NAME");
+		String passwordProvided = (String)context.get("PASSWORD");
 		
 		System.out.println("### PowerAuth 2.0 Client Signature Verification");
 		System.out.println();
@@ -71,8 +72,13 @@ public class VerifySignatureStep {
 		byte[] signatureKnowledgeKeyEncryptedBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureKnowledgeKeyEncrypted"));
 
 		// Ask for the password to unlock knowledge factor key
-		Console console = System.console();
-		char[] password = console.readPassword("Enter your password to unlock the knowledge related key: ");
+		char[] password = null;
+		if (passwordProvided == null) {
+			Console console = System.console();
+			password = console.readPassword("Enter your password to unlock the knowledge related key: ");
+		} else {
+			password = passwordProvided.toCharArray();
+		}
 
 		// Get the signature keys
 		SecretKey signaturePossessionKey = keyConversion.convertBytesToSharedSecretKey(signaturePossessionKeyBytes);
@@ -84,7 +90,7 @@ public class VerifySignatureStep {
 
 		// Read data input file
 		byte[] dataFileBytes = null;
-		if (Files.exists(Paths.get(dataFileName))) {
+		if (dataFileName != null && Files.exists(Paths.get(dataFileName))) {
 			dataFileBytes = Files.readAllBytes(Paths.get(dataFileName));
 		} else {
 			System.out.println("[WARN] Data file was not found!");

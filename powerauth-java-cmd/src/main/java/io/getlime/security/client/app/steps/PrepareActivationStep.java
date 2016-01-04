@@ -51,6 +51,7 @@ public class PrepareActivationStep {
 		String activationCode = (String) context.get("ACTIVATION_CODE");
 		JSONObject resultStatusObject = (JSONObject) context.get("STATUS_OBJECT");
 		String statusFileName = (String)context.get("STATUS_FILENAME");
+		String passwordProvided = (String)context.get("PASSWORD");
 
 		System.out.println("### PowerAuth 2.0 Client Activation Started");
 		System.out.println();
@@ -121,10 +122,16 @@ public class PrepareActivationStep {
 
 				// Encrypt the original device private key using the vault unlock key
 				byte[] encryptedDevicePrivateKey = vault.encryptDevicePrivateKey(deviceKeyPair.getPrivate(), vaultUnlockMasterKey);
+				
+				char[] password = null;
+				if (passwordProvided == null) {
+					Console console = System.console();
+					password = console.readPassword("Select a password to encrypt the knowledge related key: ");
+				} else {
+					password = passwordProvided.toCharArray();
+				}
 
 				byte[] salt = keyGenerator.generateRandomBytes(16);
-				Console console = System.console();
-				char[] password = console.readPassword("Select a password to encrypt the knowledge related key: ");
 				byte[] cSignatureKnoweldgeSecretKey = EncryptedStorageUtil.storeSignatureKnowledgeKey(password, signatureKnoweldgeSecretKey, salt, keyGenerator);
 
 				// Prepare the status object to be stored

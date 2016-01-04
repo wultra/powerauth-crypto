@@ -35,7 +35,7 @@ public class AuthenticationController {
         if (apiAuthentication != null && apiAuthentication.getUserId() != null) {
         	// ##EXAMPLE: Here, we could store the authentication in the session like this:
             // ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
-        	return new PowerAuthAPIResponse<String>("OK", null);
+        	return new PowerAuthAPIResponse<String>("OK", "Hooray!");
         } else {
             throw new PowerAuthAuthenticationException("INCORRECT SIGNATURE");
         }

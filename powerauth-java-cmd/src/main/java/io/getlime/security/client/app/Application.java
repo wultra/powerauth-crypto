@@ -46,7 +46,7 @@ public class Application implements CommandLineRunner {
 			Options options = new Options();
 			options.addOption("h", "help", false, "Print this help manual");
 			options.addOption("u", "url", true, "Base URL of the PowerAuth 2.0 Standard RESTful API");
-			options.addOption("m", "method", true, "What API method to call, available names are 'prepare', 'status', 'remove', 'sign' and 'unlock'");
+			options.addOption("m", "method", true, "What API method to call, available names are 'prepare', 'status', 'remove' and 'sign'");
 			options.addOption("c", "config-file", true, "Specifies a path to the config file with Base64 encoded server master public key, application ID and application secret");
 			options.addOption("s", "status-file", true, "Path to the file with the activation status, serving as the data persistence.");
 			options.addOption("a", "activation-code", true, "In case a specified method is 'prepare', this field contains the activation key (a concatenation of a short activation ID and activation OTP)");
@@ -54,6 +54,7 @@ public class Application implements CommandLineRunner {
 			options.addOption("e", "endpoint", true, "In case a specified method is 'sign', this field specifies a URI identifier, as specified in PowerAuth signature process.");
 			options.addOption("l", "signature-type", true, "In case a specified method is 'sign', this field specifies a signature type, as specified in PowerAuth signature process.");
 			options.addOption("d", "data-file", true, "In case a specified method is 'sign', this field specifies a file with the input data to be signed and verified with the server, as specified in PowerAuth signature process.");
+			options.addOption("p", "password", true, "Password used for a knowledge related key encryption. If not specified, an interactive input is required.");
 
 			// Options parsing
 			CommandLineParser parser = new DefaultParser();
@@ -110,9 +111,10 @@ public class Application implements CommandLineRunner {
 				Map<String, Object> context = new HashMap<>();
 				context.put("URI_STRING", uriString);
 				context.put("MASTER_PUBLIC_KEY", masterPublicKey);
-				context.put("ACTIVATION_CODE", cmd.getOptionValue("a"));
 				context.put("STATUS_OBJECT", resultStatusObject);
 				context.put("STATUS_FILENAME", statusFileName);
+				context.put("ACTIVATION_CODE", cmd.getOptionValue("a"));
+				context.put("PASSWORD", cmd.getOptionValue("p"));
 
 				PrepareActivationStep.execute(context);
 
@@ -132,6 +134,7 @@ public class Application implements CommandLineRunner {
 				context.put("STATUS_FILENAME", statusFileName);
 				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationId(clientConfigObject));
 				context.put("APPLICATION_SECRET", ConfigurationUtils.getApplicationSecret(clientConfigObject));
+				context.put("PASSWORD", cmd.getOptionValue("p"));
 
 				RemoveStep.execute(context);
 
@@ -147,10 +150,9 @@ public class Application implements CommandLineRunner {
 				context.put("ENDPOINT", cmd.getOptionValue("e"));
 				context.put("SIGNATURE_TYPE", cmd.getOptionValue("l"));
 				context.put("DATA_FILE_NAME", cmd.getOptionValue("d"));
+				context.put("PASSWORD", cmd.getOptionValue("p"));
 
 				VerifySignatureStep.execute(context);
-
-			} else if (method.equals("unlock")) {
 
 			} else {
 				HelpFormatter formatter = new HelpFormatter();
