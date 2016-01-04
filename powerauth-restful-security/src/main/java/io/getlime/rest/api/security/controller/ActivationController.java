@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.getlime.banking.soap.client.PowerAuthServiceClient;
 import io.getlime.powerauth.soap.GetActivationStatusResponse;
 import io.getlime.powerauth.soap.PrepareActivationResponse;
 import io.getlime.powerauth.soap.RemoveActivationResponse;
@@ -25,6 +24,7 @@ import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
+import io.getlime.security.soap.client.PowerAuthServiceClient;
 
 @Controller
 @RequestMapping(value = "/pa/activation")

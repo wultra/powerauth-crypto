@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.getlime.banking.soap.client.PowerAuthServiceClient;
 import io.getlime.rest.api.model.PowerAuthAPIRequest;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.model.VaultUnlockRequest;
 import io.getlime.rest.api.model.VaultUnlockResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
+import io.getlime.security.soap.client.PowerAuthServiceClient;
 
 @Controller
 @RequestMapping(value = "/pa/vault")

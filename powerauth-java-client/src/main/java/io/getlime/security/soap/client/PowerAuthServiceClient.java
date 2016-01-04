@@ -1,4 +1,4 @@
-package io.getlime.banking.soap.client;
+package io.getlime.security.soap.client;
 
 import java.util.List;
 

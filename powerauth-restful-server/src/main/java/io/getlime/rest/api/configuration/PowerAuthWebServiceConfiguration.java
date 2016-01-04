@@ -1,12 +1,14 @@
 package io.getlime.rest.api.configuration;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import io.getlime.banking.soap.client.PowerAuthServiceClient;
+import io.getlime.security.soap.client.PowerAuthServiceClient;
 
 @Configuration
+@ComponentScan(basePackages = {"io.getlime.rest"})
 public class PowerAuthWebServiceConfiguration {
 	
 	@Bean

@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
-import io.getlime.banking.soap.client.PowerAuthServiceClient;
 import io.getlime.powerauth.soap.VerifySignatureRequest;
 import io.getlime.powerauth.soap.VerifySignatureResponse;
 import io.getlime.rest.api.security.application.PowerAuthApplicationConfiguration;
@@ -24,6 +24,7 @@ import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
+import io.getlime.security.soap.client.PowerAuthServiceClient;
 
 @Component
 public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
