@@ -15,9 +15,7 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.vault.PowerAuthClientVault;
 import io.getlime.security.powerauth.server.vault.PowerAuthServerVault;
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
 import io.getlime.security.powerauth.lib.enums.PowerAuthDerivedKey;
-import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 
