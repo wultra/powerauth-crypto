@@ -18,28 +18,24 @@ import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 @RequestMapping(value = "/pa/signature")
 public class AuthenticationController {
 
-    @Autowired
-    private PowerAuthAuthenticationProvider authenticationProvider;
+	@Autowired
+	private PowerAuthAuthenticationProvider authenticationProvider;
 
-    @RequestMapping(value = "validate", method = RequestMethod.POST)
-    public @ResponseBody PowerAuthAPIResponse<String> login(
-            @RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader,
-            HttpServletRequest servletRequest) throws Exception {
+	@RequestMapping(value = "validate", method = RequestMethod.POST)
+	public @ResponseBody PowerAuthAPIResponse<String> login(
+			@RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader,
+			HttpServletRequest servletRequest) throws Exception {
 
-        PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(
-                servletRequest,
-                "/pa/signature/validate",
-                signatureHeader
-        );
+		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(servletRequest, "/pa/signature/validate", signatureHeader);
 
-        if (apiAuthentication != null && apiAuthentication.getUserId() != null) {
-        	// ##EXAMPLE: Here, we could store the authentication in the session like this:
-            // ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
-        	return new PowerAuthAPIResponse<String>("OK", "Hooray!");
-        } else {
-            throw new PowerAuthAuthenticationException("INCORRECT SIGNATURE");
-        }
+		if (apiAuthentication != null && apiAuthentication.getUserId() != null) {
+			// ##EXAMPLE: Here, we could store the authentication in the session like this:
+			// ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
+			return new PowerAuthAPIResponse<String>("OK", "Hooray!");
+		} else {
+			throw new PowerAuthAuthenticationException("INCORRECT SIGNATURE");
+		}
 
-    }
+	}
 
 }
