@@ -69,7 +69,7 @@ import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 public class Application implements CommandLineRunner {
 
 	private static final String expectedApplicationId = "a1c97807-795a-466e-87bf-230d8ac1451e";
-	private static final String expectedApplicationSecret = "d358e78a-8d12-4595-bf69-6eff2c2afc04";
+	private static final String expectedApplicationSecret = "d358e78a-8d12-4595-bf69-6eff2c2afc04";	
 	private JSONObject clientConfigObject = null;
 
 	private String getApplicationId() {
@@ -153,8 +153,8 @@ public class Application implements CommandLineRunner {
 		// Read master public key
 		PublicKey masterPublicKey = null;
 		if (Files.exists(Paths.get(configFileName))) {
-			byte[] statusFileBytes = Files.readAllBytes(Paths.get(configFileName));
-			clientConfigObject = (JSONObject) JSONValue.parse(new String(statusFileBytes));
+			byte[] configFileBytes = Files.readAllBytes(Paths.get(configFileName));
+			clientConfigObject = (JSONObject) JSONValue.parse(new String(configFileBytes));
 			byte[] masterKeyBytes = BaseEncoding.base64().decode((String) clientConfigObject.get("masterPublicKey"));
 			masterPublicKey = keyConversion.convertBytesToPublicKey(masterKeyBytes);
 		} else {
