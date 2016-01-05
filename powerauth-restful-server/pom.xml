@@ -5,17 +5,17 @@
 
 	<groupId>io.getlime</groupId>
 	<artifactId>powerauth-restful-server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<name>powerauth-restful-server</name>
 	<description>PowerAuth 2.0 Standard RESTful API</description>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.3.0.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<groupId>io.getlime.security</groupId>
+		<artifactId>powerauth-parent</artifactId>
+		<version>0.0.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<properties>
@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-restful-security</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
