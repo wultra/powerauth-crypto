@@ -377,6 +377,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 		byte[] data = request.getData().getBytes("UTF-8");
 		String signature = request.getSignature();
 		String signatureType = request.getSignatureType().toLowerCase();
+		
+		// Prepare current timestamp in advance
+		Date currentTimestamp = new Date();
 
 		// Fetch related activation
 		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
@@ -418,6 +421,11 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
 					// Reset failed attempt count
 					activation.setFailedAttempts(0L);
+					
+					// Update the last used date
+					activation.setTimestampLastUsed(currentTimestamp);
+					
+					// Save the activation
 					powerAuthRepository.save(activation);
 
 					// Audit the signature
@@ -427,7 +435,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					signatureAuditRecord.setDataBase64(BaseEncoding.base64().encode(data));
 					signatureAuditRecord.setSignature(signature);
 					signatureAuditRecord.setSignatureType(signatureType);
-					signatureAuditRecord.setTimestampCreated(new Date());
+					signatureAuditRecord.setTimestampCreated(currentTimestamp);
 					signatureAuditRepository.save(signatureAuditRecord);
 
 					// return the data
@@ -452,6 +460,11 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					if (remainingAttempts <= 0) {
 						activation.setActivationStatus(ActivationStatus.BLOCKED);
 					}
+					
+					// Update the last used date
+					activation.setTimestampLastUsed(currentTimestamp);
+					
+					// Save the activation
 					powerAuthRepository.save(activation);
 
 					// return the data
@@ -471,6 +484,11 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				// Despite the fact activation is not in active state, increase
 				// the counter
 				activation.setCounter(activation.getCounter() + 1);
+				
+				// Update the last used date
+				activation.setTimestampLastUsed(currentTimestamp);
+				
+				// Save the activation
 				powerAuthRepository.save(activation);
 
 				// return the data

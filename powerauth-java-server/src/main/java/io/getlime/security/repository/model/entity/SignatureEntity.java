@@ -38,7 +38,7 @@ public class SignatureEntity implements Serializable {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(referencedColumnName = "activation_id", nullable = false, updatable = false)
+	@JoinColumn(name = "activation_id", referencedColumnName = "activation_id", nullable = false, updatable = false)
 	private ActivationRecordEntity activation;
 
 	@Column(name = "activation_counter", nullable = false)

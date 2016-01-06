@@ -78,7 +78,7 @@ public class ActivationRecordEntity implements Serializable {
     private ActivationStatus activationStatus;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "master_keypair_id", referencedColumnName = "id", nullable = false)
     private MasterKeyPairEntity masterKeypair;
 
     protected ActivationRecordEntity() {
