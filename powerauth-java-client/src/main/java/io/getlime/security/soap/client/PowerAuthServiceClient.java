@@ -156,12 +156,12 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 		return (SignatureAuditResponse) getWebServiceTemplate().marshalSendAndReceive(request);
 	}
 	
-	public SignatureAuditResponse getSignatureAuditLog(String userId, Date startingDate, Date endingDate) throws DatatypeConfigurationException {
+	public List<SignatureAuditResponse.Items> getSignatureAuditLog(String userId, Date startingDate, Date endingDate) throws DatatypeConfigurationException {
 		SignatureAuditRequest request = new SignatureAuditRequest();
 		request.setUserId(userId);
 		request.setTimestampFrom(calendarWithDate(startingDate));
 		request.setTimestampTo(calendarWithDate(endingDate));
-		return this.getSignatureAuditLog(request);
+		return this.getSignatureAuditLog(request).getItems();
 	}
 
 }

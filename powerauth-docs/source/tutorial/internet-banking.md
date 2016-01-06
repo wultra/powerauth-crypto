@@ -83,7 +83,7 @@ In response, you will obtain a new activation data. Your goal is to display `act
 Also, you will receive `activationId` in the response that you can use to query for activation status or to commit the activation. Finally, response contains the `userId` as a back-reference to your request data.
 
 ```java
-// your actual user identifier
+// Your actual user identifier
 String userId = "1234";
 
 // Short way to read the activations
@@ -100,7 +100,7 @@ InitActivationResponse response = powerAuthServiceClient.initActivation(request)
 To commit an activation with given `activationId`, call the `commitActivation` method of the `PowerAuthServiceClient` instance. You should allow committing an activation as soon as it changes it's state from `CREATED` (initial state) to `OTP_USED` (state after the key exchange is complete).
 
 ```java
-// your actual activation identifier
+// Your actual activation identifier
 String activationId = "509d4c95-ef0d-4338-ab3a-64e730921fd1";
 
 // Short way to block the activation
@@ -125,7 +125,7 @@ To get the list of activations for a given user ID, call the `getActivationListF
 - `extras` - Extra data, content depends on application specific requirements.
 
 ```java
-// your actual user identifier
+// Your actual user identifier
 String userId = "1234";
 
 // Short way to read the activations
@@ -141,7 +141,7 @@ List<Activations> activations = response.getActivations();
 You can also get a detail of an individual activation based on `activationId` by calling the `getActivationStatus` method of the `PowerAuthServiceClient`.
 
 ```java
-// your actual activation identifier
+// Your actual activation identifier
 String activationId = "509d4c95-ef0d-4338-ab3a-64e730921fd1";
 
 // Short way to read the activation status
@@ -158,7 +158,7 @@ GetActivationStatusResponse response = powerAuthServiceClient.getActivationStatu
 To block an activation with given `activationId`, call the `blockActivation` method of the `PowerAuthServiceClient` instance. Only activations in `ACTIVE` state can be blocked.
 
 ```java
-// your actual activation identifier
+// Your actual activation identifier
 String activationId = "509d4c95-ef0d-4338-ab3a-64e730921fd1";
 
 // Short way to block the activation
@@ -173,7 +173,7 @@ BlockActivationResponse response = powerAuthServiceClient.blockActivation(reques
 To unblock an activation with given `activationId`, call the `unblockActivation` method of the `PowerAuthServiceClient` instance. Only activations in `BLOCKED` state can be unblocked.
 
 ```java
-// your actual activation identifier
+// Your actual activation identifier
 String activationId = "509d4c95-ef0d-4338-ab3a-64e730921fd1";
 
 // Short way to unblock the activation
@@ -188,7 +188,7 @@ UnblockActivationResponse response = powerAuthServiceClient.unblockActivation(re
 To remove an activation with given `activationId`, call the `removeActivation` method of the `PowerAuthServiceClient` instance. Note that unlike with the PowerAuth 2.0 Standard RESTful API (usually called by PowerAuth 2.0 Client), this call does not require PowerAuth 2.0 authorization signature. You can remove activation in any activation state.
 
 ```java
-// your actual activation identifier
+// Your actual activation identifier
 String activationId = "509d4c95-ef0d-4338-ab3a-64e730921fd1";
 
 // Short way to remove the activation
@@ -198,4 +198,37 @@ RemoveActivationResponse response = powerAuthServiceClient.removeActivation(acti
 RemoveActivationRequest request = new RemoveActivationRequest();
 request.setActivationId(activationId)
 RemoveActivationResponse response = powerAuthServiceClient.removeActivation(request);
+```
+
+### Getting the signature audit records
+
+To get the list of performed signature attempts for a given user ID, call the `getSignatureAuditLog` method of the `PowerAuthServiceClient` instance. Use this method to display the list of performed signature attempts, for example in a back-office user interface. This is especially useful for the purpose of security auditing and customer support. Each signature audit record contains following attributes:
+
+- `id` - Identifier of the signature audit record.
+- `userId` - Reference to the user who attempted to compute the signature.
+- `activationId` - Identifier of the activation that was used to construct the signature.
+- `activationCounter` - Value of the counter used for the signature.
+- `dataBase64` - Data used for the signature, base64 encoded.
+- `signatureType` - Type of the signature that was requested.
+- `signature` - Signature as it was delivered.
+- `timestampCreated` - Timestamp representing the moment a signature audit record was created (milliseconds since the Unix epoch start).
+
+```java
+// Your actual user identifier
+String userId = "1234";
+
+// Date range
+Date endingDate = new Date();
+Date startingDate = new Date(endingDate.getTime() - (7L * 24L * 60L * 60L * 1000L));
+
+// Short way to read the signature audit log
+List<SignatureAuditResponse.Items> signatureAuditItems = getSignatureAuditLog(userId,startingDate, endingDate);
+
+// ... or using the original SOAP request-response notion ...
+SignatureAuditRequest request = new SignatureAuditRequest();
+request.setUserId(userId);
+request.setTimestampFrom(calendarWithDate(startingDate));
+request.setTimestampTo(calendarWithDate(endingDate));
+SignatureAuditResponse response = powerAuthServiceClient.getSignatureAuditLog(request);
+List<SignatureAuditResponse.Items> signatureAuditItems = response.getItems();
 ```
