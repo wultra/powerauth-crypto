@@ -136,7 +136,7 @@ public class PrepareActivationStep {
 
 				// Prepare the status object to be stored
 				resultStatusObject.put("activationId", activationId);
-				resultStatusObject.put("clientPublicKey", BaseEncoding.base64().encode(keyConversion.convertPublicKeyToBytes(deviceKeyPair.getPublic())));
+				resultStatusObject.put("serverPublicKey", BaseEncoding.base64().encode(keyConversion.convertPublicKeyToBytes(serverPublicKey)));
 				resultStatusObject.put("encryptedDevicePrivateKey", BaseEncoding.base64().encode(encryptedDevicePrivateKey));
 				resultStatusObject.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConversion.convertSharedSecretKeyToBytes(signaturePossessionSecretKey)));
 				resultStatusObject.put("signatureKnowledgeKeyEncrypted", BaseEncoding.base64().encode(cSignatureKnoweldgeSecretKey));
