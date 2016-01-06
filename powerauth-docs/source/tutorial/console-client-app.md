@@ -67,7 +67,7 @@ Command-line version of a reference PowerAuth 2.0 Client uses two files:
 ```json
 {
   "activationId" : "cebb3ae6-f774-4b74-8020-f7b4da64de8f",
-  "clientPublicKey" : "BBG+4KiVZARZfk+JgEBJfuYZHTpC3va1imMVBhDd7oomPipR+YoM1LpX8xL9okcj/PHTuMyRqyyedrm+UVjDok4=",
+  "serverPublicKey" : "BKVanyqfLG2MxVwMt/LhmFliqPpHxVhtU3PEMG9FOIeJFkPAQjHpije029//S+bOprC4j6a8DMukxfoYkCFfLjU=",
   "counter" : 10,
   "encryptedDevicePrivateKey" : "HxRPkVVTM3QL+hecOY6cwQNvgNzvp2GbvvQ7cAOUXxzAk1dDaZVh1hd+2k18ZHn2",
   "signatureBiometryKey" : "4Kb+7AO49ZHOpA4vtYzZGA==",
