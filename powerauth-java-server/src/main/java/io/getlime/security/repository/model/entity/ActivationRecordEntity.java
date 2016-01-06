@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.repository.model;
+package io.getlime.security.repository.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -24,6 +24,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import io.getlime.security.repository.model.ActivationStatus;
+import io.getlime.security.repository.model.ActivationStatusConverter;
 
 @Entity(name = "pa_activation")
 public class ActivationRecordEntity implements Serializable {

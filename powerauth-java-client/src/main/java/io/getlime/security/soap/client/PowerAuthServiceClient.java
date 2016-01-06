@@ -1,6 +1,12 @@
 package io.getlime.security.soap.client;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
@@ -19,6 +25,8 @@ import io.getlime.powerauth.soap.PrepareActivationRequest;
 import io.getlime.powerauth.soap.PrepareActivationResponse;
 import io.getlime.powerauth.soap.RemoveActivationRequest;
 import io.getlime.powerauth.soap.RemoveActivationResponse;
+import io.getlime.powerauth.soap.SignatureAuditRequest;
+import io.getlime.powerauth.soap.SignatureAuditResponse;
 import io.getlime.powerauth.soap.UnblockActivationRequest;
 import io.getlime.powerauth.soap.UnblockActivationResponse;
 import io.getlime.powerauth.soap.VaultUnlockRequest;
@@ -135,6 +143,25 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 		request.setSignature(signature);
 		request.setSignatureType(signatureType);
 		return this.verifySignature(request);
+	}
+	
+	private XMLGregorianCalendar calendarWithDate(Date date) throws DatatypeConfigurationException {
+    	GregorianCalendar c = new GregorianCalendar();
+    	c.setTime(date);
+    	XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+    	return date2;
+    }
+	
+	public SignatureAuditResponse getSignatureAuditLog(SignatureAuditRequest request) {
+		return (SignatureAuditResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+	}
+	
+	public SignatureAuditResponse getSignatureAuditLog(String userId, Date startingDate, Date endingDate) throws DatatypeConfigurationException {
+		SignatureAuditRequest request = new SignatureAuditRequest();
+		request.setUserId(userId);
+		request.setTimestampFrom(calendarWithDate(startingDate));
+		request.setTimestampTo(calendarWithDate(endingDate));
+		return this.getSignatureAuditLog(request);
 	}
 
 }

@@ -15,8 +15,9 @@
  */
 package io.getlime.security.repository;
 
-import io.getlime.security.repository.model.MasterKeyPairEntity;
 import org.springframework.data.repository.CrudRepository;
+
+import io.getlime.security.repository.model.entity.MasterKeyPairEntity;
 
 public interface MasterKeyPairRepository extends CrudRepository<MasterKeyPairEntity, Long> {
 

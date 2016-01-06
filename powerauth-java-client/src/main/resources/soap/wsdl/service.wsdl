@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://getlime.io/security/powerauth" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://getlime.io/security/powerauth" targetNamespace="http://getlime.io/security/powerauth">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://getlime.io/security/powerauth" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://getlime.io/security/powerauth" targetNamespace="http://getlime.io/security/powerauth">
   <wsdl:types>
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://getlime.io/security/powerauth" version="1.0" xmlns:tns="http://getlime.io/security/powerauth">
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://getlime.io/security/powerauth" version="1.0">
     
     <!-- Init activation //-->
     
@@ -230,6 +230,39 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    
+    <!-- Signature Audit Access //-->
+    
+    <xs:element name="SignatureAuditRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="timestampFrom" type="xs:date"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="timestampTo" type="xs:date"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="SignatureAuditResponse">
+    <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="items">
+        			<xs:complexType>
+            			<xs:sequence>
+            				<xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:long"/>
+            				<xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="activationCounter" type="xs:long"/>
+                			<xs:element maxOccurs="1" minOccurs="0" name="dataBase64" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:date"/>
+            			</xs:sequence>
+        			</xs:complexType>
+        		</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <!-- PowerAuth 2.0 Enumerations //-->
     
@@ -257,6 +290,10 @@
     <wsdl:part element="tns:InitActivationRequest" name="InitActivationRequest">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="SignatureAuditRequest">
+    <wsdl:part element="tns:SignatureAuditRequest" name="SignatureAuditRequest">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="CommitActivationRequest">
     <wsdl:part element="tns:CommitActivationRequest" name="CommitActivationRequest">
     </wsdl:part>
@@ -275,6 +312,10 @@
   </wsdl:message>
   <wsdl:message name="VaultUnlockResponse">
     <wsdl:part element="tns:VaultUnlockResponse" name="VaultUnlockResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SignatureAuditResponse">
+    <wsdl:part element="tns:SignatureAuditResponse" name="SignatureAuditResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="CommitActivationResponse">
@@ -342,6 +383,12 @@
       <wsdl:input message="tns:InitActivationRequest" name="InitActivationRequest">
     </wsdl:input>
       <wsdl:output message="tns:InitActivationResponse" name="InitActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SignatureAudit">
+      <wsdl:input message="tns:SignatureAuditRequest" name="SignatureAuditRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:SignatureAuditResponse" name="SignatureAuditResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CommitActivation">
@@ -413,6 +460,15 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="InitActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SignatureAudit">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SignatureAuditRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SignatureAuditResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

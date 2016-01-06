@@ -36,6 +36,8 @@ import io.getlime.security.powerauth.PrepareActivationRequest;
 import io.getlime.security.powerauth.PrepareActivationResponse;
 import io.getlime.security.powerauth.RemoveActivationRequest;
 import io.getlime.security.powerauth.RemoveActivationResponse;
+import io.getlime.security.powerauth.SignatureAuditRequest;
+import io.getlime.security.powerauth.SignatureAuditResponse;
 import io.getlime.security.powerauth.UnblockActivationRequest;
 import io.getlime.security.powerauth.UnblockActivationResponse;
 import io.getlime.security.powerauth.VaultUnlockRequest;
@@ -84,6 +86,11 @@ public class PowerAuthController {
     @RequestMapping(value = "signature/verify", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<VerifySignatureResponse> verifySignature(@RequestBody RESTRequestWrapper<VerifySignatureRequest> request) throws Exception {
         return new RESTResponseWrapper<>("OK", powerAuthService.verifySignature(request.getRequestObject()));
+    }
+    
+    @RequestMapping(value = "signature/list", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<SignatureAuditResponse> getSignatureAuditLog(@RequestBody RESTRequestWrapper<SignatureAuditRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.getSignatureAuditLog(request.getRequestObject()));
     }
 
     @RequestMapping(value = "activation/block", method = RequestMethod.POST)

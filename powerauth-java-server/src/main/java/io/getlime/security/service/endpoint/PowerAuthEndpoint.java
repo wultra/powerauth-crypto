@@ -29,6 +29,8 @@ import io.getlime.security.powerauth.PrepareActivationRequest;
 import io.getlime.security.powerauth.PrepareActivationResponse;
 import io.getlime.security.powerauth.RemoveActivationRequest;
 import io.getlime.security.powerauth.RemoveActivationResponse;
+import io.getlime.security.powerauth.SignatureAuditRequest;
+import io.getlime.security.powerauth.SignatureAuditResponse;
 import io.getlime.security.powerauth.UnblockActivationRequest;
 import io.getlime.security.powerauth.UnblockActivationResponse;
 import io.getlime.security.powerauth.VaultUnlockRequest;
@@ -90,6 +92,12 @@ public class PowerAuthEndpoint {
     @ResponsePayload
     public VerifySignatureResponse verifySignature(@RequestPayload VerifySignatureRequest request) throws Exception {
         return powerAuthService.verifySignature(request);
+    }
+    
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "SignatureAuditRequest")
+    @ResponsePayload
+    public SignatureAuditResponse vaultUnlock(@RequestPayload SignatureAuditRequest request) throws Exception {
+        return powerAuthService.getSignatureAuditLog(request);
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BlockActivationRequest")

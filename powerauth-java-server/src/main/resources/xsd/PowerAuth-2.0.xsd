@@ -233,6 +233,39 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    
+    <!-- Signature Audit Access //-->
+    
+    <xs:element name="SignatureAuditRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="timestampFrom" type="xs:date" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="timestampTo" type="xs:date" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="SignatureAuditResponse">
+    <xs:complexType>
+            <xs:sequence>
+                <xs:element name="items" minOccurs="0" maxOccurs="unbounded">
+        			<xs:complexType>
+            			<xs:sequence>
+            				<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            				<xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="activationCounter" type="xs:long" minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="dataBase64" type="xs:string"  minOccurs="0" maxOccurs="1"/>
+                			<xs:element name="signatureType" type="xs:string"  minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="signature" type="xs:string"  minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="timestampCreated" type="xs:date"  minOccurs="1" maxOccurs="1"/>
+            			</xs:sequence>
+        			</xs:complexType>
+        		</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
     <!-- PowerAuth 2.0 Enumerations //-->
     

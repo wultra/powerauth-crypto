@@ -15,8 +15,9 @@
  */
 package io.getlime.security.repository;
 
-import io.getlime.security.repository.model.ActivationRecordEntity;
 import io.getlime.security.repository.model.ActivationStatus;
+import io.getlime.security.repository.model.entity.ActivationRecordEntity;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
