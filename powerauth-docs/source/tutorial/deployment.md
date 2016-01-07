@@ -20,9 +20,15 @@ You can download the latest `powerauth-java-server.war` at the releases page:
 
 - https://github.com/lime-company/lime-security-powerauth/releases
 
+### Creating the database schema
+
+In order for the PowerAuth 2.0 Server to work, you need to have a correct schema in the database. To create the correct database schema, execute these SQL scripts for your database engine (MySQL is used by default):
+
+- [Default SQL Database Schema](https://github.com/lime-company/lime-security-powerauth/tree/master/powerauth-docs/sql)
+
 ### Connecting PowerAuth 2.0 Server to database
 
-The default database connectivity parameters in `powerauth-java-server.war` are following:
+The default database connectivity parameters in `powerauth-java-server.war` are following (MySQL defaults):
 
 ```sh
 spring.datasource.url=jdbc:mysql://localhost:3306/powerauth
@@ -32,13 +38,7 @@ spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 spring.jpa.hibernate.ddl-auto=none
 ```
 
-These parameters are of course only for the testing purposes, they are not suitable for production environment. They should be overridden for your environment using a standard [Spring database connectivity related properties](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-connect-to-production-database).
-
-### Setting up the database schema
-
-In order for the PowerAuth 2.0 Server to work, you need to have a correct schema in the database. To create the correct database schema, execute these SQL scripts for your database engine (MySQL is used by default):
-
-- [Default SQL Database Schema](https://github.com/lime-company/lime-security-powerauth/tree/master/powerauth-docs/sql)
+These parameters are of course only for the testing purposes, they are not suitable for production environment. They should be overridden for your production environment using a standard [Spring database connectivity related properties](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-connect-to-production-database).
 
 ### Deploying PowerAuth 2.0 Server WAR file
 
@@ -56,7 +56,7 @@ You can also execute PowerAuth 2.0 Server WAR file directly using the following 
 java -jar powerauth-java-server.war
 ```
 
-_Note: If you launch both PowerAuth 2.0 Server and PowerAuth 2.0 Standard RESTful API using the 'java -jar' spell, you will get a conflict of the ports - only one application may use 8080 port at the time._
+_Note: If you launch both PowerAuth 2.0 Server and PowerAuth 2.0 Standard RESTful API using the 'java -jar' spell, you will get a conflict of the ports - only one application may use 8080 port at the time. You can overwrite the port using `-Dserver.port=8090` parameter_
 
 ## PowerAuth 2.0 Standard RESTful API
 
@@ -84,7 +84,7 @@ You can also execute WAR file directly using the following command:
 java -jar powerauth-restful-server.war
 ```
 
-_Note: If you launch both PowerAuth 2.0 Server and PowerAuth 2.0 Standard RESTful API using the 'java -jar' spell, you will get a conflict of the ports - only one application may use 8080 port at the time._
+_Note: If you launch both PowerAuth 2.0 Server and PowerAuth 2.0 Standard RESTful API using the 'java -jar' spell, you will get a conflict of the ports - only one application may use 8080 port at the time. You can overwrite the port using `-Dserver.port=8090` parameter_
 
 ## Integrating PowerAuth 2.0 with mobile API
 
