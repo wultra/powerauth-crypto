@@ -62,6 +62,14 @@ _Note: If you launch both PowerAuth 2.0 Server and PowerAuth 2.0 Standard RESTfu
 
 PowerAuth 2.0 Standard RESTful API is a Java EE application (packaged as an executable WAR file) responsible for exposing the [RESTful API according to the specification](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/api.md). It exposes services for end-user applications (PowerAuth 2.0 Clients), such as the mobile banking app or mobile token app.
 
+### Configuring PowerAuth 2.0 Standard RESTful API
+
+The default implementation of a PowerAuth 2.0 Standard RESTful API has only one proprietary configuration parameter `powerauth.service.url` that configures the SOAP endpoint location of a PowerAuth 2.0 Server. The default value for this property points to `localhost`:
+
+```bash
+powerauth.service.url=http://localhost:8080/powerauth-java-server/powerauth
+```
+
 ### Downloading PowerAuth 2.0 Standard RESTful API
 
 You can download the latest `powerauth-restful-server.war` at the releases page:
