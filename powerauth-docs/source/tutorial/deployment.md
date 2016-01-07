@@ -4,13 +4,13 @@ This chapter explains how to deploy PowerAuth application stack in a simple infr
 
 Following chapters are covered:
 
-- [PowerAuth 2.0 Server](#PowerAuth-2.0-Server)
-- [PowerAuth 2.0 Standard RESTful API](#PowerAuth-2.0-Standard-RESTful-API) (optional in production)
+- [Deploying PowerAuth 2.0 Server](#Deploying-PowerAuth-2.0-Server)
+- [Deploying PowerAuth 2.0 Standard RESTful API](#Deploying-PowerAuth-2.0-Standard-RESTful-API) (optional in production)
 - [Integrating PowerAuth 2.0 with mobile API](#Integrating-PowerAuth-2.0-with-mobile-API) (optional in testing)
 - [Integrating PowerAuth 2.0 with internet banking](#Integrating-PowerAuth-2.0-with-internet-banking) (optional in testing)
 - [PowerAuth 2.0 Reference Client](#PowerAuth-2.0-Reference-Client)
 
-## PowerAuth 2.0 Server
+## Deploying PowerAuth 2.0 Server
 
 PowerAuth 2.0 Server is a Java EE application (packaged as an executable WAR file) responsible for the PowerAuth 2.0 server-side cryptography implementation and data persistence. It exposes SOAP and RESTful API for the integrating applications (not end-user applications!), such as the internet banking or mobile banking API.
 
@@ -58,7 +58,7 @@ java -jar powerauth-java-server.war
 
 _Note: If you launch both PowerAuth 2.0 Server and PowerAuth 2.0 Standard RESTful API using the 'java -jar' spell, you will get a conflict of the ports - only one application may use 8080 port at the time. You can overwrite the port using `-Dserver.port=8090` parameter_
 
-## PowerAuth 2.0 Standard RESTful API
+## Deploying PowerAuth 2.0 Standard RESTful API
 
 PowerAuth 2.0 Standard RESTful API is a Java EE application (packaged as an executable WAR file) responsible for exposing the [RESTful API according to the specification](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/api.md). It exposes services for end-user applications (PowerAuth 2.0 Clients), such as the mobile banking app or mobile token app.
 
