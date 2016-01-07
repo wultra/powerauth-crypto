@@ -8,7 +8,7 @@ Following chapters are covered:
 - [Deploying PowerAuth 2.0 Standard RESTful API](#deploying-powerauth-20-standard-restful-api) (optional in production)
 - [Integrating PowerAuth 2.0 with mobile API](#integrating-powerauth-20-with-mobile-api) (optional in testing)
 - [Integrating PowerAuth 2.0 with internet banking](#integrating-powerauth-20-with-internet-banking) (optional in testing)
-- [PowerAuth 2.0 Reference Client](#testing-the-integration-using-powerauth-20-reference-client)
+- [Testing the integration using PowerAuth 2.0 Reference Client](#testing-the-integration-using-powerauth-20-reference-client)
 
 ## Deploying PowerAuth 2.0 Server
 
