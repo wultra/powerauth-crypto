@@ -4,11 +4,11 @@ This chapter explains how to deploy PowerAuth application stack in a simple infr
 
 Following chapters are covered:
 
-- [Deploying PowerAuth 2.0 Server](#Deploying-PowerAuth-2.0-Server)
-- [Deploying PowerAuth 2.0 Standard RESTful API](#Deploying-PowerAuth-2.0-Standard-RESTful-API) (optional in production)
-- [Integrating PowerAuth 2.0 with mobile API](#Integrating-PowerAuth-2.0-with-mobile-API) (optional in testing)
-- [Integrating PowerAuth 2.0 with internet banking](#Integrating-PowerAuth-2.0-with-internet-banking) (optional in testing)
-- [PowerAuth 2.0 Reference Client](#PowerAuth-2.0-Reference-Client)
+- [Deploying PowerAuth 2.0 Server](#deploying-powerauth-20-server)
+- [Deploying PowerAuth 2.0 Standard RESTful API](#deploying-powerauth-20-standard-restful-api) (optional in production)
+- [Integrating PowerAuth 2.0 with mobile API](#integrating-powerauth-20-with-mobile-api) (optional in testing)
+- [Integrating PowerAuth 2.0 with internet banking](#integrating-powerauth-20-with-internet-banking) (optional in testing)
+- [PowerAuth 2.0 Reference Client](#testing-the-integration-using-powerauth-20-reference-client)
 
 ## Deploying PowerAuth 2.0 Server
 
@@ -76,7 +76,7 @@ The default configuration works best with Apache Tomcat server running on defaul
 
 To deploy PowerAuth 2.0 Standard RESTful API to Apache Tomcat, simply copy the WAR file in your `webapps` folder or deploy it using the "Tomcat Web Application Manager" application (usually deployed on default Tomcat address `http://localhost:8080/manager`).
 
-### Deploying PowerAuth 2.0 Server outside the container
+### Deploying PowerAuth 2.0 Standard RESTful API outside the container
 
 You can also execute WAR file directly using the following command:
 
