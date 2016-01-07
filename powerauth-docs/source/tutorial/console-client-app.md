@@ -2,6 +2,12 @@
 
 This brief chapter serves as a documentation of the reference PowerAuth 2.0 Client - a simple utility connecting to the standard RESTful API.
 
+## Downloading PowerAuth 2.0 Reference Client
+
+You can download the latest `powerauth-java-cmd.jar` at the releases page:
+
+- https://github.com/lime-company/lime-security-powerauth/releases
+
 ## Basic usage
 
 PowerAuth 2.0 Reference Client is called as any Java application that is packaged as a JAR file and it uses following command-line arguments.
