@@ -32,7 +32,7 @@ The default database connectivity parameters in `powerauth-java-server.war` are 
 
 ```sh
 spring.datasource.url=jdbc:mysql://localhost:3306/powerauth
-spring.datasource.username=root
+spring.datasource.username=powerauth
 spring.datasource.password=
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 spring.jpa.hibernate.ddl-auto=none
