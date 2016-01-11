@@ -99,9 +99,26 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 
+	/**
+	 * Private methods
+	 */
+
+	private void deactivatePendingActivation(Date timestamp, ActivationRecordEntity activation) {
+		if ((activation.getActivationStatus().equals(ActivationStatus.CREATED) || activation.getActivationStatus().equals(ActivationStatus.OTP_USED)) && timestamp.getTime() - activation.getTimestampCreated().getTime() > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+			activation.setActivationStatus(ActivationStatus.REMOVED);
+			powerAuthRepository.save(activation);
+		}
+	}
+
+	/**
+	 * Service methods
+	 */
+
 	@Override
 	public GetActivationListForUserResponse getActivatioListForUser(GetActivationListForUserRequest request) throws Exception {
 		try {
+
+			// Get the request parameters
 			String userId = request.getUserId();
 
 			// Generate timestamp in advance
@@ -114,11 +131,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			if (activationsList != null) {
 				for (ActivationRecordEntity activation : activationsList) {
 
-					// Deactivate old pending activations first
-					if ((activation.getActivationStatus().equals(ActivationStatus.CREATED) || activation.getActivationStatus().equals(ActivationStatus.OTP_USED)) && timestamp.getTime() - activation.getTimestampCreated().getTime() > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
-						activation.setActivationStatus(ActivationStatus.REMOVED);
-						powerAuthRepository.save(activation);
-					}
+					deactivatePendingActivation(timestamp, activation);
 
 					// Map between repository object and service objects
 					Activations activationServiceItem = new Activations();
@@ -133,6 +146,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				}
 			}
 			return response;
+
 		} catch (Exception ex) {
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw new GenericServiceException("Unknown exception has occurred");
@@ -142,6 +156,8 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	@Override
 	public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception {
 		try {
+
+			// Get the request parameters
 			String activationId = request.getActivationId();
 
 			// Generate timestamp in advance
@@ -149,52 +165,88 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
 			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 
-			// Handle the case with incorrect activation instance first here
-			if (activation == null || activation.getActivationStatus() == ActivationStatus.CREATED) {
-
-				// Created activations do exist in DB, but should behave as if
-				// they didn't
-				GetActivationStatusResponse response = new GetActivationStatusResponse();
-				response.setActivationId(activationId);
-				response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.CREATED));
-				byte[] randomStatusBlob = new KeyGenerator().generateRandomBytes(16);
-				response.setCStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
-				return response;
-
-			} else {
+			// Check if the activation exists
+			if (activation != null) {
 
 				// Deactivate old pending activations first
-				if ((activation.getActivationStatus().equals(ActivationStatus.CREATED) || activation.getActivationStatus().equals(ActivationStatus.OTP_USED)) && timestamp.getTime() - activation.getTimestampCreated().getTime() > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
-					activation.setActivationStatus(ActivationStatus.REMOVED);
-					powerAuthRepository.save(activation);
+				deactivatePendingActivation(timestamp, activation);
+
+				// Handle CREATED activation
+				if (activation.getActivationStatus() == ActivationStatus.CREATED) {
+
+					// Created activations are not able to transfer valid status blob to the client
+					// since both keys were not exchanged yet and transport cannot be secured.
+					byte[] randomStatusBlob = new KeyGenerator().generateRandomBytes(16);
+
+					// return the data
+					GetActivationStatusResponse response = new GetActivationStatusResponse();
+					response.setActivationId(activationId);
+					response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+					response.setActivationName(activation.getActivationName());
+					response.setExtras(activation.getExtras());
+					response.setTimestampCreated(ModelUtil.calendarWithDate(activation.getTimestampCreated()));
+					response.setTimestampLastUsed(ModelUtil.calendarWithDate(activation.getTimestampLastUsed()));
+					response.setCStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
+					return response;
+
+				} else {
+
+					// Get the server private and device public keys to compute
+					// the transport key
+					String serverPrivateKeyBase64 = activation.getServerPrivateKeyBase64();
+					String devicePublicKeyBase64 = activation.getDevicePublicKeyBase64();
+
+					// If an activation was turned to REMOVED directly from CREATED state,
+					// there is not device public key in the database - we need to handle
+					// that case by defaulting the C_statusBlob to random value...
+					byte[] C_statusBlob = new KeyGenerator().generateRandomBytes(16);
+
+					// There is a device public key available, therefore we can compute
+					// the real C_statusBlob value.
+					if (devicePublicKeyBase64 != null) {
+
+						PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(BaseEncoding.base64().decode(serverPrivateKeyBase64));
+						PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(BaseEncoding.base64().decode(devicePublicKeyBase64));
+
+						SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+						SecretKey transportKey = powerAuthServerKeyFactory.generateServerTransportKey(masterSecretKey);
+
+						// Encrypt the status blob
+						C_statusBlob = powerAuthServerActivation.encryptedStatusBlob(activation.getActivationStatus().getByte(), activation.getCounter(), activation.getFailedAttempts().byteValue(), transportKey);
+
+					}
+
+					// return the data
+					GetActivationStatusResponse response = new GetActivationStatusResponse();
+					response.setActivationId(activationId);
+					response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
+					response.setActivationName(activation.getActivationName());
+					response.setExtras(activation.getExtras());
+					response.setTimestampCreated(ModelUtil.calendarWithDate(activation.getTimestampCreated()));
+					response.setTimestampLastUsed(ModelUtil.calendarWithDate(activation.getTimestampLastUsed()));
+					response.setCStatusBlob(BaseEncoding.base64().encode(C_statusBlob));
+
+					return response;
+
 				}
+			} else {
 
-				// Get the server private and device public keys to compute the
-				// transport key
-				String serverPrivateKeyBase64 = activation.getServerPrivateKeyBase64();
-				String devicePublicKeyBase64 = activation.getDevicePublicKeyBase64();
-				PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(BaseEncoding.base64().decode(serverPrivateKeyBase64));
-				PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(BaseEncoding.base64().decode(devicePublicKeyBase64));
-
-				SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
-				SecretKey transportKey = powerAuthServerKeyFactory.generateServerTransportKey(masterSecretKey);
-
-				// Encrypt the status blob
-				byte[] C_statusBlob = powerAuthServerActivation.encryptedStatusBlob(activation.getActivationStatus().getByte(), activation.getCounter(), activation.getFailedAttempts().byteValue(), transportKey);
+				// Activations that do not exist should return REMOVED state and
+				// a random status blob
+				byte[] randomStatusBlob = new KeyGenerator().generateRandomBytes(16);
 
 				// return the data
 				GetActivationStatusResponse response = new GetActivationStatusResponse();
 				response.setActivationId(activationId);
-				response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-				response.setActivationName(activation.getActivationName());
-				response.setExtras(activation.getExtras());
-				response.setTimestampCreated(ModelUtil.calendarWithDate(activation.getTimestampCreated()));
-				response.setTimestampLastUsed(ModelUtil.calendarWithDate(activation.getTimestampLastUsed()));
-				response.setCStatusBlob(BaseEncoding.base64().encode(C_statusBlob));
-
+				response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
+				response.setActivationName("unknown");
+				response.setExtras(null);
+				response.setTimestampCreated(null);
+				response.setTimestampLastUsed(null);
+				response.setCStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
 				return response;
-
 			}
+
 		} catch (Exception ex) {
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw new GenericServiceException("Unknown exception has occurred");
@@ -234,8 +286,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			for (int i = 0; i < PowerAuthConstants.ACTIVATION_GENERATE_ACTIVATION_ID_ITERATIONS; i++) {
 				String tmpActivationId = powerAuthServerActivation.generateActivationId();
 				ActivationRecordEntity record = powerAuthRepository.findFirstByActivationId(tmpActivationId);
-				// this activation ID has a collision, reset it and find another
-				// one
+				// this activation ID has a collision, reset it and find another one
 				if (record == null || (timestamp.getTime() - record.getTimestampCreated().getTime()) > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
 					activationId = tmpActivationId;
 					break;
@@ -245,8 +296,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				throw new GenericServiceException("ERROR_GENERIC_ACTIVATION_ID", "Too many failed attempts to generate activation ID.");
 			}
 
-			// Generate a unique short activation ID for created and OTP used
-			// states
+			// Generate a unique short activation ID for created and OTP used states
 			String activationIdShort = null;
 			Set<ActivationStatus> states = ImmutableSet.of(ActivationStatus.CREATED, ActivationStatus.OTP_USED);
 			for (int i = 0; i < PowerAuthConstants.ACTIVATION_GENERATE_ACTIVATION_SHORT_ID_ITERATIONS; i++) {
@@ -277,7 +327,6 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
 			// Store the new activation
 			ActivationRecordEntity activation = new ActivationRecordEntity(activationId, activationIdShort, activationOtp, userId, null, null, BaseEncoding.base64().encode(serverKeyPrivateBytes), BaseEncoding.base64().encode(serverKeyPublicBytes), null, new Long(0), new Long(0), timestamp, timestamp, ActivationStatus.CREATED, masterKeyPair);
-
 			powerAuthRepository.save(activation);
 
 			// Return the server response
@@ -303,6 +352,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	@Transactional
 	public PrepareActivationResponse prepareActivation(PrepareActivationRequest request) throws Exception {
 		try {
+
 			// Get request parameters
 			String activationIdShort = request.getActivationIdShort();
 			String activationNonceBase64 = request.getActivationNonce();
@@ -372,6 +422,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	}
 
 	private VerifySignatureResponse verifySignatureImplNonTransaction(VerifySignatureRequest request) throws Exception {
+
 		// Get request data
 		String activationId = request.getActivationId();
 		byte[] data = request.getData().getBytes("UTF-8");
@@ -432,9 +483,12 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					SignatureEntity signatureAuditRecord = new SignatureEntity();
 					signatureAuditRecord.setActivation(activation);
 					signatureAuditRecord.setActivationCounter(activation.getCounter());
+					signatureAuditRecord.setActivationStatus(activation.getActivationStatus());
 					signatureAuditRecord.setDataBase64(BaseEncoding.base64().encode(data));
 					signatureAuditRecord.setSignature(signature);
 					signatureAuditRecord.setSignatureType(signatureType);
+					signatureAuditRecord.setValid(true);
+					signatureAuditRecord.setNote("signature_ok");
 					signatureAuditRecord.setTimestampCreated(currentTimestamp);
 					signatureAuditRepository.save(signatureAuditRecord);
 
@@ -467,6 +521,19 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					// Save the activation
 					powerAuthRepository.save(activation);
 
+					// Audit the signature
+					SignatureEntity signatureAuditRecord = new SignatureEntity();
+					signatureAuditRecord.setActivation(activation);
+					signatureAuditRecord.setActivationCounter(activation.getCounter());
+					signatureAuditRecord.setActivationStatus(activation.getActivationStatus());
+					signatureAuditRecord.setDataBase64(BaseEncoding.base64().encode(data));
+					signatureAuditRecord.setSignature(signature);
+					signatureAuditRecord.setSignatureType(signatureType);
+					signatureAuditRecord.setValid(false);
+					signatureAuditRecord.setNote("signature_does_not_match");
+					signatureAuditRecord.setTimestampCreated(currentTimestamp);
+					signatureAuditRepository.save(signatureAuditRecord);
+
 					// return the data
 					VerifySignatureResponse response = new VerifySignatureResponse();
 					response.setActivationId(activationId);
@@ -491,6 +558,19 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				// Save the activation
 				powerAuthRepository.save(activation);
 
+				// Audit the signature
+				SignatureEntity signatureAuditRecord = new SignatureEntity();
+				signatureAuditRecord.setActivation(activation);
+				signatureAuditRecord.setActivationCounter(activation.getCounter());
+				signatureAuditRecord.setActivationStatus(activation.getActivationStatus());
+				signatureAuditRecord.setDataBase64(BaseEncoding.base64().encode(data));
+				signatureAuditRecord.setSignature(signature);
+				signatureAuditRecord.setSignatureType(signatureType);
+				signatureAuditRecord.setValid(false);
+				signatureAuditRecord.setNote("activation_invalid_state");
+				signatureAuditRecord.setTimestampCreated(currentTimestamp);
+				signatureAuditRepository.save(signatureAuditRecord);
+
 				// return the data
 				VerifySignatureResponse response = new VerifySignatureResponse();
 				response.setActivationId(activationId);
@@ -504,6 +584,19 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			}
 
 		} else {
+			
+			// Audit the signature
+			SignatureEntity signatureAuditRecord = new SignatureEntity();
+			signatureAuditRecord.setActivation(null);
+			signatureAuditRecord.setActivationCounter(0L);
+			signatureAuditRecord.setActivationStatus(null);
+			signatureAuditRecord.setDataBase64(BaseEncoding.base64().encode(data));
+			signatureAuditRecord.setSignature(signature);
+			signatureAuditRecord.setSignatureType(signatureType);
+			signatureAuditRecord.setNote("activation_not_exist");
+			signatureAuditRecord.setValid(false);
+			signatureAuditRecord.setTimestampCreated(currentTimestamp);
+			signatureAuditRepository.save(signatureAuditRecord);
 
 			// return the data
 			VerifySignatureResponse response = new VerifySignatureResponse();
@@ -533,29 +626,43 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	@Transactional
 	public CommitActivationResponse commitActivation(CommitActivationRequest request) throws Exception {
 		try {
+
+			// Get request data
 			String activationId = request.getActivationId();
 			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
+
 			// Get current timestamp
 			Date timestamp = new Date();
-			if (activation == null || (timestamp.getTime() - activation.getTimestampCreated().getTime()) > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
-				activation.setActivationStatus(ActivationStatus.REMOVED);
-				powerAuthRepository.save(activation);
-				throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
-			}
-			boolean activated = false;
-			if (activation != null) { // does the record even exist?
+
+			// Does the activation exist?
+			if (activation != null) {
+				
+				// Check already deactivated activation
+				if ((timestamp.getTime() - activation.getTimestampCreated().getTime()) > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+					activation.setActivationStatus(ActivationStatus.REMOVED);
+					powerAuthRepository.save(activation);
+					throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
+				}
+
+				// Activation is in correct state
+				boolean activated = false;
 				if (activation.getActivationStatus().equals(ActivationStatus.OTP_USED)) {
 					activated = true;
 					activation.setActivationStatus(ActivationStatus.ACTIVE);
 					powerAuthRepository.save(activation);
+					CommitActivationResponse response = new CommitActivationResponse();
+					response.setActivationId(activationId);
+					response.setActivated(activated);
+					return response;
 				} else {
 					throw new GenericServiceException("ERROR_ACTIVATION_COMMIT_STATE", "Only activations in OTP_USED state can be commited");
 				}
+				
+			} else {
+				// Activation does not exist
+				throw new GenericServiceException("ERROR_ACTIVATION_NOT_FOUND", "Activation with given activation ID was not found");
 			}
-			CommitActivationResponse response = new CommitActivationResponse();
-			response.setActivationId(activationId);
-			response.setActivated(activated);
-			return response;
+			
 		} catch (GenericServiceException ex) {
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw ex;
@@ -576,11 +683,14 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				removed = true;
 				activation.setActivationStatus(ActivationStatus.REMOVED);
 				powerAuthRepository.save(activation);
+			
+				RemoveActivationResponse response = new RemoveActivationResponse();
+				response.setActivationId(activationId);
+				response.setRemoved(removed);
+				return response;
+			} else {
+				throw new GenericServiceException("ERROR_ACTIVATION_NOT_FOUND", "Activation with given activation ID was not found");
 			}
-			RemoveActivationResponse response = new RemoveActivationResponse();
-			response.setActivationId(activationId);
-			response.setRemoved(removed);
-			return response;
 		} catch (Exception ex) {
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw new GenericServiceException("Unknown exception has occurred");
@@ -594,7 +704,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			String activationId = request.getActivationId();
 			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 			if (activation == null) {
-				throw new GenericServiceException("Activation with given activation ID was not found");
+				throw new GenericServiceException("ERROR_ACTIVATION_NOT_FOUND", "Activation with given activation ID was not found");
 			}
 
 			// does the record even exist, is it in correct state?
@@ -747,13 +857,17 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				for (SignatureEntity signatureEntity : signatureAuditEntityList) {
 
 					SignatureAuditResponse.Items item = new SignatureAuditResponse.Items();
+
+					item.setId(signatureEntity.getId());
 					item.setActivationCounter(signatureEntity.getActivationCounter());
+					item.setActivationStatus(ModelUtil.toServiceStatus(signatureEntity.getActivationStatus()));
 					item.setActivationId(signatureEntity.getActivation().getActivationId());
 					item.setDataBase64(signatureEntity.getDataBase64());
-					item.setId(signatureEntity.getId());
 					item.setSignature(signatureEntity.getSignature());
 					item.setSignatureType(signatureEntity.getSignatureType());
+					item.setValid(signatureEntity.getValid());
 					item.setTimestampCreated(ModelUtil.calendarWithDate(signatureEntity.getTimestampCreated()));
+					item.setNote(signatureEntity.getNote());
 					item.setUserId(signatureEntity.getActivation().getUserId());
 
 					response.getItems().add(item);
