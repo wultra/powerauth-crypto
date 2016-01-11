@@ -28,6 +28,7 @@ public class ConfigurationUtils {
 	
 	private static final String expectedApplicationId = "a1c97807-795a-466e-87bf-230d8ac1451e";
 	private static final String expectedApplicationSecret = "d358e78a-8d12-4595-bf69-6eff2c2afc04";
+	private static final String expectedApplicationName = "PowerAuth 2.0 Reference Client";
 	
 	public static String getApplicationId(JSONObject clientConfigObject) {
 		if (clientConfigObject.get("applicationId") != null) {
@@ -42,6 +43,14 @@ public class ConfigurationUtils {
 			return (String) clientConfigObject.get("applicationSecret");
 		} else {
 			return expectedApplicationSecret;
+		}
+	}
+	
+	public static String getApplicationName(JSONObject clientConfigObject) {
+		if (clientConfigObject.get("applicationName") != null) {
+			return (String) clientConfigObject.get("applicationName");
+		} else {
+			return expectedApplicationName;
 		}
 	}
 

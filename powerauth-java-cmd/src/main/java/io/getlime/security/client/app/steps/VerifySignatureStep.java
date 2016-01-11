@@ -136,7 +136,7 @@ public class VerifySignatureStep {
 
 		RequestEntity<byte[]> request = new RequestEntity<byte[]>(dataFileBytes, headers, httpMethod, uri);
 		
-		RestTemplate template = RestTemplateFactory.defaultRestTemplate();
+		RestTemplate template = new RestTemplate();
 
 		// Call the server with activation data
 		System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + fullURIString + " ...");

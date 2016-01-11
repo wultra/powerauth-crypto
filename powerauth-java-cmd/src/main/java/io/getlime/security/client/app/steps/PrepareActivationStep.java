@@ -61,6 +61,7 @@ public class PrepareActivationStep {
 	public static JSONObject execute(Map<String, Object> context) throws Exception {
 
 		// Read properties from "context"
+		String activationName = (String) context.get("ACTIVATION_NAME");
 		String uriString = (String) context.get("URI_STRING");
 		PublicKey masterPublicKey = (PublicKey) context.get("MASTER_PUBLIC_KEY");
 		String activationCode = (String) context.get("ACTIVATION_CODE");
@@ -90,7 +91,7 @@ public class PrepareActivationStep {
 		// Prepare the server request
 		ActivationCreateRequest requestObject = new ActivationCreateRequest();
 		requestObject.setActivationIdShort(activationIdShort);
-		requestObject.setActivationName("PowerAuth 2.0 Reference Client");
+		requestObject.setActivationName(activationName);
 		requestObject.setActivationNonce(BaseEncoding.base64().encode(nonceDeviceBytes));
 		requestObject.setcDevicePublicKey(BaseEncoding.base64().encode(cDevicePublicKeyBytes));
 		PowerAuthAPIRequest<ActivationCreateRequest> body = new PowerAuthAPIRequest<>();

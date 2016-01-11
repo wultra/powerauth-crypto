@@ -130,6 +130,7 @@ public class Application implements CommandLineRunner {
 				context.put("STATUS_FILENAME", statusFileName);
 				context.put("ACTIVATION_CODE", cmd.getOptionValue("a"));
 				context.put("PASSWORD", cmd.getOptionValue("p"));
+				context.put("ACTIVATION_NAME", ConfigurationUtils.getApplicationName(clientConfigObject));
 
 				PrepareActivationStep.execute(context);
 
