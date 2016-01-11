@@ -27,6 +27,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+import com.google.common.io.BaseEncoding;
+
 import javax.servlet.http.HttpServletRequest;
 
 import io.getlime.powerauth.soap.VerifySignatureRequest;
@@ -105,7 +107,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 
 		// Get HTTP body bytes
 		String requestBodyString = ((String)servletRequest.getAttribute(PowerAuthRequestFilter.HTTP_BODY));
-		byte[] requestBodyBytes = requestBodyString == null ? null : requestBodyString.getBytes("UTF-8");
+		byte[] requestBodyBytes = requestBodyString == null ? null : BaseEncoding.base64().decode(requestBodyString);
 
 		// Parse HTTP header
 		Map<String, String> httpHeaderInfo = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(httpAuthorizationHeader);

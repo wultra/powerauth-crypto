@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.google.common.io.BaseEncoding;
+
 public class PowerAuthRequestFilter extends OncePerRequestFilter {
 	
 	public static final String HTTP_BODY = "X-PowerAuth-Request-Body";
@@ -33,7 +35,9 @@ public class PowerAuthRequestFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		ResettableStreamHttpServletRequest resetableRequest = new ResettableStreamHttpServletRequest(request);
 		byte[] body = resetableRequest.getRequestBody();
-		resetableRequest.setAttribute(HTTP_BODY, new String(body, "UTF-8"));
+		if (body != null) {
+			resetableRequest.setAttribute(HTTP_BODY, BaseEncoding.base64().encode(body));
+		}
 		super.doFilter(resetableRequest, response, filterChain);
 	}
 
