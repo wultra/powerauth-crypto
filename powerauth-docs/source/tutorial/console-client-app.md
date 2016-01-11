@@ -62,6 +62,7 @@ Command-line version of a reference PowerAuth 2.0 Client uses two files:
 
 ```json
 {
+  "applicationName": "PowerAuth 2.0 Reference Client",
   "applicationId": "a1c97807-795a-466e-87bf-230d8ac1451e",
   "applicationSecret": "d358e78a-8d12-4595-bf69-6eff2c2afc04",
   "masterPublicKey": "BCJjw2bvI2+AN61Gwnx0axdLlDtUzSjx2FWklNnsN/Rbi2QDm7oIrCnMrz0s4RgE18KQC2gukK/bCzkDY+bR9bk="

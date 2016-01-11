@@ -103,8 +103,15 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	 * Private methods
 	 */
 
+	/**
+	 * Deactivate the activation in CREATED or OTP_USED if it's activation expiration timestamp
+	 * is below the given timestamp.
+	 * @param timestamp Timestamp to check activations against.
+	 * @param activation Activation to check.
+	 */
 	private void deactivatePendingActivation(Date timestamp, ActivationRecordEntity activation) {
-		if ((activation.getActivationStatus().equals(ActivationStatus.CREATED) || activation.getActivationStatus().equals(ActivationStatus.OTP_USED)) && timestamp.getTime() - activation.getTimestampCreated().getTime() > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+		if ((activation.getActivationStatus().equals(ActivationStatus.CREATED) || activation.getActivationStatus().equals(ActivationStatus.OTP_USED))
+				&& (timestamp.getTime() > activation.getTimestampActivationExpire().getTime())) {
 			activation.setActivationStatus(ActivationStatus.REMOVED);
 			powerAuthRepository.save(activation);
 		}
@@ -259,12 +266,24 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	public InitActivationResponse initActivation(InitActivationRequest request) throws Exception {
 
 		try {
+			
+			// Generate timestamp in advance
+			Date timestamp = new Date();
 
 			// Get request parameters
 			String userId = request.getUserId();
+			
+			// Get number of max attempts from request or from constants, if not provided
+			Long maxAttempt = request.getMaxFailureCount();
+			if (maxAttempt == null) {
+				maxAttempt = PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS;
+			}
 
-			// Generate timestamp in advance
-			Date timestamp = new Date();
+			// Get activation expiration date from request or from constants, if not provided
+			Date timestampExpiration = ModelUtil.dateWithCalendar(request.getTimestampActivationExpire());
+			if (timestampExpiration == null) {
+				timestampExpiration = new Date(timestamp.getTime() + PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE);
+			}
 
 			// Fetch the latest master private key
 			MasterKeyPairEntity masterKeyPair = masterKeyPairRepository.findFirstByOrderByTimestampCreatedDesc();
@@ -286,11 +305,10 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			for (int i = 0; i < PowerAuthConstants.ACTIVATION_GENERATE_ACTIVATION_ID_ITERATIONS; i++) {
 				String tmpActivationId = powerAuthServerActivation.generateActivationId();
 				ActivationRecordEntity record = powerAuthRepository.findFirstByActivationId(tmpActivationId);
-				// this activation ID has a collision, reset it and find another one
-				if (record == null || (timestamp.getTime() - record.getTimestampCreated().getTime()) > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
+				if (record == null) {
 					activationId = tmpActivationId;
 					break;
-				}
+				} // ... else this activation ID has a collision, reset it and try to find another one
 			}
 			if (activationId == null) {
 				throw new GenericServiceException("ERROR_GENERIC_ACTIVATION_ID", "Too many failed attempts to generate activation ID.");
@@ -301,7 +319,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			Set<ActivationStatus> states = ImmutableSet.of(ActivationStatus.CREATED, ActivationStatus.OTP_USED);
 			for (int i = 0; i < PowerAuthConstants.ACTIVATION_GENERATE_ACTIVATION_SHORT_ID_ITERATIONS; i++) {
 				String tmpActivationIdShort = powerAuthServerActivation.generateActivationIdShort();
-				ActivationRecordEntity record = powerAuthRepository.findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(tmpActivationIdShort, states, new Date(timestamp.getTime() - PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE));
+				ActivationRecordEntity record = powerAuthRepository.findFirstByActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(tmpActivationIdShort, states, timestamp);
 				// this activation short ID has a collision, reset it and find
 				// another one
 				if (record == null) {
@@ -326,7 +344,24 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			byte[] serverKeyPublicBytes = keyConversionUtilities.convertPublicKeyToBytes(serverKeyPair.getPublic());
 
 			// Store the new activation
-			ActivationRecordEntity activation = new ActivationRecordEntity(activationId, activationIdShort, activationOtp, userId, null, null, BaseEncoding.base64().encode(serverKeyPrivateBytes), BaseEncoding.base64().encode(serverKeyPublicBytes), null, new Long(0), new Long(0), timestamp, timestamp, ActivationStatus.CREATED, masterKeyPair);
+			ActivationRecordEntity activation = new ActivationRecordEntity();
+			activation.setActivationId(activationId);
+			activation.setActivationIdShort(activationIdShort);
+			activation.setActivationName(null);
+			activation.setActivationOTP(activationOtp);
+			activation.setActivationStatus(ActivationStatus.CREATED);
+			activation.setCounter(0L);
+			activation.setDevicePublicKeyBase64(null);
+			activation.setExtras(null);
+			activation.setFailedAttempts(0L);
+			activation.setMasterKeypair(masterKeyPair);
+			activation.setMaxFailedAttempts(maxAttempt);
+			activation.setServerPrivateKeyBase64(BaseEncoding.base64().encode(serverKeyPrivateBytes));
+			activation.setServerPublicKeyBase64(BaseEncoding.base64().encode(serverKeyPublicBytes));
+			activation.setTimestampActivationExpire(timestampExpiration);
+			activation.setTimestampCreated(timestamp);
+			activation.setTimestampLastUsed(timestamp);
+			activation.setUserId(userId);
 			powerAuthRepository.save(activation);
 
 			// Return the server response
@@ -365,7 +400,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
 			// Fetch the current activation by short activation ID
 			Set<ActivationStatus> states = ImmutableSet.of(ActivationStatus.CREATED);
-			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(activationIdShort, states, new Date(timestamp.getTime() - PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE));
+			ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(activationIdShort, states, timestamp);
 
 			if (activation == null) {
 				throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
@@ -496,7 +531,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					VerifySignatureResponse response = new VerifySignatureResponse();
 					response.setActivationId(activationId);
 					response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.ACTIVE));
-					response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
+					response.setRemainingAttempts(BigInteger.valueOf(activation.getMaxFailedAttempts()));
 					response.setSignatureValid(true);
 					response.setUserId(activation.getUserId());
 
@@ -510,7 +545,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					// Update failed attempts and block the activation, if
 					// necessary
 					activation.setFailedAttempts(activation.getFailedAttempts() + 1);
-					Long remainingAttempts = (PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts());
+					Long remainingAttempts = (activation.getMaxFailedAttempts() - activation.getFailedAttempts());
 					if (remainingAttempts <= 0) {
 						activation.setActivationStatus(ActivationStatus.BLOCKED);
 					}
@@ -638,9 +673,8 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			if (activation != null) {
 				
 				// Check already deactivated activation
-				if ((timestamp.getTime() - activation.getTimestampCreated().getTime()) > PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE) {
-					activation.setActivationStatus(ActivationStatus.REMOVED);
-					powerAuthRepository.save(activation);
+				deactivatePendingActivation(timestamp, activation);
+				if (activation.getActivationStatus().equals(ActivationStatus.REMOVED)) {
 					throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
 				}
 
@@ -796,7 +830,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					VaultUnlockResponse response = new VaultUnlockResponse();
 					response.setActivationId(activationId);
 					response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.ACTIVE));
-					response.setRemainingAttempts(BigInteger.valueOf(PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS));
+					response.setRemainingAttempts(BigInteger.valueOf(activation.getMaxFailedAttempts()));
 					response.setSignatureValid(true);
 					response.setUserId(activation.getUserId());
 					response.setCVaultEncryptionKey(BaseEncoding.base64().encode(cKeyBytes));
@@ -814,7 +848,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					VaultUnlockResponse response = new VaultUnlockResponse();
 					response.setActivationId(activationId);
 					response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
-					response.setRemainingAttempts(BigInteger.valueOf((PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS - activation.getFailedAttempts())));
+					response.setRemainingAttempts(BigInteger.valueOf(activation.getMaxFailedAttempts() - activation.getFailedAttempts()));
 					response.setSignatureValid(false);
 					response.setUserId(activation.getUserId());
 					response.setCVaultEncryptionKey(null);

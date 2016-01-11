@@ -31,307 +31,310 @@ import io.getlime.security.repository.model.ActivationStatusConverter;
 @Entity(name = "pa_activation")
 public class ActivationRecordEntity implements Serializable {
 
-    private static final long serialVersionUID = 7512286634644851705L;
+	private static final long serialVersionUID = 7512286634644851705L;
 
-    @Id
-    @Column(name = "activation_id", length = 37)
-    private String activationId;
+	@Id
+	@Column(name = "activation_id", length = 37)
+	private String activationId;
 
-    @Column(name = "activation_id_short", nullable = false, updatable = false)
-    private String activationIdShort;
+	@Column(name = "activation_id_short", nullable = false, updatable = false)
+	private String activationIdShort;
 
-    @Column(name = "activation_otp", nullable = false, updatable = false)
-    private String activationOTP;
+	@Column(name = "activation_otp", nullable = false, updatable = false)
+	private String activationOTP;
 
-    @Column(name = "user_id", nullable = false, updatable = false)
-    private String userId;
+	@Column(name = "user_id", nullable = false, updatable = false)
+	private String userId;
 
-    @Column(name = "activation_name", nullable = true)
-    private String activationName;
-    
-    @Column(name = "extras", nullable = true)
-    private String extras;
+	@Column(name = "activation_name", nullable = true)
+	private String activationName;
 
-    @Column(name = "server_private_key_base64", nullable = false)
-    private String serverPrivateKeyBase64;
+	@Column(name = "extras", nullable = true)
+	private String extras;
 
-    @Column(name = "server_public_key_base64", nullable = false)
-    private String serverPublicKeyBase64;
+	@Column(name = "server_private_key_base64", nullable = false)
+	private String serverPrivateKeyBase64;
 
-    @Column(name = "device_public_key_base64", nullable = true)
-    private String devicePublicKeyBase64;
+	@Column(name = "server_public_key_base64", nullable = false)
+	private String serverPublicKeyBase64;
 
-    @Column(name = "counter", nullable = false)
-    private Long counter;
+	@Column(name = "device_public_key_base64", nullable = true)
+	private String devicePublicKeyBase64;
 
-    @Column(name = "failed_attempts", nullable = false)
-    private Long failedAttempts;
+	@Column(name = "counter", nullable = false)
+	private Long counter;
 
-    @Column(name = "timestamp_created", nullable = false)
-    private Date timestampCreated;
+	@Column(name = "failed_attempts", nullable = false)
+	private Long failedAttempts;
 
-    @Column(name = "timestamp_last_used", nullable = false)
-    private Date timestampLastUsed;
+	@Column(name = "max_failed_attempts", nullable = false)
+	private Long maxFailedAttempts;
 
-    @Column(name = "activation_status", nullable = false)
-    @Convert(converter = ActivationStatusConverter.class)
-    private ActivationStatus activationStatus;
+	@Column(name = "timestamp_created", nullable = false)
+	private Date timestampCreated;
 
-    @ManyToOne
-    @JoinColumn(name = "master_keypair_id", referencedColumnName = "id", nullable = false)
-    private MasterKeyPairEntity masterKeypair;
+	@Column(name = "timestamp_activation_expire", nullable = false)
+	private Date timestampActivationExpire;
 
-    protected ActivationRecordEntity() {
-    }
+	@Column(name = "timestamp_last_used", nullable = false)
+	private Date timestampLastUsed;
 
-    public ActivationRecordEntity(
-            String activationId,
-            String activationIdShort,
-            String activationOTP,
-            String userId,
-            String activationName,
-            String extras,
-            String serverPrivateKeyBase64,
-            String serverPublicKeyBase64,
-            String devicePublicKeyBase64,
-            Long counter,
-            Long failedAttempts,
-            Date timestampCreated,
-            Date timestampLastUsed,
-            ActivationStatus status,
-            MasterKeyPairEntity masterKeypair) {
-        this.activationId = activationId;
-        this.activationIdShort = activationIdShort;
-        this.activationOTP = activationOTP;
-        this.userId = userId;
-        this.activationName = activationName;
-        this.extras = extras;
-        this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
-        this.serverPublicKeyBase64 = serverPublicKeyBase64;
-        this.devicePublicKeyBase64 = devicePublicKeyBase64;
-        this.counter = counter;
-        this.failedAttempts = failedAttempts;
-        this.timestampCreated = timestampCreated;
-        this.timestampLastUsed = timestampLastUsed;
-        this.activationStatus = status;
-        this.masterKeypair = masterKeypair;
-    }
+	@Column(name = "activation_status", nullable = false)
+	@Convert(converter = ActivationStatusConverter.class)
+	private ActivationStatus activationStatus;
 
-    public String getActivationId() {
-        return activationId;
-    }
+	@ManyToOne
+	@JoinColumn(name = "master_keypair_id", referencedColumnName = "id", nullable = false)
+	private MasterKeyPairEntity masterKeypair;
 
-    public void setActivationId(String activationId) {
-        this.activationId = activationId;
-    }
+	public ActivationRecordEntity() {
+	}
 
-    public String getActivationIdShort() {
-        return activationIdShort;
-    }
+	public ActivationRecordEntity(String activationId, String activationIdShort, String activationOTP, String userId, String activationName, String extras, String serverPrivateKeyBase64, String serverPublicKeyBase64, String devicePublicKeyBase64, Long counter, Long failedAttempts, Long maxFailedAttempts, Date timestampCreated, Date timestampActivationExpire, Date timestampLastUsed, ActivationStatus activationStatus, MasterKeyPairEntity masterKeypair) {
+		super();
+		this.activationId = activationId;
+		this.activationIdShort = activationIdShort;
+		this.activationOTP = activationOTP;
+		this.userId = userId;
+		this.activationName = activationName;
+		this.extras = extras;
+		this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
+		this.serverPublicKeyBase64 = serverPublicKeyBase64;
+		this.devicePublicKeyBase64 = devicePublicKeyBase64;
+		this.counter = counter;
+		this.failedAttempts = failedAttempts;
+		this.maxFailedAttempts = maxFailedAttempts;
+		this.timestampCreated = timestampCreated;
+		this.timestampActivationExpire = timestampActivationExpire;
+		this.timestampLastUsed = timestampLastUsed;
+		this.activationStatus = activationStatus;
+		this.masterKeypair = masterKeypair;
+	}
 
-    public void setActivationIdShort(String activationIdShort) {
-        this.activationIdShort = activationIdShort;
-    }
+	public String getActivationId() {
+		return activationId;
+	}
 
-    public String getActivationOTP() {
-        return activationOTP;
-    }
+	public void setActivationId(String activationId) {
+		this.activationId = activationId;
+	}
 
-    public void setActivationOTP(String activationOTP) {
-        this.activationOTP = activationOTP;
-    }
+	public String getActivationIdShort() {
+		return activationIdShort;
+	}
 
-    public String getUserId() {
-        return userId;
-    }
+	public void setActivationIdShort(String activationIdShort) {
+		this.activationIdShort = activationIdShort;
+	}
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+	public String getActivationOTP() {
+		return activationOTP;
+	}
 
-    public String getActivationName() {
+	public void setActivationOTP(String activationOTP) {
+		this.activationOTP = activationOTP;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getActivationName() {
 		return activationName;
 	}
-    
-    public void setActivationName(String activationName) {
+
+	public void setActivationName(String activationName) {
 		this.activationName = activationName;
 	}
-    
-    public String getExtras() {
+
+	public String getExtras() {
 		return extras;
 	}
-    
-    public void setExtras(String extras) {
+
+	public void setExtras(String extras) {
 		this.extras = extras;
 	}
 
-    public String getServerPrivateKeyBase64() {
-        return serverPrivateKeyBase64;
-    }
+	public String getServerPrivateKeyBase64() {
+		return serverPrivateKeyBase64;
+	}
 
-    public void setServerPrivateKeyBase64(String serverPrivateKeyBase64) {
-        this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
-    }
+	public void setServerPrivateKeyBase64(String serverPrivateKeyBase64) {
+		this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
+	}
 
-    public String getServerPublicKeyBase64() {
-        return serverPublicKeyBase64;
-    }
+	public String getServerPublicKeyBase64() {
+		return serverPublicKeyBase64;
+	}
 
-    public void setServerPublicKeyBase64(String serverPublicKeyBase64) {
-        this.serverPublicKeyBase64 = serverPublicKeyBase64;
-    }
+	public void setServerPublicKeyBase64(String serverPublicKeyBase64) {
+		this.serverPublicKeyBase64 = serverPublicKeyBase64;
+	}
 
-    public String getDevicePublicKeyBase64() {
-        return devicePublicKeyBase64;
-    }
+	public String getDevicePublicKeyBase64() {
+		return devicePublicKeyBase64;
+	}
 
-    public void setDevicePublicKeyBase64(String devicePublicKeyBase64) {
-        this.devicePublicKeyBase64 = devicePublicKeyBase64;
-    }
+	public void setDevicePublicKeyBase64(String devicePublicKeyBase64) {
+		this.devicePublicKeyBase64 = devicePublicKeyBase64;
+	}
 
-    public Long getCounter() {
-        return counter;
-    }
+	public Long getCounter() {
+		return counter;
+	}
 
-    public void setCounter(Long counter) {
-        this.counter = counter;
-    }
+	public void setCounter(Long counter) {
+		this.counter = counter;
+	}
 
-    public Long getFailedAttempts() {
-        return failedAttempts;
-    }
+	public Long getFailedAttempts() {
+		return failedAttempts;
+	}
 
-    public void setFailedAttempts(Long failedAttempts) {
-        this.failedAttempts = failedAttempts;
-    }
+	public void setFailedAttempts(Long failedAttempts) {
+		this.failedAttempts = failedAttempts;
+	}
 
-    public Date getTimestampCreated() {
-        return timestampCreated;
-    }
+	public Long getMaxFailedAttempts() {
+		return maxFailedAttempts;
+	}
 
-    public void setTimestampCreated(Date timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
+	public void setMaxFailedAttempts(Long maxFailedAttempts) {
+		this.maxFailedAttempts = maxFailedAttempts;
+	}
 
-    public Date getTimestampLastUsed() {
-        return timestampLastUsed;
-    }
+	public Date getTimestampCreated() {
+		return timestampCreated;
+	}
 
-    public void setTimestampLastUsed(Date timestampLastUsed) {
-        this.timestampLastUsed = timestampLastUsed;
-    }
+	public void setTimestampCreated(Date timestampCreated) {
+		this.timestampCreated = timestampCreated;
+	}
 
-    public ActivationStatus getActivationStatus() {
-        return activationStatus;
-    }
+	public Date getTimestampActivationExpire() {
+		return timestampActivationExpire;
+	}
 
-    public void setActivationStatus(ActivationStatus activationStatus) {
-        this.activationStatus = activationStatus;
-    }
+	public void setTimestampActivationExpire(Date timestampActivationExpire) {
+		this.timestampActivationExpire = timestampActivationExpire;
+	}
 
-    public MasterKeyPairEntity getMasterKeypair() {
-        return masterKeypair;
-    }
+	public Date getTimestampLastUsed() {
+		return timestampLastUsed;
+	}
 
-    public void setMasterKeypair(MasterKeyPairEntity masterKeypair) {
-        this.masterKeypair = masterKeypair;
-    }
+	public void setTimestampLastUsed(Date timestampLastUsed) {
+		this.timestampLastUsed = timestampLastUsed;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 71 * hash + Objects.hashCode(this.activationId);
-        hash = 71 * hash + Objects.hashCode(this.activationIdShort);
-        hash = 71 * hash + Objects.hashCode(this.activationOTP);
-        hash = 71 * hash + Objects.hashCode(this.userId);
-        hash = 71 * hash + Objects.hashCode(this.activationName);
-        hash = 71 * hash + Objects.hashCode(this.serverPrivateKeyBase64);
-        hash = 71 * hash + Objects.hashCode(this.serverPublicKeyBase64);
-        hash = 71 * hash + Objects.hashCode(this.devicePublicKeyBase64);
-        hash = 71 * hash + Objects.hashCode(this.counter);
-        hash = 71 * hash + Objects.hashCode(this.failedAttempts);
-        hash = 71 * hash + Objects.hashCode(this.timestampCreated);
-        hash = 71 * hash + Objects.hashCode(this.timestampLastUsed);
-        hash = 71 * hash + Objects.hashCode(this.activationStatus);
-        hash = 71 * hash + Objects.hashCode(this.masterKeypair);
-        return hash;
-    }
+	public ActivationStatus getActivationStatus() {
+		return activationStatus;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ActivationRecordEntity other = (ActivationRecordEntity) obj;
-        if (!Objects.equals(this.activationIdShort, other.activationIdShort)) {
-            return false;
-        }
-        if (!Objects.equals(this.activationOTP, other.activationOTP)) {
-            return false;
-        }
-        if (!Objects.equals(this.userId, other.userId)) {
-            return false;
-        }
-        if (!Objects.equals(this.activationName, other.activationName)) {
-            return false;
-        }
-        if (!Objects.equals(this.activationId, other.activationId)) {
-            return false;
-        }
-        if (!Objects.equals(this.serverPrivateKeyBase64, other.serverPrivateKeyBase64)) {
-            return false;
-        }
-        if (!Objects.equals(this.serverPublicKeyBase64, other.serverPublicKeyBase64)) {
-            return false;
-        }
-        if (!Objects.equals(this.devicePublicKeyBase64, other.devicePublicKeyBase64)) {
-            return false;
-        }
-        if (!Objects.equals(this.counter, other.counter)) {
-            return false;
-        }
-        if (!Objects.equals(this.failedAttempts, other.failedAttempts)) {
-            return false;
-        }
-        if (!Objects.equals(this.timestampCreated, other.timestampCreated)) {
-            return false;
-        }
-        if (!Objects.equals(this.timestampLastUsed, other.timestampLastUsed)) {
-            return false;
-        }
-        if (this.activationStatus != other.activationStatus) {
-            return false;
-        }
-        if (!Objects.equals(this.masterKeypair, other.masterKeypair)) {
-            return false;
-        }
-        return true;
-    }
+	public void setActivationStatus(ActivationStatus activationStatus) {
+		this.activationStatus = activationStatus;
+	}
 
-    @Override
-    public String toString() {
-        return "ActivationRecordEntity{"
-                + "activationId=" + activationId
-                + ", activationIdShort=" + activationIdShort
-                + ", activationOTP=" + activationOTP
-                + ", userId=" + userId
-                + ", clientName=" + activationName
-                + ", serverPrivateKeyBase64=" + serverPrivateKeyBase64
-                + ", serverPublicKeyBase64=" + serverPublicKeyBase64
-                + ", devicePublicKeyBase64=" + devicePublicKeyBase64
-                + ", counter=" + counter
-                + ", failedAttempts=" + failedAttempts
-                + ", timestampCreated=" + timestampCreated
-                + ", timestampLastUsed=" + timestampLastUsed
-                + ", status=" + activationStatus
-                + ", masterKeypair=" + masterKeypair
-                + '}';
-    }
+	public MasterKeyPairEntity getMasterKeypair() {
+		return masterKeypair;
+	}
+
+	public void setMasterKeypair(MasterKeyPairEntity masterKeypair) {
+		this.masterKeypair = masterKeypair;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 71 * hash + Objects.hashCode(this.activationId);
+		hash = 71 * hash + Objects.hashCode(this.activationIdShort);
+		hash = 71 * hash + Objects.hashCode(this.activationOTP);
+		hash = 71 * hash + Objects.hashCode(this.userId);
+		hash = 71 * hash + Objects.hashCode(this.activationName);
+		hash = 71 * hash + Objects.hashCode(this.serverPrivateKeyBase64);
+		hash = 71 * hash + Objects.hashCode(this.serverPublicKeyBase64);
+		hash = 71 * hash + Objects.hashCode(this.devicePublicKeyBase64);
+		hash = 71 * hash + Objects.hashCode(this.counter);
+		hash = 71 * hash + Objects.hashCode(this.failedAttempts);
+		hash = 71 * hash + Objects.hashCode(this.maxFailedAttempts);
+		hash = 71 * hash + Objects.hashCode(this.timestampCreated);
+		hash = 71 * hash + Objects.hashCode(this.timestampActivationExpire);
+		hash = 71 * hash + Objects.hashCode(this.timestampLastUsed);
+		hash = 71 * hash + Objects.hashCode(this.activationStatus);
+		hash = 71 * hash + Objects.hashCode(this.masterKeypair);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final ActivationRecordEntity other = (ActivationRecordEntity) obj;
+		if (!Objects.equals(this.activationIdShort, other.activationIdShort)) {
+			return false;
+		}
+		if (!Objects.equals(this.activationOTP, other.activationOTP)) {
+			return false;
+		}
+		if (!Objects.equals(this.userId, other.userId)) {
+			return false;
+		}
+		if (!Objects.equals(this.activationName, other.activationName)) {
+			return false;
+		}
+		if (!Objects.equals(this.activationId, other.activationId)) {
+			return false;
+		}
+		if (!Objects.equals(this.serverPrivateKeyBase64, other.serverPrivateKeyBase64)) {
+			return false;
+		}
+		if (!Objects.equals(this.serverPublicKeyBase64, other.serverPublicKeyBase64)) {
+			return false;
+		}
+		if (!Objects.equals(this.devicePublicKeyBase64, other.devicePublicKeyBase64)) {
+			return false;
+		}
+		if (!Objects.equals(this.counter, other.counter)) {
+			return false;
+		}
+		if (!Objects.equals(this.failedAttempts, other.failedAttempts)) {
+			return false;
+		}
+		if (!Objects.equals(this.maxFailedAttempts, other.maxFailedAttempts)) {
+			return false;
+		}
+		if (!Objects.equals(this.timestampCreated, other.timestampCreated)) {
+			return false;
+		}
+		if (!Objects.equals(this.timestampActivationExpire, other.timestampActivationExpire)) {
+			return false;
+		}
+		if (!Objects.equals(this.timestampLastUsed, other.timestampLastUsed)) {
+			return false;
+		}
+		if (this.activationStatus != other.activationStatus) {
+			return false;
+		}
+		if (!Objects.equals(this.masterKeypair, other.masterKeypair)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ActivationRecordEntity{" + "activationId=" + activationId + ", activationIdShort=" + activationIdShort + ", activationOTP=" + activationOTP + ", userId=" + userId + ", clientName=" + activationName + ", serverPrivateKeyBase64=" + serverPrivateKeyBase64 + ", serverPublicKeyBase64=" + serverPublicKeyBase64 + ", devicePublicKeyBase64=" + devicePublicKeyBase64 + ", counter=" + counter + ", failedAttempts=" + failedAttempts + ", maxFailedAttempts=" + maxFailedAttempts + ", timestampCreated=" + timestampCreated + ", timestampActivationExpire=" + timestampActivationExpire + ", timestampLastUsed=" + timestampLastUsed + ", status=" + activationStatus + ", masterKeypair=" + masterKeypair + '}';
+	}
 
 }

@@ -89,9 +89,16 @@ String userId = "1234";
 // Short way to read the activations
 InitActivationResponse activation = powerAuthServiceClient.initActivation(userId);
 
+// More control over how the activation is created
+Long maximumFailedAttempts = 10; // default: 5
+Date expireBefore = dateIn10Minutes; // default: in 2 minutes
+InitActivationResponse activation = powerAuthServiceClient.initActivation(userId, maximumFailedAttempts, expireBefore);
+
 // ... or using the original SOAP request-response notion ...
 InitActivationRequest request = new InitActivationRequest();
 request.setUserId(userId);
+request.setMaxFailureCount(maximumFailedAttempts); // optional
+request.setTimestampActivationExpire(xmlCalendarWithDate(expireBefore)); // optional
 InitActivationResponse response = powerAuthServiceClient.initActivation(request);
 ```
 

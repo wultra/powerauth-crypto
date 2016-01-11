@@ -31,6 +31,6 @@ public interface PowerAuthRepository extends CrudRepository<ActivationRecordEnti
 
     List<ActivationRecordEntity> findByUserId(String userId);
 
-    ActivationRecordEntity findFirstByActivationIdShortAndActivationStatusInAndTimestampCreatedAfter(String activationIdShort, Collection<ActivationStatus> states, Date timestampCreated);
+    ActivationRecordEntity findFirstByActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(String activationIdShort, Collection<ActivationStatus> states, Date currentTimestamp);
 
 }

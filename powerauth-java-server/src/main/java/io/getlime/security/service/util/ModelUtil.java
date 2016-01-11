@@ -42,6 +42,9 @@ public class ModelUtil {
     }
     
     public static XMLGregorianCalendar calendarWithDate(Date date) throws DatatypeConfigurationException {
+    	if (date == null) {
+    		return null;
+    	}
     	GregorianCalendar c = new GregorianCalendar();
     	c.setTime(date);
     	XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
@@ -49,6 +52,9 @@ public class ModelUtil {
     }
     
     public static Date dateWithCalendar(XMLGregorianCalendar calendar) throws DatatypeConfigurationException {
+    	if (calendar == null) {
+    		return null;
+    	}
     	return calendar.toGregorianCalendar().getTime();
     }
 
