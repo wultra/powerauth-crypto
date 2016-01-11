@@ -253,9 +253,12 @@
             				<xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
                 			<xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
                 			<xs:element maxOccurs="1" minOccurs="1" name="activationCounter" type="xs:long"/>
+                			<xs:element maxOccurs="1" minOccurs="0" name="activationStatus" type="tns:ActivationStatus"/>
                 			<xs:element maxOccurs="1" minOccurs="0" name="dataBase64" type="xs:string"/>
                 			<xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
                 			<xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="note" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="valid" type="xs:boolean"/>
                 			<xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:date"/>
             			</xs:sequence>
         			</xs:complexType>
