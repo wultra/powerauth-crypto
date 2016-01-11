@@ -32,9 +32,11 @@ CREATE TABLE `pa_activation` (
   `counter` bigint(20) NOT NULL,
   `device_public_key_base64` text,
   `failed_attempts` bigint(20) DEFAULT NULL,
+  `max_failed_attempts` bigint(20) NOT NULL DEFAULT '5',
   `server_private_key_base64` text NOT NULL,
   `server_public_key_base64` text NOT NULL,
   `timestamp_created` datetime NOT NULL,
+  `timestamp_activation_expire` datetime NOT NULL,
   `timestamp_last_used` datetime NOT NULL,
   `user_id` varchar(255) NOT NULL,
   `master_keypair_id` bigint(20) NOT NULL,
@@ -43,7 +45,6 @@ CREATE TABLE `pa_activation` (
   CONSTRAINT `FK_6qiteby9oxe0lum196431bg7w` FOREIGN KEY (`master_keypair_id`) REFERENCES `pa_master_keypair` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
@@ -53,4 +54,4 @@ CREATE TABLE `pa_activation` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-18 23:28:42
+-- Dump completed on 2016-01-11 18:31:04
