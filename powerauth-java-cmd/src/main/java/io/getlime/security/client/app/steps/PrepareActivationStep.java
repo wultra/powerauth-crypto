@@ -93,7 +93,7 @@ public class PrepareActivationStep {
 		requestObject.setActivationIdShort(activationIdShort);
 		requestObject.setActivationName(activationName);
 		requestObject.setActivationNonce(BaseEncoding.base64().encode(nonceDeviceBytes));
-		requestObject.setcDevicePublicKey(BaseEncoding.base64().encode(cDevicePublicKeyBytes));
+		requestObject.setEncryptedDevicePublicKey(BaseEncoding.base64().encode(cDevicePublicKeyBytes));
 		PowerAuthAPIRequest<ActivationCreateRequest> body = new PowerAuthAPIRequest<>();
 		body.setRequestObject(requestObject);
 		RequestEntity<PowerAuthAPIRequest<ActivationCreateRequest>> request = new RequestEntity<PowerAuthAPIRequest<ActivationCreateRequest>>(body, HttpMethod.POST, uri);
@@ -112,8 +112,8 @@ public class PrepareActivationStep {
 			ActivationCreateResponse responseObject = response.getBody().getResponseObject();
 			String activationId = responseObject.getActivationId();
 			byte[] nonceServerBytes = BaseEncoding.base64().decode(responseObject.getActivationNonce());
-			byte[] cServerPubKeyBytes = BaseEncoding.base64().decode(responseObject.getcServerPublicKey());
-			byte[] cServerPubKeySignatureBytes = BaseEncoding.base64().decode(responseObject.getcServerPublicKeySignature());
+			byte[] cServerPubKeyBytes = BaseEncoding.base64().decode(responseObject.getEncryptedServerPublicKey());
+			byte[] cServerPubKeySignatureBytes = BaseEncoding.base64().decode(responseObject.getEncryptedServerPublicKeySignature());
 			byte[] ephemeralKeyBytes = BaseEncoding.base64().decode(responseObject.getEphemeralPublicKey());
 			PublicKey ephemeralPublicKey = keyConversion.convertBytesToPublicKey(ephemeralKeyBytes);
 

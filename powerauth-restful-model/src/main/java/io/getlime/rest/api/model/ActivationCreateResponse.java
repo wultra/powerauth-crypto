@@ -20,8 +20,8 @@ public class ActivationCreateResponse {
 	private String activationId;
 	private String activationNonce;
 	private String ephemeralPublicKey;
-	private String cServerPublicKey;
-	private String cServerPublicKeySignature;
+	private String encryptedServerPublicKey;
+	private String encryptedServerPublicKeySignature;
 	
 	public String getActivationId() {
 		return activationId;
@@ -47,20 +47,20 @@ public class ActivationCreateResponse {
 		this.ephemeralPublicKey = ephemeralPublicKey;
 	}
 	
-	public String getcServerPublicKey() {
-		return cServerPublicKey;
+	public String getEncryptedServerPublicKey() {
+		return encryptedServerPublicKey;
 	}
 	
-	public void setcServerPublicKey(String cServerPublicKey) {
-		this.cServerPublicKey = cServerPublicKey;
+	public void setEncryptedServerPublicKey(String encryptedServerPublicKey) {
+		this.encryptedServerPublicKey = encryptedServerPublicKey;
 	}
 	
-	public String getcServerPublicKeySignature() {
-		return cServerPublicKeySignature;
+	public String getEncryptedServerPublicKeySignature() {
+		return encryptedServerPublicKeySignature;
 	}
 	
-	public void setcServerPublicKeySignature(String cServerPublicKeySignature) {
-		this.cServerPublicKeySignature = cServerPublicKeySignature;
+	public void setEncryptedServerPublicKeySignature(String encryptedServerPublicKeySignature) {
+		this.encryptedServerPublicKeySignature = encryptedServerPublicKeySignature;
 	}
 
 }

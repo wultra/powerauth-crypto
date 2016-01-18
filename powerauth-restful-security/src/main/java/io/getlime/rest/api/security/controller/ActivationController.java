@@ -56,7 +56,7 @@ public class ActivationController {
 
 		String activationIDShort = request.getRequestObject().getActivationIdShort();
 		String activationNonce = request.getRequestObject().getActivationNonce();
-		String cDevicePublicKey = request.getRequestObject().getcDevicePublicKey();
+		String cDevicePublicKey = request.getRequestObject().getEncryptedDevicePublicKey();
 		String activationName = request.getRequestObject().getActivationName();
 		String extras = request.getRequestObject().getExtras();
 		
@@ -71,8 +71,8 @@ public class ActivationController {
 		ActivationCreateResponse response = new ActivationCreateResponse();
 		response.setActivationId(soapResponse.getActivationId());
 		response.setActivationNonce(soapResponse.getActivationNonce());
-		response.setcServerPublicKey(soapResponse.getCServerPublicKey());
-		response.setcServerPublicKeySignature(soapResponse.getCServerPublicKeySignature());
+		response.setEncryptedServerPublicKey(soapResponse.getEncryptedServerPublicKey());
+		response.setEncryptedServerPublicKeySignature(soapResponse.getEncryptedServerPublicKeySignature());
 		response.setEphemeralPublicKey(soapResponse.getEphemeralPublicKey());
 
 		return new PowerAuthAPIResponse<ActivationCreateResponse>("OK", response);
@@ -88,7 +88,7 @@ public class ActivationController {
 
 		ActivationStatusResponse response = new ActivationStatusResponse();
 		response.setActivationId(soapResponse.getActivationId());
-		response.setcStatusBlob(soapResponse.getCStatusBlob());
+		response.setEncryptedStatusBlob(soapResponse.getEncryptedStatusBlob());
 
 		return new PowerAuthAPIResponse<ActivationStatusResponse>("OK", response);
 		

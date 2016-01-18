@@ -58,7 +58,7 @@ public class SecureVaultController {
 		
 		VaultUnlockResponse response = new VaultUnlockResponse();
 		response.setActivationId(soapResponse.getActivationId());
-		response.setcVaultEncryptionKey(soapResponse.getCVaultEncryptionKey());
+		response.setEncryptedVaultEncryptionKey(soapResponse.getEncryptedVaultEncryptionKey());
 		
 		return new PowerAuthAPIResponse<VaultUnlockResponse>("OK", response);
 	}

@@ -193,7 +193,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					response.setExtras(activation.getExtras());
 					response.setTimestampCreated(ModelUtil.calendarWithDate(activation.getTimestampCreated()));
 					response.setTimestampLastUsed(ModelUtil.calendarWithDate(activation.getTimestampLastUsed()));
-					response.setCStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
+					response.setEncryptedStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
 					return response;
 
 				} else {
@@ -231,7 +231,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					response.setExtras(activation.getExtras());
 					response.setTimestampCreated(ModelUtil.calendarWithDate(activation.getTimestampCreated()));
 					response.setTimestampLastUsed(ModelUtil.calendarWithDate(activation.getTimestampLastUsed()));
-					response.setCStatusBlob(BaseEncoding.base64().encode(C_statusBlob));
+					response.setEncryptedStatusBlob(BaseEncoding.base64().encode(C_statusBlob));
 
 					return response;
 
@@ -250,7 +250,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				response.setExtras(null);
 				response.setTimestampCreated(null);
 				response.setTimestampLastUsed(null);
-				response.setCStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
+				response.setEncryptedStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
 				return response;
 			}
 
@@ -391,7 +391,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			// Get request parameters
 			String activationIdShort = request.getActivationIdShort();
 			String activationNonceBase64 = request.getActivationNonce();
-			String cDevicePublicKeyBase64 = request.getCDevicePublicKey();
+			String cDevicePublicKeyBase64 = request.getEncryptedDevicePublicKey();
 			String activationName = request.getActivationName();
 			String extras = request.getExtras();
 
@@ -441,12 +441,15 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			PrepareActivationResponse response = new PrepareActivationResponse();
 			response.setActivationId(activation.getActivationId());
 			response.setActivationNonce(BaseEncoding.base64().encode(activationNonceServer));
-			response.setCServerPublicKey(BaseEncoding.base64().encode(C_serverPublicKey));
-			response.setCServerPublicKeySignature(BaseEncoding.base64().encode(C_serverPubKeySignature));
+			response.setEncryptedServerPublicKey(BaseEncoding.base64().encode(C_serverPublicKey));
+			response.setEncryptedServerPublicKeySignature(BaseEncoding.base64().encode(C_serverPubKeySignature));
 			response.setEphemeralPublicKey(BaseEncoding.base64().encode(ephemeralPublicKeyBytes));
 
 			return response;
 
+		} catch (IllegalArgumentException ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw new GenericServiceException("Invalid input parameter format");
 		} catch (GenericServiceException ex) {
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw ex;
@@ -833,7 +836,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					response.setRemainingAttempts(BigInteger.valueOf(activation.getMaxFailedAttempts()));
 					response.setSignatureValid(true);
 					response.setUserId(activation.getUserId());
-					response.setCVaultEncryptionKey(BaseEncoding.base64().encode(cKeyBytes));
+					response.setEncryptedVaultEncryptionKey(BaseEncoding.base64().encode(cKeyBytes));
 
 					return response;
 
@@ -851,7 +854,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 					response.setRemainingAttempts(BigInteger.valueOf(activation.getMaxFailedAttempts() - activation.getFailedAttempts()));
 					response.setSignatureValid(false);
 					response.setUserId(activation.getUserId());
-					response.setCVaultEncryptionKey(null);
+					response.setEncryptedVaultEncryptionKey(null);
 
 					return response;
 				}
@@ -865,7 +868,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				response.setRemainingAttempts(BigInteger.valueOf(0));
 				response.setSignatureValid(false);
 				response.setUserId("UNKNOWN");
-				response.setCVaultEncryptionKey(null);
+				response.setEncryptedVaultEncryptionKey(null);
 
 				return response;
 			}

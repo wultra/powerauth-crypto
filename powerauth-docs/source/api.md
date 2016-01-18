@@ -23,8 +23,8 @@ PowerAuth 2.0 Client sends a short activation ID, it's public key encrypted usin
 
 - `id` - Represents an `ACTIVATION_ID_SHORT` value (first half of an activation code).
 - `activationNonce` - Represents an activation nonce, used as an IV for AES encryption.
-- `cDevicePublicKey` - Represents a public key `KEY_DEVICE_PUBLIC` AES encrypted with `ACTIVATION_OTP`
-	- `cDevicePublicKey = AES.encrypt(KEY_DEVICE_PUBLIC, activationNonce, ACTIVATION_OTP)`
+- `encryptedDevicePublicKey` - Represents a public key `KEY_DEVICE_PUBLIC` AES encrypted with `ACTIVATION_OTP`
+	- `encryptedDevicePublicKey = AES.encrypt(KEY_DEVICE_PUBLIC, activationNonce, ACTIVATION_OTP)`
 - `clientName` - Visual representation of the device, for example "Johnny's iPhone" or "Samsung Galaxy S".
 
 PowerAuth 2.0 Server responds with an activation ID, public key encrypted using the activation OTP and device public key (for technical reasons, an ephemeral key is used here), and signature of this encrypted key created with the server's private master key:
@@ -32,16 +32,16 @@ PowerAuth 2.0 Server responds with an activation ID, public key encrypted using 
 - `activationId` - Represents a long `ACTIVATION_ID` that uniquely identifies given activation records.
 - `ephemeralPublicKey` - A technical component for AES encryption - a public component of the on-the-fly generated key pair.
 - `activationNonce` - Represents an activation nonce, used as an IV for AES encryption.
-- `cServerPublicKey` - Encrypted public key `KEY_SERVER_PUBLIC` of the server.
+- `encryptedServerPublicKey` - Encrypted public key `KEY_SERVER_PUBLIC` of the server.
 	- `SharedKey EPH_KEY = ECDH.phase(ephemeralPrivateKey, KEY_DEVICE_PUBLIC)`
-	- `byte[] cServerPublicKey = AES.encrypt(AES.encrypt(KEY_SERVER_PUBLIC, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
-- `byte[] cServerPublicKeySignature = ECDSA.sign(cServerPublicKey, KEY_SERVER_MASTER_PRIVATE)`
+	- `byte[] encryptedServerPublicKey = AES.encrypt(AES.encrypt(KEY_SERVER_PUBLIC, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
+- `byte[] encryptedServerPublicKeySignature = ECDSA.sign(encryptedServerPublicKey, KEY_SERVER_MASTER_PRIVATE)`
 
 After receiving the response, PowerAuth 2.0 Client verifies cSeverPublicKeySignature using server's public master key `KEY_SERVER_MASTER_PUBLIC` (optional) and decrypts server public key using it's private `ACTIVATION_OTP`.
 
-- `signatureOK = ECDSA.verify(cServerPublicKey, cServerPublicKeySignature, KEY_SERVER_MASTER_PUBLIC)`
+- `signatureOK = ECDSA.verify(encryptedServerPublicKey, encryptedServerPublicKeySignature, KEY_SERVER_MASTER_PUBLIC)`
 - `EPH_KEY = ECDH.phase(KEY_DEVICE_PRIVATE, ephemeralPublicKey)`
-- `serverPublicKey = AES.decrypt(AES.decrypt(cServerPublicKey, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
+- `serverPublicKey = AES.decrypt(AES.decrypt(encryptedServerPublicKey, activationNonce, ACTIVATION_OTP), activationNonce, EPH_KEY)`
 
 Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 
@@ -69,7 +69,7 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 				"activationIdShort": "XDA57-24TBC",
 				"activationNonce": "hbmRvbQRUNESF9QVUJMSUNfS0VZX3J==",
 				"activationName": "My iPhone",
-				"cDevicePublicKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
+				"encryptedDevicePublicKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
 				"extras": "Any data in any format (XML, JSON, ...) for application specific purposes"
 			}
 		}
@@ -88,8 +88,8 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
 				"activationNonce": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J==",
 				"ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
-				"cServerPublicKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-				"cServerPublicKeySignature": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+				"encryptedServerPublicKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
+				"encryptedServerPublicKeySignature": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
 			}
 		}
 ```
@@ -98,11 +98,11 @@ Then, PowerAuth 2.0 Client deduces `KEY_MASTER_SECRET`:
 
 Get the status of an activation with given activation ID. The PowerAuth 2.0 Server response contains an activation status blob that is AES encrypted with `KEY_TRANSPORT`.
 
-- `cStatusBlob = AES.encrypt(statusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT, "AES/CBC/NoPadding")`
+- `encryptedStatusBlob = AES.encrypt(statusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT, "AES/CBC/NoPadding")`
 
 PowerAuth 2.0 Client can later trivially decrypt the original status blob:
 
-- `statusBlob = AES.decrypt(cStatusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT, "AES/CBC/NoPadding")`
+- `statusBlob = AES.decrypt(encryptedStatusBlob, ByteUtils.zeroBytes(16), KEY_TRANSPORT, "AES/CBC/NoPadding")`
 
 Structure of the 16B long status blob is following:
 
@@ -158,7 +158,7 @@ where:
 			"status": "OK",
 			"responseObject": {
 				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-				"cStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ=="
+				"encryptedStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ=="
 			}
 		}
 ```
@@ -209,11 +209,11 @@ PowerAuth 2.0 Client sends an authenticated request using an activation ID - aut
 
 In response, PowerAuth 2.0 Server sends a `KEY_ENCRYPTION_VAULT` key encrypted using `KEY_ENCRYPTION_VAULT_TRANSPORT` key associated with given counter (derived from the `KEY_TRANSPORT` master key, see the `PowerAuth Key Derivation` chapter for details).
 
-- `cVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
+- `encryptedVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
 
 PowerAuth 2.0 Client can later decrypt the key using the inverse mechanism:
 
-- `cVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
+- `encryptedVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
 
 _Note: Both the signature calculation / validation and `KEY_ENCRYPTION_VAULT_TRANSPORT` key derivation should increase the counter `CTR`! In other words, if signature uses value of `CTR = N`, key derivation should use `CTR = N + 1`. For technical reason, the client should compute the `KEY_ENCRYPTION_VAULT_TRANSPORT` ahead - we need to assure that only server may be behind the client with a `CTR` value, not vice versa._
 
@@ -245,7 +245,7 @@ _Note: Both the signature calculation / validation and `KEY_ENCRYPTION_VAULT_TRA
 			"status": "OK",
 			"responseObject": {
 				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-				"cVaultEncryptionKey": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+				"encryptedVaultEncryptionKey": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
 			}
 		}
 ```

@@ -19,7 +19,7 @@ public class ActivationCreateRequest {
 	
 	private String activationIdShort;
 	private String activationNonce;
-	private String cDevicePublicKey;
+	private String encryptedDevicePublicKey;
 	private String activationName;
 	private String extras;
 	
@@ -39,12 +39,12 @@ public class ActivationCreateRequest {
 		this.activationNonce = activationNonce;
 	}
 	
-	public String getcDevicePublicKey() {
-		return cDevicePublicKey;
+	public String getEncryptedDevicePublicKey() {
+		return encryptedDevicePublicKey;
 	}
 	
-	public void setcDevicePublicKey(String cDevicePublicKey) {
-		this.cDevicePublicKey = cDevicePublicKey;
+	public void setEncryptedDevicePublicKey(String encryptedDevicePublicKey) {
+		this.encryptedDevicePublicKey = encryptedDevicePublicKey;
 	}
 	
 	public String getActivationName() {

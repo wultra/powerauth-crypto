@@ -125,7 +125,7 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 		request.setActivationIdShort(activationIdShort);
 		request.setActivationName(activationName);
 		request.setActivationNonce(activationNonce);
-		request.setCDevicePublicKey(cDevicePublicKey);
+		request.setEncryptedDevicePublicKey(cDevicePublicKey);
 		request.setExtras(extras);
 		return this.prepareActivation(request);
 	}

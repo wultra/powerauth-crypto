@@ -33,11 +33,11 @@ These functions are used in the pseudo-codes:
 	- `KeyPair keyPair = KeyGenerator.randomKeyPair()` - Generate a new ECDH key pair using P256r1 elliptic curve.
 
 - Key conversion utilities.
-	- `byte[] privateKeyBytes = KeyConversion.getBytes(PrivateKey privKey)` - Get bytes from the ECDH key pair private key by encoding the Q value (the number defining the ECDH private key).
-	- `byte[] publicKeyBytes = KeyConversion.getBytes(PublicKey pubKey)` - Get bytes from the ECDH key pair public key by encoding the D value (the point defining the ECDH public key).
+	- `byte[] privateKeyBytes = KeyConversion.getBytes(PrivateKey privKey)` - Get bytes from the ECDH key pair private key by encoding the D value (the number defining the ECDH private key).
+	- `byte[] publicKeyBytes = KeyConversion.getBytes(PublicKey pubKey)` - Get bytes from the ECDH key pair public key by encoding the Q value (the point defining the ECDH public key).
 	- `byte[] secretKeyBytes = KeyConversion.getBytes(SecretKey secretKey)` - Get bytes from the symmetric key (using getEncoded).
-	- `PrivateKey privateKey = KeyConversion.privateKeyFromBytes(byte[] privKeyBytes)` - Get ECDH key pair private key by decoding the bytes into the original Q value (the number defining the ECDH private key).
-	- `PublicKey publicKey = KeyConversion.publicKeyFromBytes(byte[] pubKeyBytes)` - Get ECDH key pair public key by decoding the bytes into the original D value (the point defining the ECDH public key).
+	- `PrivateKey privateKey = KeyConversion.privateKeyFromBytes(byte[] privKeyBytes)` - Get ECDH key pair private key by decoding the bytes into the original D value (the number defining the ECDH private key).
+	- `PublicKey publicKey = KeyConversion.publicKeyFromBytes(byte[] pubKeyBytes)` - Get ECDH key pair public key by decoding the bytes into the original Q value (the point defining the ECDH public key).
 	- `SecretKey secretKey = KeyConversion.secretKeyFromBytes(byte[] secretKeyBytes)` - Create a symmetric key using provided bytes.
 
 - Random data generators.

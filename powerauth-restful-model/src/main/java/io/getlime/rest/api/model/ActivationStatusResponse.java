@@ -18,7 +18,7 @@ package io.getlime.rest.api.model;
 public class ActivationStatusResponse {
 	
 	private String activationId;
-	private String cStatusBlob;
+	private String encryptedStatusBlob;
 	
 	public String getActivationId() {
 		return activationId;
@@ -28,12 +28,12 @@ public class ActivationStatusResponse {
 		this.activationId = activationId;
 	}
 	
-	public String getcStatusBlob() {
-		return cStatusBlob;
+	public String getEncryptedStatusBlob() {
+		return encryptedStatusBlob;
 	}
 	
-	public void setcStatusBlob(String cStatusBlob) {
-		this.cStatusBlob = cStatusBlob;
+	public void setEncryptedStatusBlob(String cStatusBlob) {
+		this.encryptedStatusBlob = cStatusBlob;
 	}
 
 }

@@ -35,7 +35,7 @@
                 <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
-                <xs:element maxOccurs="1" minOccurs="1" name="cDevicePublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedDevicePublicKey" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -46,8 +46,8 @@
                 <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="ephemeralPublicKey" type="xs:string"/>
-                <xs:element maxOccurs="1" minOccurs="1" name="cServerPublicKey" type="xs:string"/>
-                <xs:element maxOccurs="1" minOccurs="1" name="cServerPublicKeySignature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedServerPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedServerPublicKeySignature" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -90,7 +90,7 @@
                 <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:date"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="timestampLastUsed" type="xs:date"/>
-                <xs:element maxOccurs="1" minOccurs="1" name="cStatusBlob" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedStatusBlob" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -228,7 +228,7 @@
                 <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="remainingAttempts" type="xs:integer"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
-                <xs:element maxOccurs="1" minOccurs="1" name="cVaultEncryptionKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedVaultEncryptionKey" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

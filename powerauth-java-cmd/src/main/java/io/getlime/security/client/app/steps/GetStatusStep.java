@@ -86,7 +86,7 @@ public class GetStatusStep {
 			// Process the server response
 			ActivationStatusResponse responseObject = response.getBody().getResponseObject();
 			String activationIdResponse = responseObject.getActivationId();
-			byte[] cStatusBlob = BaseEncoding.base64().decode(responseObject.getcStatusBlob());
+			byte[] cStatusBlob = BaseEncoding.base64().decode(responseObject.getEncryptedStatusBlob());
 
 			// Print the results
 			ActivationStatusBlobInfo statusBlob = activation.getStatusFromEncryptedBlob(cStatusBlob, transportMasterKey);

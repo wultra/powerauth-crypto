@@ -18,7 +18,7 @@ package io.getlime.rest.api.model;
 public class VaultUnlockResponse {
 	
 	private String activationId;
-	private String cVaultEncryptionKey;
+	private String encryptedVaultEncryptionKey;
 	
 	public String getActivationId() {
 		return activationId;
@@ -28,12 +28,12 @@ public class VaultUnlockResponse {
 		this.activationId = activationId;
 	}
 	
-	public String getcVaultEncryptionKey() {
-		return cVaultEncryptionKey;
+	public String getEncryptedVaultEncryptionKey() {
+		return encryptedVaultEncryptionKey;
 	}
 	
-	public void setcVaultEncryptionKey(String cVaultEncryptionKey) {
-		this.cVaultEncryptionKey = cVaultEncryptionKey;
+	public void setEncryptedVaultEncryptionKey(String encryptedVaultEncryptionKey) {
+		this.encryptedVaultEncryptionKey = encryptedVaultEncryptionKey;
 	}
 
 }
