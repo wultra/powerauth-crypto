@@ -79,7 +79,7 @@ To describe the steps more precisely, the activation process is performed in fol
 1. (optional) PowerAuth 2.0 Client verifies `ACTIVATION_SIGNATURE` against `ACTIVATION_ID_SHORT` and `ACTIVATION_OTP` using `KEY_SERVER_MASTER_PUBLIC` and if the signature matches, it proceeds.
 
 	- `byte[] DATA = (ACTIVATION_ID_SHORT + "-" + ACTIVATION_OTP).getBytes("UTF-8")`
-	- `boolean isOK = ECDSA.verify(DATA, KEY_SERVER_MASTER_PUBLIC)`
+	- `boolean isOK = ECDSA.verify(DATA, ACTIVATION_SIGNATURE, KEY_SERVER_MASTER_PUBLIC)`
 
 1. PowerAuth 2.0 Client generates its key pair `(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC)`.
 
@@ -92,7 +92,7 @@ To describe the steps more precisely, the activation process is performed in fol
 	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
 	- `byte[] ACTIVATION_NONCE = Generator.randomBytes(16)`
 	- `byte[] keyPublicBytes = KeyConversion.getBytes(KEY_DEVICE_PUBLIC)`
-	- `byte[] C_KEY_DEVICE_PUBLIC = AES.encrypt(, ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)`
+	- `byte[] C_KEY_DEVICE_PUBLIC = AES.encrypt(keyPublicBytes, ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)`
 
 1. PowerAuth 2.0 Server decrypts and stores the public key at given record.
 
@@ -117,7 +117,7 @@ To describe the steps more precisely, the activation process is performed in fol
 1. PowerAuth 2.0 Client receives an `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `C_KEY_SERVER_PUBLIC_SIGNATURE` and if the signature matches the data, it retrieves `KEY_SERVER_PUBLIC`.
 
 	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
-	- `boolean isSignatureOK = ECDSA.verify(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)`
+	- `boolean isSignatureOK = ECDSA.verify(C_KEY_SERVER_PUBLIC, C_KEY_SERVER_PUBLIC_SIGNATURE, KEY_SERVER_MASTER_PRIVATE)`
 	- `SecretKey EPH_KEY = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)`
 	- `byte[] keyPublicBytes = AES.decrypt(AES.decrypt(C_KEY_SERVER_PUBLIC, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, PH_KEY)`
 	- `PublicKey KEY_SERVER_PUBLIC = KeyConversion.publicKeyFromBytes(keyPublicBytes)`
