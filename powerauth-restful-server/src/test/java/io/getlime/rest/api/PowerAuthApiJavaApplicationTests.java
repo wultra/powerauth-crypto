@@ -1,4 +1,4 @@
-package io.getlime.banking;
+package io.getlime.rest.api;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PowerAuthApiJavaApplication.class)
 @WebAppConfiguration
-public class MobileBankingApiJavaApplicationTests {
+public class PowerAuthApiJavaApplicationTests {
 
 	@Test
 	public void contextLoads() {
