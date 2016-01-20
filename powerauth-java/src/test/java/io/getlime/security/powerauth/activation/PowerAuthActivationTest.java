@@ -189,6 +189,46 @@ public class PowerAuthActivationTest {
 	}
 	
 	@Test
+	public void testActivationInit() throws Exception {
+		String activationOTP;
+		String activationIdShort;
+		
+		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+
+		System.out.println("ActivationSignature>> [");
+
+		int max = 20;
+		for (int i = 0; i < max; i++) {
+			activationOTP = new IdentifierGenerator().generateActivationIdShort();
+			activationIdShort = new IdentifierGenerator().generateActivationOTP();
+			
+			KeyPair kp = activationServer.generateServerKeyPair();
+			PrivateKey masterPrivateKey = kp.getPrivate();
+			PublicKey masterPublicKey = kp.getPublic();
+			
+			byte[] activationSignature = activationServer.generateActivationSignature(activationIdShort, activationOTP, masterPrivateKey);
+			
+			System.out.println("    {");			
+			System.out.println("        \"input\": {");
+			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
+			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
+			System.out.println("            \"masterPrivateKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
+			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPublicKeyToBytes(masterPublicKey)) + "\"");
+			System.out.println("        },");
+			System.out.println("        \"output\": {");
+			System.out.println("            \"activationSignature\": \"" + BaseEncoding.base64().encode(activationSignature) + "\"");
+			System.out.println("        }");
+			if (i == max - 1) {
+				System.out.println("    }");
+			} else {
+				System.out.println("    },");
+			}
+		}
+		
+		System.out.println("]");
+	}
+	
+	@Test
 	public void testActivationAccept() throws Exception {
 		String activationOTP = null;
 		String activationIdShort = null;
