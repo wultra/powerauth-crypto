@@ -343,25 +343,4 @@ public class PowerAuthActivationTest {
 		System.out.println("]");
 	}
 
-	@Test
-	public void testActivation() throws Exception {
-		String activationOTP = "CKZ2O-OE544";
-		String activationIdShort = "IFA6F-3NPAZ";
-		byte[] activationNonce = BaseEncoding.base64().decode("grDwkvXrgfUdKBsqg0xYYw==");
-		byte[] cDevicePublicKey = BaseEncoding.base64().decode("iE1Gf48fbZBWiEpcKge9rWYKMIAfgdlze3RYplsDNOXGCPrbFseq1WCX3N9vhZgF");
-
-		// Derive longer key from short activation ID and activation OTP
-		byte[] activationIdShortBytes = activationIdShort.getBytes("UTF-8");
-		SecretKey otpBasedSymmetricKey = new KeyGenerator().deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
-
-		// Decrypt device public key
-		AESEncryptionUtils aes = new AESEncryptionUtils();
-		byte[] decryptedPublicKeyBytes = aes.decrypt(cDevicePublicKey, activationNonce, otpBasedSymmetricKey);
-		System.out.println("Public Key Bytes: " + Arrays.toString(decryptedPublicKeyBytes));
-
-		PowerAuthServerActivation activation = new PowerAuthServerActivation();
-		PublicKey publicKey = activation.decryptDevicePublicKey(cDevicePublicKey, activationIdShort, activationOTP, activationNonce);
-		assertNotNull(publicKey);
-	}
-
 }
