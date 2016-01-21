@@ -20,6 +20,12 @@ You can download the latest `powerauth-java-server.war` at the releases page:
 
 - https://github.com/lime-company/lime-security-powerauth/releases
 
+### Adding database connector on classpath
+
+PowerAuth 2.0 Server supports any JPA 2.0 compatible database engine. In order for the database connectivity to work, you need to add appropriate DB client libraries on your classpath.
+
+For example, when using MySQL with Tomcat, make sure to add `mysql-connector-java-${VERSION}.jar` to the `${CATALINE_HOME}/lib` folder (server restart will be required).
+
 ### Creating the database schema
 
 In order for the PowerAuth 2.0 Server to work, you need to have a correct schema in the database. To create the correct database schema, execute these SQL scripts for your database engine (MySQL is used by default):
