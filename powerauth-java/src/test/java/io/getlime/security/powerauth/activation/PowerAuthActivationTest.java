@@ -17,12 +17,14 @@ package io.getlime.security.powerauth.activation;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
+import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
 
+import java.awt.event.ActionEvent;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -186,6 +188,69 @@ public class PowerAuthActivationTest {
 //		}
 //		
 //		System.out.println("]");
+	}
+	
+	@Test
+	public void testKeyDerivation() throws Exception {
+		
+		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
+		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+		
+		System.out.println("MasterSecretKey >>> [");
+
+		int max = 20;
+		for (int i = 0; i < max; i++) {
+			KeyPair deviceKeyPair = activationClient.generateDeviceKeyPair();
+			KeyPair serverKeyPair = activationServer.generateServerKeyPair();
+			SecretKey masterSecretKey = new KeyGenerator().computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
+			
+			System.out.println("    {");			
+			System.out.println("        \"input\": {");
+			System.out.println("            \"devicePrivateKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPrivateKeyToBytes(deviceKeyPair.getPrivate())) + "\",");
+			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPublicKeyToBytes(deviceKeyPair.getPublic())) + "\",");
+			System.out.println("            \"serverePrivateKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPrivateKeyToBytes(serverKeyPair.getPrivate())) + "\",");
+			System.out.println("            \"serverPublicKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPublicKeyToBytes(serverKeyPair.getPublic())) + "\"");
+			System.out.println("        },");
+			System.out.println("        \"output\": {");
+			System.out.println("            \"masterSecretKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(masterSecretKey)) + "\"");
+			System.out.println("        }");
+			if (i == max - 1) {
+				System.out.println("    }");
+			} else {
+				System.out.println("    },");
+			}
+		}
+		
+		System.out.println("]");
+		
+		System.out.println("KeyDerivation >>> [");
+
+		for (int i = 0; i < max; i++) {
+			KeyPair deviceKeyPair = activationClient.generateDeviceKeyPair();
+			KeyPair serverKeyPair = activationServer.generateServerKeyPair();
+			SecretKey masterSecretKey = new KeyGenerator().computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
+			
+			PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
+			
+			System.out.println("    {");			
+			System.out.println("        \"input\": {");
+			System.out.println("            \"masterSecretKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(masterSecretKey)) + "\"");
+			System.out.println("        },");
+			System.out.println("        \"output\": {");
+			System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateClientSignaturePossessionKey(masterSecretKey))) + "\",");
+			System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey))) + "\",");
+			System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureBiometryKey(masterSecretKey))) + "\",");
+			System.out.println("            \"transportKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))) + "\",");
+			System.out.println("            \"vaultEncryptionKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))) + "\"");
+			System.out.println("        }");
+			if (i == max - 1) {
+				System.out.println("    }");
+			} else {
+				System.out.println("    },");
+			}
+		}
+		
+		System.out.println("]");
 	}
 	
 	@Test
