@@ -6,6 +6,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 
@@ -17,6 +18,7 @@ import com.google.common.io.BaseEncoding;
 
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
+import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
@@ -306,6 +308,118 @@ public class GenerateVectorDataTest {
 
 		}
 
+		System.out.println("]");
+	}
+
+	@Test
+	public void testSignatureValidation() throws Exception {
+
+		System.out.println("### Signature Validation");
+		System.out.println("[");
+
+		int max = 5;
+		int key_max = 2;
+		int ctr_max = 10;
+		int data_max = 256;
+		for (int j = 0; j < max; j++) {
+
+			// Prepare data
+			KeyGenerator keyGenerator = new KeyGenerator();
+			KeyConversionUtils keyConversionUtils = new KeyConversionUtils();
+
+			KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+			PublicKey serverPublicKey = serverKeyPair.getPublic();
+
+			KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+			PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
+
+			PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
+			PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
+
+			for (int i = 0; i < key_max; i++) {
+				
+				// compute data signature
+				SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+				SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
+				SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
+				SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
+
+				for (int ctr = 0; ctr < ctr_max; ctr++) {
+
+					// generate random data
+					byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
+
+					String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey), ctr);
+					String signatureType = "possession";
+
+					System.out.println("    {");
+					System.out.println("        \"input\": {");
+					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
+					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
+					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
+					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
+					System.out.println("            \"counter\": \"" + ctr + "\",");
+					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");
+					System.out.println("        },");
+					System.out.println("        \"output\": {");
+					System.out.println("            \"signature\": \"" + signature + "\"");
+					System.out.println("        }");
+					System.out.println("    },");
+				}
+
+				for (int ctr = 0; ctr < ctr_max; ctr++) {
+
+					// generate random data
+					byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
+
+					String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctr);
+					String signatureType = "possession_knowledge";
+
+					System.out.println("    {");
+					System.out.println("        \"input\": {");
+					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
+					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
+					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
+					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
+					System.out.println("            \"counter\": \"" + ctr + "\",");
+					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");
+					System.out.println("        },");
+					System.out.println("        \"output\": {");
+					System.out.println("            \"signature\": \"" + signature + "\"");
+					System.out.println("        }");
+					System.out.println("    },");
+
+				}
+				
+				for (int ctr = 0; ctr < ctr_max; ctr++) {
+
+					// generate random data
+					byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
+
+					String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctr);
+					String signatureType = "possession_knowledge_biometry";
+
+					System.out.println("    {");
+					System.out.println("        \"input\": {");
+					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
+					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
+					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
+					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
+					System.out.println("            \"counter\": \"" + ctr + "\",");
+					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");
+					System.out.println("        },");
+					System.out.println("        \"output\": {");
+					System.out.println("            \"signature\": \"" + signature + "\"");
+					System.out.println("        }");
+					if (ctr == ctr_max - 1 && i == key_max - 1 && j == max - 1) {
+						System.out.println("    }");
+					} else {
+						System.out.println("    },");
+					}
+
+				}
+			}
+		}
 		System.out.println("]");
 	}
 
