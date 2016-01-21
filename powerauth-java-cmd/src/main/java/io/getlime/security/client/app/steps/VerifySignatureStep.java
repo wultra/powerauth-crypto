@@ -39,7 +39,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.BaseEncoding;
 
 import io.getlime.security.client.app.util.EncryptedStorageUtil;
-import io.getlime.security.client.app.util.RestTemplateFactory;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
