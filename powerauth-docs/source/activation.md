@@ -66,7 +66,7 @@ This diagram shows how public keys are exchanged between PowerAuth 2.0 Client an
 
 ### Activation Commit
 
-Finally, the last diagram shows how Master Front-End Application proactively checks the status of the activation and allows it's completion by committing the activation record.
+Finally, the last diagram shows how Master Front-End Application proactively checks the status of the activation and allows it's completion by committing the activation record. A PowerAuth 2.0 Client plays a very little role in this step - it only shows a public key fingerprint so that the key exchange can be confirmed before committing the activation.
 
 <img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth-activation-commit.png" width="100%"/>
 
