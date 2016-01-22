@@ -40,9 +40,10 @@ import io.getlime.security.powerauth.VaultUnlockRequest;
 import io.getlime.security.powerauth.VaultUnlockResponse;
 import io.getlime.security.powerauth.VerifySignatureRequest;
 import io.getlime.security.powerauth.VerifySignatureResponse;
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.server.signature.PowerAuthServerSignature;
@@ -93,10 +94,11 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	private final PowerAuthServerSignature powerAuthServerSignature = new PowerAuthServerSignature();
 	private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
 	private final PowerAuthServerVault powerAuthServerVault = new PowerAuthServerVault();
-	private final KeyConversionUtils keyConversionUtilities = new KeyConversionUtils();
+	private final CryptoProviderUtil keyConversionUtilities = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 	static {
 		Security.addProvider(new BouncyCastleProvider());
+		PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
 	}
 
 	/**
@@ -276,13 +278,13 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			// Get number of max attempts from request or from constants, if not provided
 			Long maxAttempt = request.getMaxFailureCount();
 			if (maxAttempt == null) {
-				maxAttempt = PowerAuthConstants.SIGNATURE_MAX_FAILED_ATTEMPTS;
+				maxAttempt = PowerAuthConfiguration.SIGNATURE_MAX_FAILED_ATTEMPTS;
 			}
 
 			// Get activation expiration date from request or from constants, if not provided
 			Date timestampExpiration = ModelUtil.dateWithCalendar(request.getTimestampActivationExpire());
 			if (timestampExpiration == null) {
-				timestampExpiration = new Date(timestamp.getTime() + PowerAuthConstants.ACTIVATION_VALIDITY_BEFORE_ACTIVE);
+				timestampExpiration = new Date(timestamp.getTime() + PowerAuthConfiguration.ACTIVATION_VALIDITY_BEFORE_ACTIVE);
 			}
 
 			// Fetch the latest master private key
@@ -302,7 +304,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
 			// Generate new activation data, generate a unique activation ID
 			String activationId = null;
-			for (int i = 0; i < PowerAuthConstants.ACTIVATION_GENERATE_ACTIVATION_ID_ITERATIONS; i++) {
+			for (int i = 0; i < PowerAuthConfiguration.ACTIVATION_GENERATE_ACTIVATION_ID_ITERATIONS; i++) {
 				String tmpActivationId = powerAuthServerActivation.generateActivationId();
 				ActivationRecordEntity record = powerAuthRepository.findFirstByActivationId(tmpActivationId);
 				if (record == null) {
@@ -317,7 +319,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			// Generate a unique short activation ID for created and OTP used states
 			String activationIdShort = null;
 			Set<ActivationStatus> states = ImmutableSet.of(ActivationStatus.CREATED, ActivationStatus.OTP_USED);
-			for (int i = 0; i < PowerAuthConstants.ACTIVATION_GENERATE_ACTIVATION_SHORT_ID_ITERATIONS; i++) {
+			for (int i = 0; i < PowerAuthConfiguration.ACTIVATION_GENERATE_ACTIVATION_SHORT_ID_ITERATIONS; i++) {
 				String tmpActivationIdShort = powerAuthServerActivation.generateActivationIdShort();
 				ActivationRecordEntity record = powerAuthRepository.findFirstByActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(tmpActivationIdShort, states, timestamp);
 				// this activation short ID has a collision, reset it and find
@@ -493,7 +495,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 				boolean signatureValid = false;
 				long ctr = activation.getCounter();
 				long lowestValidCounter = ctr;
-				for (long iterCtr = ctr; iterCtr < ctr + PowerAuthConstants.SIGNATURE_VALIDATION_LOOKAHEAD; iterCtr++) {
+				for (long iterCtr = ctr; iterCtr < ctr + PowerAuthConfiguration.SIGNATURE_VALIDATION_LOOKAHEAD; iterCtr++) {
 					signatureValid = powerAuthServerSignature.verifySignatureForData(data, signature, signatureKeys, iterCtr);
 					if (signatureValid) {
 						// set the lowest valid counter and break at the lowest

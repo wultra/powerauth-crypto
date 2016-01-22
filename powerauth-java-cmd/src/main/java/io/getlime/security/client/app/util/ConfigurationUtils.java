@@ -22,7 +22,7 @@ import org.json.simple.JSONObject;
 
 import com.google.common.io.BaseEncoding;
 
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 
 public class ConfigurationUtils {
 	
@@ -58,7 +58,7 @@ public class ConfigurationUtils {
 		if (clientConfigObject.get("masterPublicKey") != null) {
 			try {
 				byte[] masterKeyBytes = BaseEncoding.base64().decode((String) clientConfigObject.get("masterPublicKey"));
-				return new KeyConversionUtils().convertBytesToPublicKey(masterKeyBytes);
+				return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(masterKeyBytes);
 			} catch (IllegalArgumentException e) {
 				System.out.println("Master Public Key must be stored in a valid Base64 encoding");
 				System.out.println();

@@ -38,13 +38,14 @@ import io.getlime.rest.api.model.PowerAuthAPIRequest;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.security.client.app.util.RestTemplateFactory;
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.model.ActivationStatusBlobInfo;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
 public class GetStatusStep {
 	
 	private static final PowerAuthClientActivation activation = new PowerAuthClientActivation();
-	private static final KeyConversionUtils keyConversion = new KeyConversionUtils();
+	private static final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	@SuppressWarnings("unchecked")

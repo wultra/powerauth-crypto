@@ -21,9 +21,9 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 
 public class EncryptedStorageUtil {
 	
@@ -33,7 +33,7 @@ public class EncryptedStorageUtil {
 
 		// Encrypt the knowledge related key using the password derived key
 		AESEncryptionUtils aes = new AESEncryptionUtils();
-		byte[] signatureKnoweldgeSecretKeyBytes = new KeyConversionUtils().convertSharedSecretKeyToBytes(signatureKnoweldgeSecretKey);
+		byte[] signatureKnoweldgeSecretKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(signatureKnoweldgeSecretKey);
 		byte[] iv = new byte[16];
 		byte[] cSignatureKnoweldgeSecretKey = aes.encrypt(signatureKnoweldgeSecretKeyBytes, iv, encryptionSignatureKnowledgeKey, "AES/CBC/NoPadding");
 		return cSignatureKnoweldgeSecretKey;
@@ -47,7 +47,7 @@ public class EncryptedStorageUtil {
 		AESEncryptionUtils aes = new AESEncryptionUtils();
 		byte[] iv = new byte[16];
 		byte[] signatureKnoweldgeSecretKeyBytes = aes.decrypt(cSignatureKnoweldgeSecretKeyBytes, iv, encryptionSignatureKnowledgeKey, "AES/CBC/NoPadding");
-		return new KeyConversionUtils().convertBytesToSharedSecretKey(signatureKnoweldgeSecretKeyBytes);
+		return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(signatureKnoweldgeSecretKeyBytes);
 	}
 
 }

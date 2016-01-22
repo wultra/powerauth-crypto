@@ -39,6 +39,8 @@ import io.getlime.security.client.app.steps.PrepareActivationStep;
 import io.getlime.security.client.app.steps.RemoveStep;
 import io.getlime.security.client.app.steps.VerifySignatureStep;
 import io.getlime.security.client.app.util.ConfigurationUtils;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -56,6 +58,7 @@ public class Application implements CommandLineRunner {
 
 			// Add Bouncy Castle Security Provider
 			Security.addProvider(new BouncyCastleProvider());
+			PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
 
 			// Options definition
 			Options options = new Options();

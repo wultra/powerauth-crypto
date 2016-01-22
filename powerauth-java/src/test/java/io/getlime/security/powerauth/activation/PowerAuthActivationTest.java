@@ -17,8 +17,10 @@ package io.getlime.security.powerauth.activation;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
 
 import java.security.KeyPair;
@@ -53,6 +55,7 @@ public class PowerAuthActivationTest {
 	public void setUp() {
 		// Add Bouncy Castle Security Provider
 		Security.addProvider(new BouncyCastleProvider());
+		PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
 	}
 
 	@After
@@ -61,11 +64,11 @@ public class PowerAuthActivationTest {
 
 	@Test
 	public void testGenerateKeys() throws Exception {
-		KeyConversionUtils keyConversion = new KeyConversionUtils();
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 		KeyGenerator keyGenerator = new KeyGenerator();
 		KeyPair kp = keyGenerator.generateKeyPair();
-		System.out.println("Private Key: " + BaseEncoding.base64().encode(keyConversion.convertPrivateKeyToBytes(kp.getPrivate())));
-		System.out.println("Public Key: " + BaseEncoding.base64().encode(keyConversion.convertPublicKeyToBytes(kp.getPublic())));
+		System.out.println("Private Key: " + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
+		System.out.println("Public Key: " + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(kp.getPublic())));
 	}
 
 	/**
@@ -150,7 +153,7 @@ public class PowerAuthActivationTest {
 		byte[] activationNonce = BaseEncoding.base64().decode("grDwkvXrgfUdKBsqg0xYYw==");
 		byte[] publicKeyBytes = BaseEncoding.base64().decode("BJXfJMCANX+T9FzsG6Hi0KTYPN64i7HxMiWoMYPd17DYfBR+IwzOesTh/jj/B3trL9m3O1oODYil+8ssJzDt/QA=");
 
-		PublicKey publicKey = new KeyConversionUtils().convertBytesToPublicKey(publicKeyBytes);
+		PublicKey publicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(publicKeyBytes);
 		PowerAuthClientActivation activation = new PowerAuthClientActivation();
 
 		byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, activationOTP, activationIdShort, activationNonce);

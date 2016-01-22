@@ -15,11 +15,10 @@
  */
 package io.getlime.security.powerauth.client.activation;
 
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 import io.getlime.security.powerauth.lib.util.SignatureUtils;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
 import java.io.UnsupportedEncodingException;
@@ -98,7 +97,7 @@ public class PowerAuthClientActivation {
 			KeyGenerator keyGenerator = new KeyGenerator();
 			byte[] activationIdShortBytes = activationIdShort.getBytes("UTF-8");
 			SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
-			byte[] devicePubKeyBytes = new KeyConversionUtils().convertPublicKeyToBytes(devicePublicKey);
+			byte[] devicePubKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(devicePublicKey);
 			AESEncryptionUtils aes = new AESEncryptionUtils();
 			return aes.encrypt(devicePubKeyBytes, activationNonce, otpBasedSymmetricKey);
 		} catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException ex) {
@@ -151,7 +150,7 @@ public class PowerAuthClientActivation {
 			byte[] decryptedTMP = aes.decrypt(C_serverPublicKey, activationNonce, ephemeralSymmetricKey);
 			byte[] decryptedServerPublicKeyBytes = aes.decrypt(decryptedTMP, activationNonce, otpBasedSymmetricKey);
 
-			return new KeyConversionUtils().convertBytesToPublicKey(decryptedServerPublicKeyBytes);
+			return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedServerPublicKeyBytes);
 		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | UnsupportedEncodingException ex) {
 			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -166,14 +165,14 @@ public class PowerAuthClientActivation {
 	 */
 	public int computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) {
 		try {
-			byte[] devicePublicKeyBytes = new KeyConversionUtils().convertPublicKeyToBytes(devicePublicKey);
+			byte[] devicePublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(devicePublicKey);
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] hash = digest.digest(devicePublicKeyBytes);
 			if (hash.length < 4) { // assert
 				throw new IndexOutOfBoundsException();
 			}
 			int index = hash.length - 4;
-			int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConstants.FINGERPRINT_LENGTH));
+			int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
 			return number;
 		} catch (NoSuchAlgorithmException ex) {
 			Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);

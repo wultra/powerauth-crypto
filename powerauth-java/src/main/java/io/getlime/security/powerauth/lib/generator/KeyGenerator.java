@@ -16,8 +16,7 @@
 package io.getlime.security.powerauth.lib.generator;
 
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -53,7 +52,7 @@ public class KeyGenerator {
     public KeyPair generateKeyPair() {
         try {
             // we assume BouncyCastle provider
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", "BC");
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
             KeyPair kp = kpg.generateKeyPair();
             return kp;
@@ -73,7 +72,7 @@ public class KeyGenerator {
      */
     public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
         try {
-            KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", "BC");
+            KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             keyAgreement.init(privateKey);
             keyAgreement.doPhase(publicKey, true);
             // Generate 16B key from 32B key by applying XOR
@@ -82,7 +81,7 @@ public class KeyGenerator {
             for (int i = 0; i < 16; i++) {
                 resultSecret[i] = (byte) (sharedSecret[i] ^ sharedSecret[i + 16]);
             }
-            return new KeyConversionUtils().convertBytesToSharedSecretKey(resultSecret);
+            return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(resultSecret);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
@@ -107,7 +106,7 @@ public class KeyGenerator {
      * @return A new instance of a symmetric key.
      */
     public SecretKey generateRandomSecretKey() {
-        return new KeyConversionUtils().convertBytesToSharedSecretKey(generateRandomBytes(16));
+        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(generateRandomBytes(16));
     }
 
     /**
@@ -127,7 +126,7 @@ public class KeyGenerator {
             byte[] bytes = ByteBuffer.allocate(16).putLong(0L).putLong(index).array();
             byte[] iv = new byte[16];
             byte[] encryptedBytes = aes.encrypt(bytes, iv, secret);
-            return new KeyConversionUtils().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
+            return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -144,7 +143,7 @@ public class KeyGenerator {
      */
     public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt) {
         try {
-            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PowerAuthConstants.PBKDF_ITERATIONS, 128);
+            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PowerAuthConfiguration.PBKDF_ITERATIONS, 128);
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
             SecretKey encryptionKey = new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");

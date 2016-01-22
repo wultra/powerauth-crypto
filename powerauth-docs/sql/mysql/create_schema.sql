@@ -4,9 +4,9 @@
 
 CREATE TABLE `pa_master_keypair` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
   `master_key_private_base64` varchar(255) NOT NULL,
   `master_key_public_base64` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
   `timestamp_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

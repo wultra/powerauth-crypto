@@ -18,9 +18,8 @@ package io.getlime.security.powerauth.server.activation;
 import io.getlime.security.powerauth.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 import io.getlime.security.powerauth.lib.util.SignatureUtils;
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
@@ -143,7 +142,7 @@ public class PowerAuthServerActivation {
             // Decrypt device public key
             AESEncryptionUtils aes = new AESEncryptionUtils();
             byte[] decryptedPublicKeyBytes = aes.decrypt(C_devicePublicKey, activationNonce, otpBasedSymmetricKey);
-            PublicKey devicePublicKey = new KeyConversionUtils().convertBytesToPublicKey(decryptedPublicKeyBytes);
+            PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
             return devicePublicKey;
         } catch (IllegalBlockSizeException | InvalidKeySpecException | BadPaddingException | InvalidKeyException | UnsupportedEncodingException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
@@ -172,7 +171,7 @@ public class PowerAuthServerActivation {
         try {
 
             // Convert public key to bytes
-            byte[] serverPublicKeyBytes = new KeyConversionUtils().convertPublicKeyToBytes(serverPublicKey);
+            byte[] serverPublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(serverPublicKey);
 
             // Generate symmetric keys
             KeyGenerator keyGenerator = new KeyGenerator();
@@ -252,14 +251,14 @@ public class PowerAuthServerActivation {
      */
     public int computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) {
         try {
-            byte[] devicePublicKeyBytes = new KeyConversionUtils().convertPublicKeyToBytes(devicePublicKey);
+            byte[] devicePublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(devicePublicKey);
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(devicePublicKeyBytes);
             if (hash.length < 4) { // assert
                 throw new IndexOutOfBoundsException();
             }
             int index = hash.length - 4;
-            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConstants.FINGERPRINT_LENGTH));
+            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
             return number;
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);

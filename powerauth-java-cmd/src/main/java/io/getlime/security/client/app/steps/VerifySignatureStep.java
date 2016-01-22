@@ -41,15 +41,16 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.client.app.util.EncryptedStorageUtil;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 
 public class VerifySignatureStep {
 	
-	private static final KeyConversionUtils keyConversion = new KeyConversionUtils();
+	private static final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 	private static final KeyGenerator keyGenerator = new KeyGenerator();
 	private static final PowerAuthClientSignature signature = new PowerAuthClientSignature();
 	private static final PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();

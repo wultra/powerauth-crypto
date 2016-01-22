@@ -25,9 +25,10 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
 
 public class PowerAuthClientVault {
 	
@@ -41,13 +42,13 @@ public class PowerAuthClientVault {
 	 */
 	public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey masterTransportKey, long ctr) throws InvalidKeyException {
 		AESEncryptionUtils aes = new AESEncryptionUtils();
-		KeyConversionUtils keyConversion = new KeyConversionUtils();
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 		KeyGenerator keyGen = new KeyGenerator();
 		SecretKey vaultEncryptionTransportKey = keyGen.deriveSecretKey(masterTransportKey, ctr);
 		byte[] zeroBytes = new byte[16];
 		try {
 			byte[] keyBytes = aes.decrypt(cVaultEncryptionKey, zeroBytes, vaultEncryptionTransportKey);
-			return keyConversion.convertBytesToSharedSecretKey(keyBytes);
+			return keyConvertor.convertBytesToSharedSecretKey(keyBytes);
 		} catch (IllegalBlockSizeException | BadPaddingException ex) {
 			Logger.getLogger(PowerAuthClientVault.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -65,8 +66,8 @@ public class PowerAuthClientVault {
 	public byte[] encryptDevicePrivateKey(PrivateKey devicePrivateKey, SecretKey vaultEncryptionKey) throws InvalidKeyException {
 		try {
 			AESEncryptionUtils aes = new AESEncryptionUtils();
-			KeyConversionUtils keyConversion = new KeyConversionUtils();
-			byte[] devicePrivateKeyBytes = keyConversion.convertPrivateKeyToBytes(devicePrivateKey);
+			CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+			byte[] devicePrivateKeyBytes = keyConvertor.convertPrivateKeyToBytes(devicePrivateKey);
 			byte[] zeroBytes = new byte[16];
 			return aes.encrypt(devicePrivateKeyBytes, zeroBytes, vaultEncryptionKey);
 		} catch (IllegalBlockSizeException | BadPaddingException ex) {
@@ -85,11 +86,11 @@ public class PowerAuthClientVault {
 	 */
 	public PrivateKey decryptDevicePrivateKey(byte[] cDevicePrivateKey, SecretKey vaultEncryptionKey) throws InvalidKeyException {
 		AESEncryptionUtils aes = new AESEncryptionUtils();
-		KeyConversionUtils keyConversion = new KeyConversionUtils();
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 		byte[] zeroBytes = new byte[16];
 		try {
 			byte[] keyBytes = aes.decrypt(cDevicePrivateKey, zeroBytes, vaultEncryptionKey);
-			return keyConversion.convertBytesToPrivateKey(keyBytes);
+			return keyConvertor.convertBytesToPrivateKey(keyBytes);
 		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException ex) {
 			Logger.getLogger(PowerAuthClientVault.class.getName()).log(Level.SEVERE, null, ex);
 		}

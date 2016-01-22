@@ -15,9 +15,11 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.vault.PowerAuthClientVault;
 import io.getlime.security.powerauth.server.vault.PowerAuthServerVault;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
 
 import static org.junit.Assert.*;
 
@@ -27,6 +29,7 @@ public class VaultTest {
     public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
+        PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
     }
 	
 	@Test
@@ -51,16 +54,18 @@ public class VaultTest {
         SecretKey serverMasterKey = keyGenerator.computeSharedKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic());
         assertEquals(deviceMasterKey, serverMasterKey);
         
-        System.out.println("## Master Secret Key: " + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(deviceMasterKey)));
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        
+        System.out.println("## Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(deviceMasterKey)));
         
         // Deduce client vault encryption key and client / server master transport key
         SecretKey clientVaultEncryptionKey = keyFactory.generateServerEncryptedVaultKey(deviceMasterKey);
-        System.out.println("## Vault Encryption Key: " + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
+        System.out.println("## Vault Encryption Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
         
         SecretKey clientTransportKey = keyGenerator.deriveSecretKey(deviceMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
         SecretKey serverTransportKey = keyGenerator.deriveSecretKey(serverMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
         assertEquals(clientTransportKey, serverTransportKey);
-        System.out.println("## Master Transport Key: " + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(clientTransportKey)));
+        System.out.println("## Master Transport Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(clientTransportKey)));
         
         // Encrypt device private key
         byte[] cDevicePrivateKey = clientVault.encryptDevicePrivateKey(deviceKeyPair.getPrivate(), clientVaultEncryptionKey);

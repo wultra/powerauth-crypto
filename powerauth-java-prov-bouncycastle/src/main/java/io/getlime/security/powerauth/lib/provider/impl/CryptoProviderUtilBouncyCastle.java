@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.powerauth.lib.util;
+package io.getlime.security.powerauth.lib.provider.impl;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -35,7 +35,18 @@ import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 
-public class KeyConversionUtils {
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
+
+public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
+	
+	/**
+	 * Get the provider name, for example "BC" for Bouncy Castle.
+	 * @return Name of the provider, for example "BC" for Boucy Castle.
+	 */
+	@Override
+	public String getProviderName() {
+		return "BC";
+	}
 
     /**
      * Converts an EC public key to a byte array by encoding Q point parameter.
@@ -58,7 +69,7 @@ public class KeyConversionUtils {
      */
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException {
         try {
-            KeyFactory kf = KeyFactory.getInstance("ECDH", "BC");
+            KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
 
             ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
             ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
@@ -94,7 +105,7 @@ public class KeyConversionUtils {
      */
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException {
         try {
-            KeyFactory kf = KeyFactory.getInstance("ECDH", "BC");
+            KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
             BigInteger keyInteger = new BigInteger(keyBytes);
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
             ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);

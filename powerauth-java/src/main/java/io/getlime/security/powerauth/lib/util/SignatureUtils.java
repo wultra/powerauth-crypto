@@ -30,7 +30,8 @@ import javax.crypto.SecretKey;
 
 import com.google.common.base.Joiner;
 
-import io.getlime.security.powerauth.lib.config.PowerAuthConstants;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
 public class SignatureUtils {
 
@@ -68,7 +69,7 @@ public class SignatureUtils {
      */
     public boolean validateECDSASignature(byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, SignatureException {
         try {
-            Signature ecdsa = Signature.getInstance("SHA256withECDSA", "BC");
+            Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             ecdsa.initVerify(masterPublicKey);
             ecdsa.update(signedBytes);
             boolean isValid = ecdsa.verify(signature);
@@ -98,13 +99,15 @@ public class SignatureUtils {
 
         // Prepare holder for signature components
         String[] signatureComponents = new String[signatureKeys.size()];
+        
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
             
         for (int i = 0; i < signatureKeys.size(); i++) {
-           	byte[] signatureKey = new KeyConversionUtils().convertSharedSecretKeyToBytes(signatureKeys.get(i));
+           	byte[] signatureKey = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(i));
            	byte[] derivedKey = hmac.hash(signatureKey, ctr);
            	
            	for (int j = 0; j < i; j++) {
-           		byte[] signatureKeyInner = new KeyConversionUtils().convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
+           		byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
             	byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctr);
                 derivedKey = hmac.hash(derivedKey, derivedKeyInner);
             }
@@ -115,8 +118,8 @@ public class SignatureUtils {
                 throw new IndexOutOfBoundsException();
             }
             int index = signatureLong.length - 4;
-            int number = (ByteBuffer.wrap(signatureLong).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConstants.SIGNATURE_LENGTH));
-            String signature = String.format("%0" + PowerAuthConstants.SIGNATURE_LENGTH + "d", number);
+            int number = (ByteBuffer.wrap(signatureLong).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.SIGNATURE_LENGTH));
+            String signature = String.format("%0" + PowerAuthConfiguration.SIGNATURE_LENGTH + "d", number);
         	signatureComponents[i] = signature;
         }
         

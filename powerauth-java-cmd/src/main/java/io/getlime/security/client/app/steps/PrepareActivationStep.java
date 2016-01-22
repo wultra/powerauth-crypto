@@ -45,13 +45,14 @@ import io.getlime.security.client.app.util.RestTemplateFactory;
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.vault.PowerAuthClientVault;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.lib.util.KeyConversionUtils;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
 public class PrepareActivationStep {
 
 	private static final PowerAuthClientActivation activation = new PowerAuthClientActivation();
-	private static final KeyConversionUtils keyConversion = new KeyConversionUtils();
+	private static final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 	private static final PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
 	private static final KeyGenerator keyGenerator = new KeyGenerator();
 	private static final PowerAuthClientVault vault = new PowerAuthClientVault();

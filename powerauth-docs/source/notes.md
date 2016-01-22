@@ -114,7 +114,7 @@ Shared key `KEY_MASTER_SECRET` is generated using following algorithm (ECDH):
 ```java
 public SecretKey generateSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
 		// we assume BouncyCastle provider
-    KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", "BC");
+    KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", "BC"); // we assume BouncyCastle provider
     keyAgreement.init((Key) privateKey, new ECGenParameterSpec("secp256r1"));
     keyAgreement.doPhase(publicKey, true);
     final byte[] sharedSecret = keyAgreement.generateSecret();
@@ -142,7 +142,7 @@ In order to generate the signature for given bytes (obtained from string by conv
 
 ```java
 public byte[] signatureForBytes(byte[] bytes, PrivateKey privateKey) {
-    Signature ecdsaSign = Signature.getInstance("SHA256withECDSA", "BC");
+    Signature ecdsaSign = Signature.getInstance("SHA256withECDSA", "BC"); // we assume BouncyCastle provider
     ecdsaSign.initSign(privateKey);
     ecdsaSign.update(bytes);
     byte[] signature = ecdsaSign.sign();
@@ -154,7 +154,7 @@ To verify the signature, following code is used:
 
 ```java
 public boolean isSignatureCorrectForBytes(byte[] bytes, byte[] signature, PublicKey publicKey)
-    Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC");
+    Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC"); // we assume BouncyCastle provider
     ecdsaVerify.initVerify(publicKey);
     ecdsaVerify.update(bytes);
     boolean result = ecdsaVerify.verify(signature);

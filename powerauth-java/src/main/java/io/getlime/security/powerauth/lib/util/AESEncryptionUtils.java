@@ -28,6 +28,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
+
 public class AESEncryptionUtils {
 	
 	/**
@@ -45,7 +47,7 @@ public class AESEncryptionUtils {
      */
     public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         try {
-            Cipher cipherForCryptoResponse = Cipher.getInstance(padding, "BC");
+            Cipher cipherForCryptoResponse = Cipher.getInstance(padding, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             cipherForCryptoResponse.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(iv));
             byte[] cryptoResponseData = cipherForCryptoResponse.doFinal(bytes);
             return cryptoResponseData;
@@ -86,7 +88,7 @@ public class AESEncryptionUtils {
      */
     public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         try {
-            Cipher cipherForCryptoResponse = Cipher.getInstance(padding, "BC");
+            Cipher cipherForCryptoResponse = Cipher.getInstance(padding, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             cipherForCryptoResponse.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
             byte[] cryptoResponseData = cipherForCryptoResponse.doFinal(bytes);
             return cryptoResponseData;

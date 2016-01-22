@@ -19,8 +19,11 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
 
 public class GenerateVectorDataTest {
@@ -29,6 +32,7 @@ public class GenerateVectorDataTest {
 	public void setUp() {
 		// Add Bouncy Castle Security Provider
 		Security.addProvider(new BouncyCastleProvider());
+		PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
 	}
 
 	@Test
@@ -40,6 +44,8 @@ public class GenerateVectorDataTest {
 
 		System.out.println("## Verify Activation Data Signature");
 		System.out.println("[");
+		
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 		int max = 20;
 		for (int i = 0; i < max; i++) {
@@ -56,8 +62,8 @@ public class GenerateVectorDataTest {
 			System.out.println("        \"input\": {");
 			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
 			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
-			System.out.println("            \"masterPrivateKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
-			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPublicKeyToBytes(masterPublicKey)) + "\"");
+			System.out.println("            \"masterPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
+			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
 			System.out.println("            \"activationSignature\": \"" + BaseEncoding.base64().encode(activationSignature) + "\"");
@@ -75,6 +81,8 @@ public class GenerateVectorDataTest {
 	@Test
 	public void testEncryptDevicePublicKey() throws Exception {
 		PowerAuthClientActivation activation = new PowerAuthClientActivation();
+		
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 		System.out.println("## Encrypt Device Public Key");
 		System.out.println("[");
@@ -93,7 +101,7 @@ public class GenerateVectorDataTest {
 			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
 			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
 			System.out.println("            \"activationNonce\": \"" + BaseEncoding.base64().encode(activationNonce) + "\",");
-			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPublicKeyToBytes(publicKey)) + "\"");
+			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
 			System.out.println("            \"cDevicePublicKey\": \"" + BaseEncoding.base64().encode(cDevicePublicKey) + "\"");
@@ -113,6 +121,8 @@ public class GenerateVectorDataTest {
 
 		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
 		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+		
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 		System.out.println("## Deduce Master Secret Key");
 		System.out.println("[");
@@ -125,13 +135,13 @@ public class GenerateVectorDataTest {
 
 			System.out.println("    {");
 			System.out.println("        \"input\": {");
-			System.out.println("            \"devicePrivateKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPrivateKeyToBytes(deviceKeyPair.getPrivate())) + "\",");
-			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPublicKeyToBytes(deviceKeyPair.getPublic())) + "\",");
-			System.out.println("            \"serverePrivateKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPrivateKeyToBytes(serverKeyPair.getPrivate())) + "\",");
-			System.out.println("            \"serverPublicKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertPublicKeyToBytes(serverKeyPair.getPublic())) + "\"");
+			System.out.println("            \"devicePrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())) + "\",");
+			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(deviceKeyPair.getPublic())) + "\",");
+			System.out.println("            \"serverePrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(serverKeyPair.getPrivate())) + "\",");
+			System.out.println("            \"serverPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverKeyPair.getPublic())) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
-			System.out.println("            \"masterSecretKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(masterSecretKey)) + "\"");
+			System.out.println("            \"masterSecretKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)) + "\"");
 			System.out.println("        }");
 			if (i == max - 1) {
 				System.out.println("    }");
@@ -149,6 +159,8 @@ public class GenerateVectorDataTest {
 
 		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
 		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+		
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 		System.out.println("## Derive Keys From Master Secret");
 		System.out.println("[");
@@ -164,14 +176,14 @@ public class GenerateVectorDataTest {
 
 			System.out.println("    {");
 			System.out.println("        \"input\": {");
-			System.out.println("            \"masterSecretKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(masterSecretKey)) + "\"");
+			System.out.println("            \"masterSecretKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
-			System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateClientSignaturePossessionKey(masterSecretKey))) + "\",");
-			System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey))) + "\",");
-			System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureBiometryKey(masterSecretKey))) + "\",");
-			System.out.println("            \"transportKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))) + "\",");
-			System.out.println("            \"vaultEncryptionKey\": \"" + BaseEncoding.base64().encode(new KeyConversionUtils().convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))) + "\"");
+			System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignaturePossessionKey(masterSecretKey))) + "\",");
+			System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey))) + "\",");
+			System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureBiometryKey(masterSecretKey))) + "\",");
+			System.out.println("            \"transportKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))) + "\",");
+			System.out.println("            \"vaultEncryptionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))) + "\"");
 			System.out.println("        }");
 			if (i == max - 1) {
 				System.out.println("    }");
@@ -222,20 +234,20 @@ public class GenerateVectorDataTest {
 			ephemeralPublicKey = kp.getPublic();
 
 			cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
-			KeyConversionUtils kcu = new KeyConversionUtils();
+			CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 			System.out.println("    {");
 			System.out.println("        \"input\": {");
 			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
 			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
 			System.out.println("            \"activationNonce\": \"" + BaseEncoding.base64().encode(activationNonce) + "\",");
-			System.out.println("            \"devicePrivateKey\": \"" + BaseEncoding.base64().encode(kcu.convertPrivateKeyToBytes(devicePrivateKey)) + "\",");
-			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(kcu.convertPublicKeyToBytes(devicePublicKey)) + "\",");
+			System.out.println("            \"devicePrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(devicePrivateKey)) + "\",");
+			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)) + "\",");
 			System.out.println("            \"encryptedServerPublicKey\": \"" + BaseEncoding.base64().encode(cServerPublicKey) + "\",");
-			System.out.println("            \"ephemeralPublicKey\": \"" + BaseEncoding.base64().encode(kcu.convertPublicKeyToBytes(ephemeralPublicKey)) + "\"");
+			System.out.println("            \"ephemeralPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(ephemeralPublicKey)) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
-			System.out.println("            \"serverPublicKey\": \"" + BaseEncoding.base64().encode(kcu.convertPublicKeyToBytes(serverPublicKey)) + "\"");
+			System.out.println("            \"serverPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverPublicKey)) + "\"");
 			System.out.println("        }");
 			if (i == max - 1) {
 				System.out.println("    }");
@@ -289,13 +301,13 @@ public class GenerateVectorDataTest {
 			cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
 			byte[] cServerPublicKeySignature = activationServer.computeServerPublicKeySignature(cServerPublicKey, masterPrivateKey);
 
-			KeyConversionUtils kcu = new KeyConversionUtils();
+			CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 			System.out.println("    {");
 			System.out.println("        \"input\": {");
 			System.out.println("            \"encryptedServerPublicKey\": \"" + BaseEncoding.base64().encode(cServerPublicKey) + "\",");
-			System.out.println("            \"masterServerPrivateKey\": \"" + BaseEncoding.base64().encode(kcu.convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
-			System.out.println("            \"masterServerPublicKey\": \"" + BaseEncoding.base64().encode(kcu.convertPublicKeyToBytes(masterPublicKey)) + "\"");
+			System.out.println("            \"masterServerPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
+			System.out.println("            \"masterServerPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
 			System.out.println("            \"encryptedServerPublicKeySignature\": \"" + BaseEncoding.base64().encode(cServerPublicKeySignature) + "\"");
@@ -325,7 +337,7 @@ public class GenerateVectorDataTest {
 
 			// Prepare data
 			KeyGenerator keyGenerator = new KeyGenerator();
-			KeyConversionUtils keyConversionUtils = new KeyConversionUtils();
+			CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 			KeyPair serverKeyPair = keyGenerator.generateKeyPair();
 			PublicKey serverPublicKey = serverKeyPair.getPublic();
@@ -354,9 +366,9 @@ public class GenerateVectorDataTest {
 
 					System.out.println("    {");
 					System.out.println("        \"input\": {");
-					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
-					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
-					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
+					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
+					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
+					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
 					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
 					System.out.println("            \"counter\": \"" + ctr + "\",");
 					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");
@@ -377,9 +389,9 @@ public class GenerateVectorDataTest {
 
 					System.out.println("    {");
 					System.out.println("        \"input\": {");
-					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
-					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
-					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
+					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
+					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
+					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
 					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
 					System.out.println("            \"counter\": \"" + ctr + "\",");
 					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");
@@ -401,9 +413,9 @@ public class GenerateVectorDataTest {
 
 					System.out.println("    {");
 					System.out.println("        \"input\": {");
-					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
-					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
-					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConversionUtils.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
+					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
+					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
+					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
 					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
 					System.out.println("            \"counter\": \"" + ctr + "\",");
 					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");

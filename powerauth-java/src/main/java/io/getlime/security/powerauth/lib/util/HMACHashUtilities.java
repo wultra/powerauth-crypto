@@ -25,6 +25,8 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
+
 /**
  * Simple utility class for HMAC-SHA256 algorithm
  * @author Petr Dvorak, petr@lime-company.eu
@@ -40,7 +42,7 @@ public class HMACHashUtilities {
 	 */
 	public byte[] hash(byte[] data, byte[] key) {
 		try {
-			Mac hmacSha256 = Mac.getInstance("HmacSHA256", "BC");
+			Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
 			SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA256");
 	    	hmacSha256.init(hmacKey);
 	    	byte[] derivedKey = hmacSha256.doFinal(data);
