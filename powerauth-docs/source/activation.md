@@ -48,10 +48,27 @@ Following diagram shows example steps in PowerAuth 2.0 Client - imagine the Mobi
 
 ## Activation Flow - Sequence Diagram
 
-The sequence diagram below explains the PowerAuth 2.0 key exchange. It shows how PowerAuth 2.0 Client, Intermediate Server Application, Master Front-End Application and PowerAuth 2.0 Server play together in order to establish a shared secret between the client application and PowerAuth Server.
+The sequence diagrams below explain the PowerAuth 2.0 key exchange. It shows how PowerAuth 2.0 Client, Intermediate Server Application, Master Front-End Application and PowerAuth 2.0 Server play together in order to establish a shared secret between the client application and PowerAuth Server.
 
-//TODO: Review the diagram
-<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth.png" width="100%"/>
+For the sake of the simplicity, we have split the process into three diagrams. The details of individual steps can be found in the chapter below ("Activation Flow - Description").
+
+### Activation Initialization
+
+This diagram shows how Master Front-End Application requests the activation data from the PowerAuth 2.0 Server. The process is initiated by the Master Front-End Application (for example, the Internet banking in the web browser) and it also ends here: by displaying the activation data so that they can be entered in the PowerAuth 2.0 Client.
+
+<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth-activation-init.png" width="100%"/>
+
+### Key Exchange
+
+This diagram shows how public keys are exchanged between PowerAuth 2.0 Client and PowerAuth 2.0 Server, and how  master shared secret and PowerAuth Standard Keys are derived. The Master Front-End Application plays no active role in the process of a key exchange.
+
+<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth-activation-prepare.png" width="100%"/>
+
+### Activation Commit
+
+Finally, the last diagram shows how Master Front-End Application proactively checks the status of the activation and allows it's completion by committing the activation record.
+
+<img src="https://raw.githubusercontent.com/lime-company/lime-security-powerauth/master/powerauth-docs/export/powerauth-activation-commit.png" width="100%"/>
 
 ## Activation Flow - Description
 
