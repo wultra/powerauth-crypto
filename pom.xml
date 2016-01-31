@@ -18,6 +18,7 @@
     <description>PowerAuth 2.0</description>
 
     <modules>
+    	<module>powerauth-android</module>
         <module>powerauth-java-prov</module>
         <module>powerauth-java-prov-bouncycastle</module>
         <module>powerauth-java-prov-spongycastle</module>
