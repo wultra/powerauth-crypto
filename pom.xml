@@ -22,6 +22,7 @@
         <module>powerauth-java-prov-bouncycastle</module>
         <module>powerauth-java-prov-spongycastle</module>
         <module>powerauth-java</module>
+        <module>powerauth-java-http</module>
         <module>powerauth-java-server</module>
         <module>powerauth-java-client</module>
         <module>powerauth-java-cmd</module>

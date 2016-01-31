@@ -104,7 +104,7 @@ public class RemoveStep {
 		// knowledge factor
 		String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString("POST", "/pa/activation/remove", applicationSecret, pa_nonce, null);
 		String pa_signature = signature.signatureForData(signatureBaseString.getBytes("UTF-8"), Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), counter);
-		String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, pa_nonce, PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE, pa_signature, "2.0");
+		String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, pa_nonce, PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE.toString(), pa_signature, "2.0");
 		System.out.println("Coomputed X-PowerAuth-Authorization header: " + httpAuhtorizationHeader);
 		System.out.println();
 

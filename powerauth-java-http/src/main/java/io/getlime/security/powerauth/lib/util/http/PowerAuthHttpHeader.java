@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
-
 public class PowerAuthHttpHeader {
 	
 	public static final String ACTIVATION_ID = "pa_activation_id";
@@ -65,12 +63,12 @@ public class PowerAuthHttpHeader {
 	 * @param version PowerAuth protocol version.
 	 * @return Value to be used in <code>X-PowerAuth-Authorization</code> HTTP header.
 	 */
-	public static String getPowerAuthSignatureHTTPHeader(String activationId, String applicationId, String nonce, PowerAuthSignatureTypes signatureType, String signature, String version) {
+	public static String getPowerAuthSignatureHTTPHeader(String activationId, String applicationId, String nonce, String signatureType, String signature, String version) {
 		String result = POWERAUTH_PREFIX
 				+ headerField(ACTIVATION_ID, activationId) + ", "
 				+ headerField(APPLICATION_ID, applicationId) + ", "
 				+ headerField(NONCE, nonce) + ", "
-				+ headerField(SIGNATURE_TYPE, signatureType.toString()) + ", "
+				+ headerField(SIGNATURE_TYPE, signatureType) + ", "
 				+ headerField(SIGNATURE, signature) + ", "
 				+ headerField(VERSION, version);
 		return result;
