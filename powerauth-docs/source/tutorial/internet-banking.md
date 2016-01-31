@@ -48,7 +48,7 @@ public class PowerAuthWebServiceConfiguration {
 	@Bean
 	public PowerAuthServiceClient powerAuthClient(Jaxb2Marshaller marshaller) {
 		PowerAuthServiceClient client = new PowerAuthServiceClient();
-		client.setDefaultUri("http://localhost:8080/powerauth-java-server/powerauth");
+		client.setDefaultUri("http://localhost:8080/powerauth-java-server/soap");
 		client.setMarshaller(marshaller);
 		client.setUnmarshaller(marshaller);
 		return client;

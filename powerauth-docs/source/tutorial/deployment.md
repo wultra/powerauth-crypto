@@ -73,7 +73,7 @@ PowerAuth 2.0 Standard RESTful API is a Java EE application (packaged as an exec
 The default implementation of a PowerAuth 2.0 Standard RESTful API has only one proprietary configuration parameter `powerauth.service.url` that configures the SOAP endpoint location of a PowerAuth 2.0 Server. The default value for this property points to `localhost`:
 
 ```bash
-powerauth.service.url=http://localhost:8080/powerauth-java-server/powerauth
+powerauth.service.url=http://localhost:8080/powerauth-java-server/soap
 ```
 
 ### Downloading PowerAuth 2.0 Standard RESTful API
