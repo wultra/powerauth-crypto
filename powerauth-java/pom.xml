@@ -30,10 +30,12 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- bouncycastle for tests-->
 		<dependency>
-			<groupId>io.getlime.security</groupId>
-			<artifactId>powerauth-java-prov-bouncycastle</artifactId>
-			<version>0.0.4-SNAPSHOT</version>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-ext-jdk15on</artifactId>
+			<version>1.53</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

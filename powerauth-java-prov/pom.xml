@@ -10,4 +10,23 @@
   <version>0.0.4-SNAPSHOT</version>
   <name>powerauth-java-prov</name>
   <description>Technical Maven module. Simple interface for generic crypto provider inclusion.</description>
+
+  <dependencies>
+
+    <!-- bouncycastle & spongycastle as provided dependencies - client will need to declare one of them -->
+
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-ext-jdk15on</artifactId>
+      <version>1.53</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.madgag.spongycastle</groupId>
+      <artifactId>prov</artifactId>
+      <version>1.54.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

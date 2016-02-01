@@ -1,0 +1,27 @@
+package io.getlime.security.powerauth.lib.provider;
+
+import java.security.Security;
+
+/**
+ * @author Tomáš Vondráček (tomas.vondracek@gmail.com)
+ */
+public final class CryptoProviderUtilFactory {
+
+    private static CryptoProviderUtil utils;
+
+    public static synchronized CryptoProviderUtil getCryptoProviderUtils() {
+        if (utils == null) {
+            final boolean hasBC = Security.getProvider("BC") != null;
+            final boolean hasSC = Security.getProvider("SC") != null;
+
+            if (hasBC) {
+                utils = new CryptoProviderUtilBouncyCastle();
+            } else if (hasSC) {
+                utils = new CryptoProviderUtilsSpongyCastle();
+            } else {
+                throw new IllegalStateException("Neither spongycastne, nor bouncycastle is installed!");
+            }
+        }
+        return utils;
+    }
+}

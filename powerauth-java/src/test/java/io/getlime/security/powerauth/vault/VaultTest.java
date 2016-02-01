@@ -6,6 +6,7 @@ import java.security.Security;
 
 import javax.crypto.SecretKey;
 
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,6 @@ import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
 
 import static org.junit.Assert.*;
 
@@ -29,7 +29,7 @@ public class VaultTest {
     public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
+        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
     }
 	
 	@Test

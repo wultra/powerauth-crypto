@@ -58,10 +58,11 @@
 			<artifactId>powerauth-java-http</artifactId>
 			<version>0.0.4-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
-			<groupId>io.getlime.security</groupId>
-			<artifactId>powerauth-java-prov-bouncycastle</artifactId>
-			<version>0.0.4-SNAPSHOT</version>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-ext-jdk15on</artifactId>
+			<version>1.53</version>
 		</dependency>
 	</dependencies>
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.powerauth.lib.provider.impl;
+package io.getlime.security.powerauth.lib.provider;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -26,19 +26,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.interfaces.ECPrivateKey;
+import org.bouncycastle.jce.interfaces.ECPublicKey;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.jce.spec.ECPrivateKeySpec;
+import org.bouncycastle.jce.spec.ECPublicKeySpec;
+import org.bouncycastle.math.ec.ECPoint;
 
-import org.spongycastle.jce.ECNamedCurveTable;
-import org.spongycastle.jce.interfaces.ECPrivateKey;
-import org.spongycastle.jce.interfaces.ECPublicKey;
-import org.spongycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.spongycastle.jce.spec.ECParameterSpec;
-import org.spongycastle.jce.spec.ECPrivateKeySpec;
-import org.spongycastle.jce.spec.ECPublicKeySpec;
-import org.spongycastle.math.ec.ECPoint;
-
-import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
-
-public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
+public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
 	
 	/**
 	 * Get the provider name, for example "BC" for Bouncy Castle.
@@ -46,7 +43,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
 	 */
 	@Override
 	public String getProviderName() {
-		return "SC";
+		return "BC";
 	}
 
     /**
@@ -55,7 +52,6 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param publicKey An EC public key to be converted.
      * @return A byte array representation of the EC public key.
      */
-	@Override
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) {
         return ((ECPublicKey)publicKey).getQ().getEncoded(false);
     }
@@ -69,7 +65,6 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @throws InvalidKeySpecException When provided bytes are not a correct key
      * representation.
      */
-	@Override
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException {
         try {
             KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
@@ -92,7 +87,6 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param privateKey An EC private key to be converted to bytes.
      * @return A byte array containing the representation of the EC private key.
      */
-	@Override
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
         byte[] pkBytes = ((ECPrivateKey) privateKey).getD().toByteArray();
         return pkBytes;
@@ -107,7 +101,6 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @throws InvalidKeySpecException The provided key bytes are not a valid EC
      * private key.
      */
-	@Override
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException {
         try {
             KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
@@ -130,7 +123,6 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param sharedSecretKey A shared key to be converted to bytes.
      * @return A byte array representation of the shared secret key.
      */
-	@Override
     public byte[] convertSharedSecretKeyToBytes(SecretKey sharedSecretKey) {
         return sharedSecretKey.getEncoded();
     }
@@ -142,7 +134,6 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param bytesSecretKey Bytes representing the shared key.
      * @return An instance of the secret key by decoding from provided bytes.
      */
-	@Override
     public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) {
     	return new SecretKeySpec(bytesSecretKey, "AES/ECB/NoPadding");
     }
