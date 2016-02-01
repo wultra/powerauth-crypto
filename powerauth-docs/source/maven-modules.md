@@ -3,8 +3,6 @@
 PowerAuth 2.0 source code includes following Maven modules under a single parent project:
 
 - `powerauth-java-prov` - A technical module exporting an interface for a generic provider implementation. This is needed in order to be able to have the same cryptography module for Java SE / Java EE and Android (that requires SpongyCastle).
-- `powerauth-java-prov-bouncycastle` - Library using a Bouncy Castle cryptographic provider, used in Java SE and Java EE applications.
-- `powerauth-java-prov-spongycastle` - Library using a Spongy Castle cryptographic provider, used in Android applications.
 - `powerauth-java` - Module responsible for the PowerAuth 2.0 cryptography implementation.
 - `powerauth-java-http` - A simple utility module implementing HTTP support for PowerAuth 2.0.
 - `powerauth-java-client` - A simple SOAP service client class module capable of connecting to a running instance of PowerAuth 2.0 Server. This module is typically used to integrate with Master Front-End Application APIs, such as with internet banking application.
