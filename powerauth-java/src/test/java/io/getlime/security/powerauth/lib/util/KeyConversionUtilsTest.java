@@ -20,7 +20,6 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -32,6 +31,7 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
@@ -64,7 +64,7 @@ public class KeyConversionUtilsTest {
 	public void setUp() {
 		// Add Bouncy Castle Security Provider
 		Security.addProvider(new BouncyCastleProvider());
-		PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
+		PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
 	}
 
 	@After

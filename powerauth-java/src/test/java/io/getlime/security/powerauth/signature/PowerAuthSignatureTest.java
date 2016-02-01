@@ -20,7 +20,7 @@ import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtilFactory;
 import io.getlime.security.powerauth.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.server.signature.PowerAuthServerSignature;
 import java.security.KeyPair;
@@ -44,7 +44,7 @@ public class PowerAuthSignatureTest {
     public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
+        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
     }
 
     /**

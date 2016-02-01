@@ -24,11 +24,6 @@
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
-			<artifactId>powerauth-java-prov-spongycastle</artifactId>
-			<version>0.0.4-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-restful-model</artifactId>
 			<version>0.0.4-SNAPSHOT</version>
 		</dependency>
@@ -36,6 +31,11 @@
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java</artifactId>
 			<version>0.0.4-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.madgag.spongycastle</groupId>
+			<artifactId>prov</artifactId>
+			<version>1.54.0.0</version>
 		</dependency>
 	
 	</dependencies>

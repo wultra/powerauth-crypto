@@ -22,6 +22,7 @@ import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.getlime.security.powerauth.lib.provider.CryptoProviderUtilFactory;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -40,7 +41,6 @@ import io.getlime.security.client.app.steps.RemoveStep;
 import io.getlime.security.client.app.steps.VerifySignatureStep;
 import io.getlime.security.client.app.util.ConfigurationUtils;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.lib.provider.impl.CryptoProviderUtilBouncyCastle;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -58,7 +58,7 @@ public class Application implements CommandLineRunner {
 
 			// Add Bouncy Castle Security Provider
 			Security.addProvider(new BouncyCastleProvider());
-			PowerAuthConfiguration.INSTANCE.setKeyConvertor(new CryptoProviderUtilBouncyCastle());
+			PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
 
 			// Options definition
 			Options options = new Options();

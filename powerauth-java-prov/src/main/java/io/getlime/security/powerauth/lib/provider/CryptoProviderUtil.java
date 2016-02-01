@@ -11,7 +11,7 @@ public interface CryptoProviderUtil {
 	 * Get the provider name, for example "BC" for Bouncy Castle.
 	 * @return Name of the provider, for example "BC" for Boucy Castle.
 	 */
-	public String getProviderName();
+	String getProviderName();
 
 	/**
 	 * Converts an EC public key to a byte array by encoding Q point parameter.
@@ -19,7 +19,7 @@ public interface CryptoProviderUtil {
 	 * @param publicKey An EC public key to be converted.
 	 * @return A byte array representation of the EC public key.
 	 */
-	public byte[] convertPublicKeyToBytes(PublicKey publicKey);
+	byte[] convertPublicKeyToBytes(PublicKey publicKey);
 
 	/**
 	 * Converts byte array to an EC public key, by decoding the Q point
@@ -30,7 +30,7 @@ public interface CryptoProviderUtil {
 	 * @throws InvalidKeySpecException When provided bytes are not a correct key
 	 * representation.
 	 */
-	public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException;
+	PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException;
 
 	/**
 	 * Converts an EC private key to bytes by encoding the D number parameter.
@@ -38,7 +38,7 @@ public interface CryptoProviderUtil {
 	 * @param privateKey An EC private key to be converted to bytes.
 	 * @return A byte array containing the representation of the EC private key.
 	 */
-	public byte[] convertPrivateKeyToBytes(PrivateKey privateKey);
+	byte[] convertPrivateKeyToBytes(PrivateKey privateKey);
 
 	/**
 	 * Convert a byte array to an EC private key by decoding the D number
@@ -49,7 +49,7 @@ public interface CryptoProviderUtil {
 	 * @throws InvalidKeySpecException The provided key bytes are not a valid EC
 	 * private key.
 	 */
-	public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException;
+	PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException;
 
 	/**
 	 * Converts a shared secret key (usually used for AES based operations) to a
@@ -58,7 +58,7 @@ public interface CryptoProviderUtil {
 	 * @param sharedSecretKey A shared key to be converted to bytes.
 	 * @return A byte array representation of the shared secret key.
 	 */
-	public byte[] convertSharedSecretKeyToBytes(SecretKey sharedSecretKey);
+	byte[] convertSharedSecretKeyToBytes(SecretKey sharedSecretKey);
 
 	/**
 	 * Converts a byte array to the secret shared key (usually used for AES
@@ -67,6 +67,6 @@ public interface CryptoProviderUtil {
 	 * @param bytesSecretKey Bytes representing the shared key.
 	 * @return An instance of the secret key by decoding from provided bytes.
 	 */
-	public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey);
+	SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey);
 
 }
