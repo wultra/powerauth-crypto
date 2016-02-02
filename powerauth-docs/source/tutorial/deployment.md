@@ -50,7 +50,7 @@ These parameters are of course only for the testing purposes, they are not suita
 
 You can deploy PowerAuth 2.0 Server WAR into any Java EE container.
 
-The default configuration works best with Apache Tomcat server running on default port 8080. In this case, the deployed server is accessible on `http://localhost:8080/powerauth-java-server/` (WSDL is then available on `http://localhost:8080/powerauth-java-server/powerauth/service.wsdl`).
+The default configuration works best with Apache Tomcat server running on default port 8080. In this case, the deployed server is accessible on `http://localhost:8080/powerauth-java-server/` (WSDL is then available on `http://localhost:8080/powerauth-java-server/soap/service.wsdl`).
 
 To deploy PowerAuth 2.0 Server to Apache Tomcat, simply copy the WAR file in your `webapps` folder or deploy it using the "Tomcat Web Application Manager" application (usually deployed on default Tomcat address `http://localhost:8080/manager`).
 
