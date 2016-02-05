@@ -72,12 +72,13 @@ X-PowerAuth-Authorization: PowerAuth
 Normalized data to be signed are built using the following procedure:
 
 ```
-DATA = ${REQUEST_METHOD}&${REQUEST_URI_IDENTIFIER_HASH}&${APPLICATION_SECRET}&${NONCE}&${REQUEST_DATA}
+REQUEST_DATA = ${REQUEST_METHOD}&${REQUEST_URI_IDENTIFIER_HASH}&${NONCE}&${REQUEST_DATA}
+DATA = ${REQUEST_DATA}&${APPLICATION_SECRET}
 ```
 
-... where:
+_Note: Note that the `APPLICATION_SECRET` is technically outside the request data and is appended after the `REQUEST_DATA` normalization. This is because Intermediate Server Application does not know the `APPLICATION_SECRET` but must be able to forward normalized `REQUEST_DATA` to the PowerAuth 2.0 Server._
 
-**//TODO: Design better way of normalizing request data and URI**
+... where:
 
 - `${REQUEST_METHOD}` - HTTP method written in upper-case, such as GET or POST.
 - `${REQUEST_URI_IDENTIFIER_HASH}` - SHA256 hashed identifier of given URI of the resource (hexadecimal format), for example SHA256("/api/payment"). The hashed value (in the example before, the "/api/payment" stirng) should be uniquely chosen for each URI, but can be of an arbitrary format (if not specified otherwise).
@@ -89,9 +90,10 @@ DATA = ${REQUEST_METHOD}&${REQUEST_URI_IDENTIFIER_HASH}&${APPLICATION_SECRET}&${
 			- `PARAM[i] = (KEY[i], VALUE[i]), i = 0 .. N`
 		1. Sort all these key-value pairs according to `KEY[i]` first, then sort duplicate keys according to the `VALUE[i]`
 		1. Construct data as concatenation of the sorted key-value pairs, key is separated from value using "=" character, individual key-value pairs are separated using "&" character:
-			- `REQUEST_DATA = BASE64(CONCAT_ALL(CONCAT(KEY[j], VALUE[j], "="), "&", j = 0 .. N))` (let's assume that `j` are sorted indexes)
+			- `REQUEST_DATA = BASE64.encode(CONCAT_ALL(CONCAT(KEY[j], VALUE[j], "="), "&", j = 0 .. N))` (let's assume that `j` are sorted indexes)
+		1. _Note: The GET request normalization is inspired by the OAuth 1.0a request normalization._
 	- In case of request with body (such as POST and PUT requests), data from the resource body (bytes) are encoded using Base64 with UTF-8 encoding and appended:
-		- `REQUEST_DATA = BASE64(HTTP['body'])`
+		- `REQUEST_DATA = BASE64.encode(ByteUtils.getBytes(HTTP['body']))`
 
 ## Validating the signature
 
@@ -120,4 +122,4 @@ PowerAuth 2.0 Server can validate the signature using the following mechanism:
 		return VERIFIED;
 ```
 
-Additionally, server may implement partial signature validation - basically evaluate each signature component separately. This may be used to determine if failed attempt counter should be decremented or not (since this allows distinguishing attacker who has a physical access to the PowerAuth 2.0 Client from attacker who randomly guesses signature).
+Additionally, server may implement partial signature validation - basically evaluate each signature component separately. This may be used to determine if a failed attempt counter should be decremented or not (since this allows distinguishing attacker who has a physical access to the PowerAuth 2.0 Client from attacker who randomly guesses signature).
