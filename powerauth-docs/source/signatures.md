@@ -72,7 +72,7 @@ X-PowerAuth-Authorization: PowerAuth
 Normalized data to be signed are built using the following procedure:
 
 ```
-REQUEST_DATA = ${REQUEST_METHOD}&${REQUEST_URI_IDENTIFIER_HASH}&${NONCE}&${REQUEST_DATA}
+REQUEST_DATA = ${REQUEST_METHOD}&${REQUEST_URI_IDENTIFIER_HASH}&${NONCE}&${REQUEST_BODY}
 DATA = ${REQUEST_DATA}&${APPLICATION_SECRET}
 ```
 
@@ -84,7 +84,7 @@ _Note: Note that the `APPLICATION_SECRET` is technically outside the request dat
 - `${REQUEST_URI_IDENTIFIER_HASH}` - SHA256 hashed identifier of given URI of the resource (hexadecimal format), for example SHA256("/api/payment"). The hashed value (in the example before, the "/api/payment" string) should be uniquely chosen for each URI, but can be of an arbitrary format (if not specified otherwise).
 - `${APPLICATION_SECRET}` - An application secret key, used to bind an application identification in the signature explicitly.
 - `${NONCE}` - Random 16 bytes encoded as Base64 using UTF-8 encoding, serving as a cryptographic nonce.
-- `${REQUEST_DATA}` - Request data
+- `${REQUEST_BODY}` - Request body from the HTTP request
 	- In case of request without body (such as GET and DELETE requests), the request data is constructed from the URL query parameters (for example, GET request parameters) in a following way:
 		1. Take all URL query parameters as key-value pairs:
 			- `PARAM[i] = (KEY[i], VALUE[i]), i = 0 .. N`
