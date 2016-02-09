@@ -134,7 +134,7 @@ To describe the steps more precisely, the activation process is performed in fol
 1. PowerAuth 2.0 Client receives an `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `C_KEY_SERVER_PUBLIC_SIGNATURE` and if the signature matches the data, it retrieves `KEY_SERVER_PUBLIC`.
 
 	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
-	- `boolean isSignatureOK = ECDSA.verify(C_KEY_SERVER_PUBLIC, C_KEY_SERVER_PUBLIC_SIGNATURE, KEY_SERVER_MASTER_PRIVATE)`
+	- `boolean isSignatureOK = ECDSA.verify(C_KEY_SERVER_PUBLIC, C_KEY_SERVER_PUBLIC_SIGNATURE, KEY_SERVER_MASTER_PUBLIC)`
 	- `SecretKey EPH_KEY = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)`
 	- `byte[] keyPublicBytes = AES.decrypt(AES.decrypt(C_KEY_SERVER_PUBLIC, EPHEMERAL_NONCE, EPH_KEY), EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP)`
 	- `PublicKey KEY_SERVER_PUBLIC = KeyConversion.publicKeyFromBytes(keyPublicBytes)`
