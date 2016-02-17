@@ -109,10 +109,10 @@ public class SignatureUtils {
            	for (int j = 0; j < i; j++) {
            		byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
             	byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctr);
-                derivedKey = hmac.hash(derivedKey, derivedKeyInner);
+                derivedKey = hmac.hash(derivedKeyInner, derivedKey);
             }
             	
-            byte[] signatureLong = hmac.hash(data, derivedKey);
+            byte[] signatureLong = hmac.hash(derivedKey, data);
             	
             if (signatureLong.length < 4) { // assert
                 throw new IndexOutOfBoundsException();
