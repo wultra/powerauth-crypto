@@ -19,6 +19,7 @@ import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
+import io.getlime.security.powerauth.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.lib.util.SignatureUtils;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
 import java.io.UnsupportedEncodingException;
@@ -36,6 +37,8 @@ import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
+
+import com.google.common.io.BaseEncoding;
 
 public class PowerAuthClientActivation {
 
@@ -80,6 +83,30 @@ public class PowerAuthClientActivation {
 	 */
 	public byte[] generateActivationNonce() {
 		return new KeyGenerator().generateRandomBytes(16);
+	}
+	
+	/**
+	 * Method computes the signature of the activation data in order to prove that a correct
+	 * client application is attempting to complete the activation.
+	 * @param activationIdShort Short activation ID.
+	 * @param activationNonce Client activation nonce.
+	 * @param encryptedDevicePublicKey Encrypted device public key.
+	 * @param clientName Client name (name of the activation)
+	 * @param applicationKey Application identifier.
+	 * @param applicationSecret Application secret.
+	 * @return Signature bytes.
+	 */
+	public byte[] computeApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, String applicationKey, String applicationSecret) {
+		try {
+			String signatureBaseString = activationIdShort + "&"
+					+ BaseEncoding.base64().encode(activationNonce) + "&"
+					+ BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
+					+ applicationKey;
+			return new HMACHashUtilities().hash(signatureBaseString.getBytes("UTF-8"), BaseEncoding.base64().decode(applicationSecret));
+		} catch (UnsupportedEncodingException ex) {
+			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return null;
 	}
 
 	/**
@@ -190,10 +217,21 @@ public class PowerAuthClientActivation {
 	 */
 	public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, SecretKey transportKey) throws InvalidKeyException {
 		try {
+			
+			if (cStatusBlob.length != 32) {
+				// return mock status in case byte array has weird length
+				ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
+				statusInfo.setActivationStatus((byte)5);
+				statusInfo.setCounter(0L);
+				statusInfo.setFailedAttempts((byte)0);
+				statusInfo.setMaxFailedAttempts((byte)5);
+				statusInfo.setValid(false);
+				return statusInfo;
+			}
 
 			// Decrypt the status blob
 			AESEncryptionUtils aes = new AESEncryptionUtils();
-			byte[] zeroIv = new byte[16];
+			byte[] zeroIv = new byte[32];
 			byte[] statusBlob = aes.decrypt(cStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
 
 			// Prepare objects to read status info into
@@ -202,16 +240,19 @@ public class PowerAuthClientActivation {
 
 			// check if the prefix is OK
 			int prefix = buffer.getInt(0);
-			statusInfo.setValid(prefix == 0xDEADBEEF);
+			statusInfo.setValid(prefix == 0xDEC0DED1);
 
 			// fetch the activation status byte
 			statusInfo.setActivationStatus(buffer.get(4));
 
 			// fetch the counter info
-			statusInfo.setCounter(buffer.getInt(5));
+			statusInfo.setCounter(buffer.getLong(5));
 
 			// fetch the failed attempt count
-			statusInfo.setFailedAttempts(buffer.get(9));
+			statusInfo.setFailedAttempts(buffer.get(13));
+			
+			// fetch the max allowed failed attempt count
+			statusInfo.setFailedAttempts(buffer.get(14));
 
 			return statusInfo;
 		} catch (IllegalBlockSizeException | BadPaddingException ex) {

@@ -18,7 +18,9 @@ package io.getlime.security.powerauth.server.activation;
 import io.getlime.security.powerauth.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
+import io.getlime.security.powerauth.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.lib.util.SignatureUtils;
+import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -30,11 +32,14 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
+
+import com.google.common.io.BaseEncoding;
 
 public class PowerAuthServerActivation {
 
@@ -120,6 +125,32 @@ public class PowerAuthServerActivation {
     public byte[] generateActivationNonce() {
         return new KeyGenerator().generateRandomBytes(16);
     }
+    
+    /**
+	 * Method validates the signature of the activation data in order to prove that a correct
+	 * client application is attempting to complete the activation.
+	 * @param activationIdShort Short activation ID.
+	 * @param activationNonce Client activation nonce.
+	 * @param encryptedDevicePublicKey Encrypted device public key.
+	 * @param clientName Client name (name of the activation)
+	 * @param applicationKey Application identifier.
+	 * @param applicationSecret Application secret.
+	 * @param signature Signature to be checked against.
+	 * @return True if the signature is correct, false otherwise.
+	 */
+	public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, String applicationKey, String applicationSecret, byte[] signature) {
+		try {
+			String signatureBaseString = activationIdShort + "&"
+					+ BaseEncoding.base64().encode(activationNonce) + "&"
+					+ BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
+					+ applicationKey;
+			byte[] signatureExpected = new HMACHashUtilities().hash(signatureBaseString.getBytes("UTF-8"), BaseEncoding.base64().decode(applicationSecret));
+			return Arrays.equals(signatureExpected, signature);
+		} catch (UnsupportedEncodingException ex) {
+			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return false;
+	}
 
     /**
      * Decrypt the device public key using activation OTP.
@@ -197,21 +228,23 @@ public class PowerAuthServerActivation {
      * Returns an encrypted status blob as described in PowerAuth 2.0 Specification.
      * @param statusByte Byte determining the status of the activation.
      * @param counter Bytes with a counter information.
+     * @param failedAttempts Number of failed attempts at the moment.
      * @param transportKey A key used to protect the transport.
      * @return Encrypted status blob
      * @throws InvalidKeyException
      */
-    public byte[] encryptedStatusBlob(byte statusByte, long counter, byte failedAttempts, SecretKey transportKey)
+    public byte[] encryptedStatusBlob(byte statusByte, long counter, byte failedAttempts, byte maxFailedAttempts, SecretKey transportKey)
             throws InvalidKeyException {
         try {
-            byte[] padding = new KeyGenerator().generateRandomBytes(6);
-            byte[] zeroIv = new byte[16];
-            byte[] statusBlob = ByteBuffer.allocate(16)
-                    .putInt(0xDEADBEEF)    // 4 bytes
-                    .put(statusByte)       // 1 byte
-                    .putInt((int) counter) // 4 bytes
-                    .put(failedAttempts)   // 1 byte
-                    .put(padding)          // 6 bytes
+            byte[] padding = new KeyGenerator().generateRandomBytes(18);
+            byte[] zeroIv = new byte[32];
+            byte[] statusBlob = ByteBuffer.allocate(32)
+                    .putInt(0xDEC0DED1)     // 4 bytes
+                    .put(statusByte)        // 1 byte
+                    .putLong(counter) 	    // 8 bytes
+                    .put(failedAttempts)    // 1 byte
+                    .put(maxFailedAttempts) // 1 byte
+                    .put(padding)           // 17 bytes
                     .array();
             AESEncryptionUtils aes = new AESEncryptionUtils();
             byte[] C_statusBlob = aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
