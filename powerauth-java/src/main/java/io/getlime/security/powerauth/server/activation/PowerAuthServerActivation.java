@@ -236,8 +236,8 @@ public class PowerAuthServerActivation {
     public byte[] encryptedStatusBlob(byte statusByte, long counter, byte failedAttempts, byte maxFailedAttempts, SecretKey transportKey)
             throws InvalidKeyException {
         try {
-            byte[] padding = new KeyGenerator().generateRandomBytes(18);
-            byte[] zeroIv = new byte[32];
+            byte[] padding = new KeyGenerator().generateRandomBytes(17);
+            byte[] zeroIv = new byte[16];
             byte[] statusBlob = ByteBuffer.allocate(32)
                     .putInt(0xDEC0DED1)     // 4 bytes
                     .put(statusByte)        // 1 byte
@@ -257,18 +257,24 @@ public class PowerAuthServerActivation {
     }
 
     /**
-     * Compute an encrypted server public key signature using the Master Private
-     * Key.
+     * Compute an activation ID and encrypted server public key signature
+     * using the Master Private Key.
      *
+     * @param activationID Activation ID
      * @param C_serverPublicKey Encrypted server public key.
      * @param masterPrivateKey Master Private Key.
      * @return Signature of the encrypted server public key.
      * @throws InvalidKeyException If master private key is invalid.
+     * @throws UnsupportedEncodingException 
      */
-    public byte[] computeServerPublicKeySignature(byte[] C_serverPublicKey, PrivateKey masterPrivateKey)
-            throws InvalidKeyException {
+    public byte[] computeServerDataSignature(String activationId, byte[] C_serverPublicKey, PrivateKey masterPrivateKey)
+            throws InvalidKeyException, UnsupportedEncodingException {
         try {
-            return signatureUtils.computeECDSASignature(C_serverPublicKey, masterPrivateKey);
+        	byte[] activationIdBytes = activationId.getBytes("UTF-8");
+        	byte[] result = new byte[activationIdBytes.length + C_serverPublicKey.length];
+        	System.arraycopy(activationIdBytes, 0, result, 0, activationIdBytes.length);
+        	System.arraycopy(C_serverPublicKey, 0, result, activationIdBytes.length, C_serverPublicKey.length);
+            return signatureUtils.computeECDSASignature(result, masterPrivateKey);
         } catch (SignatureException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
         }

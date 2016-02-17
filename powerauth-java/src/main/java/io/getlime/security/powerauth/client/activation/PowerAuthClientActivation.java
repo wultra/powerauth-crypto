@@ -134,17 +134,24 @@ public class PowerAuthClientActivation {
 	}
 
 	/**
-	 * Verify signature of the encrypted server public key using Master Public Key.
+	 * Verify signature of the encrypted activation ID and server public key
+	 * using a Master Public Key.
 	 *
+	 * @param activationID Activation ID
 	 * @param C_serverPublicKey Encrypted server public key.
 	 * @param signature Encrypted server public key signature.
 	 * @param masterPublicKey Master Public Key.
 	 * @return Returns "true" if signature matches encrypted data, "false" otherwise.
 	 * @throws InvalidKeyException If provided master public key is invalid.
+	 * @throws UnsupportedEncodingException 
 	 */
-	public boolean verifyServerPublicKeySignature(byte[] C_serverPublicKey, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException {
+	public boolean verifyServerDataSignature(String activationId, byte[] C_serverPublicKey, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, UnsupportedEncodingException {
 		try {
-			return signatureUtils.validateECDSASignature(C_serverPublicKey, signature, masterPublicKey);
+			byte[] activationIdBytes = activationId.getBytes("UTF-8");
+        	byte[] result = new byte[activationIdBytes.length + C_serverPublicKey.length];
+        	System.arraycopy(activationIdBytes, 0, result, 0, activationIdBytes.length);
+        	System.arraycopy(C_serverPublicKey, 0, result, activationIdBytes.length, C_serverPublicKey.length);
+			return signatureUtils.validateECDSASignature(result, signature, masterPublicKey);
 		} catch (SignatureException ex) {
 			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -231,7 +238,7 @@ public class PowerAuthClientActivation {
 
 			// Decrypt the status blob
 			AESEncryptionUtils aes = new AESEncryptionUtils();
-			byte[] zeroIv = new byte[32];
+			byte[] zeroIv = new byte[16];
 			byte[] statusBlob = aes.decrypt(cStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
 
 			// Prepare objects to read status info into
@@ -252,7 +259,7 @@ public class PowerAuthClientActivation {
 			statusInfo.setFailedAttempts(buffer.get(13));
 			
 			// fetch the max allowed failed attempt count
-			statusInfo.setFailedAttempts(buffer.get(14));
+			statusInfo.setMaxFailedAttempts(buffer.get(14));
 
 			return statusInfo;
 		} catch (IllegalBlockSizeException | BadPaddingException ex) {
