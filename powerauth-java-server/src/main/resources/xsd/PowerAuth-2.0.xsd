@@ -4,6 +4,139 @@
            xmlns:tns="http://getlime.io/security/powerauth"
            targetNamespace="http://getlime.io/security/powerauth"
            elementFormDefault="qualified">
+           
+    <!-- List applications //-->
+    
+    <xs:element name="GetApplicationListRequest">
+    	<xs:complexType>
+    		<xs:sequence></xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetApplicationListResponse">
+        <xs:complexType>
+        	<xs:sequence>
+            	<xs:element name="applications" minOccurs="0" maxOccurs="unbounded">
+            		<xs:complexType>
+        	        	<xs:sequence>
+    	       				<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
+	            			<xs:element name="applicationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+           				</xs:sequence>
+        			</xs:complexType>
+        		</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Get application details //-->
+    
+    <xs:element name="GetApplicationDetailRequest">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetApplicationDetailResponse">
+        <xs:complexType>
+        	<xs:sequence>
+        		<xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+        		<xs:element name="applicationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+        		<xs:element name="versions" minOccurs="0" maxOccurs="unbounded">
+                	<xs:complexType>
+                	    <xs:sequence>
+            	            <xs:element name="applicationVersionId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+                       		<xs:element name="applicationVersionName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    	                   	<xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	               			<xs:element name="applicationSecret" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="supported" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+                       	</xs:sequence>
+                   	</xs:complexType>
+               	</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Create application //-->
+    
+    <xs:element name="CreateApplicationRequest">
+    	<xs:complexType>
+            <xs:sequence>
+                <xs:element name="applicationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="CreateApplicationResponse">
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            	<xs:element name="applicationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Create application version //-->
+    
+    <xs:element name="CreateApplicationVersionRequest">
+    	<xs:complexType>
+            <xs:sequence>
+                <xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationVersionName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="CreateApplicationVersionResponse">
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element name="applicationVersionId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            	<xs:element name="applicationVersionName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            	<xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            	<xs:element name="applicationSecret" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            	<xs:element name="supported" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Unsupport application version //-->
+    
+    <xs:element name="UnsupportApplicationVersionRequest">
+    	<xs:complexType>
+            <xs:sequence>
+                <xs:element name="applicationVersionId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="UnsupportApplicationVersionResponse">
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element name="applicationVersionId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            	<xs:element name="supported" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Support application version //-->
+    
+    <xs:element name="SupportApplicationVersionRequest">
+    	<xs:complexType>
+            <xs:sequence>
+                <xs:element name="applicationVersionId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="SupportApplicationVersionResponse">
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element name="applicationVersionId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            	<xs:element name="supported" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
     
     <!-- Init activation //-->
     
@@ -11,7 +144,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="timestampActivationExpire" type="xs:date" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="timestampActivationExpire" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="maxFailureCount" type="xs:long" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
@@ -25,6 +159,7 @@
                 <xs:element name="activationOTP" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="activationSignature" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -39,6 +174,8 @@
                 <xs:element name="extras" type="xs:string" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="activationNonce" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="encryptedDevicePublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationSignature" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -91,8 +228,9 @@
                 <xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="activationName" type="xs:string" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="extras" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="timestampCreated" type="xs:date" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="timestampLastUsed" type="xs:date" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="timestampCreated" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="timestampLastUsed" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="encryptedStatusBlob" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
@@ -123,6 +261,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationId" type="xs:long" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -138,9 +277,10 @@
                             <xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="1" maxOccurs="1"/>
                             <xs:element name="activationName" type="xs:string" minOccurs="0" maxOccurs="1"/>
                 			<xs:element name="extras" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                			<xs:element name="timestampCreated" type="xs:date" minOccurs="1" maxOccurs="1"/>
-                			<xs:element name="timestampLastUsed" type="xs:date" minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="timestampCreated" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="timestampLastUsed" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
                 			<xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
@@ -154,6 +294,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="data" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="signature" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="signatureType" type="xs:string" minOccurs="1" maxOccurs="1"/>
@@ -217,6 +358,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="data" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="signature" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="signatureType" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
@@ -242,8 +385,9 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="timestampFrom" type="xs:date" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="timestampTo" type="xs:date" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationId" type="xs:long" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="timestampFrom" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="timestampTo" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -256,6 +400,7 @@
             			<xs:sequence>
             				<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
             				<xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            				<xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
                 			<xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 			<xs:element name="activationCounter" type="xs:long" minOccurs="1" maxOccurs="1"/>
                 			<xs:element name="activationStatus" type="tns:ActivationStatus" minOccurs="0" maxOccurs="1"/>
@@ -264,7 +409,7 @@
                 			<xs:element name="signature" type="xs:string"  minOccurs="1" maxOccurs="1"/>
                 			<xs:element name="note" type="xs:string"  minOccurs="1" maxOccurs="1"/>
                 			<xs:element name="valid" type="xs:boolean"  minOccurs="1" maxOccurs="1"/>
-                			<xs:element name="timestampCreated" type="xs:date"  minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="timestampCreated" type="xs:dateTime"  minOccurs="1" maxOccurs="1"/>
             			</xs:sequence>
         			</xs:complexType>
         		</xs:element>
