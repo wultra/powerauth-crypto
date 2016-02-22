@@ -89,7 +89,7 @@ Command-line version of a reference PowerAuth 2.0 Client uses two files:
 
 ### Prepare activation
 
-Use the `prepare` method to activate a PowerAuth 2.0 Reference client by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/create` hosted on root URL `http://localhost:8080/powerauth-restful-server` with activation code `F3CCT-FNOUS-GEVJF-O3HMV`. Read and store the client status from the `/tmp/pa_status.json` file. Use master public key stored in the `/tmp/pamk.json` file. Store the knowledge related derived key using a given password `1234`.
+Use the `prepare` method to activate a PowerAuth 2.0 Reference client by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/create` hosted on root URL `http://localhost:8080/powerauth-restful-server` with activation code `F3CCT-FNOUS-GEVJF-O3HMV`. Read and store the client status from the `/tmp/pa_status.json` file. Use master public key and application identifiers stored in the `/tmp/pamk.json` file. Store the knowledge related derived key using a given password `1234`.
 
 _Note: If a `--password` option is not provided, this method requires interactive console input of the password, in order to encrypt the knowledge related signature key._
 
@@ -99,7 +99,7 @@ java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-
 
 ### Get activation status
 
-Use the `status` method to get the activation status for the activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/status` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key stored in the `/tmp/pamk.json` file.
+Use the `status` method to get the activation status for the activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/status` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key and application identifiers stored in the `/tmp/pamk.json` file.
 
 ```bash
 java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.json" --method "status"
@@ -107,7 +107,7 @@ java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-
 
 ### Remove the activation
 
-Use the `remove` method to remove activation with an activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/remove` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key stored in the `/tmp/pamk.json` file. Unlock the knowledge related derived key using `1234` as a password.
+Use the `remove` method to remove activation with an activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/activation/remove` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key and application identifiers stored in the `/tmp/pamk.json` file. Unlock the knowledge related derived key using `1234` as a password.
 
 _Note: If a `--password` option is not provided, this method requires interactive console input of the password, in order to unlock the knowledge related signature key._
 
@@ -117,10 +117,20 @@ java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-
 
 ### Validate the signature
 
-Use the `sign` method to verify a signature for given data using activation record associated with an activation ID stored in the status file `/tmp/pa_status.json`. Call an authenticated endpoint `http://localhost:8080/powerauth-restful-server/pa/signature/validate` that is identified by an identifier `/pa/signature/validate` (the same as the endpoint name after the main context). Use master public key stored in the `/tmp/pamk.json` file. Use HTTP method `POST`, use `possession_knowledge` signature type and take the request data from a file `/tmp/request.json`. Unlock the knowledge related derived key using `1234` as a password.
+Use the `sign` method to verify a signature for given data using activation record associated with an activation ID stored in the status file `/tmp/pa_status.json`. Call an authenticated endpoint `http://localhost:8080/powerauth-restful-server/pa/signature/validate` that is identified by an identifier `/pa/signature/validate` (the same as the endpoint name after the main context). Use master public key and application identifiers stored in the `/tmp/pamk.json` file. Use HTTP method `POST`, use `possession_knowledge` signature type and take the request data from a file `/tmp/request.json`. Unlock the knowledge related derived key using `1234` as a password.
 
 _Note: If a `--password` option is not provided, this method requires interactive console input of the password, in order to unlock the knowledge related signature key._
 
 ```bash
 java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server/pa/signature/validate" --status-file "/Users/petrdvorak/pa_status.json" --config-file "/Users/petrdvorak/pamk.json" --method "sign" --http-method "POST"  --endpoint "/pa/signature/validate" --signature-type "possession_knowledge" --data-file "/tmp/request.json"
+```
+
+### Unlock the secure vault
+
+Use the `unlock` method to unlock the secure vault for an activation with activation ID stored in the status file `/tmp/pa_status.json`, by calling the PowerAuth 2.0 Standard RESTful API endpoint `/pa/vault/unlock` hosted on root URL `http://localhost:8080/powerauth-restful-server`. Use master public key and application identifiers stored in the `/tmp/pamk.json` file. Unlock the knowledge related derived key using `1234` as a password.
+
+_Note: If a `--password` option is not provided, this method requires interactive console input of the password, in order to unlock the knowledge related signature key._
+
+```bash
+java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.json" --method "unlock" --signature-type "possession_knowledge" --password "1234"
 ```
