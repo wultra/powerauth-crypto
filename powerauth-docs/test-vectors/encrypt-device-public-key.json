@@ -1,164 +1,225 @@
 {
 	"description": "For \"/pa/activation/prepare\", client needs to be able to encrypt the public key using activation OTP, activation short ID and activation nonce. (activationIdShort, activationOtp, activationNonce, publicDeviceKey) => cPublicDeviceKey",
-	"data": [{
-		"input": {
-			"activationIdShort": "3XL5F-3W6EZ",
-			"activationOtp": "A2DGJ-KHYKG",
-			"activationNonce": "48bJ9w/rqJdKIevIxV7MZg==",
-			"publicKeyBytes": "BGKAkQZAiovWVM2MFRYDxCWJGq/lqFSZZkyir6pr1DqOxEasLjtpczfsMxUVp3H4q56y3xh9wTmTYhBw93SAEAw="
+	"data": [
+		{
+			"input": {
+				"activationIdShort": "OYBED-MG3VI",
+				"activationOtp": "JTQEI-TPLMV",
+				"activationNonce": "l/mWD+5IJwcstrDBBf5uew==",
+				"devicePublicKey": "BP3hP/73nYpQQpdvT/lrpW0+s4cBZCj/Cj3l5gm25gPPOx9/ElTWSydaAilEQSzyBpBdPN9WAz6JEFj42MaKR+c="
+			},
+			"output": {
+				"cDevicePublicKey": "I/8OpPaKCJcVh1PYHY9wnOvVXejLVNb9dXWpLwilvmvn1tTt08imef0wGW2WRL4AImh5E4LftVBDxSRxEylnVZeW6idJcFITZS53R7qDLIE="
+			}
 		},
-		"output": "UgulRKe7Ae9v7FvYFX93xFIYm/ypq+Iv0+OPeAz8K1NGihikB23FCSzqfwy1Omt1M38vGTgI+vVfjpEPBapWI87AQvN3+BEyKlx1IdWDmwo="
-	}, {
-		"input": {
-			"activationIdShort": "UWSDK-BSPX7",
-			"activationOtp": "2LFI7-4IU7F",
-			"activationNonce": "yqJgz6l30LLV8zQDC4t45Q==",
-			"publicKeyBytes": "BDeI6qbQV+OwxUx2DR4r9QwC890+4T1dcd4QzgiREqMaON6FscdrmBWFIhIxulqUyk6QdlmWEyLdmMwA8aGiAa4="
+		{
+			"input": {
+				"activationIdShort": "Y5ZDD-3BQQM",
+				"activationOtp": "ZNDEO-YRXEP",
+				"activationNonce": "EruqIADuVz0AWMH/h77pIA==",
+				"devicePublicKey": "BL6CkhPbqNJxrGf3YY5rc5emFDQ+QpoP+SAA+gJ0zXqq4wFrY1jX2rumvzog+ZSo32VOkrv11V1YnAacZ7IOSZs="
+			},
+			"output": {
+				"cDevicePublicKey": "SYEjP0fOnNL2tEx70aEHMFiT6JLJCIo+QCmWfrKC+viGSl/EwTDWghCuFeH9OY7SM/V0nVop18a1+1aXVT1w0l8YMGAqbIxKpqLPsqlDj4k="
+			}
 		},
-		"output": "qaaquM4IYUA7ufEBhZQr16kxzoxT8D+7uK5qcXyPUNbS75Sos9DYS0ZdllvNDgvQFR3HzckWnY2tM2lxS9H7iHtf9wCbC9BhzN9O8gmY8fI="
-	}, {
-		"input": {
-			"activationIdShort": "MRD75-AP273",
-			"activationOtp": "DIT57-2LCAY",
-			"activationNonce": "ua0ssG8lXyxaOCO3GRrsYQ==",
-			"publicKeyBytes": "BKtC3IDr/Xb/DJceKVkQToOSqH1TfpwDGhRC9e8zmdZzr/5v2yaTWQb5xtVCMzUi2gX78SaDnRSnELsJ41sxaPI="
+		{
+			"input": {
+				"activationIdShort": "AEDRJ-E2XZH",
+				"activationOtp": "2REOI-ZKOSC",
+				"activationNonce": "P6z+v54oDY+DxY+Hvae65w==",
+				"devicePublicKey": "BFaiy3cN+9c1e7fee8fwNDGm+UowRGI71HYmcoDcAyGvdWMiP2N9eRZDtItz11zx3dPY7egJmw2fGrHqkAjUnP4="
+			},
+			"output": {
+				"cDevicePublicKey": "um3G+KTHP3WOk0NrVEbNwOM2vzlkioJ9M1MrchPHhupV86ycmv5uT2DcZrc4fKFtr89RvmtzUgUMjUlXLMBtIHhd9kNbnaSijRPNO95wsbo="
+			}
 		},
-		"output": "uR3AdP33UbomAzx+6gCrheX7xahELYJehXd06hdaV+mdfRfAJ8cIv3ZhOkoEsa9OvTQxcdEUQ17u+Ey2g1a8hhepW0EGqCKRcKzsrgKihK8="
-	}, {
-		"input": {
-			"activationIdShort": "H3ULW-JCXU7",
-			"activationOtp": "SVFCX-M7IWR",
-			"activationNonce": "vDs4uMYQnuhlUQySqfdL2Q==",
-			"publicKeyBytes": "BJCdjU7CkAqeV9uc45v2eiWVPN4NmfkkcDmZ+N9XUkB9o0WZrL725HUBhoKxu/pfzKhLsGumiFC3L8tfCXTKFfk="
+		{
+			"input": {
+				"activationIdShort": "4HUGU-KX23E",
+				"activationOtp": "QAOQP-VUVWO",
+				"activationNonce": "fV8h7JMupqPMsO5b30ipIw==",
+				"devicePublicKey": "BLRfZMuMODec5+F2CIF3PZVKjPqQ9EkJWs8n3LMBXLd2ueoK8FvUODjJ+n75B27ny3jPsanbIQxUpmV1i4wKNKE="
+			},
+			"output": {
+				"cDevicePublicKey": "HqrH9QspP+CjNjYRxE7RR+bF7hoKMJ1OOP8gFIB+k98S1eccOF7cFZK5RiTXzEkA6OrhlYB544Lk0A5KidkXfV2VPRwR/ZuwGgXL/8EQTns="
+			}
 		},
-		"output": "mwdwQ08MIhx80eq0QuB/oGcVtU5xx48ULVIR+P4UX4GiiKD+c5Xfo/nWteKpvbSE31ocEMRYIMNl7klZTz+5pavYjS9W1dIBwU2ggPBdB/M="
-	}, {
-		"input": {
-			"activationIdShort": "33Z34-JJ2TT",
-			"activationOtp": "JLELP-FYK3U",
-			"activationNonce": "K+MiNZ+TJF6IPUj0+JOu/g==",
-			"publicKeyBytes": "BNWEyC97e3BoTNvMVkU+lWMbrMN5KHoFJuLl7FLc6WLn2AMI2birUQGzw3KMBvN+eFD3c4JDuNDXntHDiiL8xbY="
+		{
+			"input": {
+				"activationIdShort": "YQO5N-6BXNJ",
+				"activationOtp": "EDQ73-DX5ZZ",
+				"activationNonce": "iBy529Um768k0iaUDcDiNg==",
+				"devicePublicKey": "BDVpo21H/O/M7skyVdyGZHV4kLZ6sHlLSlqLDvbzFZilXcgO6En6EC+EuNrPqTvl09lEgNWou9eKtRd6r750Snc="
+			},
+			"output": {
+				"cDevicePublicKey": "f3TqaDKogXpVp+v7O+AsTNzUluyc5yoLtlGXiFxrybrNzbsomPK4UVJmt6Rt8PcPX+4s92y2AEgn31ZTnY9Ci4soi6dpMdO32IzPpXyJYeU="
+			}
 		},
-		"output": "LB9roMHZVpZ/APee/eJwW7oxOwzrT2cnJ2Y5d6WwahBZLVW0Aoa2mgGw64IuyI3K/E3iV2IYBG4c0FiM5ftxdzhqveBK+3l6YdZ9Ij51LH4="
-	}, {
-		"input": {
-			"activationIdShort": "YE3ZQ-CFTEG",
-			"activationOtp": "QZXBU-7UN2L",
-			"activationNonce": "fUOZhyJCs+URVOSpTt/xjg==",
-			"publicKeyBytes": "BHK9cjcDeWOthaSf2/O056YluLNnWYQiTsRVBquCzPNI5tNbaA357l3nS+ATAaV0mr83TSQSB2NOrWaA9S3AJLs="
+		{
+			"input": {
+				"activationIdShort": "B2VQT-RKUFF",
+				"activationOtp": "GGIW4-XJIG5",
+				"activationNonce": "c3rdlr8bKMHE+3sVUOroxA==",
+				"devicePublicKey": "BOW1aDTwwfbmm7E85CFql22dGgM+w1yQxuNwDvCwodrIgOdX7NNPGFKxMI8oK5VGwzKLP1ViuBKuabv9C3W9Ktg="
+			},
+			"output": {
+				"cDevicePublicKey": "CfYbPEZ4LgFUEeF0CtNCp+8cRJI4CzaBMd1rtu6k9Cg+Wd3GswSKk58OKPsaexERPTj1uxVDk2uysp9HQl+0gXP89amG0xZV1b6XOhc0GLo="
+			}
 		},
-		"output": "2QWovycxZ8Qx1XNcmncCyh0rbWmaiv+zrgABR0y7ZuOhfRCTSR/XjJzJCUCk4jnx+E8rpzEkzYFItbvN/T9QfO/iRi3UkzAGeraw3U8WBE4="
-	}, {
-		"input": {
-			"activationIdShort": "L6XX4-VWJXO",
-			"activationOtp": "FMMLL-4XZR5",
-			"activationNonce": "0eZRaNVdwmcUAuLqC950rg==",
-			"publicKeyBytes": "BGirChqqhtVWY5BEPKTBzghW6Lh3+nGhYOFd/jui7NyYO5SyUxtGbbAeL4udsHPInDl15IKXISVAn02MySMaSTA="
+		{
+			"input": {
+				"activationIdShort": "XDJ4U-MYHYO",
+				"activationOtp": "VQR7J-4NQOW",
+				"activationNonce": "x9+nd4fzR+43r2lr192guA==",
+				"devicePublicKey": "BPdMdRmmAEgUphqLfcbxrpHRE0Fv5ZCidbdZMDF4n0AbnpmrdJCtaklCFCJQlcJF92DQFPIemxWODGvTHXRwSUk="
+			},
+			"output": {
+				"cDevicePublicKey": "8tELB4cem9hAc+GMQk09fvC3NkBKcN0hYHH1arKiC/cpCwYjkeyCf4y8i8wCWIHtUb/stiRvks1INo+WMU+HyuQo9zSJ7dcjPKKHpdCEbig="
+			}
 		},
-		"output": "QrMgEJWXy00PmvK3OJlUs+2PQrvs1zDqDijlf54hoah+tc5BW3TAd5drU/MqfKky4NKj7PSEUh1iBJM7vhFoPpmd62QtDhZmYaDThuooeEU="
-	}, {
-		"input": {
-			"activationIdShort": "SCIQK-NIKGF",
-			"activationOtp": "FO2LM-V3LUA",
-			"activationNonce": "LfqAzBxy0tyQ2QEWkY0QnA==",
-			"publicKeyBytes": "BGqNoukT3HTanBKzSSLrGADu5ARaOH6J6BDZOakH0VMZvWHc4JJwdff3o2DuarvaJC69QACRblX3GLoWmrxk8/4="
+		{
+			"input": {
+				"activationIdShort": "YG5AK-VGH4X",
+				"activationOtp": "QJIQK-6FYC6",
+				"activationNonce": "NqqsqFlzCHd3uEzpxsMQcw==",
+				"devicePublicKey": "BJrJoCNJARwx43B5OfRnuffg+08b/qmV9HhvTHPdqDSiPLIcVM4Zjco6PYJGqaAdab7XSFDyAAJUmpXatsyMoQM="
+			},
+			"output": {
+				"cDevicePublicKey": "kR5oP0KgPq9EzKOLJetjSA9uIvnoKy5VGsfc69HvQ9G0+7FBZMqvL2XTdsj4owcTxvxPazkH9yJmiKZmnHb2jrqX6TWXn6KPk4UwlmnmpwA="
+			}
 		},
-		"output": "QK0RupHJq4iq9vC5MmO5o/URdq4CI0vD2Hj5FlYLVh+G2gHmR2+q4AyYJG+Jm8SEhe4ge7DmAQalaklBFIOn/2bY+U/EvoZANEeGX80+qPw="
-	}, {
-		"input": {
-			"activationIdShort": "Z7QB7-LK4MG",
-			"activationOtp": "27FJJ-2OB5I",
-			"activationNonce": "sSBkkHKrr3O4orDfF1hEIw==",
-			"publicKeyBytes": "BP25hOIVnITzvDpdyIidG7+6VIhOXd/JdbCMZJ38+C67zQmCNJaSywMSidx5nPXTA0Offh7uXlqWIB2soNcbacI="
+		{
+			"input": {
+				"activationIdShort": "GJNEL-EQOHZ",
+				"activationOtp": "WQA7T-ZNRWQ",
+				"activationNonce": "Bd2aFWjRgeYeO1P83G92lw==",
+				"devicePublicKey": "BCZYe3Af/fFZMvUNkiKJTGr3MgbembFMQwG9rg0CLrTdc2cAdMViVcCI3uvofCc/8avsvPUINKfREUbiuJ2NmKM="
+			},
+			"output": {
+				"cDevicePublicKey": "Ey1TqkhlYVGm7lhLmM4W/1tgHIiLSmzjj+PjDphXz0v0NGUVmvaEcYE17T2GF6D1cOnfq3fb1BexG9KTekaXPhN6bjtqszvk0lRvyAYnIUM="
+			}
 		},
-		"output": "Jk8d0VM6PjnIAhObw6xInrchksAX5x7wTebpCLPnBZ1bskU1TnC4Ixm4jFO+Jw+AYF5U/0DF9rMqZJeISGWCxsHxh5pYsr+0TJXzvhgZUp4="
-	}, {
-		"input": {
-			"activationIdShort": "GIKRW-HSZWX",
-			"activationOtp": "5PLDV-BFDKZ",
-			"activationNonce": "2Gmx9EwsyyzoWNUTjQJOoA==",
-			"publicKeyBytes": "BAIG5ZM4CAqyqn1EGS8A/sBBVxh7798zx5/EAtQl8qOuoqNbZa2yyc5nk6jpJNPQzybOBg5LyfsoxE04jr+c6nI="
+		{
+			"input": {
+				"activationIdShort": "QNEO7-LK3HX",
+				"activationOtp": "LLXNV-VD6HJ",
+				"activationNonce": "W3ULKqybyy6j91u+y1JEZg==",
+				"devicePublicKey": "BD2KWDyrWjLsiM+V0GxNmJOX+uNWUoxrMRd9bu7RCqpgn+CK/OWsbtzzJ7F0ejqYRBXf+fTykptjSKMtNHC8w84="
+			},
+			"output": {
+				"cDevicePublicKey": "9YMEAo2ULMAjIvOz/Wt+/shg9ZciVDn6smCUVfPjR8wsOtr5RDcyBulHf6pJVyRnAuExmV7Te0HNd4pYkfEB1mq0g/Tn1SyVk90mescedZo="
+			}
 		},
-		"output": "UcoNn01MHRYGS6Mf30CgVz5SyCWRHbrtHy443cpGpTOiEJZYjWV4ynrZat5VymbYJ0enG1vIG2WxIUP4+JGoKocy0SlgrX6ay52uhEmhhdI="
-	}, {
-		"input": {
-			"activationIdShort": "P26MF-QGJIM",
-			"activationOtp": "J4EIS-T3G54",
-			"activationNonce": "iseFvbSCAsbnRF4j87PwyA==",
-			"publicKeyBytes": "BHcHkPyCCIDznB8rfKXNCoS+fwZoC6d9zHv50q+MrfQw2a0gzK4tLjinPNZcsC81dLRXrlI5Gn1BI36VYZy4nX0="
+		{
+			"input": {
+				"activationIdShort": "YTFHC-UX455",
+				"activationOtp": "NAZKM-JA3YI",
+				"activationNonce": "a9VPGiqZBKHWPsY0UHJyyg==",
+				"devicePublicKey": "BPU9VpBTMcWda8pJQHMfuRbmtazpg70O5ZCnuGEpu3Xw3Fk3NFjSocwvV2O8kNrxgiIgRJ0fqfXqgCz/gyM081k="
+			},
+			"output": {
+				"cDevicePublicKey": "mNtcGS+zQxolxvXmBufCaUBquwpgYnRalR2PMm27zLId/ubAPrx1BAdyRHdI4kk21UC7CgrQA10MIKg7+DKPANLEchJKEe70MCINMEl7DaA="
+			}
 		},
-		"output": "qW9LdrnIQHwdwyLAU3ZexI3aL7P13wSUEe1FJnfnDpb5i0F4a+vXgL8dCIIJKATiPPC2AgxougkwjMBCc0bsnip+g2Qw82OAsBRaB4914z0="
-	}, {
-		"input": {
-			"activationIdShort": "JSJTS-L5CSR",
-			"activationOtp": "HO2TK-367NY",
-			"activationNonce": "E5Z5epVXzpk4QWYJVrSluA==",
-			"publicKeyBytes": "BN4D5YZxDosmXhxLNs+sMDimf+aXkswExzLEjXVlSb5zuubpgO+GrHkH17xcmmfBDfnJ5YEOQnETLJEHboeTpWM="
+		{
+			"input": {
+				"activationIdShort": "Q3IYU-PAOXA",
+				"activationOtp": "SE563-SIOWA",
+				"activationNonce": "e25D1IHZcsd6VEZ9CIodWw==",
+				"devicePublicKey": "BOVWEm9T4aUbNKt1Ko7ImiTUvl5e4OuT1Qlw8gcceRmDO7J5abJzqvrYmfGv8BzwcmwiP8vpBnhywIWFmU+aBc0="
+			},
+			"output": {
+				"cDevicePublicKey": "8CI6OK+458HJmI27OlBYw/UFJs+zoxqKK27kp0FZs59lwIYMxyoQcU3WraFJITEnIfc5I8ZzRe44FPY9bXQKctrnDCyegBBzZJfOJkb33c0="
+			}
 		},
-		"output": "y3M8vhLJ9vPaPGNv5y+AR1vwSpoDwcBG7XPftqjIUK/iVFjlKzLWIq1MMUmsUfvWYjDA9EbXg8x9dlwj56qy6sIM0XfVlEkjcHZ7yk1tfoM="
-	}, {
-		"input": {
-			"activationIdShort": "3CJDW-FAVGT",
-			"activationOtp": "Y6FJ3-5QO5B",
-			"activationNonce": "PmkAO3rp3kG58L2kFZseUQ==",
-			"publicKeyBytes": "BCYWNv5hOYwiiP0Lz8YfCYa/NRzybUL4Am9fxNGZ/ciBhOJewwt8JOel37pE9IJZ1IKlBhwUAX1TXKNQ23zXU2I="
+		{
+			"input": {
+				"activationIdShort": "G6PXU-7R3VO",
+				"activationOtp": "DJEP5-ESMOR",
+				"activationNonce": "TFYq8ESoSuxTP8otKcbxGg==",
+				"devicePublicKey": "BLdQeDmkADzpc2+wWX9bYvbzD0CDIyCKmFd7Zu3oKXv3sKNL3UN6LoYeQcEDAO8QSlZ8Omfjxm6IO5CWBnoSubs="
+			},
+			"output": {
+				"cDevicePublicKey": "C3jHz7H9kuiKTgrg3PauojnWZdj4iCp5k4hVsENJYr6AgDgzXbylOMBjIE+ZWlWSjFzC93iQmbnM6Au7yg+PYAP/3WbuXW6TrZ4KXWFI/dI="
+			}
 		},
-		"output": "5wqfwfV2EHQ9yzIFz3KSxVM/J12QAvYp5pRgZ/sKcAQIwP84FWANT8kPp+c7wOlxKtXit8zwagptFClZo5Xyx0uT0Qlx9NY/mBt7n8Ljp5U="
-	}, {
-		"input": {
-			"activationIdShort": "GM7XG-RZOMP",
-			"activationOtp": "4EHT2-MOOIC",
-			"activationNonce": "y8vbs0a52T3v92qpkIUbVQ==",
-			"publicKeyBytes": "BNBsnNY+8UbN9Ow+Z47rFLL2BOcb5YQ81rBKMtZa7+Xkv8IjsFfNrEDYa70l2yrH1s+RMSTB+YyS8B/t9WCC1Mo="
+		{
+			"input": {
+				"activationIdShort": "KL7VH-FBYXH",
+				"activationOtp": "4PUTC-4EQP3",
+				"activationNonce": "Jv9tSbIWZZz/mzJW9gZvPw==",
+				"devicePublicKey": "BEOyjGWm/7PpKzscGC3lFcWssN9ji6ab6sGK9k7NMONkjhQ8wfOcwO6Gt5vR9Bts5cQ8Zo3ePPSjQtKlMU5jS60="
+			},
+			"output": {
+				"cDevicePublicKey": "TKBxfRb0o5Q+B29vdZ1wVRn4XBOFoMXBDYFrLkxFVSMvuudfxcGa8BFrva6lxhfQtXBEIp5EwbViyf8EiWhm0SD6c9YRpfR9L+03GFFnk1w="
+			}
 		},
-		"output": "cgthqVT73ARrDqcCiw5TtV4V9wl3GLIqMMtI0Po3jTK0amh7krmRo3bYu5w3R7uxNSxIesFP6nQxD8OurXv3+RbIwhBov4UrI6aNZZrp8ZU="
-	}, {
-		"input": {
-			"activationIdShort": "IFKSW-FVDC6",
-			"activationOtp": "FXHFI-K7KVG",
-			"activationNonce": "4Yik+oWtfBq+3PGph3wR0A==",
-			"publicKeyBytes": "BBuDxSRH1RjT27dUwDjRTFGtTOAJN4azfwA5henkVmhK5otd6NCg5dSWBZXQaxzZwrPDJ9ntHyMTtDkm4nHIFBQ="
+		{
+			"input": {
+				"activationIdShort": "M3UAT-6RNTU",
+				"activationOtp": "Q7GXO-T4TZC",
+				"activationNonce": "GAkmbVQf7p1/Pu6thVPIug==",
+				"devicePublicKey": "BOxF8aB9O+Xhr2LMx2KxzvI+k1VW7xNl1ZnmcuuQaK+TH6fLIkqGszkfA16L+FS3gp8FqmRjQaTQk3Isp3CZmKA="
+			},
+			"output": {
+				"cDevicePublicKey": "YG7rlCrR9ES4nB8vG4sqc9KE1aH4zB5wPKUf+Cj9s2u54O8BIDtMd9p31swjfrr0zG4Dte3PxSjvmcZijS3fOjpw+1BonvfV1rprMYuY3ag="
+			}
 		},
-		"output": "fVZD6ZNEO4Hw6lgK2ZK42MKrVfm2Jd6O4zK9ha5qYdIrVQVIv2BKCJwypGzE4E8tWd3mZKeEUd2ZTAJ2FWtlv7WU2j0MM783ctg9iGiznFk="
-	}, {
-		"input": {
-			"activationIdShort": "4WUNE-CTYNI",
-			"activationOtp": "7KDP6-BA2IG",
-			"activationNonce": "+wJYxxKp/dnmTP2N4E0xxA==",
-			"publicKeyBytes": "BAArfjWaiSG2/UGf7E387nArcEsyEdxFZJ+Rhafs56j7o53KalSW4h6DachqiZWXNedn7Lg2nsOCE6DjXAzPhEA="
+		{
+			"input": {
+				"activationIdShort": "3DPON-VAMJZ",
+				"activationOtp": "J622K-ALC5N",
+				"activationNonce": "9ycakKwv39xrPf1lY/rXdg==",
+				"devicePublicKey": "BE7je7Kh+kamtxhQTGi4oA23KwtZUKPW6nc35r8hr/cFgJs8bKaA4c0Qp2v/DhEZ2+OcOCrtZxFGu936MqDlR1g="
+			},
+			"output": {
+				"cDevicePublicKey": "BuQzXnmh9ZY6E/gk8m9GiMhMP0XeZOKVs84vsgOrGmumNXUI/hsA78chr9JCqLU3nkiwTYfjlShKVzjfTKNLGBszJkQVaPD2Xmb44QCl+3s="
+			}
 		},
-		"output": "VnZPXMjogXPoUzge2r2/lFs4Cmzr+E8fZlh5VQ6x1+bJjcFsHCg8+unPHVDkP0+MDKcbRGJyFLJHNqAhGKtbxmKDVRI55E25F+R+5NqCJPE="
-	}, {
-		"input": {
-			"activationIdShort": "YP7BI-GTDBS",
-			"activationOtp": "WWXPB-2EHSV",
-			"activationNonce": "fUOXVT0DA9QJFNM/p89lcQ==",
-			"publicKeyBytes": "BByirKWt4VLDrsxMuPFn/qcfXzzVqd4YkOlda3epfmGN9AF3/kpG9eTTNghk5xIJwEUMn1gI+VoSz0PxFi0hRM0="
+		{
+			"input": {
+				"activationIdShort": "2KYJG-7WJMD",
+				"activationOtp": "K5G2R-TXR45",
+				"activationNonce": "bOZWddGxeD4mFck7vq5V0g==",
+				"devicePublicKey": "BLQxKuRVbKkDrrAoyVGEI3hxdZ6EXtvAfRtthza7tmssm1luNayuTOqH2ouwchX3HGL4Og5GHiJ4bMocZYtmh1M="
+			},
+			"output": {
+				"cDevicePublicKey": "PN4wKMzswn5m+VmFD/kXXGpBxBQUdpQj1WssmnEKT/ihnjPmyYSQy7tSfy7gPctCHIKatTalOqZijerhbi8PJImxcG7Rv8dElSVpej7y4o8="
+			}
 		},
-		"output": "Zrbr2eEDyp77682xQ8HNlywIkHceyUrOLQsfjZ4kmH8DLgQgvrHWpTA5NYV3gT9dM3MdYbLl0k/T3nkrS381L+BQUNB0jLMJOuzD1UBkJOA="
-	}, {
-		"input": {
-			"activationIdShort": "OAUO5-W2AQ6",
-			"activationOtp": "XW56J-LAO33",
-			"activationNonce": "sj2LjFZrFAMavLs/fheAeA==",
-			"publicKeyBytes": "BDGYIWR4jI1dzSMJym4kLDGhl3g70EVK42YzKOFbEdeSu3dB7TXH4IWFzEIlQtLXpKaunK3INPT/4Z/vp99LcNs="
+		{
+			"input": {
+				"activationIdShort": "H6SXW-QAXOY",
+				"activationOtp": "ZZCVB-DHHAI",
+				"activationNonce": "lwXq6SeWOf2rbacQxdHZsQ==",
+				"devicePublicKey": "BOH+bOCTJuBS5C2Ct9O7ozbHjyme+UgZXMOL3tKBGbquLtJiswSz0ovn9cf33mNSkSSQjIaCOWRzqjBiW2o/Ykk="
+			},
+			"output": {
+				"cDevicePublicKey": "9Yv2W8N3o1Nt656qVfg/D3JPjPDRRKO57TsD297qDzuQTHx5/hgiyUIbfxyquSIPMBQqFa3rNQAFF0xk8p0vI0WHz17k3Jy0GtLjcZGnM9w="
+			}
 		},
-		"output": "gmeXliZq9aZSQHFEeWNrrYWdUIr8xq/LeFhbM1anCm8DdcwPkuzDxe2bsOIQQxpsRzyv+j6BtlrVZHfJnJMZhYQhi2q0Ee9wHen7elOoEHA="
-	}, {
-		"input": {
-			"activationIdShort": "DKDQC-3ZL43",
-			"activationOtp": "RCTU7-LIFRY",
-			"activationNonce": "GjkLI+L3iPdMCML1ZTKxFg==",
-			"publicKeyBytes": "BKsiyQ78TJugt7rt+gGZKLOCoD+0GO4+N872p5w+44DefWDwuGque4G+o/TTADISEtWF45VNuZMVwJkHq4CpRgw="
+		{
+			"input": {
+				"activationIdShort": "YLMQF-TVBF5",
+				"activationOtp": "EY2JE-WDL6X",
+				"activationNonce": "DtZfRhNA7JcnIGk5uupY5w==",
+				"devicePublicKey": "BO15yozcDEleQ2emYsUYA+teqPvyttKXzKOkTjiSeJZaui+GDfGJU3BTd0RfejVlfJIcXwPNEFUts41vfUvcv6U="
+			},
+			"output": {
+				"cDevicePublicKey": "+xysRFnybpn+YdoCp8K5AFRyKvPgPsXF8O/gaYFCDAYZuss2reOnhUw60FaNUi7KkViKdPGYG9tN7guM1GS+/JbYl4Dc5470Jxc5UzDxRx0="
+			}
 		},
-		"output": "XityjI2akPRCwZu7lqQ9t844dBMBo0W6841W9S2XFw45EBbtEQCHYo2wtWzFHBvbtuCSv7fO7tKHSwdpk2X85hVpo7hMv8JsOcTNJWUwwBg="
-	}, {
-		"input": {
-			"activationIdShort": "IXHDL-IHCVI",
-			"activationOtp": "AGDZK-JKFCH",
-			"activationNonce": "Qw7M/Y/MMG7TT6IJ7yAX0g==",
-			"publicKeyBytes": "BHpV5yCY0+wEyS1qo3w6VJZeljXTMZp/0jVRNu7W8JIirAMRrgoC4hzdarEwNgCj/AIUTg+8uGaD5BxnXp2hMzU="
-		},
-		"output": "QuFQci/vP5pECDDBibk6USyFKvNjdDXmVJCxN/1x3RHJruUJEpzXiXHTykHMHkrUXwH2xzq3/eqouQgjUShsb0/q7fID5n3GDh92jALSjNU="
-	}]
+		{
+			"input": {
+				"activationIdShort": "YAQRF-ECQJY",
+				"activationOtp": "RSUXR-SVUJO",
+				"activationNonce": "lkc3BK7kr4ijbzI5YTTq1w==",
+				"devicePublicKey": "BBILveL+kKPtTO8SHjhCYVCmApI2uKQhKFlsvsJ1gVsfnxXIqzZaFgt65IG/RzFrzjTw/mNIQGcaoUhrDKsd/hE="
+			},
+			"output": {
+				"cDevicePublicKey": "1ZluFzbAJVXwGjtEckg2TyoWQQL6MLph3FJX1ZuR/Pfe8gDNa8mKM2Wz8tv2dzryumRRTaI7cCAgt4d4YVR4F35wcxc0wXw+jBm/rI0qTbM="
+			}
+		}
+	]
 }
