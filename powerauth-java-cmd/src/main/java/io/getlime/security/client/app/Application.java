@@ -191,7 +191,7 @@ public class Application implements CommandLineRunner {
 
 			} else {
 				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("java -jar powerauth-java-client-app.jar", options);
+				formatter.printHelp("java -jar powerauth-java-cmd.jar", options);
 				return;
 			}
 
