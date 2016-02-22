@@ -21,6 +21,7 @@ public class ActivationStatusBlobInfo {
 	private byte activationStatus;
 	private long counter;
 	private byte failedAttempts;
+	private byte maxFailedAttempts;
 	
 	public boolean isValid() {
 		return valid;
@@ -52,6 +53,14 @@ public class ActivationStatusBlobInfo {
 	
 	public void setFailedAttempts(byte failedAttempts) {
 		this.failedAttempts = failedAttempts;
+	}
+	
+	public byte getMaxFailedAttempts() {
+		return maxFailedAttempts;
+	}
+	
+	public void setMaxFailedAttempts(byte maxFailedAttempts) {
+		this.maxFailedAttempts = maxFailedAttempts;
 	}
 	
 }

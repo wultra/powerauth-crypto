@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class PowerAuthHttpHeader {
 	
 	public static final String ACTIVATION_ID = "pa_activation_id";
-	public static final String APPLICATION_ID = "pa_application_id";
+	public static final String APPLICATION_ID = "pa_application_key";
 	public static final String SIGNATURE = "pa_signature";
 	public static final String SIGNATURE_TYPE = "pa_signature_type";
 	public static final String NONCE = "pa_nonce";

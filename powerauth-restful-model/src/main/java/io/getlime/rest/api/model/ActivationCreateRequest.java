@@ -22,6 +22,8 @@ public class ActivationCreateRequest {
 	private String encryptedDevicePublicKey;
 	private String activationName;
 	private String extras;
+	private String applicationKey;
+	private String applicationSignature;
 	
 	public String getActivationIdShort() {
 		return activationIdShort;
@@ -61,6 +63,22 @@ public class ActivationCreateRequest {
 	
 	public void setExtras(String extras) {
 		this.extras = extras;
+	}
+	
+	public String getApplicationKey() {
+		return applicationKey;
+	}
+	
+	public void setApplicationKey(String applicationKey) {
+		this.applicationKey = applicationKey;
+	}
+	
+	public String getApplicationSignature() {
+		return applicationSignature;
+	}
+	
+	public void setApplicationSignature(String applicationSignature) {
+		this.applicationSignature = applicationSignature;
 	}
 	
 }

@@ -104,22 +104,24 @@ To describe the steps more precisely, the activation process is performed in fol
 	- `PrivateKey KEY_DEVICE_PRIVATE = keyPair.getPrivate()`
 	- `PublicKey KEY_DEVICE_PUBLIC = keyPair.getPublic()`
 
-1. PowerAuth 2.0 Client sends a request with an `ACTIVATION_ID_SHORT`, `ACTIVATION_NONCE` (used as an initialization vector for AES encryption) and `C_KEY_DEVICE_PUBLIC` to the PowerAuth 2.0 Server (via Intermediate Server Application).
+1. PowerAuth 2.0 Client sends a request with an `ACTIVATION_ID_SHORT`, `ACTIVATION_NONCE` (used as an initialization vector for AES encryption) and `C_KEY_DEVICE_PUBLIC` to the PowerAuth 2.0 Server (via Intermediate Server Application). Request also contains an application signature `APPLICATION_SIGNATURE` computed using `APPLICATION_SECRET` and activation data.
 
 	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
 	- `byte[] ACTIVATION_NONCE = Generator.randomBytes(16)`
 	- `byte[] keyPublicBytes = KeyConversion.getBytes(KEY_DEVICE_PUBLIC)`
 	- `byte[] C_KEY_DEVICE_PUBLIC = AES.encrypt(keyPublicBytes, ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)`
+	- `SecretKey signingKey = KeyConversion.secretKeyFromBytes(Base64.decode(APPLICATION_SECRET))`
+	- `byte[] APPLICATION_SIGNATURE = Mac.hmacSha256(signingKey, ACTIVATION_ID_SHORT + "&" + ACTIVATION_NONCE + "&" + C_KEY_DEVICE_PUBLIC + "&" + APPLICATION_KEY)`
 
-1. PowerAuth 2.0 Server decrypts and stores the public key at given record.
+1. PowerAuth 2.0 Server verifies that the application signature matches expected application and if it does, it decrypts and stores the public key at given record (otherwise, the server returns a generic error).
 
 	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
 	- `byte[] keyPublicBytes = AES.decrypt(C_KEY_DEVICE_PUBLIC, ACTIVATION_NONCE, KEY_ENCRYPTION_OTP)`
 	- `PublicKey KEY_DEVICE_PUBLIC = KeyConversion.publicKeyFromBytes(keyPublicBytes)`
 
-1. PowerAuth 2.0 Server changes the record status to `OTP_USED`
+1. PowerAuth 2.0 Server changes the record status to `OTP_USED`.
 
-1. PowerAuth 2.0 Server responds with `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `C_KEY_SERVER_PUBLIC_SIGNATURE`.
+1. PowerAuth 2.0 Server responds with `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `SERVER_DATA_SIGNATURE`.
 
 	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
 	- `KeyPair keyPair = KeyGenerator.randomKeyPair()`
@@ -129,12 +131,16 @@ To describe the steps more precisely, the activation process is performed in fol
 	- `byte[] EPHEMERAL_NONCE = Generator.randomBytes(16)`
 	- `byte[] keyPublicBytes = KeyConversion.getBytes(KEY_SERVER_PUBLIC)`
 	- `byte[] C_KEY_SERVER_PUBLIC = AES.encrypt(AES.encrypt(keyPublicBytes, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, EPH_KEY)`
-	- `byte[] C_KEY_SERVER_PUBLIC_SIGNATURE = ECDSA.sign(C_KEY_SERVER_PUBLIC, KEY_SERVER_MASTER_PRIVATE)`
+	- `byte[] activationIdBytes = ACTIVATION_ID.getBytes("UTF-8")`
+	- `byte[] activationData = ByteUtils.concat(C_KEY_SERVER_PUBLIC, activationIdBytes)`
+	- `byte[] SERVER_DATA_SIGNATURE = ECDSA.sign(activationData, KEY_SERVER_MASTER_PRIVATE)`
 
-1. PowerAuth 2.0 Client receives an `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `C_KEY_SERVER_PUBLIC_SIGNATURE` and if the signature matches the data, it retrieves `KEY_SERVER_PUBLIC`.
+1. PowerAuth 2.0 Client receives an `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `SERVER_DATA_SIGNATURE` and if the signature matches the data, it retrieves `KEY_SERVER_PUBLIC`.
 
 	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
-	- `boolean isSignatureOK = ECDSA.verify(C_KEY_SERVER_PUBLIC, C_KEY_SERVER_PUBLIC_SIGNATURE, KEY_SERVER_MASTER_PRIVATE)`
+	- `byte[] activationIdBytes = ACTIVATION_ID.getBytes("UTF-8")`
+	- `byte[] activationData = ByteUtils.concat(C_KEY_SERVER_PUBLIC, activationIdBytes)`
+	- `boolean isSignatureOK = ECDSA.verify(activationData, SERVER_DATA_SIGNATURE, KEY_SERVER_MASTER_PRIVATE)`
 	- `SecretKey EPH_KEY = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)`
 	- `byte[] keyPublicBytes = AES.decrypt(AES.decrypt(C_KEY_SERVER_PUBLIC, EPHEMERAL_NONCE, EPH_KEY), EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP)`
 	- `PublicKey KEY_SERVER_PUBLIC = KeyConversion.publicKeyFromBytes(keyPublicBytes)`

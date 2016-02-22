@@ -97,14 +97,13 @@ public class RemoveStep {
 		SecretKey signatureKnowledgeKey = EncryptedStorageUtil.getSignatureKnowledgeKey(password, signatureKnowledgeKeyEncryptedBytes, signatureKnowledgeKeySalt, keyGenerator);
 
 		// Generate nonce
-		String pa_nonce = BaseEncoding.base64().encode(keyGenerator.generateRandomBytes(16));
+		byte[] pa_nonce = keyGenerator.generateRandomBytes(16);
 
 		// Compute the current PowerAuth 2.0 signature for possession
-		// and
-		// knowledge factor
-		String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString("POST", "/pa/activation/remove", applicationSecret, pa_nonce, null);
+		// and knowledge factor
+		String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString("POST", "/pa/activation/remove", pa_nonce, null) + "&" + applicationSecret;
 		String pa_signature = signature.signatureForData(signatureBaseString.getBytes("UTF-8"), Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), counter);
-		String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, pa_nonce, PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE.toString(), pa_signature, "2.0");
+		String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, BaseEncoding.base64().encode(pa_nonce), PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE.toString(), pa_signature, "2.0");
 		System.out.println("Coomputed X-PowerAuth-Authorization header: " + httpAuhtorizationHeader);
 		System.out.println();
 

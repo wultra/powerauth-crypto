@@ -26,10 +26,18 @@ import io.getlime.security.powerauth.BlockActivationRequest;
 import io.getlime.security.powerauth.BlockActivationResponse;
 import io.getlime.security.powerauth.CommitActivationRequest;
 import io.getlime.security.powerauth.CommitActivationResponse;
+import io.getlime.security.powerauth.CreateApplicationRequest;
+import io.getlime.security.powerauth.CreateApplicationResponse;
+import io.getlime.security.powerauth.CreateApplicationVersionRequest;
+import io.getlime.security.powerauth.CreateApplicationVersionResponse;
 import io.getlime.security.powerauth.GetActivationListForUserRequest;
 import io.getlime.security.powerauth.GetActivationListForUserResponse;
 import io.getlime.security.powerauth.GetActivationStatusRequest;
 import io.getlime.security.powerauth.GetActivationStatusResponse;
+import io.getlime.security.powerauth.GetApplicationDetailRequest;
+import io.getlime.security.powerauth.GetApplicationDetailResponse;
+import io.getlime.security.powerauth.GetApplicationListRequest;
+import io.getlime.security.powerauth.GetApplicationListResponse;
 import io.getlime.security.powerauth.InitActivationRequest;
 import io.getlime.security.powerauth.InitActivationResponse;
 import io.getlime.security.powerauth.PrepareActivationRequest;
@@ -38,8 +46,12 @@ import io.getlime.security.powerauth.RemoveActivationRequest;
 import io.getlime.security.powerauth.RemoveActivationResponse;
 import io.getlime.security.powerauth.SignatureAuditRequest;
 import io.getlime.security.powerauth.SignatureAuditResponse;
+import io.getlime.security.powerauth.SupportApplicationVersionRequest;
+import io.getlime.security.powerauth.SupportApplicationVersionResponse;
 import io.getlime.security.powerauth.UnblockActivationRequest;
 import io.getlime.security.powerauth.UnblockActivationResponse;
+import io.getlime.security.powerauth.UnsupportApplicationVersionRequest;
+import io.getlime.security.powerauth.UnsupportApplicationVersionResponse;
 import io.getlime.security.powerauth.VaultUnlockRequest;
 import io.getlime.security.powerauth.VaultUnlockResponse;
 import io.getlime.security.powerauth.VerifySignatureRequest;
@@ -106,6 +118,36 @@ public class PowerAuthController {
     @RequestMapping(value = "/vault/unlock", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<VaultUnlockResponse> vaultUnlock(@RequestBody RESTRequestWrapper<VaultUnlockRequest> request) throws Exception {
         return new RESTResponseWrapper<>("OK", powerAuthService.vaultUnlock(request.getRequestObject()));
+    }
+        
+    @RequestMapping(value = "/application/list", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetApplicationListResponse> getApplicationList(@RequestBody RESTRequestWrapper<GetApplicationListRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.getApplicationList(request.getRequestObject()));
+    }
+    
+    @RequestMapping(value = "/application/detail", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetApplicationDetailResponse> getApplicationDetail(@RequestBody RESTRequestWrapper<GetApplicationDetailRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.getApplicationDetail(request.getRequestObject()));
+    }
+    
+    @RequestMapping(value = "/application/create", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<CreateApplicationResponse> createApplication(@RequestBody RESTRequestWrapper<CreateApplicationRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.createApplication(request.getRequestObject()));
+    }
+    
+    @RequestMapping(value = "/application/version/create", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<CreateApplicationVersionResponse> createApplicationVersion(@RequestBody RESTRequestWrapper<CreateApplicationVersionRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.createApplicationVersion(request.getRequestObject()));
+    }
+
+    @RequestMapping(value = "/application/version/unsupport", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<UnsupportApplicationVersionResponse> unsupportApplicationVersion(@RequestBody RESTRequestWrapper<UnsupportApplicationVersionRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.unsupportApplicationVersion(request.getRequestObject()));
+    }
+    
+    @RequestMapping(value = "/application/version/support", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<SupportApplicationVersionResponse> supportApplicationVersion(@RequestBody RESTRequestWrapper<SupportApplicationVersionRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.supportApplicationVersion(request.getRequestObject()));
     }
 
 }

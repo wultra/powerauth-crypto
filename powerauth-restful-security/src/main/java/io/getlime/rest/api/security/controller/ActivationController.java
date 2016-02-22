@@ -59,13 +59,17 @@ public class ActivationController {
 		String cDevicePublicKey = request.getRequestObject().getEncryptedDevicePublicKey();
 		String activationName = request.getRequestObject().getActivationName();
 		String extras = request.getRequestObject().getExtras();
+		String applicationKey = request.getRequestObject().getApplicationKey();
+		String applicationSignature = request.getRequestObject().getApplicationSignature();
 		
 		PrepareActivationResponse soapResponse = powerAuthClient.prepareActivation(
 				activationIDShort,
 				activationName,
 				activationNonce,
 				cDevicePublicKey,
-				extras
+				extras,
+				applicationKey,
+				applicationSignature
 		);
 
 		ActivationCreateResponse response = new ActivationCreateResponse();
@@ -97,7 +101,7 @@ public class ActivationController {
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<ActivationRemoveResponse> removeActivation(@RequestBody PowerAuthAPIRequest<ActivationRemoveRequest> request, @RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader, HttpServletRequest servletRequest) throws Exception {
 
-		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(servletRequest, "/pa/activation/remove", signatureHeader);
+		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature("POST", null, "/pa/activation/remove", signatureHeader);
 		
 		if (apiAuthentication != null && apiAuthentication.getActivationId() != null) {
 

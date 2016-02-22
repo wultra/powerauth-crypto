@@ -23,6 +23,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity(name = "pa_master_keypair")
 public class MasterKeyPairEntity implements Serializable {
@@ -31,6 +33,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name")
@@ -44,8 +47,12 @@ public class MasterKeyPairEntity implements Serializable {
 
     @Column(name = "timestamp_created", nullable = false)
     private Date timestampCreated;
+    
+    @ManyToOne
+    @JoinColumn(name = "application_id", referencedColumnName = "id", nullable = false, updatable = false)
+    private ApplicationEntity application;
 
-    protected MasterKeyPairEntity() {
+    public MasterKeyPairEntity() {
     }
 
     public MasterKeyPairEntity(Long id, String name, String masterKeyPrivateBase64, String masterKeyPublicBase64, Date timestampCreated) {
@@ -95,6 +102,14 @@ public class MasterKeyPairEntity implements Serializable {
     public void setTimestampCreated(Date timestampCreated) {
         this.timestampCreated = timestampCreated;
     }
+    
+    public ApplicationEntity getApplication() {
+		return application;
+	}
+    
+    public void setApplication(ApplicationEntity application) {
+		this.application = application;
+	}
 
     @Override
     public int hashCode() {
@@ -104,6 +119,7 @@ public class MasterKeyPairEntity implements Serializable {
         hash = 37 * hash + Objects.hashCode(this.masterKeyPrivateBase64);
         hash = 37 * hash + Objects.hashCode(this.masterKeyPublicBase64);
         hash = 37 * hash + Objects.hashCode(this.timestampCreated);
+        hash = 37 * hash + Objects.hashCode(this.application);
         return hash;
     }
 
@@ -134,6 +150,9 @@ public class MasterKeyPairEntity implements Serializable {
         if (!Objects.equals(this.timestampCreated, other.timestampCreated)) {
             return false;
         }
+        if (!Objects.equals(this.application, other.application)) {
+            return false;
+        }
         return true;
     }
 
@@ -145,6 +164,7 @@ public class MasterKeyPairEntity implements Serializable {
                 + ", masterKeyPrivate=" + masterKeyPrivateBase64
                 + ", masterKeyPublic=" + masterKeyPublicBase64
                 + ", timestampCreated=" + timestampCreated
+                + ", application=" + application.getId()
                 + '}';
     }
 

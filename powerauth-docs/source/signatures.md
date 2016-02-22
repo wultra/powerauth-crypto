@@ -33,18 +33,18 @@ public String computeSignature(byte[] data, List<SecretKey> signatureKeys, int C
 	String[] signatureComponents = new String[signatureKeys.size()];
 	for (int i = 0; i < signatureKeys.size(); i++) {
 		byte[] KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(0));
-		byte[] KEY_DERIVED = Mac.HMAC_SHA256(KEY_SIGNATURE, CTR);
+		byte[] KEY_DERIVED = Mac.hmacSha256(KEY_SIGNATURE, CTR);
 
 		// ... compute signature key using more than one keys, at most 2 extra keys
 		// ... this skips the key with index 0 when i == 0
 		for (int j = 0; j < i; j++) {
 			KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(j + 1));
-			KEY_DERIVED_CURRENT = Mac.HMAC_SHA256(KEY_SIGNATURE, CTR);
-			KEY_DERIVED = Mac.HMAC_SHA256(KEY_DERIVED, KEY_DERIVED_CURRENT);
+			KEY_DERIVED_CURRENT = Mac.hmacSha256(KEY_SIGNATURE, CTR);
+			KEY_DERIVED = Mac.hmacSha256(KEY_DERIVED_CURRENT, KEY_DERIVED);
 		}
 
 		// ... sign the data
-		byte[] SIGNATURE_LONG = Mac.HMAC_SHA256(DATA, KEY_DERIVED);
+		byte[] SIGNATURE_LONG = Mac.hmacSha256(KEY_DERIVED, DATA);
 
 		// ... decimalize the signature component
 		int signComponent = (TRUNCATE(SIGNATURE_LONG, 4) & 0x7FFFFFFF) % Math.pow(10,8);
@@ -61,8 +61,8 @@ PowerAuth 2.0 Client sends the signature in the HTTP `X-PowerAuth-Authorization`
 ```http
 X-PowerAuth-Authorization: PowerAuth
 	pa_activation_id="7a24c6e9-48e9-43c2-ab4a-aed6270e924d",
-	pa_application_id="Z19gyYaW5kb521fYWN0aXZhdGlvbl9JRaAhbG9du",
-	pa_nonce="kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
+	pa_application_key="Z19gyYaW5kb521fYWN0aXZ==",
+	pa_nonce="kYjzVBB8Y0ZFabxSWbWovY==",
 	pa_signature_type="possession_knowledge_biometry"
 	pa_signature="12345678-12345678-12345678",
 	pa_version="2.0"
@@ -72,7 +72,7 @@ X-PowerAuth-Authorization: PowerAuth
 Normalized data to be signed are built using the following procedure:
 
 ```
-REQUEST_DATA = ${REQUEST_METHOD}&${REQUEST_URI_IDENTIFIER_HASH}&${NONCE}&${REQUEST_BODY}
+REQUEST_DATA = ${REQUEST_METHOD}&${REQUEST_URI_IDENTIFIER}&${NONCE}&${REQUEST_BODY}
 DATA = ${REQUEST_DATA}&${APPLICATION_SECRET}
 ```
 
@@ -81,9 +81,9 @@ _Note: Note that the `APPLICATION_SECRET` is technically outside the request dat
 ... where:
 
 - `${REQUEST_METHOD}` - HTTP method written in upper-case, such as GET or POST.
-- `${REQUEST_URI_IDENTIFIER_HASH}` - SHA256 hashed identifier of given URI of the resource (hexadecimal format), for example SHA256("/api/payment"). The hashed value (in the example before, the "/api/payment" string) should be uniquely chosen for each URI, but can be of an arbitrary format (if not specified otherwise).
-- `${APPLICATION_SECRET}` - An application secret key, used to bind an application identification in the signature explicitly.
-- `${NONCE}` - Random 16 bytes encoded as Base64 using UTF-8 encoding, serving as a cryptographic nonce.
+- `${REQUEST_URI_IDENTIFIER}` - identifier of given URI of the resource encoded as Base64 with UTF-8 encoding, for example `Base64.encode("/api/payment".getBytes("UTF-8"))`. The hashed value (in the example before, the "/api/payment" string) should be uniquely chosen for each URI, but can be of an arbitrary format (if not specified otherwise).
+- `${APPLICATION_SECRET}` - An application secret key, used to bind an application identification in the signature explicitly. This value is 16B encoded as Base64 using UTF-8 encoding (see implementation notes).
+- `${NONCE}` - Random 16 bytes (suggested length) encoded as Base64 using UTF-8 encoding, serving as a cryptographic nonce.
 - `${REQUEST_BODY}` - Request body from the HTTP request
 	- In case of request without body (such as GET and DELETE requests), the request data is constructed from the URL query parameters (for example, GET request parameters) in a following way:
 		1. Take all URL query parameters as key-value pairs:

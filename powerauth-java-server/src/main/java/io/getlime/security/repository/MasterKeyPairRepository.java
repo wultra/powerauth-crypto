@@ -21,6 +21,6 @@ import io.getlime.security.repository.model.entity.MasterKeyPairEntity;
 
 public interface MasterKeyPairRepository extends CrudRepository<MasterKeyPairEntity, Long> {
 
-    MasterKeyPairEntity findFirstByOrderByTimestampCreatedDesc();
+    MasterKeyPairEntity findFirstByApplicationIdOrderByTimestampCreatedDesc(Long id);
 
 }

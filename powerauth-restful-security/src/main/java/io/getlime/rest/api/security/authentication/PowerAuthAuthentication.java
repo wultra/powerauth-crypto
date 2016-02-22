@@ -22,12 +22,12 @@ public class PowerAuthAuthentication extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 6495166873663643144L;
 	
 	private String activationId;
-	private String applicationSecret;
+	private String applicationKey;
 	private String signature;
 	private String signatureType;
 	private String requestUri;
 	private String httpMethod;
-	private String nonce;
+	private byte[] nonce;
 	private byte[] data;
 
 	public PowerAuthAuthentication() {
@@ -52,14 +52,14 @@ public class PowerAuthAuthentication extends AbstractAuthenticationToken {
 		this.activationId = activationId;
 	}
 	
-	public String getApplicationSecret() {
-		return applicationSecret;
+	public String getApplicationKey() {
+		return applicationKey;
 	}
 	
-	public void setApplicationSecret(String applicationSecret) {
-		this.applicationSecret = applicationSecret;
+	public void setApplicationKey(String applicationKey) {
+		this.applicationKey = applicationKey;
 	}
-
+	
 	public String getSignature() {
 		return signature;
 	}
@@ -92,11 +92,11 @@ public class PowerAuthAuthentication extends AbstractAuthenticationToken {
 		this.httpMethod = httpMethod;
 	}
 
-	public String getNonce() {
+	public byte[] getNonce() {
 		return nonce;
 	}
 
-	public void setNonce(String nonce) {
+	public void setNonce(byte[] nonce) {
 		this.nonce = nonce;
 	}
 

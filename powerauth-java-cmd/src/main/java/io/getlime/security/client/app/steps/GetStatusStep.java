@@ -97,6 +97,7 @@ public class GetStatusStep {
 			System.out.println("Status: " + statusBlob.getActivationStatus());
 			System.out.println("Counter: " + statusBlob.getCounter());
 			System.out.println("Failures: " + statusBlob.getFailedAttempts());
+			System.out.println("Max. Failures allowed: " + statusBlob.getMaxFailedAttempts());
 			System.out.println("### Done.");
 			System.out.println();
 		} catch (HttpClientErrorException exception) {

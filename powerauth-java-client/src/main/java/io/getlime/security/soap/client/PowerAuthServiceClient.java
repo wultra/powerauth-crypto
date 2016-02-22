@@ -29,11 +29,19 @@ import io.getlime.powerauth.soap.BlockActivationRequest;
 import io.getlime.powerauth.soap.BlockActivationResponse;
 import io.getlime.powerauth.soap.CommitActivationRequest;
 import io.getlime.powerauth.soap.CommitActivationResponse;
+import io.getlime.powerauth.soap.CreateApplicationRequest;
+import io.getlime.powerauth.soap.CreateApplicationResponse;
+import io.getlime.powerauth.soap.CreateApplicationVersionRequest;
+import io.getlime.powerauth.soap.CreateApplicationVersionResponse;
 import io.getlime.powerauth.soap.GetActivationListForUserRequest;
 import io.getlime.powerauth.soap.GetActivationListForUserResponse;
 import io.getlime.powerauth.soap.GetActivationListForUserResponse.Activations;
 import io.getlime.powerauth.soap.GetActivationStatusRequest;
 import io.getlime.powerauth.soap.GetActivationStatusResponse;
+import io.getlime.powerauth.soap.GetApplicationDetailRequest;
+import io.getlime.powerauth.soap.GetApplicationDetailResponse;
+import io.getlime.powerauth.soap.GetApplicationListRequest;
+import io.getlime.powerauth.soap.GetApplicationListResponse;
 import io.getlime.powerauth.soap.InitActivationRequest;
 import io.getlime.powerauth.soap.InitActivationResponse;
 import io.getlime.powerauth.soap.PrepareActivationRequest;
@@ -42,8 +50,12 @@ import io.getlime.powerauth.soap.RemoveActivationRequest;
 import io.getlime.powerauth.soap.RemoveActivationResponse;
 import io.getlime.powerauth.soap.SignatureAuditRequest;
 import io.getlime.powerauth.soap.SignatureAuditResponse;
+import io.getlime.powerauth.soap.SupportApplicationVersionRequest;
+import io.getlime.powerauth.soap.SupportApplicationVersionResponse;
 import io.getlime.powerauth.soap.UnblockActivationRequest;
 import io.getlime.powerauth.soap.UnblockActivationResponse;
+import io.getlime.powerauth.soap.UnsupportApplicationVersionRequest;
+import io.getlime.powerauth.soap.UnsupportApplicationVersionResponse;
 import io.getlime.powerauth.soap.VaultUnlockRequest;
 import io.getlime.powerauth.soap.VaultUnlockResponse;
 import io.getlime.powerauth.soap.VerifySignatureRequest;
@@ -120,13 +132,15 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	 * @param extras Additional, application specific information.
 	 * @return {@link PrepareActivationResponse}
 	 */
-	public PrepareActivationResponse prepareActivation(String activationIdShort, String activationName, String activationNonce, String cDevicePublicKey, String extras) {
+	public PrepareActivationResponse prepareActivation(String activationIdShort, String activationName, String activationNonce, String cDevicePublicKey, String extras, String applicationKey, String applicationSignature) {
 		PrepareActivationRequest request = new PrepareActivationRequest();
 		request.setActivationIdShort(activationIdShort);
 		request.setActivationName(activationName);
 		request.setActivationNonce(activationNonce);
 		request.setEncryptedDevicePublicKey(cDevicePublicKey);
 		request.setExtras(extras);
+		request.setApplicationKey(applicationKey);
+		request.setApplicationSignature(applicationSignature);
 		return this.prepareActivation(request);
 	}
 	
@@ -261,14 +275,18 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	
 	/**
 	 * Call the vaultUnlock method of the PowerAuth 2.0 Server SOAP interface.
-	 * @param activationId Activation Id of an activation to be used for authentication. 
+	 * @param activationId Activation Id of an activation to be used for authentication.
+	 * @param applicationId Application Key of an application related to the activation.
+	 * @param data Data to be signed encoded in format as specified by PowerAuth 2.0 data normalization.  
 	 * @param signature Vault opening request signature.
 	 * @param signatureType Vault opening request signature type.
 	 * @return {@link VaultUnlockResponse}
 	 */
-	public VaultUnlockResponse unlockVault(String activationId, String signature, String signatureType) {
+	public VaultUnlockResponse unlockVault(String activationId, String applicationKey, String data, String signature, String signatureType) {
 		VaultUnlockRequest request = new VaultUnlockRequest();
 		request.setActivationId(activationId);
+		request.setApplicationKey(applicationKey);
+		request.setData(data);
 		request.setSignature(signature);
 		request.setSignatureType(signatureType);
 		return this.unlockVault(request);
@@ -286,14 +304,16 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	/**
 	 * Call the verifySignature method of the PowerAuth 2.0 Server SOAP interface.
 	 * @param activationId Activation ID of activation to be used for authentication.
+	 * @param applicationId Application Key of an application related to the activation.
 	 * @param data Data to be signed encoded in format as specified by PowerAuth 2.0 data normalization.
 	 * @param signature Request signature.
 	 * @param signatureType Request signature type.
 	 * @return
 	 */
-	public VerifySignatureResponse verifySignature(String activationId, String data, String signature, String signatureType) {
+	public VerifySignatureResponse verifySignature(String activationId, String applicationKey, String data, String signature, String signatureType) {
 		VerifySignatureRequest request = new VerifySignatureRequest();
 		request.setActivationId(activationId);
+		request.setApplicationKey(applicationKey);
 		request.setData(data);
 		request.setSignature(signature);
 		request.setSignatureType(signatureType);
@@ -323,5 +343,124 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 		request.setTimestampTo(calendarWithDate(endingDate));
 		return this.getSignatureAuditLog(request).getItems();
 	}
+	
+	/**
+	 * Get the list of all applications that are registered in PowerAuth 2.0 Server.
+	 * @param request {@link GetApplicationListRequest} instance.
+	 * @return {@link GetApplicationListResponse}
+	 */
+	public GetApplicationListResponse getApplicationList(GetApplicationListRequest request) {
+		return (GetApplicationListResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+	}
+	
+	/**
+	 * Get the list of all applications that are registered in PowerAuth 2.0 Server.
+	 * @return List of applications.
+	 */
+	public List<GetApplicationListResponse.Applications> getApplicationList() {
+		return this.getApplicationList(new GetApplicationListRequest()).getApplications();
+	}
+    
+	/**
+	 * Return the detail of given application, including all application versions.
+	 * @param request {@link GetApplicationDetailRequest} instance.
+	 * @return {@link GetApplicationDetailResponse}
+	 */
+    public GetApplicationDetailResponse getApplicationDetail(GetApplicationDetailRequest request) {
+    	return (GetApplicationDetailResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+    
+    /**
+     * Get the detail of an application with given ID, including the version list.
+     * @param applicationId ID of an application to fetch.
+     * @return Application with given ID, including the version list.
+     */
+    public GetApplicationDetailResponse getApplicationDetail(Long applicationId) {
+    	GetApplicationDetailRequest request = new GetApplicationDetailRequest();
+    	request.setApplicationId(applicationId);
+    	return this.getApplicationDetail(request);
+    }
+     
+    /**
+     * Create a new application with given name.
+     * @param request {@link CreateApplicationRequest} instance.
+     * @return {@link CreateApplicationResponse}
+     */
+    public CreateApplicationResponse createApplication(CreateApplicationRequest request) {
+    	return (CreateApplicationResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+    
+    /**
+     * Create a new application with given name.
+     * @param name Name of the new application.
+     * @return Application with a given name.
+     */
+    public CreateApplicationResponse createApplication(String name) {
+    	CreateApplicationRequest request = new CreateApplicationRequest();
+    	request.setApplicationName(name);
+    	return this.createApplication(request);
+    }
+    
+    /**
+     * Create a version with a given name for an application with given ID.
+     * @param request {@link CreateApplicationVersionRequest} instance.
+     * @return {@link CreateApplicationVersionResponse}
+     */
+    public CreateApplicationVersionResponse createApplicationVersion(CreateApplicationVersionRequest request) {
+    	return (CreateApplicationVersionResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+    
+    /**
+     * Create a version with a given name for an application with given ID.
+     * @param applicationId ID of an application to create a version for.
+     * @param versionName Name of the version. The value should follow some well received conventions (such as "1.0.3", for example).
+     * @return A new version with a given name and application key / secret.
+     */
+    public CreateApplicationVersionResponse createApplicationVersion(Long applicationId, String versionName) {
+    	CreateApplicationVersionRequest request = new CreateApplicationVersionRequest();
+    	request.setApplicationId(applicationId);
+    	request.setApplicationVersionName(versionName);
+    	return this.createApplicationVersion(request);
+    }
+    
+    /**
+     * Cancel the support for a given application version.
+     * @param request {@link UnsupportApplicationVersionRequest} instance.
+     * @return {@link UnsupportApplicationVersionResponse}
+     */
+    public UnsupportApplicationVersionResponse unsupportApplicationVersion(UnsupportApplicationVersionRequest request) {
+    	return (UnsupportApplicationVersionResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+    
+    /**
+     * Cancel the support for a given application version.
+     * @param versionId Version to be unsupported.
+     * @return Information about success / failure.
+     */
+    public UnsupportApplicationVersionResponse unsupportApplicationVersion(Long versionId) {
+    	UnsupportApplicationVersionRequest request = new UnsupportApplicationVersionRequest();
+    	request.setApplicationVersionId(versionId);
+    	return this.unsupportApplicationVersion(request);
+    }
+    
+    /**
+     * Renew the support for a given application version.
+     * @param request {@link SupportApplicationVersionRequest} instance.
+     * @return {@link SupportApplicationVersionResponse}
+     */
+    public SupportApplicationVersionResponse supportApplicationVersion(SupportApplicationVersionRequest request) {
+    	return (SupportApplicationVersionResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+    
+    /**
+     * Renew the support for a given application version.
+     * @param versionId Version to be supported again.
+     * @return Information about success / failure.
+     */
+    public SupportApplicationVersionResponse supportApplicationVersion(Long versionId) {
+    	SupportApplicationVersionRequest request = new SupportApplicationVersionRequest();
+    	request.setApplicationVersionId(versionId);
+    	return this.supportApplicationVersion(request);
+    }
 
 }

@@ -102,7 +102,7 @@ public class PowerAuthClientActivation {
 					+ BaseEncoding.base64().encode(activationNonce) + "&"
 					+ BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
 					+ applicationKey;
-			return new HMACHashUtilities().hash(signatureBaseString.getBytes("UTF-8"), BaseEncoding.base64().decode(applicationSecret));
+			return new HMACHashUtilities().hash(BaseEncoding.base64().decode(applicationSecret), signatureBaseString.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException ex) {
 			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
 		}

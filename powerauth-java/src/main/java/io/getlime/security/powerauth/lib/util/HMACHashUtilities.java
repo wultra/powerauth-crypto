@@ -36,11 +36,11 @@ public class HMACHashUtilities {
 	
 	/**
 	 * Compute a HMAC-SHA256 of given data with provided key bytes
-	 * @param data Data for the HMAC-SHA256 algorithm. 
 	 * @param key Key for the HMAC-SHA256 algorithm
+	 * @param data Data for the HMAC-SHA256 algorithm. 
 	 * @return HMAC-SHA256 of given data using given key.
 	 */
-	public byte[] hash(byte[] data, byte[] key) {
+	public byte[] hash(byte[] key, byte[] data) {
 		try {
 			Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
 			SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA256");

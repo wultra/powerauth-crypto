@@ -25,12 +25,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public interface PowerAuthRepository extends CrudRepository<ActivationRecordEntity, String> {
+public interface ActivationRepository extends CrudRepository<ActivationRecordEntity, String> {
 
     ActivationRecordEntity findFirstByActivationId(String activationId);
 
     List<ActivationRecordEntity> findByUserId(String userId);
+    
+    List<ActivationRecordEntity> findByApplicationIdAndUserId(Long applicationID, String userId);
 
-    ActivationRecordEntity findFirstByActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(String activationIdShort, Collection<ActivationStatus> states, Date currentTimestamp);
+    ActivationRecordEntity findFirstByApplicationIdAndActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(Long applicationId, String activationIdShort, Collection<ActivationStatus> states, Date currentTimestamp);
 
 }

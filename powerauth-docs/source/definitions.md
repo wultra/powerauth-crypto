@@ -53,3 +53,4 @@ These functions are used in the pseudo-codes:
 	- `byte[] zeroBytes = ByteUtils.zeroBytes(int N)` - Generate buffer with N zero bytes.
 	- `byte[] truncatedBytes = ByteUtils.truncate(byte[] bytes, int N)` - Get last N bytes of given byte array.
 	- `int integer = ByteUtils.getInt(byte[4] bytes)` - Get integer from 4 byte long byte array.
+	- `byte[] result = ByteUtils.concat(byte[] a, byte[] b)` - Concatenate two byte arrays - append `b` after `a`.

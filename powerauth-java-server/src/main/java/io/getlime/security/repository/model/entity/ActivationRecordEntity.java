@@ -84,13 +84,34 @@ public class ActivationRecordEntity implements Serializable {
 	private ActivationStatus activationStatus;
 
 	@ManyToOne
+	@JoinColumn(name = "application_id", referencedColumnName = "id", nullable = false)
+	private ApplicationEntity application;
+	
+	@ManyToOne
 	@JoinColumn(name = "master_keypair_id", referencedColumnName = "id", nullable = false)
-	private MasterKeyPairEntity masterKeypair;
+	private MasterKeyPairEntity masterKeyPair;
 
 	public ActivationRecordEntity() {
 	}
 
-	public ActivationRecordEntity(String activationId, String activationIdShort, String activationOTP, String userId, String activationName, String extras, String serverPrivateKeyBase64, String serverPublicKeyBase64, String devicePublicKeyBase64, Long counter, Long failedAttempts, Long maxFailedAttempts, Date timestampCreated, Date timestampActivationExpire, Date timestampLastUsed, ActivationStatus activationStatus, MasterKeyPairEntity masterKeypair) {
+	public ActivationRecordEntity(String activationId, 
+			String activationIdShort, 
+			String activationOTP, 
+			String userId, 
+			String activationName, 
+			String extras, 
+			String serverPrivateKeyBase64, 
+			String serverPublicKeyBase64, 
+			String devicePublicKeyBase64, 
+			Long counter, 
+			Long failedAttempts, 
+			Long maxFailedAttempts,
+			Date timestampCreated, 
+			Date timestampActivationExpire, 
+			Date timestampLastUsed, 
+			ActivationStatus activationStatus,
+			MasterKeyPairEntity masterKeyPair,
+			ApplicationEntity application) {
 		super();
 		this.activationId = activationId;
 		this.activationIdShort = activationIdShort;
@@ -108,7 +129,8 @@ public class ActivationRecordEntity implements Serializable {
 		this.timestampActivationExpire = timestampActivationExpire;
 		this.timestampLastUsed = timestampLastUsed;
 		this.activationStatus = activationStatus;
-		this.masterKeypair = masterKeypair;
+		this.masterKeyPair = masterKeyPair;
+		this.application = application;
 	}
 
 	public String getActivationId() {
@@ -239,12 +261,20 @@ public class ActivationRecordEntity implements Serializable {
 		this.activationStatus = activationStatus;
 	}
 
-	public MasterKeyPairEntity getMasterKeypair() {
-		return masterKeypair;
+	public ApplicationEntity getApplication() {
+		return application;
 	}
-
-	public void setMasterKeypair(MasterKeyPairEntity masterKeypair) {
-		this.masterKeypair = masterKeypair;
+	
+	public void setApplication(ApplicationEntity application) {
+		this.application = application;
+	}
+	
+	public MasterKeyPairEntity getMasterKeyPair() {
+		return masterKeyPair;
+	}
+	
+	public void setMasterKeyPair(MasterKeyPairEntity masterKeyPair) {
+		this.masterKeyPair = masterKeyPair;
 	}
 
 	@Override
@@ -265,7 +295,8 @@ public class ActivationRecordEntity implements Serializable {
 		hash = 71 * hash + Objects.hashCode(this.timestampActivationExpire);
 		hash = 71 * hash + Objects.hashCode(this.timestampLastUsed);
 		hash = 71 * hash + Objects.hashCode(this.activationStatus);
-		hash = 71 * hash + Objects.hashCode(this.masterKeypair);
+		hash = 71 * hash + Objects.hashCode(this.application);
+		hash = 71 * hash + Objects.hashCode(this.masterKeyPair);
 		return hash;
 	}
 
@@ -326,7 +357,10 @@ public class ActivationRecordEntity implements Serializable {
 		if (this.activationStatus != other.activationStatus) {
 			return false;
 		}
-		if (!Objects.equals(this.masterKeypair, other.masterKeypair)) {
+		if (!Objects.equals(this.application, other.application)) {
+			return false;
+		}
+		if (!Objects.equals(this.masterKeyPair, other.masterKeyPair)) {
 			return false;
 		}
 		return true;
@@ -334,7 +368,25 @@ public class ActivationRecordEntity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ActivationRecordEntity{" + "activationId=" + activationId + ", activationIdShort=" + activationIdShort + ", activationOTP=" + activationOTP + ", userId=" + userId + ", clientName=" + activationName + ", serverPrivateKeyBase64=" + serverPrivateKeyBase64 + ", serverPublicKeyBase64=" + serverPublicKeyBase64 + ", devicePublicKeyBase64=" + devicePublicKeyBase64 + ", counter=" + counter + ", failedAttempts=" + failedAttempts + ", maxFailedAttempts=" + maxFailedAttempts + ", timestampCreated=" + timestampCreated + ", timestampActivationExpire=" + timestampActivationExpire + ", timestampLastUsed=" + timestampLastUsed + ", status=" + activationStatus + ", masterKeypair=" + masterKeypair + '}';
+		return "ActivationRecordEntity{" 
+				+ "activationId=" + activationId 
+				+ ", activationIdShort=" + activationIdShort 
+				+ ", activationOTP=" + activationOTP 
+				+ ", userId=" + userId 
+				+ ", clientName=" + activationName 
+				+ ", serverPrivateKeyBase64=" + serverPrivateKeyBase64 
+				+ ", serverPublicKeyBase64=" + serverPublicKeyBase64 
+				+ ", devicePublicKeyBase64=" + devicePublicKeyBase64 
+				+ ", counter=" + counter 
+				+ ", failedAttempts=" + failedAttempts 
+				+ ", maxFailedAttempts=" + maxFailedAttempts 
+				+ ", timestampCreated=" + timestampCreated 
+				+ ", timestampActivationExpire=" + timestampActivationExpire 
+				+ ", timestampLastUsed=" + timestampLastUsed 
+				+ ", status=" + activationStatus 
+				+ ", masterKeyPair=" + masterKeyPair
+				+ ", application=" + application
+				+ '}';
 	}
 
 }

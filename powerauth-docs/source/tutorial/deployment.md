@@ -24,7 +24,7 @@ You can download the latest `powerauth-java-server.war` at the releases page:
 
 PowerAuth 2.0 Server supports any JPA 2.0 compatible database engine. In order for the database connectivity to work, you need to add appropriate DB client libraries on your classpath.
 
-For example, when using MySQL with Tomcat, make sure to add `mysql-connector-java-${VERSION}.jar` to the `${CATALINE_HOME}/lib` folder (server restart will be required).
+For example, when using MySQL with Tomcat, make sure to add `mysql-connector-java-${VERSION}.jar` to the `${CATALINA_HOME}/lib` folder (server restart will be required).
 
 ### Creating the database schema
 

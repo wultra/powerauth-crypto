@@ -94,7 +94,6 @@ public class PowerAuthActivationTest {
 		for (int i = 0; i < 20; i++) {
 
 			// SERVER: Generate data for activation
-			@SuppressWarnings("unused")
 			String activationId = serverActivation.generateActivationId();
 			String activationIdShort = serverActivation.generateActivationIdShort();
 			String activationOTP = serverActivation.generateActivationOTP();
@@ -124,10 +123,10 @@ public class PowerAuthActivationTest {
 			PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
 			byte[] serverNonce = serverActivation.generateActivationNonce();
 			byte[] c_serverPublicKey = serverActivation.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, serverNonce);
-			byte[] c_serverPublicKeySignature = serverActivation.computeServerPublicKeySignature(c_serverPublicKey, masterPrivateKey);
+			byte[] c_serverPublicKeySignature = serverActivation.computeServerDataSignature(activationId, c_serverPublicKey, masterPrivateKey);
 
 			// CLIENT: Validate server public key signature and decrypt server public key
-			boolean serverPublicKeySignatureOK = clientActivation.verifyServerPublicKeySignature(c_serverPublicKey, c_serverPublicKeySignature, masterPublicKey);
+			boolean serverPublicKeySignatureOK = clientActivation.verifyServerDataSignature(activationId, c_serverPublicKey, c_serverPublicKeySignature, masterPublicKey);
 			assertTrue(serverPublicKeySignatureOK);
 
 			PublicKey decryptedServerPublicKey = clientActivation.decryptServerPublicKey(c_serverPublicKey, devicePrivateKey, ephemeralPublicKey, activationOTP, activationIdShort, serverNonce);

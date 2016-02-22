@@ -264,6 +264,7 @@ public class GenerateVectorDataTest {
 
 	@Test
 	public void testVerifyServerPublicKeySignature() throws Exception {
+		String activationId = null;
 		String activationOTP = null;
 		String activationIdShort = null;
 		byte[] activationNonce = null;
@@ -281,6 +282,7 @@ public class GenerateVectorDataTest {
 		int max = 20;
 		for (int i = 0; i < max; i++) {
 
+			activationId = new IdentifierGenerator().generateActivationId();
 			activationIdShort = new IdentifierGenerator().generateActivationIdShort();
 			activationOTP = new IdentifierGenerator().generateActivationOTP();
 			activationNonce = activationServer.generateActivationNonce();
@@ -299,12 +301,13 @@ public class GenerateVectorDataTest {
 			PublicKey masterPublicKey = kp.getPublic();
 
 			cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
-			byte[] cServerPublicKeySignature = activationServer.computeServerPublicKeySignature(cServerPublicKey, masterPrivateKey);
+			byte[] cServerPublicKeySignature = activationServer.computeServerDataSignature(activationId, cServerPublicKey, masterPrivateKey);
 
 			CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 			System.out.println("    {");
 			System.out.println("        \"input\": {");
+			System.out.println("            \"activationId\": \"" + activationId + "\",");
 			System.out.println("            \"encryptedServerPublicKey\": \"" + BaseEncoding.base64().encode(cServerPublicKey) + "\",");
 			System.out.println("            \"masterServerPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
 			System.out.println("            \"masterServerPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)) + "\"");

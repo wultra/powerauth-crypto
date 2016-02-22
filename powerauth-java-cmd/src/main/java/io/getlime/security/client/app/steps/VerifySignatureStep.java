@@ -101,7 +101,7 @@ public class VerifySignatureStep {
 		SecretKey signatureBiometryKey = keyConversion.convertBytesToSharedSecretKey(signatureBiometryKeyBytes);
 
 		// Generate nonce
-		String pa_nonce = BaseEncoding.base64().encode(keyGenerator.generateRandomBytes(16));
+		byte[] pa_nonce = keyGenerator.generateRandomBytes(16);
 
 		// Read data input file
 		byte[] dataFileBytes = null;
@@ -113,9 +113,9 @@ public class VerifySignatureStep {
 		}
 
 		// Compute the current PowerAuth 2.0 signature for possession and knowledge factor
-		String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(httpMethodString, endpoint, applicationSecret, pa_nonce, dataFileBytes);
+		String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(httpMethodString, endpoint, pa_nonce, dataFileBytes) + "&" + applicationSecret;
 		String pa_signature = signature.signatureForData(signatureBaseString.getBytes("UTF-8"), keyFactory.keysForSignatureType(signatureType, signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), counter);
-		String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, pa_nonce, PowerAuthSignatureTypes.getEnumFromString(signatureType).toString(), pa_signature, "2.0");
+		String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, BaseEncoding.base64().encode(pa_nonce), PowerAuthSignatureTypes.getEnumFromString(signatureType).toString(), pa_signature, "2.0");
 
 		// Increment the counter
 		counter += 1;

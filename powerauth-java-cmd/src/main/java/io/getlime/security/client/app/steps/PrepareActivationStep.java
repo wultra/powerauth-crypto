@@ -63,6 +63,8 @@ public class PrepareActivationStep {
 
 		// Read properties from "context"
 		String activationName = (String) context.get("ACTIVATION_NAME");
+		String applicationId = (String) context.get("APPLICATION_ID");
+		String applicationSecret = (String) context.get("APPLICATION_SECRET");
 		String uriString = (String) context.get("URI_STRING");
 		PublicKey masterPublicKey = (PublicKey) context.get("MASTER_PUBLIC_KEY");
 		String activationCode = (String) context.get("ACTIVATION_CODE");
@@ -88,13 +90,16 @@ public class PrepareActivationStep {
 		KeyPair deviceKeyPair = activation.generateDeviceKeyPair();
 		byte[] nonceDeviceBytes = activation.generateActivationNonce();
 		byte[] cDevicePublicKeyBytes = activation.encryptDevicePublicKey(deviceKeyPair.getPublic(), activationOTP, activationIdShort, nonceDeviceBytes);
+		byte[] signature = activation.computeApplicationSignature(activationIdShort, nonceDeviceBytes, cDevicePublicKeyBytes, applicationId, applicationSecret);
 
 		// Prepare the server request
 		ActivationCreateRequest requestObject = new ActivationCreateRequest();
 		requestObject.setActivationIdShort(activationIdShort);
+		requestObject.setApplicationKey(applicationId);
 		requestObject.setActivationName(activationName);
 		requestObject.setActivationNonce(BaseEncoding.base64().encode(nonceDeviceBytes));
 		requestObject.setEncryptedDevicePublicKey(BaseEncoding.base64().encode(cDevicePublicKeyBytes));
+		requestObject.setApplicationSignature(BaseEncoding.base64().encode(signature));
 		PowerAuthAPIRequest<ActivationCreateRequest> body = new PowerAuthAPIRequest<>();
 		body.setRequestObject(requestObject);
 		RequestEntity<PowerAuthAPIRequest<ActivationCreateRequest>> request = new RequestEntity<PowerAuthAPIRequest<ActivationCreateRequest>>(body, HttpMethod.POST, uri);
@@ -119,7 +124,7 @@ public class PrepareActivationStep {
 			PublicKey ephemeralPublicKey = keyConversion.convertBytesToPublicKey(ephemeralKeyBytes);
 
 			// Verify that the server public key signature is valid
-			boolean isDataSignatureValid = activation.verifyServerPublicKeySignature(cServerPubKeyBytes, cServerPubKeySignatureBytes, masterPublicKey);
+			boolean isDataSignatureValid = activation.verifyServerDataSignature(activationId, cServerPubKeyBytes, cServerPubKeySignatureBytes, masterPublicKey);
 
 			if (isDataSignatureValid) {
 
