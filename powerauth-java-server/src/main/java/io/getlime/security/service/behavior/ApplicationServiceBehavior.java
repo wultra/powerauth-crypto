@@ -46,6 +46,7 @@ public class ApplicationServiceBehavior {
 		GetApplicationDetailResponse response = new GetApplicationDetailResponse();
 		response.setApplicationId(application.getId());
 		response.setApplicationName(application.getName());
+		response.setMasterPublicKey(masterKeyPairRepository.findFirstByApplicationIdOrderByTimestampCreatedDesc(application.getId()).getMasterKeyPublicBase64());
 
 		List<ApplicationVersionEntity> versions = applicationVersionRepository.findByApplicationId(application.getId());
 		for (ApplicationVersionEntity version : versions) {

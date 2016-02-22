@@ -40,6 +40,7 @@
         	<xs:sequence>
         		<xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
         		<xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
+        		<xs:element maxOccurs="1" minOccurs="1" name="masterPublicKey" type="xs:string"/>
         		<xs:element maxOccurs="unbounded" minOccurs="0" name="versions">
                 	<xs:complexType>
                 	    <xs:sequence>
