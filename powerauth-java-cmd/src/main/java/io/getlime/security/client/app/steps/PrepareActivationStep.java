@@ -90,7 +90,13 @@ public class PrepareActivationStep {
 		KeyPair deviceKeyPair = activation.generateDeviceKeyPair();
 		byte[] nonceDeviceBytes = activation.generateActivationNonce();
 		byte[] cDevicePublicKeyBytes = activation.encryptDevicePublicKey(deviceKeyPair.getPublic(), activationOTP, activationIdShort, nonceDeviceBytes);
-		byte[] signature = activation.computeApplicationSignature(activationIdShort, nonceDeviceBytes, cDevicePublicKeyBytes, applicationId, applicationSecret);
+		byte[] signature = activation.computeApplicationSignature(
+				activationIdShort, 
+				nonceDeviceBytes, 
+				cDevicePublicKeyBytes, 
+				BaseEncoding.base64().decode(applicationId), 
+				BaseEncoding.base64().decode(applicationSecret)
+		);
 
 		// Prepare the server request
 		ActivationCreateRequest requestObject = new ActivationCreateRequest();

@@ -138,13 +138,13 @@ public class PowerAuthServerActivation {
 	 * @param signature Signature to be checked against.
 	 * @return True if the signature is correct, false otherwise.
 	 */
-	public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, String applicationKey, String applicationSecret, byte[] signature) {
+	public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) {
 		try {
 			String signatureBaseString = activationIdShort + "&"
 					+ BaseEncoding.base64().encode(activationNonce) + "&"
 					+ BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
-					+ applicationKey;
-			byte[] signatureExpected = new HMACHashUtilities().hash(BaseEncoding.base64().decode(applicationSecret), signatureBaseString.getBytes("UTF-8"));
+					+ BaseEncoding.base64().encode(applicationKey);
+			byte[] signatureExpected = new HMACHashUtilities().hash(applicationSecret, signatureBaseString.getBytes("UTF-8"));
 			return Arrays.equals(signatureExpected, signature);
 		} catch (UnsupportedEncodingException ex) {
 			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);

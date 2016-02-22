@@ -96,13 +96,13 @@ public class PowerAuthClientActivation {
 	 * @param applicationSecret Application secret.
 	 * @return Signature bytes.
 	 */
-	public byte[] computeApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, String applicationKey, String applicationSecret) {
+	public byte[] computeApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret) {
 		try {
 			String signatureBaseString = activationIdShort + "&"
 					+ BaseEncoding.base64().encode(activationNonce) + "&"
 					+ BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
-					+ applicationKey;
-			return new HMACHashUtilities().hash(BaseEncoding.base64().decode(applicationSecret), signatureBaseString.getBytes("UTF-8"));
+					+ BaseEncoding.base64().encode(applicationKey);
+			return new HMACHashUtilities().hash(applicationSecret, signatureBaseString.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException ex) {
 			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
 		}

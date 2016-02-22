@@ -357,7 +357,13 @@ public class ActivationServiceBehavior {
 		PublicKey devicePublicKey = powerAuthServerActivation.decryptDevicePublicKey(C_devicePublicKey, activationIdShort, activation.getActivationOTP(), activationNonce);
 		byte[] applicationSignatureBytes = BaseEncoding.base64().decode(applicationSignature);
 		
-		if (!powerAuthServerActivation.validateApplicationSignature(activationIdShort, activationNonce, C_devicePublicKey, applicationKey, applicationVersion.getApplicationSecret(), applicationSignatureBytes)) {
+		if (!powerAuthServerActivation.validateApplicationSignature(
+				activationIdShort, 
+				activationNonce, 
+				C_devicePublicKey, 
+				BaseEncoding.base64().decode(applicationKey), 
+				BaseEncoding.base64().decode(applicationVersion.getApplicationSecret()), 
+				applicationSignatureBytes)) {
 			throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
 		}
 
