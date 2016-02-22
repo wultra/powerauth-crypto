@@ -64,6 +64,54 @@ java -jar powerauth-java-server.war
 
 _Note: If you launch both PowerAuth 2.0 Server and PowerAuth 2.0 Standard RESTful API using the 'java -jar' spell, you will get a conflict of the ports - only one application may use 8080 port at the time. You can overwrite the port using `-Dserver.port=8090` parameter_
 
+### Generating your first application
+
+In order to initialize the database with an application, call PowerAuth 2.0 Server endpoint:
+
+```bash
+$ curl -s -H "Content-Type: application/json" -X POST -d '{ "requestObject": { "applicationName": "DEMO APPLICATION NAME" } }' http://localhost:8080/powerauth-java-server/rest/pa/application/create | json_pp
+{
+   "status" : "OK",
+   "responseObject" : {
+      "applicationId" : 1,
+      "applicationName" : "DEMO APPLICATION NAME"
+   }
+}
+```
+
+This command will create:
+
+- A new application instance named "DEMO APPLICATION NAME" with an `id = 1`.
+- A default application version named "default" with associated `application_key` and `application_secret` values
+- A new master key pair associated with the application.
+
+To get the application details, you can copy the `applicationId` value from the previous response and call:
+
+```bash
+$ curl -s -H "Content-Type: application/json" -X POST -d '{ "requestObject": { "applicationId": 1 } }' http://localhost:8080/powerauth-java-server/rest/pa/application/detail | json_pp
+{
+   "status" : "OK",
+   "responseObject" : {
+      "masterPublicKey" : "BKOUTVjJKVB/AnRwq3tbqVkol6omI9DS6E/Yu3swh0l6MewONsjL01LA2/dxpgN5+6Ihy9cW1BpuYtdoFrxxlTA=",
+      "applicationId" : 1,
+      "versions" : [
+         {
+            "applicationVersionId" : 1,
+            "applicationVersionName" : "default",
+            "applicationKey" : "zinbZhRMTXP4UTY+QrjZsg==",
+            "applicationSecret" : "tzE7Ps0Ia8G/pFM75rh6yA==",
+            "supported" : true
+         }
+      ],
+      "applicationName" : "DEMO APPLICATION NAME"
+   }
+}
+```
+
+You can then use these values in your PowerAuth 2.0 Client application. Read the tutorial to the reference client for more information:
+
+- [Using PowerAuth 2.0 Reference Client](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/console-client-app.md)
+
 ## Deploying PowerAuth 2.0 Standard RESTful API
 
 PowerAuth 2.0 Standard RESTful API is a Java EE application (packaged as an executable WAR file) responsible for exposing the [RESTful API according to the specification](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/api.md). It exposes services for end-user applications (PowerAuth 2.0 Clients), such as the mobile banking app or mobile token app.
