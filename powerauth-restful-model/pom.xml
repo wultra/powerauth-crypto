@@ -1,17 +1,48 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  
-  <groupId>io.getlime.security</groupId>
-  <artifactId>powerauth-restful-model</artifactId>
-  <version>0.0.6-SNAPSHOT</version>
-  <name>powerauth-restful-model</name>
-  <description>PowerAuth 2.0 RESTful API model classes</description>
-  
-  <parent>
-    <groupId>io.getlime.security</groupId>
-    <artifactId>powerauth-parent</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
-  </parent>
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.getlime.security</groupId>
+	<artifactId>powerauth-restful-model</artifactId>
+	<version>0.0.7-SNAPSHOT</version>
+	<name>powerauth-restful-model</name>
+	<description>PowerAuth 2.0 RESTful API model classes</description>
+
+	<parent>
+		<groupId>io.getlime.security</groupId>
+		<artifactId>powerauth-parent</artifactId>
+		<version>0.0.7-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-artifact</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+									<type>${project.packaging}</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>../dist/</outputDirectory>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

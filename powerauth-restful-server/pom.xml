@@ -3,25 +3,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>io.getlime</groupId>
-	<artifactId>powerauth-restful-server</artifactId>
-	<version>0.0.6-SNAPSHOT</version>
-	<packaging>war</packaging>
-
 	<name>powerauth-restful-server</name>
 	<description>PowerAuth 2.0 Standard RESTful API</description>
+	<groupId>io.getlime</groupId>
+	<artifactId>powerauth-restful-server</artifactId>
+	<version>0.0.7-SNAPSHOT</version>
+	<packaging>war</packaging>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.0.6-SNAPSHOT</version>
+		<version>0.0.7-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.8</java.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -44,11 +38,11 @@
 			<artifactId>guava</artifactId>
 			<version>14.0.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-restful-security</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
+			<version>0.0.7-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -57,6 +51,31 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-artifact</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+									<type>${project.packaging}</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>../dist/</outputDirectory>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

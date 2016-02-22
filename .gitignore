@@ -19,3 +19,4 @@
 ## Directory-based project format:
 .idea/
 .mvn
+dist/

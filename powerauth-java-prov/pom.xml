@@ -1,33 +1,68 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>io.getlime.security</groupId>
-    <artifactId>powerauth-parent</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
-  </parent>
-  
-  <groupId>io.getlime.security</groupId>
-  <artifactId>powerauth-java-prov</artifactId>
-  <version>0.0.6-SNAPSHOT</version>
-  <name>powerauth-java-prov</name>
-  <description>Technical Maven module. Simple interface for generic crypto provider inclusion.</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.getlime.security</groupId>
+		<artifactId>powerauth-parent</artifactId>
+		<version>0.0.7-SNAPSHOT</version>
+	</parent>
 
-  <dependencies>
+	<groupId>io.getlime.security</groupId>
+	<artifactId>powerauth-java-prov</artifactId>
+	<version>0.0.7-SNAPSHOT</version>
+	<name>powerauth-java-prov</name>
+	<description>Technical Maven module. Simple interface for generic crypto provider inclusion.</description>
 
-    <!-- bouncycastle & spongycastle as provided dependencies - client will need to declare one of them -->
+	<dependencies>
 
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-ext-jdk15on</artifactId>
-      <version>1.53</version>
-      <scope>provided</scope>
-    </dependency>
+		<!-- bouncycastle & spongycastle as provided dependencies -->
+		<!-- client will need to declare one of them -->
 
-    <dependency>
-      <groupId>com.madgag.spongycastle</groupId>
-      <artifactId>prov</artifactId>
-      <version>1.54.0.0</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-ext-jdk15on</artifactId>
+			<version>1.53</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.madgag.spongycastle</groupId>
+			<artifactId>prov</artifactId>
+			<version>1.54.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-artifact</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+									<type>${project.packaging}</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>../dist/</outputDirectory>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
 </project>
