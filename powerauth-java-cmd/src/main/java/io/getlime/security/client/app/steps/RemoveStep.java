@@ -122,9 +122,8 @@ public class RemoveStep {
 		headers.add("X-PowerAuth-Authorization", httpAuhtorizationHeader);
 
 		// Send the activation status request to the server
-		ActivationRemoveRequest requestObject = new ActivationRemoveRequest();
 		PowerAuthAPIRequest<ActivationRemoveRequest> body = new PowerAuthAPIRequest<>();
-		body.setRequestObject(requestObject);
+		body.setRequestObject(new ActivationRemoveRequest());
 		RequestEntity<PowerAuthAPIRequest<ActivationRemoveRequest>> request = new RequestEntity<PowerAuthAPIRequest<ActivationRemoveRequest>>(body, headers, HttpMethod.POST, uri);
 		
 		RestTemplate template = RestTemplateFactory.defaultRestTemplate();

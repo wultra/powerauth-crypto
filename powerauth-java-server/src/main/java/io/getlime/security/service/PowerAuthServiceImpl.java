@@ -15,6 +15,7 @@
  */
 package io.getlime.security.service;
 
+import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.BlockActivationRequest;
 import io.getlime.security.powerauth.BlockActivationResponse;
 import io.getlime.security.powerauth.CommitActivationRequest;
@@ -50,6 +51,7 @@ import io.getlime.security.powerauth.VaultUnlockResponse;
 import io.getlime.security.powerauth.VerifySignatureRequest;
 import io.getlime.security.powerauth.VerifySignatureResponse;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtilFactory;
 import io.getlime.security.service.behavior.ActivationServiceBehavior;
@@ -259,6 +261,13 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			String signature = request.getSignature();
 			String signatureType = request.getSignatureType().toLowerCase();
 			String data = request.getData();
+			
+			// Reject 1FA signatures.
+			if (signatureType.equals(PowerAuthSignatureTypes.BIOMETRY.toString())
+					|| signatureType.equals(PowerAuthSignatureTypes.KNOWLEDGE.toString())
+					|| signatureType.equals(PowerAuthSignatureTypes.POSSESSION.toString())) {
+				throw new GenericServiceException("Invalid Signature Provided");
+			}
 
 			// Verify the signature
 			VerifySignatureRequest verifySignatureRequest = new VerifySignatureRequest();
@@ -270,7 +279,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			VerifySignatureResponse verifySignatureResponse = this.verifySignatureImplNonTransaction(verifySignatureRequest);
 
 			return vaultUnlockServiceBehavior.unlockVault(activationId, verifySignatureResponse.isSignatureValid(), keyConversionUtilities);
-
+		} catch (GenericServiceException ex) {
+			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+			throw ex;
 		} catch (Exception ex) {
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw new GenericServiceException("Unknown exception has occurred");

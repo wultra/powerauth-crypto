@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import io.getlime.security.client.app.steps.GetStatusStep;
 import io.getlime.security.client.app.steps.PrepareActivationStep;
 import io.getlime.security.client.app.steps.RemoveStep;
+import io.getlime.security.client.app.steps.VaultUnlockStep;
 import io.getlime.security.client.app.steps.VerifySignatureStep;
 import io.getlime.security.client.app.util.ConfigurationUtils;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
@@ -64,7 +65,7 @@ public class Application implements CommandLineRunner {
 			Options options = new Options();
 			options.addOption("h", "help", false, "Print this help manual");
 			options.addOption("u", "url", true, "Base URL of the PowerAuth 2.0 Standard RESTful API");
-			options.addOption("m", "method", true, "What API method to call, available names are 'prepare', 'status', 'remove' and 'sign'");
+			options.addOption("m", "method", true, "What API method to call, available names are 'prepare', 'status', 'remove', 'sign' and 'unlock'");
 			options.addOption("c", "config-file", true, "Specifies a path to the config file with Base64 encoded server master public key, application ID and application secret");
 			options.addOption("s", "status-file", true, "Path to the file with the activation status, serving as the data persistence.");
 			options.addOption("a", "activation-code", true, "In case a specified method is 'prepare', this field contains the activation key (a concatenation of a short activation ID and activation OTP)");
@@ -174,6 +175,19 @@ public class Application implements CommandLineRunner {
 				context.put("PASSWORD", cmd.getOptionValue("p"));
 
 				VerifySignatureStep.execute(context);
+
+			} else if (method.equals("unlock")) {
+
+				Map<String, Object> context = new HashMap<>();
+				context.put("URI_STRING", uriString);
+				context.put("STATUS_OBJECT", resultStatusObject);
+				context.put("STATUS_FILENAME", statusFileName);
+				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationId(clientConfigObject));
+				context.put("APPLICATION_SECRET", ConfigurationUtils.getApplicationSecret(clientConfigObject));
+				context.put("SIGNATURE_TYPE", cmd.getOptionValue("l"));
+				context.put("PASSWORD", cmd.getOptionValue("p"));
+
+				VaultUnlockStep.execute(context);
 
 			} else {
 				HelpFormatter formatter = new HelpFormatter();
