@@ -15,7 +15,6 @@
  */
 package io.getlime.security.service;
 
-import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.BlockActivationRequest;
 import io.getlime.security.powerauth.BlockActivationResponse;
 import io.getlime.security.powerauth.CommitActivationRequest;
