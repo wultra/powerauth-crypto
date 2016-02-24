@@ -225,6 +225,7 @@
                 <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
                 <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
                 <xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:dateTime"/>

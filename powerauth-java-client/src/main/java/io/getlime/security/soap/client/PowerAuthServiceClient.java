@@ -93,24 +93,31 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	/**
 	 * Call the initActivation method of the PowerAuth 2.0 Server SOAP interface.
 	 * @param userId User ID for which a new CREATED activation should be created.
+	 * @param applicationId Application ID for which a new CREATED activation should be created.
 	 * @return {@link InitActivationReponse}
 	 */
-	public InitActivationResponse initActivation(String userId) {
-		return this.initActivation(userId, null, null);
+	public InitActivationResponse initActivation(String userId, Long applicationId) {
+		return this.initActivation(userId, applicationId, null, null);
 	}
 	
 	/**
 	 * Call the initActivation method of the PowerAuth 2.0 Server SOAP interface.
 	 * @param userId User ID for which a new CREATED activation should be created.
+	 * @param applicationId Application ID for which a new CREATED activation should be created.
 	 * @param maxFailureCount How many failed attempts should be allowed for this activation.
 	 * @param timestampActivationExpire Timestamp until when the activation can be committed.
 	 * @return {@link InitActivationReponse}
 	 */
-	public InitActivationResponse initActivation(String userId, Long maxFailureCount, Date timestampActivationExpire) {
+	public InitActivationResponse initActivation(String userId, Long applicationId, Long maxFailureCount, Date timestampActivationExpire) {
 		InitActivationRequest request = new InitActivationRequest();
 		request.setUserId(userId);
-		request.setMaxFailureCount(maxFailureCount);
-		request.setTimestampActivationExpire(calendarWithDate(timestampActivationExpire));
+		request.setApplicationId(applicationId);
+		if (maxFailureCount != null) {
+			request.setMaxFailureCount(maxFailureCount);
+		}
+		if (timestampActivationExpire != null) {
+			request.setTimestampActivationExpire(calendarWithDate(timestampActivationExpire));
+		}
 		return this.initActivation(request);
 	}
 	
