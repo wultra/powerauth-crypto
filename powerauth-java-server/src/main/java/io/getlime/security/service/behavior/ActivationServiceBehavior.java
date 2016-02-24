@@ -133,6 +133,7 @@ public class ActivationServiceBehavior {
 				// return the data
 				GetActivationStatusResponse response = new GetActivationStatusResponse();
 				response.setActivationId(activationId);
+				response.setUserId(activation.getUserId());
 				response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
 				response.setActivationName(activation.getActivationName());
 				response.setExtras(activation.getExtras());
@@ -180,6 +181,7 @@ public class ActivationServiceBehavior {
 				response.setActivationId(activationId);
 				response.setActivationStatus(ModelUtil.toServiceStatus(activation.getActivationStatus()));
 				response.setActivationName(activation.getActivationName());
+				response.setUserId(activation.getUserId());
 				response.setExtras(activation.getExtras());
 				response.setApplicationId(activation.getApplication().getId());
 				response.setTimestampCreated(ModelUtil.calendarWithDate(activation.getTimestampCreated()));
@@ -200,6 +202,7 @@ public class ActivationServiceBehavior {
 			response.setActivationId(activationId);
 			response.setActivationStatus(ModelUtil.toServiceStatus(ActivationStatus.REMOVED));
 			response.setActivationName("unknown");
+			response.setUserId("unknown");
 			response.setApplicationId(0L);
 			response.setExtras(null);
 			response.setTimestampCreated(null);

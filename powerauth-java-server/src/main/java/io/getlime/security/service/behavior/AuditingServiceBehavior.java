@@ -38,6 +38,7 @@ public class AuditingServiceBehavior {
 				SignatureAuditResponse.Items item = new SignatureAuditResponse.Items();
 
 				item.setId(signatureEntity.getId());
+				item.setApplicationId(signatureEntity.getActivation().getApplication().getId());
 				item.setActivationCounter(signatureEntity.getActivationCounter());
 				item.setActivationStatus(ModelUtil.toServiceStatus(signatureEntity.getActivationStatus()));
 				item.setActivationId(signatureEntity.getActivation().getActivationId());
