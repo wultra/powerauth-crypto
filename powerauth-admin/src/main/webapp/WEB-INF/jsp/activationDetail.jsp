@@ -10,7 +10,7 @@
 
 	<ol class="breadcrumb">
 		<li><a class="black" href="${pageContext.request.contextPath}/activation/list">User selection</a></li>
-		<li><a class="black" href="${pageContext.request.contextPath}/activation/list?userId=${userId}">User "${userId}"</a></li>
+		<li><a class="black" href="${pageContext.request.contextPath}/activation/list?userId=<c:out value="${userId}"/>">User "<c:out value="${userId}"/>"</a></li>
 		<li class="active">Activation detail</li>
 	</ol>
 	
@@ -27,14 +27,14 @@
 					<div class="panel-body gray">
 						<p>
 							Client activation code<br>
-							<strong class="code black">${activationIdShort}-${activationOtp}</strong>
+							<strong class="code black"><c:out value="${activationIdShort}"/>-<c:out value="${activationOtp}"/></strong>
 						</p>
 						<p>
 							Client activation code signature<br>
-							<strong class="code black wrap">${activationSignature}</strong>
+							<strong class="code black wrap"><c:out value="${activationSignature}"/></strong>
 						</p>
 						<p>
-							<img src="${activationQR}" class="w100" alt="Activation QR code" style="border: 1px solid #777777"/>
+							<img src="<c:out value="${activationQR}"/>" class="w100" alt="Activation QR code" style="border: 1px solid #777777"/>
 						</p>
 					</div>
 				</div>
@@ -47,12 +47,12 @@
 				<div class="panel-body gray">
 					<p>
 						Activation ID<br>
-						<strong class="code black">${activationId}</strong>
+						<strong class="code black"><c:out value="${activationId}"/></strong>
 					</p> 
 					<c:if test="${activationName != null}">
 						<p>
 							Activation Name<br>
-							<span class="black">${activationName}</span>
+							<span class="black"><c:out value="${activationName}"/></span>
 						</p>
 					</c:if>
 					<table class="w100">
@@ -74,7 +74,7 @@
 							<td>
 								<p>
 									Application<br>
-									<span class="black"><a class="black" href="${pageContext.request.contextPath}/application/detail/${applicationId}">${applicationName}</a></span>
+									<span class="black"><a class="black" href="${pageContext.request.contextPath}/application/detail/<c:out value="${applicationId}"/>"><c:out value="${applicationName}"/></a></span>
 								</p>
 							</td>
 							<td>
@@ -120,7 +120,7 @@
 										<td class="gray" style="width: 250px;">
 											<p>
 												Transaction ID<br>
-												<span class="black">${item.id}</span>
+												<span class="black"><c:out value="${item.id}"/></span>
 											</p>
 											<p>
 												Date<br>
@@ -128,25 +128,34 @@
 											</p>
 											<p>
 												Value<br>
-												<span class="black">${item.signature}</span>
+												<span class="black"><c:out value="${item.signature}"/></span>
 											</p>
 											<p>
 												Type<br>
-												<span class="black">${item.signatureType}</span>
+												<span class="black"><c:out value="${item.signatureType}"/></span>
 											</p>
 											<p>
 												Result<br>
-												<span class="black"><c:choose><c:when test="${item.valid}">OK</c:when><c:otherwise>NOK</c:otherwise></c:choose>: ${item.note}</span>
+												<span class="black">
+													<c:choose>
+														<c:when test="${item.valid}">OK</c:when>
+														<c:otherwise>NOK</c:otherwise>
+													</c:choose>: <c:out value="${item.note}"/>
+												</span>
 											</p>
 											<table class="w100">
 												<tr>
 													<td>
 														Activation<br>
-														<span class="black"><jsp:include page="activationStatusSnippet.jsp"><jsp:param value="${item.activationStatus}" name="status"/></jsp:include></span>
+														<span class="black">
+															<jsp:include page="activationStatusSnippet.jsp">
+																<jsp:param value="${item.activationStatus}" name="status"/>
+															</jsp:include>
+														</span>
 													</td>
 													<td>
 														Counter<br>
-														<span class="black">${item.activationCounter}</span>
+														<span class="black"><c:out value="${item.activationCounter}"/></span>
 													</td>
 												</tr>
 											</table>
@@ -154,7 +163,7 @@
 										<td>
 											<p class="wrap gray">
 												Signed data<br>
-												<span class="black">${item.dataBase64}</span>
+												<span class="black"><c:out value="${item.dataBase64}"/></span>
 											</p>
 										</td>
 									</tr>

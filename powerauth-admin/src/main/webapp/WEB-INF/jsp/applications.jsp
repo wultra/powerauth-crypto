@@ -40,9 +40,9 @@
 				</thead>
 				<tbody>
 					<c:forEach items="${applications}" var="item">
-						<tr class="code clickable-row" data-href="${pageContext.request.contextPath}/application/detail/${item.id}">
-							<td>${item.id}</td>
-							<td>${item.applicationName}</td>
+						<tr class="code clickable-row" data-href="${pageContext.request.contextPath}/application/detail/<c:out value="${item.id}"/>">
+							<td><c:out value="${item.id}"/></td>
+							<td><c:out value="${item.applicationName}"/></td>
 						</tr>
 					</c:forEach>
 				</tbody>

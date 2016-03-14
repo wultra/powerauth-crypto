@@ -17,16 +17,16 @@
 			<div class="panel panel-default">
 		
 				<div class="panel-heading">
-					<h3 class="panel-title">Application #${id}: ${name}</h3>
+					<h3 class="panel-title">Application #<c:out value="${id}"/>: <c:out value="${name}"/></h3>
 				</div>
 				
 				<div class="panel-body">
 					<p>Master Public Key</p>
-					<div class="well code wrap">${masterPublicKey}</div>
+					<div class="well code wrap"><c:out value="${masterPublicKey}"/></div>
 				</div>
 				
 				<div class="panel-footer">
-					<a href="${pageContext.request.contextPath}/application/detail/${id}/version/create" class="btn btn-success pull-right">New Version</a>
+					<a href="${pageContext.request.contextPath}/application/detail/<c:out value="${id}"/>/version/create" class="btn btn-success pull-right">New Version</a>
 					<div class="clearfix"></div>
 				</div>
 			</div>
@@ -47,9 +47,9 @@
 						<tbody>
 							<c:forEach items="${versions}" var="item">
 								<tr class="code">
-									<td>${item.applicationVersionName}</td>
-									<td>${item.applicationKey}</td>
-									<td>${item.applicationSecret}</td>
+									<td><c:out value="${item.applicationVersionName}"/></td>
+									<td><c:out value="${item.applicationKey}"/></td>
+									<td><c:out value="${item.applicationSecret}"/></td>
 									<td>
 										<c:choose>
 											<c:when test="${item.supported}">
@@ -63,16 +63,16 @@
 									<td>
 										<c:choose>
 											<c:when test="${item.supported}">
-												<form action="${pageContext.request.contextPath}/application/detail/${id}/version/update/do.submit" method="POST">
+												<form action="${pageContext.request.contextPath}/application/detail/<c:out value="${id}"/>/version/update/do.submit" method="POST">
 													<input type="hidden" name="enabled" value="false" />
-													<input type="hidden" name="version" value="${item.applicationVersionId}" />
+													<input type="hidden" name="version" value="<c:out value="${item.applicationVersionId}"/>" />
 													<input type="submit" value="Disable" class="btn btn-sm btn-default w100"/>
 												</form>
 											</c:when>
 											<c:otherwise>
-												<form action="${pageContext.request.contextPath}/application/detail/${id}/version/update/do.submit" method="POST">
+												<form action="${pageContext.request.contextPath}/application/detail/<c:out value="${id}"/>/version/update/do.submit" method="POST">
 													<input type="hidden" name="enabled" value="true" />
-													<input type="hidden" name="version" value="${item.applicationVersionId}" />
+													<input type="hidden" name="version" value="<c:out value="${item.applicationVersionId}"/>" />
 													<input type="submit" value="Enable" class="btn btn-sm btn-default w100"/>
 												</form>
 											</c:otherwise>

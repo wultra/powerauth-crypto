@@ -8,7 +8,7 @@
 
 	<ol class="breadcrumb">
 		<li><a class="black" href="${pageContext.request.contextPath}/application/list">Applications</a></li>
-		<li><a class="black" href="${pageContext.request.contextPath}/application/detail/${applicationId}">Application detail</a></li>
+		<li><a class="black" href="${pageContext.request.contextPath}/application/detail/<c:out value="${applicationId}"/>">Application detail</a></li>
 		<li class="active">New version</li>
 	</ol>
 	
@@ -20,7 +20,7 @@
 		</div>
 		
 		<div class="panel-body">
-			<form class="form-inline" action="${pageContext.request.contextPath}/application/detail/${applicationId}/version/create/do.submit" method="POST">
+			<form class="form-inline" action="${pageContext.request.contextPath}/application/detail/<c:out value="${applicationId}"/>/version/create/do.submit" method="POST">
 				Version name: <input type="text" name="name" class="form-control"/>
 				<input type="submit" value="Submit" class="btn btn-success" />
 			</form>
