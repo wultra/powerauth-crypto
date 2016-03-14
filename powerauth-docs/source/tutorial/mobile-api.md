@@ -124,10 +124,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-    	http.authorizeRequests().antMatchers("/secured/**").fullyAuthenticated();
-    	http.httpBasic().disable();
-    	http.csrf().disable();
-    	http.exceptionHandling().authenticationEntryPoint(apiAuthenticationEntryPoint);
+      http.authorizeRequests().antMatchers("/secured/**").fullyAuthenticated();
+      http.httpBasic().disable();
+      http.csrf().disable();
+      http.exceptionHandling().authenticationEntryPoint(apiAuthenticationEntryPoint);
     }
 
 }
