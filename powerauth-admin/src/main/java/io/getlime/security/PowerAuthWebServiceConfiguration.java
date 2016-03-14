@@ -1,5 +1,6 @@
 package io.getlime.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,9 @@ import io.getlime.security.soap.client.PowerAuthServiceClient;
 @Configuration
 @ComponentScan(basePackages = {"io.getlime.rest"})
 public class PowerAuthWebServiceConfiguration {
+	
+	@Value("${powerauth.service.url}")
+	private String powerAuthServiceUrl;
 
     @Bean
     public Jaxb2Marshaller marshaller() {
@@ -21,7 +25,7 @@ public class PowerAuthWebServiceConfiguration {
     @Bean
     public PowerAuthServiceClient powerAuthClient(Jaxb2Marshaller marshaller) {
         PowerAuthServiceClient client = new PowerAuthServiceClient();
-        client.setDefaultUri("http://powerauth-server.eu-gb.mybluemix.net/soap/");
+        client.setDefaultUri(powerAuthServiceUrl);
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);
         return client;
