@@ -101,7 +101,7 @@ public class ActivationController {
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<ActivationRemoveResponse> removeActivation(@RequestBody PowerAuthAPIRequest<ActivationRemoveRequest> request, @RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader, HttpServletRequest servletRequest) throws Exception {
 
-		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature("POST", null, "/pa/activation/remove", signatureHeader);
+		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.validateRequestSignature("POST", null, "/pa/activation/remove", signatureHeader);
 		
 		if (apiAuthentication != null && apiAuthentication.getActivationId() != null) {
 

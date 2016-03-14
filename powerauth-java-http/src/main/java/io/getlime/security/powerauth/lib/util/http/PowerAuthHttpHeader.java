@@ -36,13 +36,13 @@ public class PowerAuthHttpHeader {
 		if (!xPowerAuthSignatureHeader.startsWith(POWERAUTH_PREFIX)) {
 			return null;
 		}
-		xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.substring(POWERAUTH_PREFIX.length());
+		xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.substring(POWERAUTH_PREFIX.length()).trim();
 		
 		// Parse the key / value pairs
 		Map<String, String> result = new HashMap<>();
 		Pattern p = Pattern.compile("(\\w+)=\"*((?<=\")[^\"]+(?=\")|([^\\s]+)),*\"*");
 		Matcher m = p.matcher(xPowerAuthSignatureHeader);
-		while(m.find()){
+		while (m.find()) {
 		    result.put(m.group(1), m.group(2));
 		}
 

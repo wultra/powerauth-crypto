@@ -41,7 +41,7 @@ public class AuthenticationController {
 			@RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader,
 			HttpServletRequest servletRequest) throws Exception {
 
-		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(servletRequest, "/pa/signature/validate", signatureHeader);
+		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.validateRequestSignature(servletRequest, "/pa/signature/validate", signatureHeader);
 
 		if (apiAuthentication != null && apiAuthentication.getUserId() != null) {
 			// ##EXAMPLE: Here, we could store the authentication in the session like this:
