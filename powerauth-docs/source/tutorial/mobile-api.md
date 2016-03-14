@@ -77,7 +77,7 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         registrationBean.setFilter(new PowerAuthRequestFilter());
         registrationBean.setMatchAfter(true);
-        registrationBean.addUrlPatterns("/secured/");
+        registrationBean.addUrlPatterns("/secured/*");
         return registrationBean;
     }
 

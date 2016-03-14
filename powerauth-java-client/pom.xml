@@ -4,7 +4,7 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-client</artifactId>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>0.0.8</version>
 
 	<name>powerauth-java-client</name>
 	<description>PowerAuth 2.0 Service Client</description>
@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.0.7-SNAPSHOT</version>
+		<version>0.0.8</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

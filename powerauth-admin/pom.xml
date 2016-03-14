@@ -7,13 +7,13 @@
 	<description>PowerAuth 2.0 Server Admin Console</description>
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-admin</artifactId>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>0.0.8</version>
 	<packaging>war</packaging>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.0.7-SNAPSHOT</version>
+		<version>0.0.8</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -47,11 +47,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.getlime.security</groupId>
-			<artifactId>powerauth-java-client</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
 			<version>3.2.1</version>
@@ -60,6 +55,11 @@
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
 			<version>3.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.getlime.security</groupId>
+			<artifactId>powerauth-java-client</artifactId>
+			<version>0.0.8</version>
 		</dependency>
 	</dependencies>
 

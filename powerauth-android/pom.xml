@@ -4,14 +4,14 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-android</artifactId>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>0.0.8</version>
 	<name>powerauth-java-android</name>
 	<description>Android library with PowerAuth 2.0 Client related modules</description>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.0.7-SNAPSHOT</version>
+		<version>0.0.8</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -20,17 +20,17 @@
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java-http</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
+			<version>0.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-restful-model</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
+			<version>0.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
+			<version>0.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
