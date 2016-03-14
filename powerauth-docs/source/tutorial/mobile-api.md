@@ -94,10 +94,10 @@ PowerAuth uses the concept of `application ID` and `application secret`. While `
 @Configuration
 public class ApplicationConfiguration implements PowerAuthApplicationConfiguration {
 
-  @Override
-	public boolean isAllowedApplicationKey(String applicationKey) {
-    return true; // default implementation
-	}
+    @Override
+    public boolean isAllowedApplicationKey(String applicationKey) {
+        return true; // default implementation
+    }
 
 }
 ```
