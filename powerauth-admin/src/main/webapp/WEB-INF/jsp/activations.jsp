@@ -78,7 +78,7 @@
 						<tbody>
 							<c:forEach items="${activations}" var="item">
 								<c:if test="${(showAll == true) || (item.activationStatus == 'CREATED') || (item.activationStatus == 'ACTIVE') || (item.activationStatus == 'OTP_USED') || (item.activationStatus == 'BLOCKED')}">
-								<tr class="code clickable-row" data-href='${pageContext.request.contextPath}/activation/detail/<c:out value="${item.activationId}"/>?userId=<c:out value="${userId}"/>'>
+								<tr class="code clickable-row" data-href='${pageContext.request.contextPath}/activation/detail/<c:out value="${item.activationId}"/>'>
 									<td><c:out value="${item.activationId}"/></td>
 									<td><c:out value="${item.activationName}"/></td>
 									<td>
