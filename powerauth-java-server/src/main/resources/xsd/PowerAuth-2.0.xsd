@@ -234,6 +234,9 @@
                 <xs:element name="timestampCreated" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="timestampLastUsed" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="encryptedStatusBlob" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationIdShort" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="activationOTP" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="activationSignature" type="xs:string" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -283,6 +286,7 @@
                 			<xs:element name="timestampLastUsed" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
                 			<xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 			<xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+                			<xs:element name="applicationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

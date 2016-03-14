@@ -77,7 +77,7 @@ public class SignatureServiceBehavior {
 				// Save the activation
 				powerAuthRepository.save(activation);
 
-				auditingServiceBehavior.logSignatureAuditRecord(activation, signatureType, signatureType, data, false, "activation_invalid_application", currentTimestamp);
+				auditingServiceBehavior.logSignatureAuditRecord(activation, signatureType, signature, data, false, "activation_invalid_application", currentTimestamp);
 
 				// return the data
 				VerifySignatureResponse response = new VerifySignatureResponse();
@@ -135,7 +135,7 @@ public class SignatureServiceBehavior {
 					// Save the activation
 					powerAuthRepository.save(activation);
 
-					auditingServiceBehavior.logSignatureAuditRecord(activation, signatureType, signatureType, data, true, "signature_ok", currentTimestamp);
+					auditingServiceBehavior.logSignatureAuditRecord(activation, signatureType, signature, data, true, "signature_ok", currentTimestamp);
 
 					// return the data
 					VerifySignatureResponse response = new VerifySignatureResponse();
@@ -166,7 +166,7 @@ public class SignatureServiceBehavior {
 					// Save the activation
 					powerAuthRepository.save(activation);
 
-					auditingServiceBehavior.logSignatureAuditRecord(activation, signatureType, signatureType, data, false, "signature_does_not_match", currentTimestamp);
+					auditingServiceBehavior.logSignatureAuditRecord(activation, signatureType, signature, data, false, "signature_does_not_match", currentTimestamp);
 
 					// return the data
 					VerifySignatureResponse response = new VerifySignatureResponse();
@@ -192,7 +192,7 @@ public class SignatureServiceBehavior {
 				// Save the activation
 				powerAuthRepository.save(activation);
 
-				auditingServiceBehavior.logSignatureAuditRecord(activation, signatureType, signatureType, data, false, "activation_invalid_state", currentTimestamp);
+				auditingServiceBehavior.logSignatureAuditRecord(activation, signatureType, signature, data, false, "activation_invalid_state", currentTimestamp);
 
 				// return the data
 				VerifySignatureResponse response = new VerifySignatureResponse();

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import io.getlime.rest.api.model.ErrorModel;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 
@@ -67,6 +68,13 @@ public class DefaultExceptionHandler {
 		List<ErrorBody> errorList = new ArrayList<>();
 		errorList.add(new ErrorBody(exception.getMessage()));
 		return new PowerAuthAPIResponse<List<ErrorBody>>("ERROR", errorList);
+	}
+	
+	@ExceptionHandler(value = ErrorException.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public @ResponseBody PowerAuthAPIResponse<List<ErrorModel>> handleErrorException(HttpServletRequest request, ErrorException exception) {
+		exception.printStackTrace();
+		return new PowerAuthAPIResponse<List<ErrorModel>>("ERROR", exception.getErrors());
 	}
 
 }

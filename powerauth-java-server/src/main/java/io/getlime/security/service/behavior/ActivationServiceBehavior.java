@@ -104,6 +104,7 @@ public class ActivationServiceBehavior {
 				activationServiceItem.setTimestampLastUsed(ModelUtil.calendarWithDate(activation.getTimestampLastUsed()));
 				activationServiceItem.setUserId(activation.getUserId());
 				activationServiceItem.setApplicationId(activation.getApplication().getId());
+				activationServiceItem.setApplicationName(activation.getApplication().getName());
 				response.getActivations().add(activationServiceItem);
 			}
 		}
@@ -129,6 +130,15 @@ public class ActivationServiceBehavior {
 				// Created activations are not able to transfer valid status blob to the client
 				// since both keys were not exchanged yet and transport cannot be secured.
 				byte[] randomStatusBlob = new KeyGenerator().generateRandomBytes(16);
+				
+				// Activation signature
+				String masterPrivateKeyBase64 = masterKeyPairRepository.findFirstByApplicationIdOrderByTimestampCreatedDesc(activation.getApplication().getId()).getMasterKeyPrivateBase64();
+				byte[] masterPrivateKeyBytes = BaseEncoding.base64().decode(masterPrivateKeyBase64);
+				byte[] activationSignature = powerAuthServerActivation.generateActivationSignature(
+						activation.getActivationIdShort(), 
+						activation.getActivationOTP(), 
+						keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes)
+				);
 
 				// return the data
 				GetActivationStatusResponse response = new GetActivationStatusResponse();
@@ -141,6 +151,9 @@ public class ActivationServiceBehavior {
 				response.setTimestampCreated(ModelUtil.calendarWithDate(activation.getTimestampCreated()));
 				response.setTimestampLastUsed(ModelUtil.calendarWithDate(activation.getTimestampLastUsed()));
 				response.setEncryptedStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
+				response.setActivationIdShort(activation.getActivationIdShort());
+				response.setActivationOTP(activation.getActivationOTP());
+				response.setActivationSignature(BaseEncoding.base64().encode(activationSignature));
 				return response;
 
 			} else {
@@ -187,6 +200,9 @@ public class ActivationServiceBehavior {
 				response.setTimestampCreated(ModelUtil.calendarWithDate(activation.getTimestampCreated()));
 				response.setTimestampLastUsed(ModelUtil.calendarWithDate(activation.getTimestampLastUsed()));
 				response.setEncryptedStatusBlob(BaseEncoding.base64().encode(C_statusBlob));
+				response.setActivationIdShort(null);
+				response.setActivationOTP(null);
+				response.setActivationSignature(null);
 
 				return response;
 
@@ -208,6 +224,9 @@ public class ActivationServiceBehavior {
 			response.setTimestampCreated(null);
 			response.setTimestampLastUsed(null);
 			response.setEncryptedStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
+			response.setActivationIdShort(null);
+			response.setActivationOTP(null);
+			response.setActivationSignature(null);
 			return response;
 		}
 	}

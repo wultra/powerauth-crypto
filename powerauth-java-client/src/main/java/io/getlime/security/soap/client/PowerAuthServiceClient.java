@@ -337,7 +337,8 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	}
 	
 	/**
-	 * Call the verifySignature method of the PowerAuth 2.0 Server SOAP interface.
+	 * Call the verifySignature method of the PowerAuth 2.0 Server SOAP interface and get
+	 * signature audit log for all application of a given user.
 	 * @param userId User ID to query the audit log against.
 	 * @param startingDate Limit the results to given starting date (= "newer than")
 	 * @param endingDate Limit the results to given ending date (= "older than")
@@ -346,6 +347,24 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	public List<SignatureAuditResponse.Items> getSignatureAuditLog(String userId, Date startingDate, Date endingDate) {
 		SignatureAuditRequest request = new SignatureAuditRequest();
 		request.setUserId(userId);
+		request.setTimestampFrom(calendarWithDate(startingDate));
+		request.setTimestampTo(calendarWithDate(endingDate));
+		return this.getSignatureAuditLog(request).getItems();
+	}
+	
+	/**
+	 * Call the verifySignature method of the PowerAuth 2.0 Server SOAP interface and get
+	 * signature audit log for a single application.
+	 * @param userId User ID to query the audit log against.
+	 * @param applicationId Application ID to query the audit log against.
+	 * @param startingDate Limit the results to given starting date (= "newer than")
+	 * @param endingDate Limit the results to given ending date (= "older than")
+	 * @return List of signature audit items {@link SignatureAuditResponse.Items}
+	 */
+	public List<SignatureAuditResponse.Items> getSignatureAuditLog(String userId, Long applicationId, Date startingDate, Date endingDate) {
+		SignatureAuditRequest request = new SignatureAuditRequest();
+		request.setUserId(userId);
+		request.setApplicationId(applicationId);
 		request.setTimestampFrom(calendarWithDate(startingDate));
 		request.setTimestampTo(calendarWithDate(endingDate));
 		return this.getSignatureAuditLog(request).getItems();
