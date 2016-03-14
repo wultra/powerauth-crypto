@@ -94,6 +94,7 @@
 										<jsp:include page="activationStatusForms.jsp">
 											<jsp:param value="${item.activationStatus}" name="status"/>
 											<jsp:param value="${item.activationId}" name="activationId"/>
+											<jsp:param value="/activation/list?userId=${userId}" name="redirect"/>
 										</jsp:include>
 									</td>
 								</tr>

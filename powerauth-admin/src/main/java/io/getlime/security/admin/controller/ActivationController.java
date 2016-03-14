@@ -17,13 +17,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.google.common.io.BaseEncoding;
 
 import io.getlime.powerauth.soap.ActivationStatus;
+import io.getlime.powerauth.soap.BlockActivationResponse;
 import io.getlime.powerauth.soap.CommitActivationResponse;
 import io.getlime.powerauth.soap.GetActivationListForUserResponse;
 import io.getlime.powerauth.soap.GetActivationStatusResponse;
 import io.getlime.powerauth.soap.GetApplicationDetailResponse;
 import io.getlime.powerauth.soap.GetApplicationListResponse;
 import io.getlime.powerauth.soap.InitActivationResponse;
+import io.getlime.powerauth.soap.RemoveActivationResponse;
 import io.getlime.powerauth.soap.SignatureAuditResponse;
+import io.getlime.powerauth.soap.UnblockActivationResponse;
 import io.getlime.security.soap.client.PowerAuthServiceClient;
 import io.getlime.security.util.QRUtil;
 
@@ -118,6 +121,42 @@ public class ActivationController {
 	public String activationCreateCommitAction(@RequestParam(value = "activationId") String activationId, Map<String, Object> model) {
 		CommitActivationResponse commitActivation = client.commitActivation(activationId);
 		return "redirect:/activation/detail/" + commitActivation.getActivationId();
+	}
+	
+	@RequestMapping(value = "/activation/block/do.submit", method = RequestMethod.POST)
+	public String blockActivation(@RequestParam(value = "activationId") String activationId, @RequestParam(value = "redirect") String redirect, Map<String, Object> model) {
+		BlockActivationResponse blockActivation = client.blockActivation(activationId);
+		if (redirect != null && !redirect.trim().isEmpty()) {
+			return "redirect:" + redirect;
+		}
+		return "redirect:/activation/detail/" + blockActivation.getActivationId();
+	}
+	
+	@RequestMapping(value = "/activation/unblock/do.submit", method = RequestMethod.POST)
+	public String unblockActivation(@RequestParam(value = "activationId") String activationId, @RequestParam(value = "redirect") String redirect, Map<String, Object> model) {
+		UnblockActivationResponse unblockActivation = client.unblockActivation(activationId);
+		if (redirect != null && !redirect.trim().isEmpty()) {
+			return "redirect:" + redirect;
+		}
+		return "redirect:/activation/detail/" + unblockActivation.getActivationId();
+	}
+	
+	@RequestMapping(value = "/activation/commit/do.submit", method = RequestMethod.POST)
+	public String commitActivation(@RequestParam(value = "activationId") String activationId, @RequestParam(value = "redirect") String redirect, Map<String, Object> model) {
+		CommitActivationResponse commitActivation = client.commitActivation(activationId);
+		if (redirect != null && !redirect.trim().isEmpty()) {
+			return "redirect:" + redirect;
+		}
+		return "redirect:/activation/detail/" + commitActivation.getActivationId();
+	}
+	
+	@RequestMapping(value = "/activation/remove/do.submit", method = RequestMethod.POST)
+	public String removeActivation(@RequestParam(value = "activationId") String activationId, @RequestParam(value = "redirect") String redirect, Map<String, Object> model) {
+		RemoveActivationResponse removeActivation = client.removeActivation(activationId);
+		if (redirect != null && !redirect.trim().isEmpty()) {
+			return "redirect:" + redirect;
+		}
+		return "redirect:/activation/detail/" + removeActivation.getActivationId();
 	}
 
 }

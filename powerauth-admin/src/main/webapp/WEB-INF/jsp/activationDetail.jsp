@@ -117,7 +117,7 @@
 							<c:otherwise>
 								<c:forEach items="${signatures}" var="item">
 									<tr class="code">
-										<td class="gray" style="width: 250px;">
+										<td class="gray" style="width: 270px;">
 											<p>
 												Transaction ID<br>
 												<span class="black"><c:out value="${item.id}"/></span>
@@ -138,9 +138,10 @@
 												Result<br>
 												<span class="black">
 													<c:choose>
-														<c:when test="${item.valid}">OK</c:when>
-														<c:otherwise>NOK</c:otherwise>
-													</c:choose>: <c:out value="${item.note}"/>
+														<c:when test="${item.valid}"><span class="green">OK</span>:</c:when>
+														<c:otherwise><span class="red">NOK</span>:</c:otherwise>
+													</c:choose>
+													<c:out value="${item.note}"/>
 												</span>
 											</p>
 											<table class="w100">
