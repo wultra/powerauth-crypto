@@ -154,7 +154,7 @@ public class AuthenticationController {
             @RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader,
             HttpServletRequest servletRequest) throws Exception {
 
-        PowerAuthApiAuthentication apiAuthentication = authenticationProvider.checkRequestSignature(
+        PowerAuthApiAuthentication apiAuthentication = authenticationProvider.validateRequestSignature(
                 servletRequest,
                 "/session/login",
                 signatureHeader
