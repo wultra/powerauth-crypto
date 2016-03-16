@@ -86,8 +86,6 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
 ### Register a PowerAuth application registry
 
-_(optional)_
-
 PowerAuth uses the concept of `application ID` and `application secret`. While `applicationId` attribute is transmitted with requests in `X-PowerAuth-Authorization` header, `applicationSecret` is shared implicitly between client and server and is a part of the actual signature value. Applications are a first class citizen in PowerAuth protocol. Intermediate application, however, may influence which applications are accepted by implementing following configuration.
 
 ```java
@@ -96,7 +94,12 @@ public class ApplicationConfiguration implements PowerAuthApplicationConfigurati
 
     @Override
     public boolean isAllowedApplicationKey(String applicationKey) {
-        return true; // default implementation
+        return true; // suggested default implementation
+    }
+
+    @Override
+    public Map<String, Object> statusServiceCustomObject() {
+        return null; // suggested default implementation
     }
 
 }
