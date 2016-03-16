@@ -36,6 +36,7 @@ import io.getlime.rest.api.model.ActivationStatusRequest;
 import io.getlime.rest.api.model.ActivationStatusResponse;
 import io.getlime.rest.api.model.PowerAuthAPIRequest;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
+import io.getlime.rest.api.security.application.PowerAuthApplicationConfiguration;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
@@ -50,6 +51,9 @@ public class ActivationController {
 
 	@Autowired
 	private PowerAuthAuthenticationProvider authenticationProvider;
+	
+	@Autowired
+	private PowerAuthApplicationConfiguration applicationConfiguration;
 
 	@RequestMapping(value = "create", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<ActivationCreateResponse> createActivation(@RequestBody PowerAuthAPIRequest<ActivationCreateRequest> request) {
@@ -93,6 +97,7 @@ public class ActivationController {
 		ActivationStatusResponse response = new ActivationStatusResponse();
 		response.setActivationId(soapResponse.getActivationId());
 		response.setEncryptedStatusBlob(soapResponse.getEncryptedStatusBlob());
+		response.setCustomObject(applicationConfiguration.statusServiceCustomObject());
 
 		return new PowerAuthAPIResponse<ActivationStatusResponse>("OK", response);
 		

@@ -15,10 +15,13 @@
  */
 package io.getlime.rest.api.model;
 
+import java.util.Map;
+
 public class ActivationStatusResponse {
 	
 	private String activationId;
 	private String encryptedStatusBlob;
+	private Map<String, Object> customObject;
 	
 	public String getActivationId() {
 		return activationId;
@@ -34,6 +37,14 @@ public class ActivationStatusResponse {
 	
 	public void setEncryptedStatusBlob(String cStatusBlob) {
 		this.encryptedStatusBlob = cStatusBlob;
+	}
+	
+	public Map<String, Object> getCustomObject() {
+		return customObject;
+	}
+	
+	public void setCustomObject(Map<String, Object> customObject) {
+		this.customObject = customObject;
 	}
 
 }

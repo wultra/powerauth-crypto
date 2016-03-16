@@ -15,6 +15,8 @@
  */
 package io.getlime.rest.api.configuration;
 
+import java.util.Map;
+
 import org.springframework.context.annotation.Configuration;
 
 import io.getlime.rest.api.security.application.PowerAuthApplicationConfiguration;
@@ -25,6 +27,11 @@ public class ApplicationConfiguration implements PowerAuthApplicationConfigurati
 	@Override
 	public boolean isAllowedApplicationKey(String applicationKey) {
 		return true;
+	}
+
+	@Override
+	public Map<String, Object> statusServiceCustomObject() {
+		return null;
 	}
 	
 }

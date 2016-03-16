@@ -15,8 +15,12 @@
  */
 package io.getlime.rest.api.security.application;
 
+import java.util.Map;
+
 public interface PowerAuthApplicationConfiguration {
 	
 	public boolean isAllowedApplicationKey(String applicationKey);
+	
+	public Map<String, Object> statusServiceCustomObject();
 
 }
