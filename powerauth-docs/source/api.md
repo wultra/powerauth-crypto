@@ -136,6 +136,8 @@ where:
 - `${MAX_FAIL_COUNT}` - 1 byte representing information about the maximum allowed number of failed attempts.
 - `${RANDOM_NOISE}` - Random 17 byte padding (a complement to the total length of 32B). These bytes also serve as a source of entropy for the transport (AES encrypted `cStatusBlob` will be different each time an endpoint is called).
 
+This endpoint also returns a `customObject` object with custom application specific data. This object may be used for example to provide service specific data (current timestamp, info about service status, ...) in order to minimize number of required request in practical deployments (for example, mobile banking needs to ask for the service status data on application launch).
+
 <table>
 	<tr>
 		<td>Method</td>
@@ -171,7 +173,10 @@ where:
 			"status": "OK",
 			"responseObject": {
 				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-				"encryptedStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ=="
+				"encryptedStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
+				"customObject": {
+            "_comment": "Any object data, such as timestamp, service status info, etc."
+        }
 			}
 		}
 ```
