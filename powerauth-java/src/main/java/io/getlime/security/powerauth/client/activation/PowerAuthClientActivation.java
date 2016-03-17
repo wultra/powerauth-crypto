@@ -148,9 +148,9 @@ public class PowerAuthClientActivation {
 	public boolean verifyServerDataSignature(String activationId, byte[] C_serverPublicKey, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, UnsupportedEncodingException {
 		try {
 			byte[] activationIdBytes = activationId.getBytes("UTF-8");
-        	byte[] result = new byte[activationIdBytes.length + C_serverPublicKey.length];
-        	System.arraycopy(activationIdBytes, 0, result, 0, activationIdBytes.length);
-        	System.arraycopy(C_serverPublicKey, 0, result, activationIdBytes.length, C_serverPublicKey.length);
+			String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
+			String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
+			byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes("UTF-8");
 			return signatureUtils.validateECDSASignature(result, signature, masterPublicKey);
 		} catch (SignatureException ex) {
 			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);

@@ -132,14 +132,18 @@ To describe the steps more precisely, the activation process is performed in fol
 	- `byte[] keyPublicBytes = KeyConversion.getBytes(KEY_SERVER_PUBLIC)`
 	- `byte[] C_KEY_SERVER_PUBLIC = AES.encrypt(AES.encrypt(keyPublicBytes, EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP), EPHEMERAL_NONCE, EPH_KEY)`
 	- `byte[] activationIdBytes = ACTIVATION_ID.getBytes("UTF-8")`
-	- `byte[] activationData = ByteUtils.concat(C_KEY_SERVER_PUBLIC, activationIdBytes)`
+	- `String activationIdBytesBase64 = Base64.encode(activationIdBytes)`
+	- `String C_KEY_SERVER_PUBLIC_BASE64 = Base64.encode(C_KEY_SERVER_PUBLIC)`
+	- `byte[] activationData = activationIdBytesBase64 + "&" + C_KEY_SERVER_PUBLIC_BASE64`
 	- `byte[] SERVER_DATA_SIGNATURE = ECDSA.sign(activationData, KEY_SERVER_MASTER_PRIVATE)`
 
 1. PowerAuth 2.0 Client receives an `ACTIVATION_ID`, `C_KEY_SERVER_PUBLIC`, `KEY_EPHEMERAL_PUBLIC` and `SERVER_DATA_SIGNATURE` and if the signature matches the data, it retrieves `KEY_SERVER_PUBLIC`.
 
 	- `SecretKey KEY_ENCRYPTION_OTP = PBKDF2.expand(ACTIVATION_OTP, ACTIVATION_ID_SHORT.getBytes("UTF-8"), 10 000)`
 	- `byte[] activationIdBytes = ACTIVATION_ID.getBytes("UTF-8")`
-	- `byte[] activationData = ByteUtils.concat(C_KEY_SERVER_PUBLIC, activationIdBytes)`
+	- `String activationIdBytesBase64 = Base64.encode(activationIdBytes)`
+	- `String C_KEY_SERVER_PUBLIC_BASE64 = Base64.encode(C_KEY_SERVER_PUBLIC)`
+	- `byte[] activationData = activationIdBytesBase64 + "&" + C_KEY_SERVER_PUBLIC_BASE64`
 	- `boolean isSignatureOK = ECDSA.verify(activationData, SERVER_DATA_SIGNATURE, KEY_SERVER_MASTER_PUBLIC)`
 	- `SecretKey EPH_KEY = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_EPHEMERAL_PUBLIC)`
 	- `byte[] keyPublicBytes = AES.decrypt(AES.decrypt(C_KEY_SERVER_PUBLIC, EPHEMERAL_NONCE, EPH_KEY), EPHEMERAL_NONCE, KEY_ENCRYPTION_OTP)`
