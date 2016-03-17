@@ -119,7 +119,7 @@ PowerAuth 2.0 Client can later trivially decrypt the original status blob:
 Structure of the 32B long status blob is following:
 
 ```java
-	0xDE 0xAD 0xBE 0xEF 1B:${STATUS} 8B:${CTR} 1B:${FAIL_COUNT} 1B:${MAX_FAIL_COUNT} 17B:${RANDOM_NOISE}
+	0xDE 0xC0 0xDE 0xD1 1B:${STATUS} 8B:${CTR} 1B:${FAIL_COUNT} 1B:${MAX_FAIL_COUNT} 17B:${RANDOM_NOISE}
 ```
 
 where:
@@ -175,9 +175,9 @@ This endpoint also returns a `customObject` object with custom application speci
 				"activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
 				"encryptedStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
 				"customObject": {
-            "_comment": "Any object data, such as timestamp, service status info, etc."
+          "_comment": "Any object data, such as timestamp, service status info, etc."
         }
-			}
+      }
 		}
 ```
 
