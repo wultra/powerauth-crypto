@@ -93,18 +93,24 @@ public class GenerateVectorDataTest {
 			String activationIdShort = new IdentifierGenerator().generateActivationOTP();
 			byte[] activationNonce = activation.generateActivationNonce();
 			PublicKey publicKey = new KeyGenerator().generateKeyPair().getPublic();
+			byte[] applicationKey = new KeyGenerator().generateRandomBytes(16);
+			byte[] applicationSecret = new KeyGenerator().generateRandomBytes(16);
 
 			byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, activationOTP, activationIdShort, activationNonce);
+			byte[] applicationSignature = activation.computeApplicationSignature(activationIdShort, activationNonce, cDevicePublicKey, applicationKey, applicationSecret);
 
 			System.out.println("    {");
 			System.out.println("        \"input\": {");
 			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
 			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
 			System.out.println("            \"activationNonce\": \"" + BaseEncoding.base64().encode(activationNonce) + "\",");
+			System.out.println("            \"applicationKey\": \"" + BaseEncoding.base64().encode(applicationKey) + "\",");
+			System.out.println("            \"applicationSecret\": \"" + BaseEncoding.base64().encode(applicationSecret) + "\",");
 			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
-			System.out.println("            \"cDevicePublicKey\": \"" + BaseEncoding.base64().encode(cDevicePublicKey) + "\"");
+			System.out.println("            \"cDevicePublicKey\": \"" + BaseEncoding.base64().encode(cDevicePublicKey) + "\",");
+			System.out.println("            \"applicationSignature\": \"" + BaseEncoding.base64().encode(applicationSignature) + "\"");
 			System.out.println("        }");
 			if (i == max - 1) {
 				System.out.println("    }");
