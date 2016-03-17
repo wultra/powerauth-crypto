@@ -27,7 +27,7 @@ PowerAuth 2.0 Client sends following data on the server:
 - `activationName` - Visual representation of the device, for example "Johnny's iPhone" or "Samsung Galaxy S".
 - `applicationSignature` - Signature using an application secret, to prove that the activation was completed using a given application.
 	- `SecretKey signatureKey = KeyConversion.secretKeyFromBytes(Base64.decode(APPLICATION_SECRET))`
-	- `byte[] applicationSignature = Mac.hmacSha256(signatureKey, id + "&" + Base64.encode(activationNonce) + "&" + Base64.encode(encryptedDevicePublicKey) + "&" + applicationKey)`
+	- `byte[] applicationSignature = Mac.hmacSha256(signatureKey, activationIdShort + "&" + Base64.encode(activationNonce) + "&" + Base64.encode(encryptedDevicePublicKey) + "&" + applicationKey)`
 - `encryptedDevicePublicKey` - Represents a public key `KEY_DEVICE_PUBLIC` AES encrypted with `ACTIVATION_OTP`.
 	- `byte[] encryptedDevicePublicKey = AES.encrypt(KEY_DEVICE_PUBLIC, activationNonce, ACTIVATION_OTP)`
 - `extras` - Any client side attributes associated with this activation, like a more detailed information about the client, etc.
@@ -180,6 +180,7 @@ This endpoint also returns a `customObject` object with custom application speci
 			}
 		}
 ```
+
 
 ## Activation remove
 
