@@ -6,14 +6,21 @@
 -- Create tables for applications and application versions
 --
 
+CREATE SEQUENCE
+ALTER SEQUENCE ;
+
 CREATE TABLE pa_application (
-  id bigint NOT NULL AUTO_INCREMENT,
+  id bigint NOT NULL DEFAULT NEXTVAL ('pa_application_seq'),
   name varchar(255) DEFAULT NULL,
   PRIMARY KEY (id)
 );
 
+ALTER SEQUENCE pa_application_seq RESTART WITH 1;
+
+CREATE SEQUENCE application_secret;
+
 CREATE TABLE pa_application_version (
-  id bigint NOT NULL AUTO_INCREMENT,
+  id bigint NOT NULL DEFAULT NEXTVAL ('pa_application_version_seq'),
   application_id bigint NOT NULL,
   name varchar(255) DEFAULT NULL,
   application_key varchar(255) DEFAULT NULL,
@@ -23,6 +30,8 @@ CREATE TABLE pa_application_version (
   CONSTRAINT FK_APPLICATION_VERSION FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
+ALTER SEQUENCE pa_application_version_seq RESTART WITH 1;
+
 CREATE INDEX KEY_APPLICATION_ID ON pa_application_version (application_id);
 CREATE INDEX KEY_APPLICATION_KEY ON pa_application_version (application_key);
 
@@ -30,16 +39,20 @@ CREATE INDEX KEY_APPLICATION_KEY ON pa_application_version (application_key);
 -- Create table for application related master keypair
 --
 
+CREATE SEQUENCE master_key_private_ba;
+
 CREATE TABLE pa_master_keypair (
-  id bigint NOT NULL AUTO_INCREMENT,
+  id bigint NOT NULL DEFAULT NEXTVAL ('pa_master_keypair_seq'),
   application_id bigint NOT NULL,
   name varchar(255) DEFAULT NULL,
   master_key_private_base64 varchar(255) NOT NULL,
   master_key_public_base64 varchar(255) NOT NULL,
-  timestamp_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  timestamp_created timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   CONSTRAINT FK_APPLICATION_KEYPAIR FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
+
+ALTER SEQUENCE pa_master_keypair_seq RESTART WITH 1;
 
 CREATE INDEX FK_APPLICATION_KEYPAIR_idx ON pa_master_keypair (application_id);
 
@@ -55,17 +68,17 @@ CREATE TABLE pa_activation (
   activation_name varchar(255) DEFAULT NULL,
   application_id bigint NOT NULL,
   user_id varchar(255) NOT NULL,
-  extras clob,
+  extras text,
   counter bigint NOT NULL,
-  device_public_key_base64 clob,
+  device_public_key_base64 text,
   failed_attempts bigint DEFAULT NULL,
   max_failed_attempts bigint NOT NULL DEFAULT '5',
-  server_private_key_base64 clob NOT NULL,
-  server_public_key_base64 clob NOT NULL,
+  server_private_key_base64 text NOT NULL,
+  server_public_key_base64 text NOT NULL,
   master_keypair_id bigint DEFAULT NULL,
-  timestamp_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  timestamp_activation_expire datetime NOT NULL,
-  timestamp_last_used datetime NOT NULL,
+  timestamp_created timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  timestamp_activation_expire timestamp(0) NOT NULL,
+  timestamp_last_used timestamp(0) NOT NULL,
   PRIMARY KEY (activation_id),
   CONSTRAINT FK_ACTIVATION_APPLICATION FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
@@ -76,19 +89,23 @@ CREATE INDEX FK_ACTIVATION_APPLICATION_idx ON pa_activation (application_id);
 -- Create a table for signature audits
 --
 
+CREATE SEQUENCE activation_counter;
+
 CREATE TABLE pa_signature_audit (
-  id int NOT NULL AUTO_INCREMENT,
+  id int NOT NULL DEFAULT NEXTVAL ('pa_signature_audit_seq'),
   activation_id varchar(37) NOT NULL,
   activation_counter bigint NOT NULL,
   activation_status int NOT NULL,
-  data_base64 clob,
+  data_base64 text,
   signature_type varchar(255) NOT NULL,
   signature varchar(255) NOT NULL,
   valid int NOT NULL DEFAULT '0',
-  note clob NOT NULL,
-  timestamp_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  note text NOT NULL,
+  timestamp_created timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   CONSTRAINT FK_ACTIVATION_ID FOREIGN KEY (activation_id) REFERENCES pa_activation (activation_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
+
+ALTER SEQUENCE pa_signature_audit_seq RESTART WITH 1;
 
 CREATE INDEX K_ACTIVATION_ID ON pa_signature_audit (activation_id);
