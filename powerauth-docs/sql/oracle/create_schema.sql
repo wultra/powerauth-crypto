@@ -6,22 +6,48 @@
 -- Create tables for applications and application versions
 --
 
+--
+-- Create tables for applications and application versions
+--
+
 CREATE TABLE pa_application (
-  id bigint NOT NULL AUTO_INCREMENT,
-  name varchar(255) DEFAULT NULL,
+  id number(19) NOT NULL,
+  name varchar2(255) DEFAULT NULL,
   PRIMARY KEY (id)
 );
 
+-- Generate ID using sequence and trigger
+CREATE SEQUENCE pa_application_seq START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER pa_application_seq_tr
+ BEFORE INSERT ON pa_application FOR EACH ROW
+ WHEN (NEW.id IS NULL)
+BEGIN
+ SELECT pa_application_seq.NEXTVAL INTO :NEW.id FROM DUAL;
+END;
+/
+
 CREATE TABLE pa_application_version (
-  id bigint NOT NULL AUTO_INCREMENT,
-  application_id bigint NOT NULL,
-  name varchar(255) DEFAULT NULL,
-  application_key varchar(255) DEFAULT NULL,
-  application_secret varchar(255) DEFAULT NULL,
-  supported int DEFAULT NULL,
+  id number(19) NOT NULL,
+  application_id number(19) NOT NULL,
+  name varchar2(255) DEFAULT NULL,
+  application_key varchar2(255) DEFAULT NULL,
+  application_secret varchar2(255) DEFAULT NULL,
+  supported number(10) DEFAULT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT FK_APPLICATION_VERSION FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT FK_APPLICATION_VERSION FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE
 );
+
+-- Generate ID using sequence and trigger
+CREATE SEQUENCE pa_application_version_seq START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER pa_application_version_seq_tr
+ BEFORE INSERT ON pa_application_version FOR EACH ROW
+ WHEN (NEW.id IS NULL)
+BEGIN
+ SELECT pa_application_version_seq.NEXTVAL INTO :NEW.id FROM DUAL;
+END;
+/
 
 CREATE INDEX KEY_APPLICATION_ID ON pa_application_version (application_id);
 CREATE INDEX KEY_APPLICATION_KEY ON pa_application_version (application_key);
@@ -31,15 +57,26 @@ CREATE INDEX KEY_APPLICATION_KEY ON pa_application_version (application_key);
 --
 
 CREATE TABLE pa_master_keypair (
-  id bigint NOT NULL AUTO_INCREMENT,
-  application_id bigint NOT NULL,
-  name varchar(255) DEFAULT NULL,
-  master_key_private_base64 varchar(255) NOT NULL,
-  master_key_public_base64 varchar(255) NOT NULL,
-  timestamp_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id number(19) NOT NULL,
+  application_id number(19) NOT NULL,
+  name varchar2(255) DEFAULT NULL,
+  master_key_private_base64 varchar2(255) NOT NULL,
+  master_key_public_base64 varchar2(255) NOT NULL,
+  timestamp_created timestamp(0) DEFAULT SYSTIMESTAMP NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT FK_APPLICATION_KEYPAIR FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT FK_APPLICATION_KEYPAIR FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE
 );
+
+-- Generate ID using sequence and trigger
+CREATE SEQUENCE pa_master_keypair_seq START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER pa_master_keypair_seq_tr
+ BEFORE INSERT ON pa_master_keypair FOR EACH ROW
+ WHEN (NEW.id IS NULL)
+BEGIN
+ SELECT pa_master_keypair_seq.NEXTVAL INTO :NEW.id FROM DUAL;
+END;
+/
 
 CREATE INDEX FK_APPLICATION_KEYPAIR_idx ON pa_master_keypair (application_id);
 
@@ -48,26 +85,26 @@ CREATE INDEX FK_APPLICATION_KEYPAIR_idx ON pa_master_keypair (application_id);
 --
 
 CREATE TABLE pa_activation (
-  activation_id varchar(37) NOT NULL,
-  activation_id_short varchar(255) NOT NULL,
-  activation_otp varchar(255) NOT NULL,
-  activation_status int NOT NULL,
-  activation_name varchar(255) DEFAULT NULL,
-  application_id bigint NOT NULL,
-  user_id varchar(255) NOT NULL,
+  activation_id varchar2(37) NOT NULL,
+  activation_id_short varchar2(255) NOT NULL,
+  activation_otp varchar2(255) NOT NULL,
+  activation_status number(10) NOT NULL,
+  activation_name varchar2(255) DEFAULT NULL,
+  application_id number(19) NOT NULL,
+  user_id varchar2(255) NOT NULL,
   extras clob,
-  counter bigint NOT NULL,
+  counter number(19) NOT NULL,
   device_public_key_base64 clob,
-  failed_attempts bigint DEFAULT NULL,
-  max_failed_attempts bigint NOT NULL DEFAULT '5',
+  failed_attempts number(19) DEFAULT NULL,
+  max_failed_attempts number(19) DEFAULT '5' NOT NULL,
   server_private_key_base64 clob NOT NULL,
   server_public_key_base64 clob NOT NULL,
-  master_keypair_id bigint DEFAULT NULL,
-  timestamp_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  timestamp_activation_expire datetime NOT NULL,
-  timestamp_last_used datetime NOT NULL,
+  master_keypair_id number(19) DEFAULT NULL,
+  timestamp_created timestamp(0) DEFAULT SYSTIMESTAMP NOT NULL,
+  timestamp_activation_expire timestamp(0) NOT NULL,
+  timestamp_last_used timestamp(0) NOT NULL,
   PRIMARY KEY (activation_id),
-  CONSTRAINT FK_ACTIVATION_APPLICATION FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT FK_ACTIVATION_APPLICATION FOREIGN KEY (application_id) REFERENCES pa_application (id) ON DELETE CASCADE
 );
 
 CREATE INDEX FK_ACTIVATION_APPLICATION_idx ON pa_activation (application_id);
@@ -77,18 +114,29 @@ CREATE INDEX FK_ACTIVATION_APPLICATION_idx ON pa_activation (application_id);
 --
 
 CREATE TABLE pa_signature_audit (
-  id int NOT NULL AUTO_INCREMENT,
-  activation_id varchar(37) NOT NULL,
-  activation_counter bigint NOT NULL,
-  activation_status int NOT NULL,
+  id number(10) NOT NULL,
+  activation_id varchar2(37) NOT NULL,
+  activation_counter number(19) NOT NULL,
+  activation_status number(10) NOT NULL,
   data_base64 clob,
-  signature_type varchar(255) NOT NULL,
-  signature varchar(255) NOT NULL,
-  valid int NOT NULL DEFAULT '0',
+  signature_type varchar2(255) NOT NULL,
+  signature varchar2(255) NOT NULL,
+  valid number(10) DEFAULT '0' NOT NULL,
   note clob NOT NULL,
-  timestamp_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  timestamp_created timestamp(0) DEFAULT SYSTIMESTAMP NOT NULL,
   PRIMARY KEY (id),
-  CONSTRAINT FK_ACTIVATION_ID FOREIGN KEY (activation_id) REFERENCES pa_activation (activation_id) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT FK_ACTIVATION_ID FOREIGN KEY (activation_id) REFERENCES pa_activation (activation_id) ON DELETE CASCADE
 );
+
+-- Generate ID using sequence and trigger
+CREATE SEQUENCE pa_signature_audit_seq START WITH 1 INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER pa_signature_audit_seq_tr
+ BEFORE INSERT ON pa_signature_audit FOR EACH ROW
+ WHEN (NEW.id IS NULL)
+BEGIN
+ SELECT pa_signature_audit_seq.NEXTVAL INTO :NEW.id FROM DUAL;
+END;
+/
 
 CREATE INDEX K_ACTIVATION_ID ON pa_signature_audit (activation_id);
