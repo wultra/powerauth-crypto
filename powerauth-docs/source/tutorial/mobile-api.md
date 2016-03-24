@@ -30,7 +30,7 @@ To add PowerAuth support in your RESTful API, add Maven dependency for PowerAuth
 <dependency>
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-restful-security</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.8</version>
 </dependency>
 ```
 
