@@ -23,7 +23,7 @@ To add a PowerAuth support in your application, add Maven dependency for PowerAu
 <dependency>
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-java-client</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.8</version>
 </dependency>
 ```
 
