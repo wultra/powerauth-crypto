@@ -17,8 +17,17 @@ import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 
+/**
+ * Test command-line client implementation.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class ApplicationTest {
 
+	/**
+	 * Register crypto providers.
+	 */
 	@Before
 	public void setUp() {
 		// Add Bouncy Castle Security Provider
@@ -26,6 +35,10 @@ public class ApplicationTest {
 		PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
 	}
 
+	/**
+	 * Test encryption of the KEY_SIGNATURE_KNOWLEDGE using the password.
+	 * @throws Exception In case test fails.
+	 */
 	@Test
 	public void testPasswordEncryption() throws Exception {
 

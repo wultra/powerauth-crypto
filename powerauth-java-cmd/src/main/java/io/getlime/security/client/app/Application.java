@@ -43,11 +43,22 @@ import io.getlime.security.client.app.steps.VerifySignatureStep;
 import io.getlime.security.client.app.util.ConfigurationUtils;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 
+/**
+ * Command-line utility for testing PowerAuth implementation and for verification of
+ * a correct system deployment.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
 	private JSONObject clientConfigObject = null;
 
+	/**
+	 * Application main
+	 * @param args Arguments, use --help to print expected arguments
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
@@ -135,7 +146,7 @@ public class Application implements CommandLineRunner {
 				context.put("ACTIVATION_CODE", cmd.getOptionValue("a"));
 				context.put("PASSWORD", cmd.getOptionValue("p"));
 				context.put("ACTIVATION_NAME", ConfigurationUtils.getApplicationName(clientConfigObject));
-				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationId(clientConfigObject));
+				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationKey(clientConfigObject));
 				context.put("APPLICATION_SECRET", ConfigurationUtils.getApplicationSecret(clientConfigObject));
 
 				PrepareActivationStep.execute(context);
@@ -154,7 +165,7 @@ public class Application implements CommandLineRunner {
 				context.put("URI_STRING", uriString);
 				context.put("STATUS_OBJECT", resultStatusObject);
 				context.put("STATUS_FILENAME", statusFileName);
-				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationId(clientConfigObject));
+				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationKey(clientConfigObject));
 				context.put("APPLICATION_SECRET", ConfigurationUtils.getApplicationSecret(clientConfigObject));
 				context.put("PASSWORD", cmd.getOptionValue("p"));
 
@@ -166,7 +177,7 @@ public class Application implements CommandLineRunner {
 				context.put("URI_STRING", uriString);
 				context.put("STATUS_OBJECT", resultStatusObject);
 				context.put("STATUS_FILENAME", statusFileName);
-				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationId(clientConfigObject));
+				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationKey(clientConfigObject));
 				context.put("APPLICATION_SECRET", ConfigurationUtils.getApplicationSecret(clientConfigObject));
 				context.put("HTTP_METHOD", cmd.getOptionValue("t"));
 				context.put("ENDPOINT", cmd.getOptionValue("e"));
@@ -182,7 +193,7 @@ public class Application implements CommandLineRunner {
 				context.put("URI_STRING", uriString);
 				context.put("STATUS_OBJECT", resultStatusObject);
 				context.put("STATUS_FILENAME", statusFileName);
-				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationId(clientConfigObject));
+				context.put("APPLICATION_ID", ConfigurationUtils.getApplicationKey(clientConfigObject));
 				context.put("APPLICATION_SECRET", ConfigurationUtils.getApplicationSecret(clientConfigObject));
 				context.put("SIGNATURE_TYPE", cmd.getOptionValue("l"));
 				context.put("PASSWORD", cmd.getOptionValue("p"));

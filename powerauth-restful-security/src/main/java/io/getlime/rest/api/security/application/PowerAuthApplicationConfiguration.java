@@ -17,10 +17,29 @@ package io.getlime.rest.api.security.application;
 
 import java.util.Map;
 
+/**
+ * Interface providing method for PowerAuth behavior high-level customization.
+ *  
+ * @author Petr Dvorak
+ *
+ */
 public interface PowerAuthApplicationConfiguration {
 	
+	/**
+	 * Check if a given application key is allowed in given server instance. Default and suggested behavior
+	 * is to simply return true, unless for some reason given application key must be restricted while still
+	 * being "supported" in the PowerAuth server database.
+	 * @param applicationKey Application key
+	 * @return True if the application key is allowed, false otherwise. 
+	 */
 	public boolean isAllowedApplicationKey(String applicationKey);
 	
+	/**
+	 * In order to minimize number of up-front request, /pa/activation/status end-point may return
+	 * any custom state-less object with an information about the service (such as current timestamp,
+	 * service outage info, etc.). Default implementation may simply return null.
+	 * @return Custom object with state-less information about the API server status.
+	 */
 	public Map<String, Object> statusServiceCustomObject();
 
 }

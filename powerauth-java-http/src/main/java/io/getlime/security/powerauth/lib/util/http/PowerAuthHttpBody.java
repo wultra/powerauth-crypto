@@ -16,14 +16,28 @@
 package io.getlime.security.powerauth.lib.util.http;
 
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
 import com.google.common.io.BaseEncoding;
 
+/**
+ * Helper class simplifying working with HTTP request body in context of PowerAuth protocol.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthHttpBody {
 
+	/**
+	 * Prepare signature base string ("data to be signed") using request parameters.
+	 * @param httpMethod HTTP Method (for example "GET", "POST", "PUT", "DELETE", ...)
+	 * @param requestUri Request URI identifier (for example "/secure/payment", or "SEC_PAYM" - structure of URI ID is lose, but the first approach is suggested)
+	 * @param nonce Random 16B nonce value.
+	 * @param data Request data.
+	 * @return PowerAuth signature base string.
+	 * @throws UnsupportedEncodingException In case UTF-8 is not supported on the system.
+	 */
 	public static String getSignatureBaseString(String httpMethod, String requestUri, byte[] nonce, byte[] data)
-			throws UnsupportedEncodingException, NoSuchAlgorithmException {
+			throws UnsupportedEncodingException {
 
 		String requestUriHash = "";
 		if (requestUri != null) {

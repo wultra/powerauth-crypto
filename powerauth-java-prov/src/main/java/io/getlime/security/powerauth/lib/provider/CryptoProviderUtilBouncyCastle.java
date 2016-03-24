@@ -35,6 +35,12 @@ import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 
+/**
+ * Crypto provider based on BouncyCastle crypto provider.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
 	
 	/**

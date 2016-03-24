@@ -50,6 +50,7 @@ import io.getlime.powerauth.soap.RemoveActivationRequest;
 import io.getlime.powerauth.soap.RemoveActivationResponse;
 import io.getlime.powerauth.soap.SignatureAuditRequest;
 import io.getlime.powerauth.soap.SignatureAuditResponse;
+import io.getlime.powerauth.soap.SignatureAuditResponse.Items;
 import io.getlime.powerauth.soap.SupportApplicationVersionRequest;
 import io.getlime.powerauth.soap.SupportApplicationVersionResponse;
 import io.getlime.powerauth.soap.UnblockActivationRequest;
@@ -61,6 +62,13 @@ import io.getlime.powerauth.soap.VaultUnlockResponse;
 import io.getlime.powerauth.soap.VerifySignatureRequest;
 import io.getlime.powerauth.soap.VerifySignatureResponse;
 
+/**
+ * Class implementing a PowerAuth SOAP service client based on provided WSDL
+ * service description.
+ * 
+ * @author Petr Dvorak
+ * 
+ */
 public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	
 	/**
@@ -94,7 +102,7 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	 * Call the initActivation method of the PowerAuth 2.0 Server SOAP interface.
 	 * @param userId User ID for which a new CREATED activation should be created.
 	 * @param applicationId Application ID for which a new CREATED activation should be created.
-	 * @return {@link InitActivationReponse}
+	 * @return {@link InitActivationResponse}
 	 */
 	public InitActivationResponse initActivation(String userId, Long applicationId) {
 		return this.initActivation(userId, applicationId, null, null);
@@ -106,7 +114,7 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	 * @param applicationId Application ID for which a new CREATED activation should be created.
 	 * @param maxFailureCount How many failed attempts should be allowed for this activation.
 	 * @param timestampActivationExpire Timestamp until when the activation can be committed.
-	 * @return {@link InitActivationReponse}
+	 * @return {@link InitActivationResponse}
 	 */
 	public InitActivationResponse initActivation(String userId, Long applicationId, Long maxFailureCount, Date timestampActivationExpire) {
 		InitActivationRequest request = new InitActivationRequest();
@@ -135,6 +143,8 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	 * @param activationIdShort Short activation ID.
 	 * @param activationName Name of this activation.
 	 * @param activationNonce Activation nonce.
+	 * @param applicationKey Application key of a given application.
+	 * @param applicationSignature Signature proving a correct application is sending the data.
 	 * @param cDevicePublicKey Device public key encrypted with activation OTP.
 	 * @param extras Additional, application specific information.
 	 * @return {@link PrepareActivationResponse}
@@ -283,7 +293,7 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	/**
 	 * Call the vaultUnlock method of the PowerAuth 2.0 Server SOAP interface.
 	 * @param activationId Activation Id of an activation to be used for authentication.
-	 * @param applicationId Application Key of an application related to the activation.
+	 * @param applicationKey Application Key of an application related to the activation.
 	 * @param data Data to be signed encoded in format as specified by PowerAuth 2.0 data normalization.  
 	 * @param signature Vault opening request signature.
 	 * @param signatureType Vault opening request signature type.
@@ -311,11 +321,11 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	/**
 	 * Call the verifySignature method of the PowerAuth 2.0 Server SOAP interface.
 	 * @param activationId Activation ID of activation to be used for authentication.
-	 * @param applicationId Application Key of an application related to the activation.
+	 * @param applicationKey Application Key of an application related to the activation.
 	 * @param data Data to be signed encoded in format as specified by PowerAuth 2.0 data normalization.
 	 * @param signature Request signature.
 	 * @param signatureType Request signature type.
-	 * @return
+	 * @return Verify signature and return SOAP response with the verification results.
 	 */
 	public VerifySignatureResponse verifySignature(String activationId, String applicationKey, String data, String signature, String signatureType) {
 		VerifySignatureRequest request = new VerifySignatureRequest();
@@ -342,7 +352,7 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	 * @param userId User ID to query the audit log against.
 	 * @param startingDate Limit the results to given starting date (= "newer than")
 	 * @param endingDate Limit the results to given ending date (= "older than")
-	 * @return List of signature audit items {@link SignatureAuditResponse.Items}
+	 * @return List of signature audit items {@link Items}
 	 */
 	public List<SignatureAuditResponse.Items> getSignatureAuditLog(String userId, Date startingDate, Date endingDate) {
 		SignatureAuditRequest request = new SignatureAuditRequest();
@@ -359,7 +369,7 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	 * @param applicationId Application ID to query the audit log against.
 	 * @param startingDate Limit the results to given starting date (= "newer than")
 	 * @param endingDate Limit the results to given ending date (= "older than")
-	 * @return List of signature audit items {@link SignatureAuditResponse.Items}
+	 * @return List of signature audit items {@link Items}
 	 */
 	public List<SignatureAuditResponse.Items> getSignatureAuditLog(String userId, Long applicationId, Date startingDate, Date endingDate) {
 		SignatureAuditRequest request = new SignatureAuditRequest();

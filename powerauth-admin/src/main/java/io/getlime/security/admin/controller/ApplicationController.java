@@ -15,17 +15,32 @@ import io.getlime.powerauth.soap.GetApplicationDetailResponse;
 import io.getlime.powerauth.soap.GetApplicationListResponse;
 import io.getlime.security.soap.client.PowerAuthServiceClient;
 
+/**
+ * Controller related to application and application version management.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Controller
 public class ApplicationController {
 
 	@Autowired
 	private PowerAuthServiceClient client;
 
+	/**
+	 * Redirect '/' URL to the list of application.
+	 * @return Redirect view to list of applications. 
+	 */
 	@RequestMapping(value = "/")
 	public String homePage() {
 		return "redirect:/application/list";
 	}
 
+	/**
+	 * Show list of applications.
+	 * @param model Model with passed parameters.
+	 * @return "applications" view.
+	 */
 	@RequestMapping(value = "/application/list")
 	public String applicationList(Map<String, Object> model) {
 		List<GetApplicationListResponse.Applications> applicationList = client.getApplicationList();
@@ -33,29 +48,58 @@ public class ApplicationController {
 		return "applications";
 	}
 
+	/**
+	 * Create a new application.
+	 * @param model Model with passed parameters.
+	 * @return "applicationCreate" view.
+	 */
 	@RequestMapping(value = "/application/create")
 	public String applicationCreate(Map<String, Object> model) {
 		return "applicationCreate";
 	}
 
+	/**
+	 * Create a new application version.
+	 * @param id Application ID
+	 * @param model Model with passed parameters.
+	 * @return "applicationVersionCreate" view.
+	 */
 	@RequestMapping(value = "/application/detail/{id}/version/create")
 	public String applicationVersionCreate(@PathVariable Long id, Map<String, Object> model) {
 		model.put("applicationId", id);
 		return "applicationVersionCreate";
 	}
 
+	/**
+	 * Execute the application create action by calling the SOAP service.
+	 * @param name Application name.
+	 * @return Redirect to the new application details.
+	 */
 	@RequestMapping(value = "/application/create/do.submit", method = RequestMethod.POST)
 	public String applicationCreateAction(@RequestParam String name) {
 		CreateApplicationResponse application = client.createApplication(name);
 		return "redirect:/application/detail/" + application.getApplicationId();
 	}
 
+	/**
+	 * Execute the application version create action by calling the SOAP service.
+	 * @param applicationId Application ID.
+	 * @param name Version name.
+	 * @return Redirect to application detail (application versions are visible there).
+	 */
 	@RequestMapping(value = "/application/detail/{applicationId}/version/create/do.submit", method = RequestMethod.POST)
 	public String applicationVersionCreateAction(@PathVariable Long applicationId, @RequestParam String name) {
 		client.createApplicationVersion(applicationId, name);
 		return "redirect:/application/detail/" + applicationId;
 	}
 
+	/**
+	 * Execute the action that marks application version supported / unsupported.
+	 * @param version Application version.
+	 * @param enabled True for supported, False for unsupported
+	 * @param id Application ID (path variable), for the redirect purposes 
+	 * @return Redirect to application detail (application versions are visible there). 
+	 */
 	@RequestMapping(value = "/application/detail/{id}/version/update/do.submit", method = RequestMethod.POST)
 	public String applicationUpdateAction(
 			@RequestParam(value = "version", required = false) Long version,
@@ -69,6 +113,12 @@ public class ApplicationController {
 		return "redirect:/application/detail/" + id;
 	}
 
+	/**
+	 * Show application detail.
+	 * @param id Application ID.
+	 * @param model Model with passed parameters.
+	 * @return "applicationDetail" view.
+	 */
 	@RequestMapping(value = "/application/detail/{id}")
 	public String applicationDetail(@PathVariable(value = "id") Long id, Map<String, Object> model) {
 		GetApplicationDetailResponse applicationDetails = client.getApplicationDetail(id);

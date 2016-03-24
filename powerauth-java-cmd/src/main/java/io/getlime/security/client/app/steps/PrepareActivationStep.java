@@ -49,6 +49,12 @@ import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
+/**
+ * Helper class with prepare activation logics.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PrepareActivationStep {
 
 	private static final PowerAuthClientActivation activation = new PowerAuthClientActivation();
@@ -58,6 +64,12 @@ public class PrepareActivationStep {
 	private static final PowerAuthClientVault vault = new PowerAuthClientVault();
 	private static final ObjectMapper mapper = new ObjectMapper();
 
+	/**
+	 * Execute this step with given context
+	 * @param context Provided context
+	 * @return Result status object, null in case of failure.
+	 * @throws Exception In case of any error.
+	 */
 	@SuppressWarnings("unchecked")
 	public static JSONObject execute(Map<String, Object> context) throws Exception {
 

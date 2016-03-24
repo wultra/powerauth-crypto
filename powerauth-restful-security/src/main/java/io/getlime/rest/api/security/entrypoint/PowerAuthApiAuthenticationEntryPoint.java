@@ -29,6 +29,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 
+/**
+ * Default PowerAuth authentication entry-point implementation.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Service
 public class PowerAuthApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

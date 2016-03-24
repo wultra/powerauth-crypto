@@ -21,6 +21,13 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+/**
+ * Class implementing processes PowerAuth Server uses to compute and validate
+ * signatures. 
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthServerSignature {
 
     private final SignatureUtils signatureUtils = new SignatureUtils();
@@ -34,7 +41,7 @@ public class PowerAuthServerSignature {
      * @param signatureKeys Keys used for signature.
      * @param ctr Counter / derived signing key index.
      * @return Returns "true" if the signature matches, "false" otherwise.
-     * @throws InvalidKeyException
+     * @throws InvalidKeyException If provided key is invalid.
      */
     public boolean verifySignatureForData(
             byte[] data,

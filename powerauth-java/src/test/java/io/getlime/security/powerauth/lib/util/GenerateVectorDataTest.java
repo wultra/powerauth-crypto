@@ -26,8 +26,17 @@ import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation;
 
+/**
+ * Generate test vectors
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class GenerateVectorDataTest {
 
+	/**
+	 * Register crypto providers
+	 */
 	@Before
 	public void setUp() {
 		// Add Bouncy Castle Security Provider
@@ -35,6 +44,10 @@ public class GenerateVectorDataTest {
 		PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
 	}
 
+	/**
+	 * Generate test data for activation data signature.
+	 * @throws Exception In case any unknown error occurs.
+	 */
 	@Test
 	public void testVerifyActivationData() throws Exception {
 		String activationOTP;
@@ -78,6 +91,10 @@ public class GenerateVectorDataTest {
 		System.out.println("]");
 	}
 
+	/**
+	 * Generate test data for public key encryption. 
+	 * @throws Exception In case any unknown error occurs.
+	 */
 	@Test
 	public void testEncryptDevicePublicKey() throws Exception {
 		PowerAuthClientActivation activation = new PowerAuthClientActivation();
@@ -122,6 +139,10 @@ public class GenerateVectorDataTest {
 		System.out.println("]");
 	}
 
+	/**
+	 * Generate test data for master key derivation. 
+	 * @throws Exception In case any unknown error occurs.
+	 */
 	@Test
 	public void testMasterKeyDerivation() throws Exception {
 
@@ -160,6 +181,10 @@ public class GenerateVectorDataTest {
 
 	}
 
+	/**
+	 * Generate test data for key derivation. 
+	 * @throws Exception In case any unknown error occurs.
+	 */
 	@Test
 	public void testDerivedKeyDerivation() throws Exception {
 
@@ -201,6 +226,10 @@ public class GenerateVectorDataTest {
 		System.out.println("]");
 	}
 
+	/**
+	 * Generate test data for decrypting server public key. 
+	 * @throws Exception In case any unknown error occurs.
+	 */
 	@Test
 	public void testActivationAccept() throws Exception {
 		String activationOTP = null;
@@ -268,6 +297,10 @@ public class GenerateVectorDataTest {
 		System.out.println("]");
 	}
 
+	/**
+	 * Generate test data for verifying server response data.
+	 * @throws Exception In case any unknown error occurs.
+	 */
 	@Test
 	public void testVerifyServerPublicKeySignature() throws Exception {
 		String activationId = null;
@@ -332,6 +365,10 @@ public class GenerateVectorDataTest {
 		System.out.println("]");
 	}
 
+	/**
+	 * Generate test data for signature validation 
+	 * @throws Exception In case any unknown error occurs.
+	 */
 	@Test
 	public void testSignatureValidation() throws Exception {
 

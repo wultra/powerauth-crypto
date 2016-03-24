@@ -47,6 +47,13 @@ import io.getlime.security.service.PowerAuthServiceImpl;
 import io.getlime.security.service.exceptions.GenericServiceException;
 import io.getlime.security.service.util.ModelUtil;
 
+/**
+ * Behavior class implementing processes related with activations. Used to move the
+ * implementation outside of the main service implementation.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Component
 public class ActivationServiceBehavior {
 
@@ -75,6 +82,13 @@ public class ActivationServiceBehavior {
 		}
 	}
 
+	/**
+	 * Get activations for application ID and user ID
+	 * @param applicationId Application ID
+	 * @param userId User ID
+	 * @return Response with list of matching activations
+	 * @throws DatatypeConfigurationException If calendar conversion fails. 
+	 */
 	public GetActivationListForUserResponse getActivationList(Long applicationId, String userId) throws DatatypeConfigurationException {
 
 		// Generate timestamp in advance
@@ -111,6 +125,15 @@ public class ActivationServiceBehavior {
 		return response;
 	}
 
+	/**
+	 * Get activation status for given activation ID
+	 * @param activationId Activation ID
+	 * @param keyConversionUtilities Key conversion utility class
+	 * @return Activation status response
+	 * @throws DatatypeConfigurationException If calendar convert fails
+	 * @throws InvalidKeySpecException If invalid key is provided
+	 * @throws InvalidKeyException If invalid key is provided
+	 */
 	public GetActivationStatusResponse getActivationStatus(String activationId, CryptoProviderUtil keyConversionUtilities) throws DatatypeConfigurationException, InvalidKeySpecException, InvalidKeyException {
 
 		// Generate timestamp in advance
@@ -231,6 +254,18 @@ public class ActivationServiceBehavior {
 		}
 	}
 
+	/**
+	 * Init activation with given parameters
+	 * @param applicationId Application ID
+	 * @param userId User ID
+	 * @param maxFailedCount Maximum failed attempt count (5) 
+	 * @param activationExpireTimestamp Timestamp after which activation can no longer be completed
+	 * @param keyConversionUtilities Utility class for key conversion
+	 * @return Response with activation initialization data
+	 * @throws GenericServiceException If invalid values are provided.
+	 * @throws InvalidKeySpecException If invalid key is provided
+	 * @throws InvalidKeyException If invalid key is provided
+	 */
 	public InitActivationResponse initActivation(Long applicationId, String userId, Long maxFailedCount, Date activationExpireTimestamp, CryptoProviderUtil keyConversionUtilities) throws GenericServiceException, InvalidKeySpecException, InvalidKeyException {
 		// Generate timestamp in advance
 		Date timestamp = new Date();
@@ -347,6 +382,22 @@ public class ActivationServiceBehavior {
 		return response;
 	}
 
+	/**
+	 * Prepare activation with given parameters
+	 * @param activationIdShort Short activation ID
+	 * @param activationNonceBase64 Activation nonce encoded as Base64
+	 * @param cDevicePublicKeyBase64 Encrypted device public key encoded as Base64
+	 * @param activationName Activation name
+	 * @param extras Extra parameter
+	 * @param applicationKey Application key
+	 * @param applicationSignature Application signature
+	 * @param keyConversionUtilities Utility class for key conversion
+	 * @return Prepared activation information 
+	 * @throws GenericServiceException In case invalid data is provided
+	 * @throws InvalidKeySpecException If invalid key was provided
+	 * @throws InvalidKeyException If invalid key was provided
+	 * @throws UnsupportedEncodingException If UTF-8 is not supported on the system
+	 */
 	public PrepareActivationResponse prepareActivation(String activationIdShort, String activationNonceBase64, String cDevicePublicKeyBase64, String activationName, String extras, String applicationKey, String applicationSignature, CryptoProviderUtil keyConversionUtilities) throws GenericServiceException, InvalidKeySpecException, InvalidKeyException, UnsupportedEncodingException {
 
 		// Get current timestamp
@@ -426,6 +477,12 @@ public class ActivationServiceBehavior {
 		return response;
 	}
 
+	/**
+	 * Commit activation with given ID
+	 * @param activationId Activation ID
+	 * @return Response with activation commit confirmation
+	 * @throws GenericServiceException In case invalid data is provided or activation is not found, in invalid state or already expired
+	 */
 	public CommitActivationResponse commitActivation(String activationId) throws GenericServiceException {
 
 		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
@@ -464,6 +521,12 @@ public class ActivationServiceBehavior {
 		}
 	}
 
+	/**
+	 * Remove activation with given ID
+	 * @param activationId Activation ID
+	 * @return Response with confirmation of removal
+	 * @throws GenericServiceException In case activation does not exist
+	 */
 	public RemoveActivationResponse removeActivation(String activationId) throws GenericServiceException {
 		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 		boolean removed = false;
@@ -481,6 +544,12 @@ public class ActivationServiceBehavior {
 		}
 	}
 
+	/**
+	 * Block activation with given ID
+	 * @param activationId Activation ID
+	 * @return Response confirming that activation was blocked
+	 * @throws GenericServiceException In case activation does not exist.
+	 */
 	public BlockActivationResponse blockActivation(String activationId) throws GenericServiceException {
 		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 		if (activation == null) {
@@ -498,6 +567,12 @@ public class ActivationServiceBehavior {
 		return response;
 	}
 
+	/**
+	 * Unblock activation with given ID
+	 * @param activationId Activation ID
+	 * @return Response confirming that activation was unblocked
+	 * @throws GenericServiceException In case activation does not exist.
+	 */
 	public UnblockActivationResponse unblockActivation(String activationId) throws GenericServiceException {
 		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 		if (activation == null) {

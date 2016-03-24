@@ -38,8 +38,17 @@ import com.google.common.io.BaseEncoding;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test for PowerAuth signature calculation and validation.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthSignatureTest {
 
+	/**
+	 * Register crypto providers. 
+	 */
 	@Before
     public void setUp() {
         // Add Bouncy Castle Security Provider
@@ -50,7 +59,7 @@ public class PowerAuthSignatureTest {
     /**
      * Test of signature generation and validation.
      *
-     * @throws java.lang.Exception
+     * @throws java.lang.Exception If the test fails.
      */
     @Test
     public void testSignatureForData() throws Exception {

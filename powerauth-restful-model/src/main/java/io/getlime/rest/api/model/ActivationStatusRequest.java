@@ -15,14 +15,28 @@
  */
 package io.getlime.rest.api.model;
 
+/**
+ * Request object for /pa/activation/status end-point
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class ActivationStatusRequest {
 	
 	private String activationId;
 	
+	/**
+	 * Get activation ID
+	 * @return Activation ID
+	 */
 	public String getActivationId() {
 		return activationId;
 	}
 	
+	/**
+	 * Set activation ID
+	 * @param activationId Activation ID
+	 */
 	public void setActivationId(String activationId) {
 		this.activationId = activationId;
 	}

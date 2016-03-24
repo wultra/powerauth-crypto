@@ -15,14 +15,28 @@
  */
 package io.getlime.rest.api.model;
 
+/**
+ * Response object for /pa/activation/remove end-point
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class ActivationRemoveResponse {
 	
 	private String activationId;
 	
+	/**
+	 * Get activation ID
+	 * @return Activation ID
+	 */
 	public String getActivationId() {
 		return activationId;
 	}
 	
+	/**
+	 * Set activation ID
+	 * @param activationId Activation ID
+	 */
 	public void setActivationId(String activationId) {
 		this.activationId = activationId;
 	}

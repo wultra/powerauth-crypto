@@ -16,7 +16,6 @@
 package io.getlime.rest.api.security.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,12 @@ import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import io.getlime.security.soap.client.PowerAuthServiceClient;
 
+/**
+ * Controller implementing secure vault related end-points from the
+ * PowerAuth Standard API.
+ * @author Petr Dvorak
+ *
+ */
 @Controller
 @RequestMapping(value = "/pa/vault")
 public class SecureVaultController {
@@ -45,10 +50,19 @@ public class SecureVaultController {
 	@Autowired
 	private PowerAuthServiceClient powerAuthClient;
 	
+	/**
+	 * Request the vault unlock key.
+	 * @param request PowerAuth RESTful request with {@link VaultUnlockRequest} payload.
+	 * @param signatureHeader PowerAuth signature HTTP header.
+	 * @return PowerAuth RESTful response with {@link VaultUnlockResponse} payload.
+	 * @throws PowerAuthAuthenticationException In case authentication fails.
+	 * @throws UnsupportedEncodingException In case UTF-8 is not supported.
+	 */
 	@RequestMapping(value = "unlock", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<VaultUnlockResponse> unlockVault(
 			@RequestBody PowerAuthAPIRequest<VaultUnlockRequest> request, 
-			@RequestHeader(value = "X-PowerAuth-Authorization", required = true, defaultValue = "unknown") String signatureHeader) throws PowerAuthAuthenticationException, UnsupportedEncodingException, NoSuchAlgorithmException {
+			@RequestHeader(value = "X-PowerAuth-Authorization", required = true, defaultValue = "unknown") String signatureHeader) 
+					throws PowerAuthAuthenticationException, UnsupportedEncodingException {
 		
 		Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signatureHeader);
 		String activationId = map.get(PowerAuthHttpHeader.ACTIVATION_ID);

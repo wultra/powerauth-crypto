@@ -23,6 +23,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 import io.getlime.rest.api.security.entrypoint.PowerAuthApiAuthenticationEntryPoint;
 
+/**
+ * Spring Security default configuration maps the default "entry-point" to all
+ * end-points on /secured/** context path, disables HTTP basic and disables CSRF.
+ *  
+ * @author Petr Dvorak
+ *
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {

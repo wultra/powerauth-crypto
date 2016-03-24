@@ -24,15 +24,46 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
+/**
+ * Database repository for activation entities.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Component
 public interface ActivationRepository extends CrudRepository<ActivationRecordEntity, String> {
 
+	/**
+	 * Find a first activation with given activation ID
+	 * @param activationId Activation ID
+	 * @return Activation with given ID or null if not found
+	 */
     ActivationRecordEntity findFirstByActivationId(String activationId);
 
+    /**
+     * Find all activations for given user ID
+     * @param userId User ID
+     * @return List of activations for given user
+     */
     List<ActivationRecordEntity> findByUserId(String userId);
     
-    List<ActivationRecordEntity> findByApplicationIdAndUserId(Long applicationID, String userId);
+    /**
+     * Find all activations for given user ID and application ID
+     * @param applicationId Application ID
+     * @param userId User ID
+     * @return List of activations for given user and application
+     */
+    List<ActivationRecordEntity> findByApplicationIdAndUserId(Long applicationId, String userId);
 
+    /**
+     * Find the first activation associated with given application by the activation ID short.
+     * Filter the results by activation state and make sure to apply activation time window.
+     * @param applicationId Application ID
+     * @param activationIdShort Short activation ID
+     * @param states Allowed activation states
+     * @param currentTimestamp Current timestamp
+     * @return Activation matching the search criteria or null if not found
+     */
     ActivationRecordEntity findFirstByApplicationIdAndActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(Long applicationId, String activationIdShort, Collection<ActivationStatus> states, Date currentTimestamp);
 
 }

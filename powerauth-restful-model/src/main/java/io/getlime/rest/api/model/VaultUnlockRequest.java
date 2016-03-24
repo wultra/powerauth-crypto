@@ -15,6 +15,12 @@
  */
 package io.getlime.rest.api.model;
 
+/**
+ * Request object for /pa/vault/unlock end-point.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class VaultUnlockRequest {
 
 }

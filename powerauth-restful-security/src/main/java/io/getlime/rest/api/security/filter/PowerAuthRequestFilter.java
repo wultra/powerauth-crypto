@@ -26,8 +26,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.google.common.io.BaseEncoding;
 
+/**
+ * Request filter that intercepts the request body, forwards it to the controller 
+ * as a request attribute named "X-PowerAuth-Request-Body" and resets the stream.
+ *  
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthRequestFilter extends OncePerRequestFilter {
 	
+	/**
+	 * Constant for the request attribute name "X-PowerAuth-Request-Body".
+	 */
 	public static final String HTTP_BODY = "X-PowerAuth-Request-Body";
 
 	@Override

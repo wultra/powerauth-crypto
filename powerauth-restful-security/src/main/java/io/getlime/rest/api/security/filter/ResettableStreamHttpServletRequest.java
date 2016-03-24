@@ -27,6 +27,12 @@ import javax.servlet.http.HttpServletRequestWrapper;
 
 import com.google.common.primitives.Bytes;
 
+/**
+ * Resettable HTTP servlet request stream.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class ResettableStreamHttpServletRequest extends HttpServletRequestWrapper {
 
     private byte[] requestBody = new byte[0];
@@ -42,6 +48,11 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
         super(request);
     }
 
+    /**
+     * Get request body.
+     * @return Bytes with the request body contents.
+     * @throws IOException In case stream reqding fails.
+     */
     public byte[] getRequestBody() throws IOException {
         if (bufferFilled) {
             return Arrays.copyOf(requestBody, requestBody.length);

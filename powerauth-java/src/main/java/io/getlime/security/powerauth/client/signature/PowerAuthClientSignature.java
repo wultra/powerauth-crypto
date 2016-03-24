@@ -21,6 +21,12 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+/**
+ * Class implementing client-side signature related processes.
+ *  
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthClientSignature {
 
     private final SignatureUtils signatureUtils = new SignatureUtils();

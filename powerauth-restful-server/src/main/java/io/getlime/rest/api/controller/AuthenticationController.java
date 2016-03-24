@@ -29,6 +29,12 @@ import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 
+/**
+ * Sample end-point demonstrating how PowerAuth signature validation works.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Controller
 @RequestMapping(value = "/pa/signature")
 public class AuthenticationController {
@@ -36,6 +42,13 @@ public class AuthenticationController {
 	@Autowired
 	private PowerAuthAuthenticationProvider authenticationProvider;
 
+	/**
+	 * Validate any data sent to this end-point.
+	 * @param signatureHeader HTTP header with PowerAuth signature.
+	 * @param servletRequest Servlet request
+	 * @return API response with success.
+	 * @throws Exception In case any error occurs, including during signature validation.
+	 */
 	@RequestMapping(value = "validate", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<String> login(
 			@RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader,

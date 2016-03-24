@@ -33,6 +33,12 @@ import com.google.common.base.Joiner;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
+/**
+ * Utility class for signature calculation and validation used both on client and server.
+ *  
+ * @author Petr Dvorak
+ *
+ */
 public class SignatureUtils {
 
     /**
@@ -41,8 +47,8 @@ public class SignatureUtils {
      * @param bytes Bytes to be signed.
      * @param masterPrivateKey Private key for computing the signature.
      * @return Signature for given data.
-     * @throws InvalidKeyException
-     * @throws SignatureException
+     * @throws InvalidKeyException In case invalid key was provided.
+     * @throws SignatureException In case signature calculation fails.
      */
     public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, SignatureException {
         try {
@@ -64,8 +70,8 @@ public class SignatureUtils {
      * @param signature Signature of the bytes.
      * @param masterPublicKey Public key for validating the signature.
      * @return Returns "true" if signature matches, "false" otherwise.
-     * @throws InvalidKeyException
-     * @throws SignatureException
+     * @throws InvalidKeyException In case invalid key was provided.
+     * @throws SignatureException In case signature calculation fails.
      */
     public boolean validateECDSASignature(byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, SignatureException {
         try {
@@ -88,7 +94,7 @@ public class SignatureUtils {
      * @param signatureKeys Keys for computing the signature.
      * @param counter Counter / derived key index.
      * @return PowerAuth 2.0 signature for given data.
-     * @throws InvalidKeyException
+     * 
      */
     public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, long counter) {
     	// Prepare a hash
@@ -134,7 +140,7 @@ public class SignatureUtils {
      * @param signatureKeys Keys for signature validation.
      * @param counter Counter.
      * @return Return "true" if signature matches, "false" otherwise.
-     * @throws InvalidKeyException
+     * @throws InvalidKeyException In case invalid key is provided.
      */
     public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, long counter) throws InvalidKeyException {
         return signature.equals(computePowerAuthSignature(data, signatureKeys, counter));

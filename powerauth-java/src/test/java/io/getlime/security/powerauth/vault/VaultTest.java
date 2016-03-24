@@ -23,8 +23,17 @@ import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test the secure vault implementation.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class VaultTest {
 	
+	/**
+	 * Register crypto providers.
+	 */
 	@Before
     public void setUp() {
         // Add Bouncy Castle Security Provider
@@ -32,10 +41,14 @@ public class VaultTest {
         PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
     }
 	
+	/**
+	 * Test the secure vault implementation
+	 * @throws Exception In case the test fails.
+	 */
 	@Test
 	public void testVault() throws Exception {
 		
-		System.out.println("# PowerAuth 2.0 Signature");
+		System.out.println("# PowerAuth 2.0 Secure Vault");
         System.out.println();
         
         PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();

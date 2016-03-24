@@ -1,40 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.getlime.security</groupId>
-    <artifactId>powerauth-parent</artifactId>
-    <version>0.0.8</version>
-    <packaging>pom</packaging>
+	<name>powerauth-parent</name>
+	<description>PowerAuth 2.0</description>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.2.RELEASE</version>
-        <relativePath /> <!-- lookup parent from repository -->
-    </parent>
+	<groupId>io.getlime.security</groupId>
+	<artifactId>powerauth-parent</artifactId>
+	<version>0.0.8</version>
+	<packaging>pom</packaging>
 
-    <name>powerauth-parent</name>
-    <description>PowerAuth 2.0</description>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.3.2.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
 
-    <modules>
-    	<module>powerauth-android</module>
-        <module>powerauth-java-prov</module>
-        <module>powerauth-java</module>
-        <module>powerauth-java-http</module>
-        <module>powerauth-java-server</module>
-        <module>powerauth-java-client</module>
-        <module>powerauth-java-cmd</module>
-        <module>powerauth-restful-model</module>
-        <module>powerauth-restful-security</module>
-        <module>powerauth-restful-server</module>
-        <module>powerauth-admin</module>
-    </modules>
+	<inceptionYear>2016</inceptionYear>
+	<url>http://powerauth.com/</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-    </properties>
+	<organization>
+		<name>Lime - HighTech Solutions Inc.</name>
+		<url>http://getlime.io/</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>Apache 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Petr Dvorak</name>
+			<email>petr@lime-company.eu</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://github.com/lime-company/lime-security-powerauth.git</connection>
+		<developerConnection>scm:git:https://github.com/lime-company/lime-security-powerauth.git</developerConnection>
+		<url>https://github.com/lime-company/lime-security-powerauth</url>
+	</scm>
+
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/lime-company/lime-security-powerauth/issues</url>
+	</issueManagement>
+
+	<modules>
+		<module>powerauth-android</module>
+		<module>powerauth-java-prov</module>
+		<module>powerauth-java</module>
+		<module>powerauth-java-http</module>
+		<module>powerauth-java-server</module>
+		<module>powerauth-java-client</module>
+		<module>powerauth-java-cmd</module>
+		<module>powerauth-restful-model</module>
+		<module>powerauth-restful-security</module>
+		<module>powerauth-restful-server</module>
+		<module>powerauth-admin</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<failOnError>false</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 </project>

@@ -30,6 +30,12 @@ import io.getlime.rest.api.model.ErrorModel;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 
+/**
+ * Implementation of a default exception handler for the demo server.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @ControllerAdvice
 public class DefaultExceptionHandler {
 
@@ -52,6 +58,12 @@ public class DefaultExceptionHandler {
 
 	}
 
+	/**
+	 * Handle PowerAuthAuthenticationException exceptions.
+	 * @param request Request that was processed while the exception was raised.
+	 * @param exception Exception instance.
+	 * @return Error response.
+	 */
 	@ExceptionHandler(value = PowerAuthAuthenticationException.class)
 	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public @ResponseBody PowerAuthAPIResponse<List<ErrorBody>> handleUnauthorizedException(HttpServletRequest request, Exception exception) {
@@ -61,6 +73,12 @@ public class DefaultExceptionHandler {
 		return new PowerAuthAPIResponse<List<ErrorBody>>("ERROR", errorList);
 	}
 
+	/**
+	 * Handle Exception exceptions.
+	 * @param request Request that was processed while the exception was raised.
+	 * @param exception Exception instance.
+	 * @return Error response.
+	 */
 	@ExceptionHandler(value = Exception.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody PowerAuthAPIResponse<List<ErrorBody>> handleException(HttpServletRequest request, Exception exception) {
@@ -70,6 +88,12 @@ public class DefaultExceptionHandler {
 		return new PowerAuthAPIResponse<List<ErrorBody>>("ERROR", errorList);
 	}
 	
+	/**
+	 * Handle ErrorException exceptions.
+	 * @param request Request that was processed while the exception was raised.
+	 * @param exception Exception instance.
+	 * @return Error response.
+	 */
 	@ExceptionHandler(value = ErrorException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public @ResponseBody PowerAuthAPIResponse<List<ErrorModel>> handleErrorException(HttpServletRequest request, ErrorException exception) {

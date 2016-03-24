@@ -15,6 +15,12 @@
  */
 package io.getlime.rest.api.model;
 
+/**
+ * Request object for /pa/activation/create end-point.
+ * 
+ * @author Petr Dvirak
+ *
+ */
 public class ActivationCreateRequest {
 	
 	private String activationIdShort;
@@ -25,58 +31,114 @@ public class ActivationCreateRequest {
 	private String applicationKey;
 	private String applicationSignature;
 	
+	/**
+	 * Get activation ID short.
+	 * @return Activation ID short.
+	 */
 	public String getActivationIdShort() {
 		return activationIdShort;
 	}
 	
+	/**
+	 * Set activation ID short.
+	 * @param activationIdShort Activation ID short.
+	 */
 	public void setActivationIdShort(String activationIdShort) {
 		this.activationIdShort = activationIdShort;
 	}
 	
+	/**
+	 * Get activation nonce.
+	 * @return Activation nonce.
+	 */
 	public String getActivationNonce() {
 		return activationNonce;
 	}
 	
+	/**
+	 * Set activation nonce.
+	 * @param activationNonce Activation nonce.
+	 */
 	public void setActivationNonce(String activationNonce) {
 		this.activationNonce = activationNonce;
 	}
 	
+	/**
+	 * Get encrypted device public key.
+	 * @return cDevicePublicKey
+	 */
 	public String getEncryptedDevicePublicKey() {
 		return encryptedDevicePublicKey;
 	}
 	
+	/**
+	 * Set encrypted device public key.
+	 * @param encryptedDevicePublicKey Encrypted device public key.
+	 */
 	public void setEncryptedDevicePublicKey(String encryptedDevicePublicKey) {
 		this.encryptedDevicePublicKey = encryptedDevicePublicKey;
 	}
 	
+	/**
+	 * Get activation name.
+	 * @return Activation name.
+	 */
 	public String getActivationName() {
 		return activationName;
 	}
 	
+	/**
+	 * Set activation name.
+	 * @param activationName Activation name.
+	 */
 	public void setActivationName(String activationName) {
 		this.activationName = activationName;
 	}
 	
+	/**
+	 * Get extra parameter.
+	 * @return Extra parameter.
+	 */
 	public String getExtras() {
 		return extras;
 	}
 	
+	/**
+	 * Set extra parameter.
+	 * @param extras Extra parameter.
+	 */
 	public void setExtras(String extras) {
 		this.extras = extras;
 	}
 	
+	/**
+	 * Get application key.
+	 * @return Application key.
+	 */
 	public String getApplicationKey() {
 		return applicationKey;
 	}
 	
+	/**
+	 * Set application key.
+	 * @param applicationKey Application key.
+	 */
 	public void setApplicationKey(String applicationKey) {
 		this.applicationKey = applicationKey;
 	}
 	
+	/**
+	 * Get application signature.
+	 * @return Application signature.
+	 */
 	public String getApplicationSignature() {
 		return applicationSignature;
 	}
 	
+	/**
+	 * Set application signature.
+	 * @param applicationSignature Application signature.
+	 */
 	public void setApplicationSignature(String applicationSignature) {
 		this.applicationSignature = applicationSignature;
 	}

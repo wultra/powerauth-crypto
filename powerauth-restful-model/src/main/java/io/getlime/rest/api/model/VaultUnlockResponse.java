@@ -15,23 +15,45 @@
  */
 package io.getlime.rest.api.model;
 
+/**
+ * Response object for /pa/vault/unlock end-point.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class VaultUnlockResponse {
 	
 	private String activationId;
 	private String encryptedVaultEncryptionKey;
 	
+	/**
+	 * Get activation ID
+	 * @return Activation ID
+	 */
 	public String getActivationId() {
 		return activationId;
 	}
 	
+	/**
+	 * Set activation ID
+	 * @param activationId Activation ID
+	 */
 	public void setActivationId(String activationId) {
 		this.activationId = activationId;
 	}
 	
+	/**
+	 * Get encrypted vault encryption key (using a key derived from the master transport key).
+	 * @return Encrypted vault encryption key.
+	 */
 	public String getEncryptedVaultEncryptionKey() {
 		return encryptedVaultEncryptionKey;
 	}
 	
+	/**
+	 * Set encrypted vault encryption key (using a key derived from the master transport key).
+	 * @param encryptedVaultEncryptionKey Encrypted vault encryption key.
+	 */
 	public void setEncryptedVaultEncryptionKey(String encryptedVaultEncryptionKey) {
 		this.encryptedVaultEncryptionKey = encryptedVaultEncryptionKey;
 	}

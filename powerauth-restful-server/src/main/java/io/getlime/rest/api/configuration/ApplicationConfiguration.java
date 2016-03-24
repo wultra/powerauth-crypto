@@ -21,6 +21,11 @@ import org.springframework.context.annotation.Configuration;
 
 import io.getlime.rest.api.security.application.PowerAuthApplicationConfiguration;
 
+/**
+ * Default implementation of PowerAuthApplicationConfiguration interface. 
+ * @author Petr Dvorak
+ *
+ */
 @Configuration
 public class ApplicationConfiguration implements PowerAuthApplicationConfiguration {
 

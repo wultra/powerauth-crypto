@@ -30,13 +30,20 @@ import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
 
+/**
+ * Class implementing client-side processes related to PowerAuth secure vault.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthClientVault {
 	
 	/**
 	 * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using a transport key
 	 * KEY_ENCRYPTION_VAULT_TRANSPORT.
 	 * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.
-	 * @param vaultEncryptionTransportKey Key used for decrypting vault encryption key.
+	 * @param masterTransportKey Master transport key used for deriving a transport key, used for decrypting vault encryption key.
+	 * @param ctr Counter used for key derivation.
 	 * @return Original KEY_ENCRYPTION_VAULT
 	 * @throws InvalidKeyException In case invalid key is provided.
 	 */

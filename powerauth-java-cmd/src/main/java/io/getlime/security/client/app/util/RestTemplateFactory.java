@@ -25,8 +25,18 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+/**
+ * Factory class for the default {@link RestTemplate} instance.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class RestTemplateFactory {
 
+	/**
+	 * Return default RestTemplate skeleton.
+	 * @return Default RestTempalte skeleton.
+	 */
 	public static RestTemplate defaultRestTemplate() {
 		// Prepare converters
 		ObjectMapper mapper = new ObjectMapper();

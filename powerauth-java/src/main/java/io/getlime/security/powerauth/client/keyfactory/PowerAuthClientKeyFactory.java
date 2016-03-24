@@ -27,6 +27,12 @@ import io.getlime.security.powerauth.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 
+/**
+ * Class implementing client side key factory for keys related to PowerAuth processes.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthClientKeyFactory {
 
 	private KeyGenerator keyGenerator = new KeyGenerator();
@@ -156,7 +162,7 @@ public class PowerAuthClientKeyFactory {
 	 * Generate a signature key KEY_SIGNATURE_BIOMETRY from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey
 	 *            Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_SIGNATURE_BIOMETRY.
@@ -169,7 +175,7 @@ public class PowerAuthClientKeyFactory {
 	 * Generate a signature key KEY_SIGNATURE_KNOWLEDGE from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey
 	 *            Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_SIGNATURE_KNOWLEDGE.
@@ -182,7 +188,7 @@ public class PowerAuthClientKeyFactory {
 	 * Generate a signature key KEY_SIGNATURE_POSSESSION from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey
 	 *            Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_SIGNATURE_POSSESSION.
@@ -195,7 +201,7 @@ public class PowerAuthClientKeyFactory {
 	 * Generate a transport key KEY_ENCRYPTED_VAULT from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey
 	 *            Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_ENCRYPTED_VAULT.
@@ -208,7 +214,7 @@ public class PowerAuthClientKeyFactory {
 	 * Generate a transport key KEY_TRANSPORT from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey
 	 *            Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_TRANSPORT.

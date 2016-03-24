@@ -40,6 +40,13 @@ import javax.crypto.SecretKey;
 
 import com.google.common.io.BaseEncoding;
 
+/**
+ * Class implementing a cryptography used on the client side in order
+ * to complete the PowerAuth Client activation.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthClientActivation {
 
 	private final SignatureUtils signatureUtils = new SignatureUtils();
@@ -91,7 +98,6 @@ public class PowerAuthClientActivation {
 	 * @param activationIdShort Short activation ID.
 	 * @param activationNonce Client activation nonce.
 	 * @param encryptedDevicePublicKey Encrypted device public key.
-	 * @param clientName Client name (name of the activation)
 	 * @param applicationKey Application identifier.
 	 * @param applicationSecret Application secret.
 	 * @return Signature bytes.
@@ -137,13 +143,13 @@ public class PowerAuthClientActivation {
 	 * Verify signature of the encrypted activation ID and server public key
 	 * using a Master Public Key.
 	 *
-	 * @param activationID Activation ID
+	 * @param activationId Activation ID
 	 * @param C_serverPublicKey Encrypted server public key.
 	 * @param signature Encrypted server public key signature.
 	 * @param masterPublicKey Master Public Key.
 	 * @return Returns "true" if signature matches encrypted data, "false" otherwise.
 	 * @throws InvalidKeyException If provided master public key is invalid.
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException In case system does not support UTF-8 encoding.
 	 */
 	public boolean verifyServerDataSignature(String activationId, byte[] C_serverPublicKey, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, UnsupportedEncodingException {
 		try {
@@ -220,7 +226,7 @@ public class PowerAuthClientActivation {
 	 * @param cStatusBlob Encrypted activation status blob
 	 * @param transportKey A key used to protect the transport.
 	 * @return Status information from the status blob
-	 * @throws InvalidKeyException
+	 * @throws InvalidKeyException When invalid key is provided.
 	 */
 	public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, SecretKey transportKey) throws InvalidKeyException {
 		try {

@@ -41,6 +41,13 @@ import javax.crypto.SecretKey;
 
 import com.google.common.io.BaseEncoding;
 
+/**
+ * Class implementing cryptography used on a server side in order to assure
+ * PowerAuth Server activation related processes.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthServerActivation {
 
     private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
@@ -132,7 +139,6 @@ public class PowerAuthServerActivation {
 	 * @param activationIdShort Short activation ID.
 	 * @param activationNonce Client activation nonce.
 	 * @param encryptedDevicePublicKey Encrypted device public key.
-	 * @param clientName Client name (name of the activation)
 	 * @param applicationKey Application identifier.
 	 * @param applicationSecret Application secret.
 	 * @param signature Signature to be checked against.
@@ -229,9 +235,10 @@ public class PowerAuthServerActivation {
      * @param statusByte Byte determining the status of the activation.
      * @param counter Bytes with a counter information.
      * @param failedAttempts Number of failed attempts at the moment.
+     * @param maxFailedAttempts Number of allowed failed attempts.
      * @param transportKey A key used to protect the transport.
      * @return Encrypted status blob
-     * @throws InvalidKeyException
+     * @throws InvalidKeyException When invalid key is provided.
      */
     public byte[] encryptedStatusBlob(byte statusByte, long counter, byte failedAttempts, byte maxFailedAttempts, SecretKey transportKey)
             throws InvalidKeyException {
@@ -260,12 +267,12 @@ public class PowerAuthServerActivation {
      * Compute an activation ID and encrypted server public key signature
      * using the Master Private Key.
      *
-     * @param activationID Activation ID
+     * @param activationId Activation ID
      * @param C_serverPublicKey Encrypted server public key.
      * @param masterPrivateKey Master Private Key.
      * @return Signature of the encrypted server public key.
      * @throws InvalidKeyException If master private key is invalid.
-     * @throws UnsupportedEncodingException 
+     * @throws UnsupportedEncodingException In case UTF-8 is not supported on the system.
      */
     public byte[] computeServerDataSignature(String activationId, byte[] C_serverPublicKey, PrivateKey masterPrivateKey)
             throws InvalidKeyException, UnsupportedEncodingException {

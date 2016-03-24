@@ -19,6 +19,12 @@ import com.google.common.io.BaseEncoding;
 import java.security.SecureRandom;
 import java.util.UUID;
 
+/**
+ * Generator of identifiers used in Poweruth protocol.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class IdentifierGenerator {
 
     private final SecureRandom secureRandom = new SecureRandom();

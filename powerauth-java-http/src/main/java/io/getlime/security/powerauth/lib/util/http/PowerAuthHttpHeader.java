@@ -20,17 +20,51 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Helper class simplifying working with PowerAuth HTTP Authorization header "X-PowerAuth-Authorization".
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthHttpHeader {
 	
+	/**
+	 * Key representing the "pa_activation_id" in the PowerAuth authorization header.
+	 */
 	public static final String ACTIVATION_ID = "pa_activation_id";
+	
+	/**
+	 * Key representing the "pa_application_key" in the PowerAuth authorization header.
+	 */
 	public static final String APPLICATION_ID = "pa_application_key";
+	
+	/**
+	 * Key representing the "pa_signature" in the PowerAuth authorization header.
+	 */
 	public static final String SIGNATURE = "pa_signature";
+	
+	/**
+	 * Key representing the "pa_signature_type" in the PowerAuth authorization header.
+	 */
 	public static final String SIGNATURE_TYPE = "pa_signature_type";
+	
+	/**
+	 * Key representing the "pa_nonce" in the PowerAuth authorization header.
+	 */
 	public static final String NONCE = "pa_nonce";
+	
+	/**
+	 * Key representing the "pa_version" in the PowerAuth authorization header.
+	 */
 	public static final String VERSION = "pa_version";
 	
 	private static final String POWERAUTH_PREFIX = "PowerAuth ";
 
+	/**
+	 * Parse the PowerAuth authorization header and return map with values.
+	 * @param xPowerAuthSignatureHeader HTTP header with PowerAuth authorization.
+	 * @return Map with parsed header values.
+	 */
 	public static Map<String, String> parsePowerAuthSignatureHTTPHeader(String xPowerAuthSignatureHeader) {
 		xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.trim();
 		if (!xPowerAuthSignatureHeader.startsWith(POWERAUTH_PREFIX)) {

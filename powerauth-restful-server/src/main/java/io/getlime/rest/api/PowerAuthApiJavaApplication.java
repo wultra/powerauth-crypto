@@ -18,9 +18,16 @@ package io.getlime.rest.api;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * Spring Boot main class
+ */
 @SpringBootApplication
 public class PowerAuthApiJavaApplication {
 
+	/**
+	 * Main method
+	 * @param args Arguments
+	 */
     public static void main(String[] args) {
         SpringApplication.run(PowerAuthApiJavaApplication.class, args);
     }

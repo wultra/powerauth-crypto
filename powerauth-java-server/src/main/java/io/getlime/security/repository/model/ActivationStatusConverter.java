@@ -20,6 +20,12 @@ import javax.persistence.Converter;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Converter between {@link ActivationStatus} and integer values.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Converter
 @Component
 public class ActivationStatusConverter implements AttributeConverter<ActivationStatus, Integer> {

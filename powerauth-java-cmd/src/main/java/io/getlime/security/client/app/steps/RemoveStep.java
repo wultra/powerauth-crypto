@@ -51,6 +51,12 @@ import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 
+/**
+ * Helper class with activation remove logics.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class RemoveStep {
 	
 	private static final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
@@ -58,6 +64,12 @@ public class RemoveStep {
 	private static final PowerAuthClientSignature signature = new PowerAuthClientSignature();
 	private static final ObjectMapper mapper = new ObjectMapper();
 	
+	/**
+	 * Execute this step with given context
+	 * @param context Provided context
+	 * @return Result status object, null in case of failure.
+	 * @throws Exception In case of any error.
+	 */
 	@SuppressWarnings("unchecked")
 	public static JSONObject execute(Map<String, Object> context) throws Exception {
 		

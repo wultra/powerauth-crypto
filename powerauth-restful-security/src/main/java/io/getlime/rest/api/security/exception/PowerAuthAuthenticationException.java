@@ -15,14 +15,27 @@
  */
 package io.getlime.rest.api.security.exception;
 
+/**
+ * Exception raised in case PowerAuth authentication fails.
+ *  
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthAuthenticationException extends Exception {
 
 	private static final long serialVersionUID = 4280095091435126237L;
 	
+	/**
+	 * Default constructor
+	 */
 	public PowerAuthAuthenticationException() {
 		super();
 	}
 	
+	/**
+	 * Contructor with error message
+	 * @param message Error message
+	 */
 	public PowerAuthAuthenticationException(String message) {
 		super(message);
 	}

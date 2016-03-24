@@ -27,6 +27,13 @@ import io.getlime.security.repository.model.entity.ApplicationEntity;
 import io.getlime.security.repository.model.entity.ApplicationVersionEntity;
 import io.getlime.security.repository.model.entity.MasterKeyPairEntity;
 
+/**
+ * Behavior class implementing the application management related processes. The class separates the
+ * logics from the main service class.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Component
 public class ApplicationServiceBehavior {
 
@@ -39,6 +46,11 @@ public class ApplicationServiceBehavior {
 	@Autowired
 	private MasterKeyPairRepository masterKeyPairRepository;
 
+	/**
+	 * Get application details.
+	 * @param applicationId Application ID
+	 * @return Response with application details
+	 */
 	public GetApplicationDetailResponse getApplicationDetail(Long applicationId) {
 
 		ApplicationEntity application = applicationRepository.findOne(applicationId);
@@ -64,6 +76,10 @@ public class ApplicationServiceBehavior {
 		return response;
 	}
 
+	/**
+	 * Get application list in the PowerAuth Server instance.
+	 * @return List of applications.
+	 */
 	public GetApplicationListResponse getApplicationList() {
 
 		Iterable<ApplicationEntity> result = applicationRepository.findAll();
@@ -81,6 +97,12 @@ public class ApplicationServiceBehavior {
 		return response;
 	}
 	
+	/**
+	 * Create a new application with given name.
+	 * @param name Application name
+	 * @param keyConversionUtilities Utility class for the key conversion
+	 * @return Response with new application information
+	 */
 	public CreateApplicationResponse createApplication(String name, CryptoProviderUtil keyConversionUtilities) {
 		
 		ApplicationEntity application = new ApplicationEntity();
@@ -119,6 +141,12 @@ public class ApplicationServiceBehavior {
 		return response;
 	}
 	
+	/**
+	 * Create a new application version
+	 * @param applicationId Application ID
+	 * @param versionName Application version name
+	 * @return Response with new version information
+	 */
 	public CreateApplicationVersionResponse createApplicationVersion(Long applicationId, String versionName) {
 		
 		ApplicationEntity application = applicationRepository.findOne(applicationId);
@@ -145,6 +173,11 @@ public class ApplicationServiceBehavior {
 		return response;
 	}
 	
+	/**
+	 * Mark a version with given ID as unsupported
+	 * @param versionId Version ID
+	 * @return Response confirming the operation
+	 */
 	public UnsupportApplicationVersionResponse unsupportApplicationVersion(Long versionId) {
 		
 		ApplicationVersionEntity version = applicationVersionRepository.findOne(versionId);
@@ -158,6 +191,11 @@ public class ApplicationServiceBehavior {
 		return response;
 	}
 	
+	/**
+	 * Mark a version with given ID as supported
+	 * @param versionId Version ID
+	 * @return Response confirming the operation
+	 */
 	public SupportApplicationVersionResponse supportApplicationVersion(Long versionId) {
 		
 		ApplicationVersionEntity version = applicationVersionRepository.findOne(versionId);

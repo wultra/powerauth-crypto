@@ -28,6 +28,12 @@ import javax.persistence.ManyToOne;
 import io.getlime.security.repository.model.ActivationStatus;
 import io.getlime.security.repository.model.ActivationStatusConverter;
 
+/**
+ * Database entity for an "activation" objects.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Entity(name = "pa_activation")
 public class ActivationRecordEntity implements Serializable {
 
@@ -91,9 +97,33 @@ public class ActivationRecordEntity implements Serializable {
 	@JoinColumn(name = "master_keypair_id", referencedColumnName = "id", nullable = false)
 	private MasterKeyPairEntity masterKeyPair;
 
+	/**
+	 * Default constructor.
+	 */
 	public ActivationRecordEntity() {
 	}
 
+	/**
+	 * Constructor with all parameters.
+	 * @param activationId Activation ID
+	 * @param activationIdShort Activation Id Short
+	 * @param activationOTP Activation OTP
+	 * @param userId User Id
+	 * @param activationName Activation name
+	 * @param extras Extra parameter
+	 * @param serverPrivateKeyBase64 Server private key encoded as Base64
+	 * @param serverPublicKeyBase64 Server public key encoded as Base64.
+	 * @param devicePublicKeyBase64 device public key encoded as Base64.
+	 * @param counter Counter
+	 * @param failedAttempts Current failed attempt count.
+	 * @param maxFailedAttempts Maximum allowed failed attempt count.
+	 * @param timestampCreated Created timestamp.
+	 * @param timestampActivationExpire Activation completion expiration timestamp.
+	 * @param timestampLastUsed Last signature timestamp.
+	 * @param activationStatus Activation status.
+	 * @param masterKeyPair Associated master keypair.
+	 * @param application Associated application.
+	 */
 	public ActivationRecordEntity(String activationId, 
 			String activationIdShort, 
 			String activationOTP, 
@@ -133,146 +163,300 @@ public class ActivationRecordEntity implements Serializable {
 		this.application = application;
 	}
 
+	/**
+	 * Get activation ID.
+	 * @return Activation ID.
+	 */
 	public String getActivationId() {
 		return activationId;
 	}
 
+	/**
+	 * Set activation ID.
+	 * @param activationId Activation ID.
+	 */
 	public void setActivationId(String activationId) {
 		this.activationId = activationId;
 	}
 
+	/**
+	 * Get short activation ID
+	 * @return Short activation ID
+	 */
 	public String getActivationIdShort() {
 		return activationIdShort;
 	}
 
+	/**
+	 * Set short activation ID
+	 * @param activationIdShort Short activation ID
+	 */
 	public void setActivationIdShort(String activationIdShort) {
 		this.activationIdShort = activationIdShort;
 	}
 
+	/**
+	 * Get activation OTP
+	 * @return Activation OTP
+	 */
 	public String getActivationOTP() {
 		return activationOTP;
 	}
 
+	/**
+	 * Set activation OTP
+	 * @param activationOTP Activation OTP
+	 */
 	public void setActivationOTP(String activationOTP) {
 		this.activationOTP = activationOTP;
 	}
 
+	/**
+	 * Get user ID
+	 * @return User ID
+	 */
 	public String getUserId() {
 		return userId;
 	}
 
+	/**
+	 * Set user ID
+	 * @param userId User ID
+	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
+	/**
+	 * Get activation name
+	 * @return Activation name
+	 */
 	public String getActivationName() {
 		return activationName;
 	}
 
+	/**
+	 * Set activation name
+	 * @param activationName Activation name
+	 */
 	public void setActivationName(String activationName) {
 		this.activationName = activationName;
 	}
 
+	/**
+	 * Get extra parameter
+	 * @return Extra parameter
+	 */
 	public String getExtras() {
 		return extras;
 	}
 
+	/**
+	 * Set extra parameter
+	 * @param extras Extra parameter
+	 */
 	public void setExtras(String extras) {
 		this.extras = extras;
 	}
 
+	/**
+	 * Get Base64 encoded server private key
+	 * @return Base64 encoded server private key
+	 */
 	public String getServerPrivateKeyBase64() {
 		return serverPrivateKeyBase64;
 	}
 
+	/**
+	 * Set Base64 encoded server private key.
+	 * @param serverPrivateKeyBase64 Base64 encoded server private key.
+	 */
 	public void setServerPrivateKeyBase64(String serverPrivateKeyBase64) {
 		this.serverPrivateKeyBase64 = serverPrivateKeyBase64;
 	}
 
+	/**
+	 * Get Base64 encoded server public key
+	 * @return Base64 encoded server public key
+	 */
 	public String getServerPublicKeyBase64() {
 		return serverPublicKeyBase64;
 	}
-
+	
+	/**
+	 * Set Base64 encoded server public key
+	 * @param serverPublicKeyBase64 Base64 encoded server public key
+	 */
 	public void setServerPublicKeyBase64(String serverPublicKeyBase64) {
 		this.serverPublicKeyBase64 = serverPublicKeyBase64;
 	}
 
+	/**
+	 * Get Base64 encoded device public key
+	 * @return Base64 encoded device public key
+	 */
 	public String getDevicePublicKeyBase64() {
 		return devicePublicKeyBase64;
 	}
 
+	/**
+	 * Set Base64 encoded device public key
+	 * @param devicePublicKeyBase64 Base64 encoded device public key
+	 */
 	public void setDevicePublicKeyBase64(String devicePublicKeyBase64) {
 		this.devicePublicKeyBase64 = devicePublicKeyBase64;
 	}
-
+	
+	/**
+	 * Get counter value
+	 * @return Counter
+	 */
 	public Long getCounter() {
 		return counter;
 	}
 
+	/**
+	 * Set counter value
+	 * @param counter Counter
+	 */
 	public void setCounter(Long counter) {
 		this.counter = counter;
 	}
 
+	/**
+	 * Get current number of failed attempts
+	 * @return Failed attempts
+	 */
 	public Long getFailedAttempts() {
 		return failedAttempts;
 	}
 
+	/**
+	 * Set current number of failed attempts
+	 * @param failedAttempts Failed attempts
+	 */
 	public void setFailedAttempts(Long failedAttempts) {
 		this.failedAttempts = failedAttempts;
 	}
 
+	/**
+	 * Get maximum allowed number of failed attempts
+	 * @return Max. amount of allowed failed attempts
+	 */
 	public Long getMaxFailedAttempts() {
 		return maxFailedAttempts;
 	}
 
+	/**
+	 * Set maximum allowed number of failed attempts
+	 * @param maxFailedAttempts Max. amount of allowed failed attempts
+	 */
 	public void setMaxFailedAttempts(Long maxFailedAttempts) {
 		this.maxFailedAttempts = maxFailedAttempts;
 	}
 
+	/**
+	 * Get created timestamp
+	 * @return Created timestamp
+	 */
 	public Date getTimestampCreated() {
 		return timestampCreated;
 	}
 
+	/**
+	 * Set created timestamp
+	 * @param timestampCreated Created timestamp
+	 */
 	public void setTimestampCreated(Date timestampCreated) {
 		this.timestampCreated = timestampCreated;
 	}
 
+	/**
+	 * Get timestamp of activation completion expiration - application must turn
+	 * from CREATED to ACTIVE state before this moment, or else it will turn REMOVED
+	 * on next access. 
+	 * @return Timestamp of activation completion expiration.
+	 */
 	public Date getTimestampActivationExpire() {
 		return timestampActivationExpire;
 	}
 
+	/**
+	 * Set timestamp of activation completion expiration - application must turn
+	 * from CREATED to ACTIVE state before this moment, or else it will turn REMOVED
+	 * on next access. 
+	 * @param timestampActivationExpire Timestamp of activation completion expiration.
+	 */
 	public void setTimestampActivationExpire(Date timestampActivationExpire) {
 		this.timestampActivationExpire = timestampActivationExpire;
 	}
 
+	/**
+	 * Get timestamp of the last signature calculation
+	 * @return Timestamp of the last signature calculation
+	 */
 	public Date getTimestampLastUsed() {
 		return timestampLastUsed;
 	}
 
+	/**
+	 * Set timestamp of the last signature calculation
+	 * @param timestampLastUsed timestamp of the last signature calculation
+	 */
 	public void setTimestampLastUsed(Date timestampLastUsed) {
 		this.timestampLastUsed = timestampLastUsed;
 	}
 
+	/**
+	 * Get activation status.
+	 * @return Activation status, value of {@link ActivationStatus}
+	 */
 	public ActivationStatus getActivationStatus() {
 		return activationStatus;
 	}
 
+	/**
+	 * Set activation status.
+	 * @param activationStatus Activation status, value of {@link ActivationStatus}
+	 */
 	public void setActivationStatus(ActivationStatus activationStatus) {
 		this.activationStatus = activationStatus;
 	}
 
+	/**
+	 * Get associated application instance. Each activation is strongly associated with
+	 * a single application.
+	 * @return Associated application, instance of {@link ApplicationEntity}
+	 */
 	public ApplicationEntity getApplication() {
 		return application;
 	}
 	
+	/**
+	 * Set associated application instance. Each activation is strongly associated with
+	 * a single application.
+	 * @param application Associated application, instance of {@link ApplicationEntity}
+	 */
 	public void setApplication(ApplicationEntity application) {
 		this.application = application;
 	}
 	
+	/**
+	 * Get associated master key pair. While master key pair is associated with an application
+	 * by default, it must also be associated with an activation when a new activation is
+	 * created so that it is strongly bound with the activation. 
+	 * @return Master Key Pair.
+	 */
 	public MasterKeyPairEntity getMasterKeyPair() {
 		return masterKeyPair;
 	}
 	
+	/**
+	 * Set associated master key pair. While master key pair is associated with an application
+	 * by default, it must also be associated with an activation when a new activation is
+	 * created so that it is strongly bound with the activation. 
+	 * @param masterKeyPair Master Key Pair.
+	 */
 	public void setMasterKeyPair(MasterKeyPairEntity masterKeyPair) {
 		this.masterKeyPair = masterKeyPair;
 	}

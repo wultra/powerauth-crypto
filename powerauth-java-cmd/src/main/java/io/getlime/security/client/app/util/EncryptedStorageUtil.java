@@ -25,8 +25,25 @@ import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
 
+/**
+ * Utility class implementing processes related to data storage on client side.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class EncryptedStorageUtil {
 	
+	/**
+	 * Encrypt the KEY_SIGNATURE_KNOWLEDGE key using a provided password.
+	 * @param password Password to be used for encryption.
+	 * @param signatureKnoweldgeSecretKey Original KEY_SIGNATURE_KNOWLEDGE key.
+	 * @param salt Random salt.
+	 * @param keyGenerator Key generator instance.
+	 * @return Encrypted KEY_SIGNATURE_KNOWLEDGE using password and random salt.
+	 * @throws InvalidKeyException In case invalid key is provided.
+	 * @throws IllegalBlockSizeException In case invalid key is provided.
+	 * @throws BadPaddingException In case invalid padding is provided.
+	 */
 	public static byte[] storeSignatureKnowledgeKey(char[] password, SecretKey signatureKnoweldgeSecretKey, byte[] salt, KeyGenerator keyGenerator) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		// Ask for the password and generate storage key
 		SecretKey encryptionSignatureKnowledgeKey = keyGenerator.deriveSecretKeyFromPassword(new String(password), salt);
@@ -39,6 +56,17 @@ public class EncryptedStorageUtil {
 		return cSignatureKnoweldgeSecretKey;
 	}
 
+	/**
+	 * Decrypt the KEY_SIGNATURE_KNOWLEDGE key using a provided password.
+	 * @param password Password to be used for decryption.
+	 * @param cSignatureKnoweldgeSecretKeyBytes Encrypted KEY_SIGNATURE_KNOWLEDGE key.
+	 * @param salt Salt that was used for encryption.
+	 * @param keyGenerator Key generator instance.
+	 * @return Original KEY_SIGNATURE_KNOWLEDGE key.
+	 * @throws InvalidKeyException In case invalid key is provided
+	 * @throws IllegalBlockSizeException In case invalid key is provided
+	 * @throws BadPaddingException In case invalid padding is provided
+	 */
 	public static SecretKey getSignatureKnowledgeKey(char[] password, byte[] cSignatureKnoweldgeSecretKeyBytes, byte[] salt, KeyGenerator keyGenerator) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		// Ask for the password and generate storage key
 		SecretKey encryptionSignatureKnowledgeKey = keyGenerator.deriveSecretKeyFromPassword(new String(password), salt);

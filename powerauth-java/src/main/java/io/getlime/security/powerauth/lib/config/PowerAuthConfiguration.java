@@ -17,8 +17,17 @@ package io.getlime.security.powerauth.lib.config;
 
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
+/**
+ * PowerAuth cryptography configuration class.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public enum PowerAuthConfiguration {
 
+	/**
+	 * Singleton instance 
+	 */
 	INSTANCE;
 
 	/**
@@ -26,10 +35,18 @@ public enum PowerAuthConfiguration {
 	 */
 	private CryptoProviderUtil keyConvertor;
 
+	/**
+	 * Set key convertor instance.
+	 * @param keyConvertor Key convertor instance
+	 */
 	public void setKeyConvertor(CryptoProviderUtil keyConvertor) {
 		this.keyConvertor = keyConvertor;
 	}
 
+	/**
+	 * Get key convertor instance.
+	 * @return Key convertor instance
+	 */
 	public CryptoProviderUtil getKeyConvertor() {
 		if (keyConvertor == null) {
 			throw new NullPointerException("Convertor mustn't be null! Set convertor by calling PowerAuthConfiguration.INSTANCE.setConvertor().");

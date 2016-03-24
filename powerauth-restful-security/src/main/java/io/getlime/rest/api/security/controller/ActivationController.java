@@ -42,6 +42,13 @@ import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 import io.getlime.security.soap.client.PowerAuthServiceClient;
 
+/**
+ * Controller implementing activation related end-points from the PowerAuth
+ * Standard API.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Controller
 @RequestMapping(value = "/pa/activation")
 public class ActivationController {
@@ -55,6 +62,11 @@ public class ActivationController {
 	@Autowired
 	private PowerAuthApplicationConfiguration applicationConfiguration;
 
+	/**
+	 * Create a new activation.
+	 * @param request PowerAuth RESTful request with {@link ActivationCreateRequest} payload.
+	 * @return PowerAuth RESTful response with {@link ActivationCreateResponse} payload.
+	 */
 	@RequestMapping(value = "create", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<ActivationCreateResponse> createActivation(@RequestBody PowerAuthAPIRequest<ActivationCreateRequest> request) {
 
@@ -87,6 +99,11 @@ public class ActivationController {
 		
 	}
 
+	/**
+	 * Get activation status.
+	 * @param request PowerAuth RESTful request with {@link ActivationStatusRequest} payload.
+	 * @return PowerAuth RESTful response with {@link ActivationStatusResponse} payload.
+	 */
 	@RequestMapping(value = "status", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<ActivationStatusResponse> getActivationStatus(@RequestBody PowerAuthAPIRequest<ActivationStatusRequest> request) {
 		
@@ -103,6 +120,14 @@ public class ActivationController {
 		
 	}
 
+	/**
+	 * Get activation status.
+	 * @param request PowerAuth RESTful request with {@link ActivationRemoveRequest} payload.
+	 * @param signatureHeader PowerAuth signature HTTP header. 
+	 * @param servletRequest Associated servlet request.
+	 * @return PowerAuth RESTful response with {@link ActivationRemoveResponse} payload.
+	 * @throws Exception In case the signature validation fails. 
+	 */
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<ActivationRemoveResponse> removeActivation(@RequestBody PowerAuthAPIRequest<ActivationRemoveRequest> request, @RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader, HttpServletRequest servletRequest) throws Exception {
 

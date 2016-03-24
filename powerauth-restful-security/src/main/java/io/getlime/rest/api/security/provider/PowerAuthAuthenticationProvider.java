@@ -16,7 +16,6 @@
 package io.getlime.rest.api.security.provider;
 
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +44,12 @@ import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import io.getlime.security.soap.client.PowerAuthServiceClient;
 
+/**
+ * Implementation of PowerAuth authentication provider.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Component
 public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 
@@ -72,7 +77,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 					powerAuthAuthentication.getData()
 			);
 			soapRequest.setData(payload);
-		} catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+		} catch (UnsupportedEncodingException ex) {
 			Logger.getLogger(PowerAuthAuthenticationProvider.class.getName()).log(Level.SEVERE, null, ex);
 			return null;
 		}

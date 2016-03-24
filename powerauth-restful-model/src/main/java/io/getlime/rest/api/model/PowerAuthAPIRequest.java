@@ -15,21 +15,42 @@
  */
 package io.getlime.rest.api.model;
 
+/**
+ * Generic class for all PowerAuth RESTful API Requests.
+ * 
+ * @author Petr Dvorak
+ *
+ * @param <T> Type used as a request object in the request.
+ */
 public class PowerAuthAPIRequest<T> {
 	
 	private T requestObject;
 	
+	/**
+	 * Default constructor
+	 */
 	public PowerAuthAPIRequest() {
     }
 	
+	/**
+	 * Constructor with a given request object
+	 * @param requestObject Request object
+	 */
 	public PowerAuthAPIRequest(T requestObject) {
 		this.requestObject = requestObject;
 	}
 	
+	/**
+	 * Get request object
+	 * @return Request object
+	 */
 	public T getRequestObject() {
 		return requestObject;
 	}
-	
+	/**
+	 * Set request object
+	 * @param requestObject Request object
+	 */
 	public void setRequestObject(T requestObject) {
 		this.requestObject = requestObject;
 	}

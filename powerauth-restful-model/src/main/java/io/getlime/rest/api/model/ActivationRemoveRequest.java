@@ -15,6 +15,12 @@
  */
 package io.getlime.rest.api.model;
 
+/**
+ * Request object for /pa/activation/remove end-point.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class ActivationRemoveRequest {
 
 }

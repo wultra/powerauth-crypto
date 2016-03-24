@@ -24,20 +24,36 @@ import com.google.common.io.BaseEncoding;
 
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 
+/**
+ * Helper class for configuration 
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class ConfigurationUtils {
-	
-	private static final String expectedApplicationId = "a1c97807-795a-466e-87bf-230d8ac1451e";
-	private static final String expectedApplicationSecret = "d358e78a-8d12-4595-bf69-6eff2c2afc04";
+
+	private static final String expectedApplicationKey = "MTIzNDU2Nzg5MGFiY2RlZg==";
+	private static final String expectedApplicationSecret = "c2VjcmV0MDAwMDAwMDAwMA==";
 	private static final String expectedApplicationName = "PowerAuth 2.0 Reference Client";
-	
-	public static String getApplicationId(JSONObject clientConfigObject) {
+
+	/**
+	 * Get application key value that is set in dictionary, or a default value.
+	 * @param clientConfigObject Object with configuration.
+	 * @return Application key.
+	 */
+	public static String getApplicationKey(JSONObject clientConfigObject) {
 		if (clientConfigObject.get("applicationId") != null) {
 			return (String) clientConfigObject.get("applicationId");
 		} else {
-			return expectedApplicationId;
+			return expectedApplicationKey;
 		}
 	}
 
+	/**
+	 * Get application secret that is set in dictionary, or a default value.
+	 * @param clientConfigObject Object with configuration.
+	 * @return Application secret.
+	 */
 	public static String getApplicationSecret(JSONObject clientConfigObject) {
 		if (clientConfigObject.get("applicationSecret") != null) {
 			return (String) clientConfigObject.get("applicationSecret");
@@ -45,7 +61,12 @@ public class ConfigurationUtils {
 			return expectedApplicationSecret;
 		}
 	}
-	
+
+	/**
+	 * Get application name that is set in dictionary, or a default value.
+	 * @param clientConfigObject Object with configuration.
+	 * @return Application name.
+	 */
 	public static String getApplicationName(JSONObject clientConfigObject) {
 		if (clientConfigObject.get("applicationName") != null) {
 			return (String) clientConfigObject.get("applicationName");
@@ -54,6 +75,11 @@ public class ConfigurationUtils {
 		}
 	}
 
+	/**
+	 * Get master public key from the configuration object
+	 * @param clientConfigObject Object with configuration.
+	 * @return Master public key.
+	 */
 	public static PublicKey getMasterKey(JSONObject clientConfigObject) {
 		if (clientConfigObject.get("masterPublicKey") != null) {
 			try {

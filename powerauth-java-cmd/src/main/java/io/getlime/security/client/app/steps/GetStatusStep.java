@@ -42,12 +42,24 @@ import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
+/**
+ * Helper class with step for getting activation status.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class GetStatusStep {
 	
 	private static final PowerAuthClientActivation activation = new PowerAuthClientActivation();
 	private static final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 	private static final ObjectMapper mapper = new ObjectMapper();
 
+	/**
+	 * Execute this step with given context
+	 * @param context Provided context
+	 * @return null
+	 * @throws Exception In case of any error.
+	 */
 	@SuppressWarnings("unchecked")
 	public static JSONObject execute(Map<String, Object> context) throws Exception {
 		

@@ -31,6 +31,12 @@ import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
 
+/**
+ * Class implementing server-side logics for PowerAuth vault encryption.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthServerVault {
 	
 	/**

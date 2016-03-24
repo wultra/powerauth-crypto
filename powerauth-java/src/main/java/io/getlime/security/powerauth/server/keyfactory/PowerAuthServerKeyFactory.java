@@ -27,17 +27,24 @@ import io.getlime.security.powerauth.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 
+
 /**
- * Generate a list with signature keys for given signature type and master secret
- * @param signatureType Requested signature type
- * @param masterSecretKey Master Key Secret
- * @return List with keys constructed from master secret that are needed to get
- * requested signature type. 
+ * Key factory used on server side to generate PowerAuth related keys.
+ * 
+ * @author Petr Dvorak
+ *
  */
 public class PowerAuthServerKeyFactory {
 	
 	private KeyGenerator keyGenerator = new KeyGenerator();
 	
+	/**
+	 * Generate a list with signature keys for given signature type and master secret
+	 * @param signatureType Requested signature type
+	 * @param masterSecretKey Master Key Secret
+	 * @return List with keys constructed from master secret that are needed to get
+	 * requested signature type. 
+	 */
 	public List<SecretKey> keysForSignatureType(String signatureType, SecretKey masterSecretKey) {
 		
 		List<SecretKey> signatureKeys = new ArrayList<>();
@@ -90,7 +97,7 @@ public class PowerAuthServerKeyFactory {
 	 * Generate a transport key KEY_ENCRYPTED_VAULT from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_ENCRYPTED_VAULT.
 	 */
@@ -120,7 +127,7 @@ public class PowerAuthServerKeyFactory {
 	 * Generate a signature key KEY_SIGNATURE_BIOMETRY from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_SIGNATURE_BIOMETRY.
 	 */
@@ -135,7 +142,7 @@ public class PowerAuthServerKeyFactory {
 	 * Generate a signature key KEY_SIGNATURE_KNOWLEDGE from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_SIGNATURE_KNOWLEDGE.
 	 */
@@ -150,7 +157,7 @@ public class PowerAuthServerKeyFactory {
 	 * Generate a signature key KEY_SIGNATURE_POSSESSION from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_SIGNATURE_POSSESSION.
 	 */
@@ -165,7 +172,7 @@ public class PowerAuthServerKeyFactory {
 	 * Generate a transport key KEY_TRANSPORT from master secret key
 	 * KEY_MASTER_SECRET using KDF.
 	 *
-	 * @see KeyGenerator#deriveSecretKey(javax.crypto.SecretKey, java.lang.long)
+	 * @see KeyGenerator#deriveSecretKey(SecretKey, long)
 	 * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
 	 * @return An instance of signature key KEY_TRANSPORT.
 	 */

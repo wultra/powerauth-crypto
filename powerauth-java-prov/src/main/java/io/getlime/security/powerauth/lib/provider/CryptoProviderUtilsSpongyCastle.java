@@ -36,6 +36,12 @@ import org.spongycastle.jce.spec.ECPrivateKeySpec;
 import org.spongycastle.jce.spec.ECPublicKeySpec;
 import org.spongycastle.math.ec.ECPoint;
 
+/**
+ * Crypto provider based on SpongyCastle crypto provider.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
 	
 	/**

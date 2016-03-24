@@ -18,6 +18,9 @@ package io.getlime.rest.api;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 
+/**
+ * Servlet initializer 
+ */
 public class ServletInitializer extends SpringBootServletInitializer {
 
     @Override

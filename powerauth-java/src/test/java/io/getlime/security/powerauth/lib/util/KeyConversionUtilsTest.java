@@ -24,8 +24,6 @@ import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
@@ -36,30 +34,27 @@ import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPrivateKeySpec;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author petrdvorak
+ * Test for key conversion utilities
+ * 
+ * @author Petr Dvorak
+ * 
  */
 public class KeyConversionUtilsTest {
 
+	/**
+	 * Default constructor
+	 */
 	public KeyConversionUtilsTest() {
 	}
 
-	@BeforeClass
-	public static void setUpClass() {
-	}
-
-	@AfterClass
-	public static void tearDownClass() {
-	}
-
+	/**
+	 * Set up crypto providers
+	 */
 	@Before
 	public void setUp() {
 		// Add Bouncy Castle Security Provider
@@ -67,15 +62,11 @@ public class KeyConversionUtilsTest {
 		PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
 	}
 
-	@After
-	public void tearDown() {
-	}
-
 	/**
 	 * Test of convertPublicKey method, of class KeyConversionUtils.
 	 * 
-	 * @throws NoSuchProviderException
-	 * @throws NoSuchAlgorithmException
+	 * @throws Exception In case test fails 
+	 *
 	 */
 	@Test
 	public void testConvertPublicKey() throws Exception {

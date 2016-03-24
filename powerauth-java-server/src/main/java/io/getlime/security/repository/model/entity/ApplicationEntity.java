@@ -10,6 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+/**
+ * Entity class representing an application.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Entity(name = "pa_application")
 public class ApplicationEntity implements Serializable {
 
@@ -26,8 +32,17 @@ public class ApplicationEntity implements Serializable {
 	@OneToMany(mappedBy = "application")
 	private List<ApplicationVersionEntity> versions;
 	
+	/**
+	 * Default constructor
+	 */
 	public ApplicationEntity() { }
 	
+	/**
+	 * Constructor for a new application
+	 * @param id Application ID
+	 * @param name Application name
+	 * @param versions Collection of versions
+	 */
 	public ApplicationEntity(Long id, String name, List<ApplicationVersionEntity> versions) {
 		super();
 		this.id = id;
@@ -35,18 +50,34 @@ public class ApplicationEntity implements Serializable {
 		this.versions = versions;
 	}
 
+	/**
+	 * Get application ID
+	 * @return Application ID
+	 */
 	public Long getId() {
 		return id;
 	}
 	
+	/**
+	 * Set application ID
+	 * @param id Application ID
+	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 	
+	/**
+	 * Get application name
+	 * @return Application name
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Set application name
+	 * @param name Application name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}

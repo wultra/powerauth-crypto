@@ -13,8 +13,21 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 
+/**
+ * Utility class for generating QR codes.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class QRUtil {
 
+	/**
+	 * Encode the string data into a QR code of a given size (size = width = height)
+	 * and return the result as "data:" URL. 
+	 * @param qrCodeData String with the data to be stored in the QR code.
+	 * @param qrCodeSize Size of the QR code in pixels.
+	 * @return Data URL with encoded QR code.
+	 */
 	public static String encode(String qrCodeData,int qrCodeSize) {
 		try {
 			BitMatrix matrix = new MultiFormatWriter().encode(

@@ -5,6 +5,13 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import javax.crypto.SecretKey;
 
+/**
+ * Interface for key conversion methods, used to decouple logics from
+ * the implementation based on specific Java crypto provider (BC, SC, ...)  
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public interface CryptoProviderUtil {
 	
 	/**

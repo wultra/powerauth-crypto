@@ -40,6 +40,14 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * An implementation of a high-level key generator class. Keys are generated
+ * using elliptic curves (EC) and unless explicitly stated otherwise, they
+ * have 128b length.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class KeyGenerator {
 
     private final SecureRandom random = new SecureRandom();

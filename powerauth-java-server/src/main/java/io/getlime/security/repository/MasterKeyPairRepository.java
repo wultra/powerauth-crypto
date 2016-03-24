@@ -19,8 +19,19 @@ import org.springframework.data.repository.CrudRepository;
 
 import io.getlime.security.repository.model.entity.MasterKeyPairEntity;
 
+/**
+ * Database repository for accessing Master Key Pair data.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public interface MasterKeyPairRepository extends CrudRepository<MasterKeyPairEntity, Long> {
 
+	/**
+	 * Find one newest master key pair with a given application ID
+	 * @param id Application ID
+	 * @return The newest Master Key Pair for given application. 
+	 */
     MasterKeyPairEntity findFirstByApplicationIdOrderByTimestampCreatedDesc(Long id);
 
 }

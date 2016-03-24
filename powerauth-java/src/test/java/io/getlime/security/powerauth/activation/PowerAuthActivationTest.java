@@ -30,10 +30,7 @@ import java.security.Security;
 
 import javax.crypto.SecretKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -43,14 +40,9 @@ import static org.junit.Assert.*;
  */
 public class PowerAuthActivationTest {
 
-	@BeforeClass
-	public static void setUpClass() {
-	}
-
-	@AfterClass
-	public static void tearDownClass() {
-	}
-
+	/**
+	 * Add crypto providers.
+	 */
 	@Before
 	public void setUp() {
 		// Add Bouncy Castle Security Provider
@@ -58,10 +50,10 @@ public class PowerAuthActivationTest {
 		PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
 	}
 
-	@After
-	public void tearDown() {
-	}
-
+	/**
+	 * Test that the keys are correctly generated.
+	 * @throws Exception When test fails.
+	 */
 	@Test
 	public void testGenerateKeys() throws Exception {
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
@@ -74,7 +66,7 @@ public class PowerAuthActivationTest {
 	/**
 	 * Test of the complete activation process, orchestration between client and server.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws Exception In case test fails
 	 */
 	@Test
 	public void testActivationProcess() throws Exception {
@@ -145,6 +137,11 @@ public class PowerAuthActivationTest {
 		}
 	}
 
+	/**
+	 * Test public key encryption.
+	 * 
+	 * @throws Exception When test fails.
+	 */
 	@Test
 	public void testActivationGenerate() throws Exception {
 		String activationOTP = "CKZ2O-OE544";

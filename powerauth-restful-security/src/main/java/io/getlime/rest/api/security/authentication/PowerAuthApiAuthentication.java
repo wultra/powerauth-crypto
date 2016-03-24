@@ -23,6 +23,13 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+/**
+ * PowerAuth API authentication object used between intermediate server application (such as mobile 
+ * banking API) and core systems (such as banking core).
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthApiAuthentication extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = -3790516505615465445L;
@@ -30,10 +37,18 @@ public class PowerAuthApiAuthentication extends AbstractAuthenticationToken {
 	private String activationId;
 	private String userId;
 
+	/**
+	 * Default constructor
+	 */
 	public PowerAuthApiAuthentication() {
 		super(null);
 	}
 
+	/**
+	 * Constructor for a new PowerAuthApiAuthentication
+	 * @param activationId Activation ID
+	 * @param userId User ID
+	 */
 	public PowerAuthApiAuthentication(String activationId, String userId) {
 		super(null);
 		this.activationId = activationId;
@@ -61,19 +76,35 @@ public class PowerAuthApiAuthentication extends AbstractAuthenticationToken {
 	public Object getPrincipal() {
 		return this.userId;
 	}
-
+	
+	/**
+	 * Get user ID
+	 * @return User ID
+	 */
 	public String getUserId() {
 		return userId;
 	}
 
+	/**
+	 * Set user ID
+	 * @param userId User ID
+	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
+	/**
+	 * Get activation ID
+	 * @return Activation ID
+	 */
 	public String getActivationId() {
 		return activationId;
 	}
 
+	/**
+	 * Set activation ID
+	 * @param activationId Activation ID
+	 */
 	public void setActivationId(String activationId) {
 		this.activationId = activationId;
 	}

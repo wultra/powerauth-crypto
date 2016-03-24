@@ -3,12 +3,18 @@ package io.getlime.security.powerauth.lib.provider;
 import java.security.Security;
 
 /**
+ * Factory class for building the correct crypto provider instances.
+ * 
  * @author Tomáš Vondráček (tomas.vondracek@gmail.com)
  */
 public final class CryptoProviderUtilFactory {
 
     private static CryptoProviderUtil utils;
 
+    /**
+     * Return shared (singleton) instance of crypto provider utilities.
+     * @return Crypto provider utilities.
+     */
     public static synchronized CryptoProviderUtil getCryptoProviderUtils() {
         if (utils == null) {
             final boolean hasBC = Security.getProvider("BC") != null;

@@ -30,6 +30,12 @@ import javax.crypto.spec.IvParameterSpec;
 
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 
+/**
+ * A utility class for AES encryption.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class AESEncryptionUtils {
 	
 	/**
@@ -41,9 +47,9 @@ public class AESEncryptionUtils {
      * @param secret Secret signature key.
      * @param padding Padding to be used, for example "AES/CBC/PKCS7Padding".
      * @return Encrypted bytes.
-     * @throws InvalidKeyException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
+     * @throws InvalidKeyException In case an invalid key is provided.
+     * @throws IllegalBlockSizeException In case invalid key size is provided.
+     * @throws BadPaddingException In case invalid padding is provided. 
      */
     public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         try {
@@ -65,9 +71,9 @@ public class AESEncryptionUtils {
      * @param iv Initialization vector.
      * @param secret Secret signature key.
      * @return Encrypted bytes.
-     * @throws InvalidKeyException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
+     * @throws InvalidKeyException In case an invalid key is provided.
+     * @throws IllegalBlockSizeException In case invalid key size is provided.
+     * @throws BadPaddingException In case invalid padding is provided.
      */
     public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         return this.encrypt(bytes, iv, secret, "AES/CBC/PKCS7Padding");
@@ -82,9 +88,9 @@ public class AESEncryptionUtils {
      * @param secret Secret signature key.
      * @param padding Padding to be used, for example "AES/CBC/PKCS7Padding".
      * @return Original decrypted bytes.
-     * @throws InvalidKeyException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
+     * @throws InvalidKeyException In case an invalid key is provided.
+     * @throws IllegalBlockSizeException In case invalid key size is provided.
+     * @throws BadPaddingException In case invalid padding is provided.
      */
     public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         try {
@@ -106,9 +112,9 @@ public class AESEncryptionUtils {
      * @param iv Initialization vector.
      * @param secret Secret signature key.
      * @return Original decrypted bytes.
-     * @throws InvalidKeyException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
+     * @throws InvalidKeyException In case an invalid key is provided.
+     * @throws IllegalBlockSizeException In case invalid key size is provided.
+     * @throws BadPaddingException In case invalid padding is provided.
      */
     public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         return this.decrypt(bytes, iv, secret, "AES/CBC/PKCS7Padding");

@@ -15,6 +15,12 @@
  */
 package io.getlime.rest.api.model;
 
+/**
+ * Response object for /pa/activation/create end-point.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class ActivationCreateResponse {
 	
 	private String activationId;
@@ -23,42 +29,82 @@ public class ActivationCreateResponse {
 	private String encryptedServerPublicKey;
 	private String encryptedServerPublicKeySignature;
 	
+	/**
+	 * Get activation ID
+	 * @return Activation ID
+	 */
 	public String getActivationId() {
 		return activationId;
 	}
 	
+	/**
+	 * Set activation ID
+	 * @param activationId Activation ID
+	 */
 	public void setActivationId(String activationId) {
 		this.activationId = activationId;
 	}
 	
+	/**
+	 * Get activation nonce.
+	 * @return Activation nonce.
+	 */
 	public String getActivationNonce() {
 		return activationNonce;
 	}
 	
+	/**
+	 * Set activation nonce.
+	 * @param activationNonce Activation nonce.
+	 */
 	public void setActivationNonce(String activationNonce) {
 		this.activationNonce = activationNonce;
 	}
 	
+	/**
+	 * Get ephemeral public key.
+	 * @return Ephemeral public key.
+	 */
 	public String getEphemeralPublicKey() {
 		return ephemeralPublicKey;
 	}
 	
+	/**
+	 * Set ephemeral public key.
+	 * @param ephemeralPublicKey Ephemeral public key.
+	 */
 	public void setEphemeralPublicKey(String ephemeralPublicKey) {
 		this.ephemeralPublicKey = ephemeralPublicKey;
 	}
 	
+	/**
+	 * Get encrypted server public key.
+	 * @return Encrypted server public key.
+	 */
 	public String getEncryptedServerPublicKey() {
 		return encryptedServerPublicKey;
 	}
 	
+	/**
+	 * Set encrypted server public key.
+	 * @param encryptedServerPublicKey Encrypted server public key.
+	 */
 	public void setEncryptedServerPublicKey(String encryptedServerPublicKey) {
 		this.encryptedServerPublicKey = encryptedServerPublicKey;
 	}
 	
+	/**
+	 * Get server data signature.
+	 * @return Server data signature. 
+	 */
 	public String getEncryptedServerPublicKeySignature() {
 		return encryptedServerPublicKeySignature;
 	}
 	
+	/**
+	 * Set server data signature.
+	 * @param encryptedServerPublicKeySignature Server data signature.
+	 */
 	public void setEncryptedServerPublicKeySignature(String encryptedServerPublicKeySignature) {
 		this.encryptedServerPublicKeySignature = encryptedServerPublicKeySignature;
 	}

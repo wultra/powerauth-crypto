@@ -23,6 +23,12 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import io.getlime.security.soap.client.PowerAuthServiceClient;
 
+/**
+ * Default PowerAuth Service configuration.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Configuration
 @ComponentScan(basePackages = {"io.getlime.rest"})
 public class PowerAuthWebServiceConfiguration {
@@ -30,6 +36,10 @@ public class PowerAuthWebServiceConfiguration {
 	@Value("${powerauth.service.url}")
 	private String powerAuthServiceUrl;
 
+	/**
+	 * Marshaller for PowerAuth SOAP service communication.
+	 * @return JAXB marshaller with correctly configured context path.
+	 */
 	@Bean
 	public Jaxb2Marshaller marshaller() {
 		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
@@ -37,6 +47,13 @@ public class PowerAuthWebServiceConfiguration {
 		return marshaller;
 	}
 
+	/**
+	 * Prepare a correctly configured PowerAuthServiceClient instance with the service
+	 * URL specified using 'powerauth.service.url' server property.
+	 * @param marshaller JAXB marshaller
+	 * @return Correctly configured PowerAuthServiceClient instance with the service
+	 * URL specified using 'powerauth.service.url' server property
+	 */
 	@Bean
 	public PowerAuthServiceClient powerAuthClient(Jaxb2Marshaller marshaller) {
 		PowerAuthServiceClient client = new PowerAuthServiceClient();

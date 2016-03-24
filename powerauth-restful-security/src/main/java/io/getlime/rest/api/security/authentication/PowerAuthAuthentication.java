@@ -17,6 +17,13 @@ package io.getlime.rest.api.security.authentication;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
+/**
+ * PowerAuth authentication object used between PowerAuth Client and intermediate server
+ * application (such as mobile banking API).
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class PowerAuthAuthentication extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 6495166873663643144L;
@@ -30,6 +37,9 @@ public class PowerAuthAuthentication extends AbstractAuthenticationToken {
 	private byte[] nonce;
 	private byte[] data;
 
+	/**
+	 * Default constructor.
+	 */
 	public PowerAuthAuthentication() {
 		super(null);
 	}
@@ -44,66 +54,130 @@ public class PowerAuthAuthentication extends AbstractAuthenticationToken {
 		return activationId;
 	}
 
+	/**
+	 * Get activation ID.
+	 * @return Activation ID.
+	 */
 	public String getActivationId() {
 		return activationId;
 	}
 
+	/**
+	 * Set activation ID.
+	 * @param activationId Activation ID.
+	 */
 	public void setActivationId(String activationId) {
 		this.activationId = activationId;
 	}
 	
+	/**
+	 * Get application key.
+	 * @return Application key.
+	 */
 	public String getApplicationKey() {
 		return applicationKey;
 	}
 	
+	/**
+	 * Set application key.
+	 * @param applicationKey Application key.
+	 */
 	public void setApplicationKey(String applicationKey) {
 		this.applicationKey = applicationKey;
 	}
 	
+	/**
+	 * Get signature.
+	 * @return Signature.
+	 */
 	public String getSignature() {
 		return signature;
 	}
 
+	/**
+	 * Set signature.
+	 * @param signature Signature.
+	 */
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
 	
+	/**
+	 * Get signature type.
+	 * @return Signature type.
+	 */
 	public String getSignatureType() {
 		return signatureType;
 	}
 	
+	/**
+	 * Set signature type.
+	 * @param signatureType Signature type.
+	 */
 	public void setSignatureType(String signatureType) {
 		this.signatureType = signatureType;
 	}
 
+	/**
+	 * Get request URI identifier.
+	 * @return Request URI identifier.
+	 */
 	public String getRequestUri() {
 		return requestUri;
 	}
 
+	/**
+	 * Set request URI identifier.
+	 * @param requestUri Request URI identifier.
+	 */
 	public void setRequestUri(String requestUri) {
 		this.requestUri = requestUri;
 	}
 
+	/**
+	 * Get HTTP method.
+	 * @return HTTP method.
+	 */
 	public String getHttpMethod() {
 		return httpMethod;
 	}
 
+	/**
+	 * Set HTTP method.
+	 * @param httpMethod HTTP method.
+	 */
 	public void setHttpMethod(String httpMethod) {
 		this.httpMethod = httpMethod;
 	}
 
+	/**
+	 * Get nonce.
+	 * @return Nonce.
+	 */
 	public byte[] getNonce() {
 		return nonce;
 	}
 
+	/**
+	 * Set nonce.
+	 * @param nonce Nonce.
+	 */
 	public void setNonce(byte[] nonce) {
 		this.nonce = nonce;
 	}
 
+	/**
+	 * Get request data.
+	 * @return Request data.
+	 */
 	public byte[] getData() {
 		return data;
 	}
 
+	/**
+	 * Set request data.
+	 * @param data Request data.
+	 */
 	public void setData(byte[] data) {
 		this.data = data;
 	}

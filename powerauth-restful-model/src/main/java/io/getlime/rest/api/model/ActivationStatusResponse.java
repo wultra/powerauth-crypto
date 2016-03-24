@@ -17,32 +17,61 @@ package io.getlime.rest.api.model;
 
 import java.util.Map;
 
+/**
+ * Response object for /pa/activation/status end-point
+ * 
+ * @author Petr Dvorak
+ *
+ */
 public class ActivationStatusResponse {
 	
 	private String activationId;
 	private String encryptedStatusBlob;
 	private Map<String, Object> customObject;
 	
+	/**
+	 * Get activation ID
+	 * @return Activation ID
+	 */
 	public String getActivationId() {
 		return activationId;
 	}
 	
+	/**
+	 * Set activation ID
+	 * @param activationId Activation ID
+	 */
 	public void setActivationId(String activationId) {
 		this.activationId = activationId;
 	}
 	
+	/**
+	 * Get encrypted activation status blob
+	 * @return Encrypted activation status blob
+	 */
 	public String getEncryptedStatusBlob() {
 		return encryptedStatusBlob;
 	}
 	
+	/**
+	 * Set encrypted activation status blob
+	 * @param cStatusBlob encrypted activation status blob
+	 */
 	public void setEncryptedStatusBlob(String cStatusBlob) {
 		this.encryptedStatusBlob = cStatusBlob;
 	}
 	
+	/**
+	 * Get custom associated object.
+	 * @return Custom associated object
+	 */
 	public Map<String, Object> getCustomObject() {
 		return customObject;
 	}
-	
+	/**
+	 * Set custom associated object
+	 * @param customObject Custom associated object
+	 */
 	public void setCustomObject(Map<String, Object> customObject) {
 		this.customObject = customObject;
 	}
