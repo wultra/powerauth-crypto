@@ -35,7 +35,7 @@ In order to connect to the correct PowerAuth 2.0 Server, you need add following 
 
 ```java
 @Configuration
-@ComponentScan(basePackages = {"io.getlime.rest"})
+@ComponentScan(basePackages = {"io.getlime"})
 public class PowerAuthWebServiceConfiguration {
 
 	@Bean
