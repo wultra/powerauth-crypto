@@ -27,10 +27,21 @@ import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
 
+/**
+ * PowerAuth 2.0 Server default web service configuration.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @EnableWs
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
 
+	/**
+	 * Map the SOAP interface to ${CONTEXT_PATH}/soap path.
+	 * @param applicationContext Application context.
+	 * @return New servlet registration with correct context.
+	 */
     @Bean
     public ServletRegistrationBean messageDispatcherServlet(ApplicationContext applicationContext) {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
@@ -39,16 +50,27 @@ public class WebServiceConfig extends WsConfigurerAdapter {
         return new ServletRegistrationBean(servlet, "/soap/*");
     }
 
+    /**
+     * Specify SOAP service parameters from WSDL file. Map service WSDP to
+     * ${CONTEXT_PATH}/soap/service.wsdl address.
+     * @param powerAuthSchema XSD schema with PowerAuth service objects.
+     * @return WSDL definition.
+     */
     @Bean(name = "service")
-    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema countriesSchema) {
+    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema powerAuthSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("PowerAuthPort");
         wsdl11Definition.setLocationUri("/soap");
         wsdl11Definition.setTargetNamespace("http://getlime.io/security/powerauth");
-        wsdl11Definition.setSchema(countriesSchema);
+        wsdl11Definition.setSchema(powerAuthSchema);
         return wsdl11Definition;
     }
 
+    /**
+     * Return PowerAuth 2.0 Server service XSD schema.
+     * 
+     * @return Correct XSD schema.
+     */
     @Bean
     public XsdSchema countriesSchema() {
         return new SimpleXsdSchema(new ClassPathResource("xsd/PowerAuth-2.0.xsd"));

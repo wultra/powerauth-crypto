@@ -18,9 +18,19 @@ package io.getlime.security;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * PowerAuth 2.0 Server main application class.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @SpringBootApplication
 public class Application {
 
+	/**
+	 * Main application method.
+	 * @param args Arguments.
+	 */
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }

@@ -25,6 +25,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExc
 
 import io.getlime.security.service.controller.RESTResponseExceptionResolver;
 
+/**
+ * PowerAuth 2.0 Server web application configuration. The main purpose of this class
+ * at the moment is to assure proper handling of application exceptions (correct
+ * order).
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
