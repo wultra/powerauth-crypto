@@ -101,6 +101,15 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	}
 	
 	/**
+	 * Call the getSystemStatus method of the PowerAuth 2.0 Server SOAP interface.
+	 * @return {@link GetSystemStatusResponse}
+	 */
+	public GetSystemStatusResponse initActivation() {
+		GetSystemStatusRequest request = new GetSystemStatusRequest();
+		return (GetSystemStatusResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+	}
+	
+	/**
 	 * Call the initActivation method of the PowerAuth 2.0 Server SOAP interface.
 	 * @param request {@link InitActivationRequest} instance
 	 * @return {@link InitActivationResponse}
