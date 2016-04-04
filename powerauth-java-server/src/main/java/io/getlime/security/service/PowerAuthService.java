@@ -31,6 +31,8 @@ import io.getlime.security.powerauth.GetApplicationDetailRequest;
 import io.getlime.security.powerauth.GetApplicationDetailResponse;
 import io.getlime.security.powerauth.GetApplicationListRequest;
 import io.getlime.security.powerauth.GetApplicationListResponse;
+import io.getlime.security.powerauth.GetSystemStatusRequest;
+import io.getlime.security.powerauth.GetSystemStatusResponse;
 import io.getlime.security.powerauth.InitActivationRequest;
 import io.getlime.security.powerauth.InitActivationResponse;
 import io.getlime.security.powerauth.PrepareActivationRequest;
@@ -52,6 +54,8 @@ import io.getlime.security.powerauth.VerifySignatureResponse;
 
 public interface PowerAuthService {
 
+	public GetSystemStatusResponse getSystemStatus(GetSystemStatusRequest request) throws Exception;
+	
     public GetActivationListForUserResponse getActivatioListForUser(GetActivationListForUserRequest request) throws Exception;
 
     public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception;

@@ -31,6 +31,8 @@ import io.getlime.security.powerauth.GetApplicationDetailRequest;
 import io.getlime.security.powerauth.GetApplicationDetailResponse;
 import io.getlime.security.powerauth.GetApplicationListRequest;
 import io.getlime.security.powerauth.GetApplicationListResponse;
+import io.getlime.security.powerauth.GetSystemStatusRequest;
+import io.getlime.security.powerauth.GetSystemStatusResponse;
 import io.getlime.security.powerauth.InitActivationRequest;
 import io.getlime.security.powerauth.InitActivationResponse;
 import io.getlime.security.powerauth.PrepareActivationRequest;
@@ -63,6 +65,12 @@ public class PowerAuthEndpoint {
 
     @Autowired
     private PowerAuthService powerAuthService;
+    
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetSystemStatusRequest")
+    @ResponsePayload
+    public GetSystemStatusResponse getSystemStatus(@RequestPayload GetSystemStatusRequest request) throws Exception {
+        return powerAuthService.getSystemStatus(request);
+    }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "InitActivationRequest")
     @ResponsePayload

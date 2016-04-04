@@ -5,6 +5,25 @@
            targetNamespace="http://getlime.io/security/powerauth"
            elementFormDefault="qualified">
            
+   	<!-- Status method //-->
+    
+    <xs:element name="GetSystemStatusRequest">
+    	<xs:complexType>
+    		<xs:sequence></xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetSystemStatusResponse">
+        <xs:complexType>
+        	<xs:sequence>
+            	<xs:element name="status" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	            <xs:element name="applicationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	            <xs:element name="applicationDisplayName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	            <xs:element name="timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+           
     <!-- List applications //-->
     
     <xs:element name="GetApplicationListRequest">

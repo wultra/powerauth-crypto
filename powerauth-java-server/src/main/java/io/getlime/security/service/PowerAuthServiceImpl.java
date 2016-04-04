@@ -31,6 +31,8 @@ import io.getlime.security.powerauth.GetApplicationDetailRequest;
 import io.getlime.security.powerauth.GetApplicationDetailResponse;
 import io.getlime.security.powerauth.GetApplicationListRequest;
 import io.getlime.security.powerauth.GetApplicationListResponse;
+import io.getlime.security.powerauth.GetSystemStatusRequest;
+import io.getlime.security.powerauth.GetSystemStatusResponse;
 import io.getlime.security.powerauth.InitActivationRequest;
 import io.getlime.security.powerauth.InitActivationResponse;
 import io.getlime.security.powerauth.PrepareActivationRequest;
@@ -58,6 +60,7 @@ import io.getlime.security.service.behavior.ApplicationServiceBehavior;
 import io.getlime.security.service.behavior.AuditingServiceBehavior;
 import io.getlime.security.service.behavior.SignatureServiceBehavior;
 import io.getlime.security.service.behavior.VaultUnlockServiceBehavior;
+import io.getlime.security.service.configuration.PowerAuthServiceConfiguration;
 import io.getlime.security.service.exceptions.GenericServiceException;
 import io.getlime.security.service.util.ModelUtil;
 
@@ -73,8 +76,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Default implementation of the PowerAuth 2.0 Server service.
+ * The implementation of this service is divided into "behaviors"
+ * responsible for individual processes.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Component
 public class PowerAuthServiceImpl implements PowerAuthService {
+	
+	@Autowired
+	private PowerAuthServiceConfiguration powerAuthServiceConfiguration;
 
 	@Autowired
 	private ActivationServiceBehavior activationServiceBehavior;
@@ -96,6 +110,16 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 	static {
 		Security.addProvider(new BouncyCastleProvider());
 		PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
+	}
+	
+	@Override
+	public GetSystemStatusResponse getSystemStatus(GetSystemStatusRequest request) throws Exception {
+		GetSystemStatusResponse response = new GetSystemStatusResponse();
+		response.setStatus("OK");
+		response.setApplicationName(powerAuthServiceConfiguration.getApplicationName());
+		response.setApplicationDisplayName(powerAuthServiceConfiguration.getApplicationDisplayName());
+		response.setTimestamp(ModelUtil.calendarWithDate(new Date()));
+		return response;
 	}
 
 	@Override

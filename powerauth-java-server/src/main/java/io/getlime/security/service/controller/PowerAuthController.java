@@ -38,6 +38,8 @@ import io.getlime.security.powerauth.GetApplicationDetailRequest;
 import io.getlime.security.powerauth.GetApplicationDetailResponse;
 import io.getlime.security.powerauth.GetApplicationListRequest;
 import io.getlime.security.powerauth.GetApplicationListResponse;
+import io.getlime.security.powerauth.GetSystemStatusRequest;
+import io.getlime.security.powerauth.GetSystemStatusResponse;
 import io.getlime.security.powerauth.InitActivationRequest;
 import io.getlime.security.powerauth.InitActivationResponse;
 import io.getlime.security.powerauth.PrepareActivationRequest;
@@ -64,6 +66,11 @@ public class PowerAuthController {
 
     @Autowired
     private PowerAuthService powerAuthService;
+    
+    @RequestMapping(value = "/status", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetSystemStatusResponse> getSystemStatus(@RequestBody RESTRequestWrapper<GetSystemStatusRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.getSystemStatus(request.getRequestObject()));
+    }
 
     @RequestMapping(value = "/activation/init", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<InitActivationResponse> initActivation(@RequestBody RESTRequestWrapper<InitActivationRequest> request) throws Exception {

@@ -1,6 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://getlime.io/security/powerauth" targetNamespace="http://getlime.io/security/powerauth">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://getlime.io/security/powerauth" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://getlime.io/security/powerauth" targetNamespace="http://getlime.io/security/powerauth">
   <wsdl:types>
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://getlime.io/security/powerauth" version="1.0">
+           
+   	<!-- Status method //-->
+    
+    <xs:element name="GetSystemStatusRequest">
+    	<xs:complexType>
+    		<xs:sequence/>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetSystemStatusResponse">
+        <xs:complexType>
+        	<xs:sequence>
+            	<xs:element maxOccurs="1" minOccurs="1" name="status" type="xs:string"/>
+	            <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
+	            <xs:element maxOccurs="1" minOccurs="1" name="applicationDisplayName" type="xs:string"/>
+	            <xs:element maxOccurs="1" minOccurs="1" name="timestamp" type="xs:dateTime"/>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
            
     <!-- List applications //-->
     
@@ -438,6 +457,10 @@
     <wsdl:part element="tns:UnsupportApplicationVersionResponse" name="UnsupportApplicationVersionResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="GetSystemStatusResponse">
+    <wsdl:part element="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="CommitActivationRequest">
     <wsdl:part element="tns:CommitActivationRequest" name="CommitActivationRequest">
     </wsdl:part>
@@ -496,6 +519,10 @@
   </wsdl:message>
   <wsdl:message name="UnblockActivationResponse">
     <wsdl:part element="tns:UnblockActivationResponse" name="UnblockActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetSystemStatusRequest">
+    <wsdl:part element="tns:GetSystemStatusRequest" name="GetSystemStatusRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SupportApplicationVersionRequest">
@@ -575,6 +602,12 @@
       <wsdl:input message="tns:UnsupportApplicationVersionRequest" name="UnsupportApplicationVersionRequest">
     </wsdl:input>
       <wsdl:output message="tns:UnsupportApplicationVersionResponse" name="UnsupportApplicationVersionResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSystemStatus">
+      <wsdl:input message="tns:GetSystemStatusRequest" name="GetSystemStatusRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CommitActivation">
@@ -682,6 +715,15 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="UnsupportApplicationVersionResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSystemStatus">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetSystemStatusRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetSystemStatusResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

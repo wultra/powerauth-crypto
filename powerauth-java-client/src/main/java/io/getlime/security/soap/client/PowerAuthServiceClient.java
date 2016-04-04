@@ -42,6 +42,8 @@ import io.getlime.powerauth.soap.GetApplicationDetailRequest;
 import io.getlime.powerauth.soap.GetApplicationDetailResponse;
 import io.getlime.powerauth.soap.GetApplicationListRequest;
 import io.getlime.powerauth.soap.GetApplicationListResponse;
+import io.getlime.powerauth.soap.GetSystemStatusRequest;
+import io.getlime.powerauth.soap.GetSystemStatusResponse;
 import io.getlime.powerauth.soap.InitActivationRequest;
 import io.getlime.powerauth.soap.InitActivationResponse;
 import io.getlime.powerauth.soap.PrepareActivationRequest;
@@ -88,6 +90,15 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 		}
 		return null;
     }
+	
+	/**
+	 * Call the getSystemStatus method of the PowerAuth 2.0 Server SOAP interface.
+	 * @param request {@link GetSystemStatusRequest} instance
+	 * @return {@link GetSystemStatusResponse}
+	 */
+	public GetSystemStatusResponse initActivation(GetSystemStatusRequest request) {
+		return (GetSystemStatusResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+	}
 	
 	/**
 	 * Call the initActivation method of the PowerAuth 2.0 Server SOAP interface.
