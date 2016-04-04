@@ -31,9 +31,19 @@ import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolv
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Exception resolver responsible for catching Spring errors and rendering them in
+ * the same format as the application logics exceptions.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Component
 public class RESTResponseExceptionResolver extends DefaultHandlerExceptionResolver {
 
+	/**
+	 * Default constructor.
+	 */
     public RESTResponseExceptionResolver() {
         super.setOrder(Ordered.LOWEST_PRECEDENCE - 1);
     }

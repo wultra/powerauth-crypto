@@ -17,23 +17,45 @@ package io.getlime.security.service.controller;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Base class for RESTful request object.
+ * 
+ * @author Petr Dvorak
+ *
+ * @param <T> Type of the request object instance. 
+ */
 public class RESTRequestWrapper<T> {
 
     @NotNull
     private T requestObject;
 
+    /**
+     * Default constructor.
+     */
     public RESTRequestWrapper() {
     }
 
+    /**
+     * Constructor with a correctly typed request object instance.
+     * @param requestObject Request object.
+     */
     public RESTRequestWrapper(@NotNull T requestObject) {
         this.requestObject = requestObject;
     }
 
+    /**
+     * Get request object.
+     * @return Request object.
+     */
     @NotNull
     public T getRequestObject() {
         return requestObject;
     }
 
+    /**
+     * Set request object.
+     * @param requestObject Request object.
+     */
     public void setRequestObject(T requestObject) {
         this.requestObject = requestObject;
     }

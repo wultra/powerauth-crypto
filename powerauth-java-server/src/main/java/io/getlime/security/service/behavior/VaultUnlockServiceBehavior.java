@@ -19,6 +19,13 @@ import io.getlime.security.repository.model.ActivationStatus;
 import io.getlime.security.repository.model.entity.ActivationRecordEntity;
 import io.getlime.security.service.util.ModelUtil;
 
+/**
+ * Behavior class implementing the vault unlock related processes. The class separates the
+ * logics from the main service class.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Component
 public class VaultUnlockServiceBehavior {
 	
@@ -27,6 +34,18 @@ public class VaultUnlockServiceBehavior {
 	
 	private final PowerAuthServerVault powerAuthServerVault = new PowerAuthServerVault();
 
+	/**
+	 * Method to retrieve the vault unlock key. Before calling this method, it is assumed that
+	 * client application performs signature validation - this method should not be called unauthenticated.
+	 * To indicate the signature validation result, 'isSignatureValid' boolean is passed as one of the
+	 * method parameters.
+	 * @param activationId Activation ID.
+	 * @param isSignatureValid Information about validity of the signature.
+	 * @param keyConversionUtilities Key conversion utilities.
+	 * @return Vault unlock response with a properly encrypted vault unlock key.
+	 * @throws InvalidKeySpecException In case invalid key is provided.
+	 * @throws InvalidKeyException In case invalid key is provided.
+	 */
 	public VaultUnlockResponse unlockVault(String activationId, boolean isSignatureValid, CryptoProviderUtil keyConversionUtilities) throws InvalidKeySpecException, InvalidKeyException {
 		// Find related activation record
 		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);

@@ -17,6 +17,13 @@ package io.getlime.security.service.controller;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Base class for RESTful response object.
+ * 
+ * @author Petr Dvorak
+ *
+ * @param <T> Type of the response object instance.
+ */
 public class RESTResponseWrapper<T> {
 
     @NotNull
@@ -25,26 +32,50 @@ public class RESTResponseWrapper<T> {
     @NotNull
     private String status;
 
+    /**
+     * Default constructor.
+     */
     public RESTResponseWrapper() {
     }
 
+    /**
+     * Constructor with status and response object.
+     * @param status Status - "OK" or "ERROR".
+     * @param responseObject Response object instance.
+     */
     public RESTResponseWrapper(@NotNull String status, @NotNull T responseObject) {
         this.status = status;
         this.responseObject = responseObject;
     }
 
+    /**
+     * Get response object.
+     * @return Response object.
+     */
     public T getResponseObject() {
         return responseObject;
     }
 
+    /**
+     * Set response object.
+     * @param responseObject Response object.
+     */
     public void setResponseObject(T responseObject) {
         this.responseObject = responseObject;
     }
 
+    /**
+     * Get response status.
+     * @return Status.
+     */
     public String getStatus() {
         return status;
     }
 
+    /**
+     * Set response status.
+     * @param status Status.
+     */
     public void setStatus(String status) {
         this.status = status;
     }

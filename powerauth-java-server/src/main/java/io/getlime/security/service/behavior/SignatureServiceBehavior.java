@@ -28,6 +28,13 @@ import io.getlime.security.repository.model.entity.ActivationRecordEntity;
 import io.getlime.security.repository.model.entity.ApplicationVersionEntity;
 import io.getlime.security.service.util.ModelUtil;
 
+/**
+ * Behavior class implementing the signature validation related processes. The class separates the
+ * logics from the main service class.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Component
 public class SignatureServiceBehavior {
 	
@@ -43,6 +50,19 @@ public class SignatureServiceBehavior {
 	private final PowerAuthServerSignature powerAuthServerSignature = new PowerAuthServerSignature();
 	private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
 
+	/**
+	 * Verify signature for given activation and provided data. Log every validation attempt in the audit log.
+	 * @param activationId Activation ID.
+	 * @param signatureType Provided signature type.
+	 * @param signature Provided signature.
+	 * @param dataString String with data used to compute the signature. 
+	 * @param applicationKey Associated application key.
+	 * @param keyConversionUtilities Conversion utility class.
+	 * @return Response with the signature validation result object.
+	 * @throws UnsupportedEncodingException In case UTF-8 is not supported on the system.
+	 * @throws InvalidKeySpecException In case invalid key is provided.
+	 * @throws InvalidKeyException In case invalid key is provided.
+	 */
 	public VerifySignatureResponse verifySignature(String activationId, String signatureType, String signature, String dataString, String applicationKey, CryptoProviderUtil keyConversionUtilities) throws UnsupportedEncodingException, InvalidKeySpecException, InvalidKeyException {
 		// Prepare current timestamp in advance
 		Date currentTimestamp = new Date();

@@ -31,6 +31,12 @@ import javax.persistence.ManyToOne;
 import io.getlime.security.repository.model.ActivationStatus;
 import io.getlime.security.repository.model.ActivationStatusConverter;
 
+/**
+ * Entity representing a single signature audit log.
+ * 
+ * @author Petr Dvorak
+ *
+ */
 @Entity(name = "pa_signature_audit")
 public class SignatureEntity implements Serializable {
 
@@ -70,9 +76,25 @@ public class SignatureEntity implements Serializable {
 	@Column(name = "timestamp_created", nullable = false)
 	private Date timestampCreated;
 
+	/**
+	 * Default constructor.
+	 */
 	public SignatureEntity() {
 	}
 
+	/**
+	 * Constructor with all properties.
+	 * @param id Signature audit item record ID.
+	 * @param activation Associated activation, or null of no related activation was found.
+	 * @param activationCounter Activation counter at the time of signature computation attempt, or 0 if activation is null.
+	 * @param activationStatus Activation status at the time of signature computation attempt.
+	 * @param dataBase64 Data that were sent alongside the signature.
+	 * @param signatureType Requested signature type.
+	 * @param signature Signature value.
+	 * @param note Signature audit log note, with more information about the log reason.
+	 * @param valid True if the signature was valid, false otherwise.
+	 * @param timestampCreated Created timestapm.
+	 */
 	public SignatureEntity(Long id, ActivationRecordEntity activation, Long activationCounter, ActivationStatus activationStatus, String dataBase64, String signatureType, String signature, String note, Boolean valid, Date timestampCreated) {
 		super();
 		this.id = id;
@@ -87,82 +109,162 @@ public class SignatureEntity implements Serializable {
 		this.timestampCreated = timestampCreated;
 	}
 
+	/**
+	 * Get record ID.
+	 * @return Record ID.
+	 */
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * Set record ID.
+	 * @param id Record ID.
+	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	/**
+	 * Get related activation. 
+	 * @return Related activation.
+	 */
 	public ActivationRecordEntity getActivation() {
 		return activation;
 	}
 
+	/**
+	 * Set related activation.
+	 * @param activation Related activation.
+	 */
 	public void setActivation(ActivationRecordEntity activation) {
 		this.activation = activation;
 	}
 
+	/**
+	 * Get activation counter value.
+	 * @return Activation counter value.
+	 */
 	public Long getActivationCounter() {
 		return activationCounter;
 	}
 
+	/**
+	 * Set activation counter value.
+	 * @param activationCounter Activation counter value.
+	 */
 	public void setActivationCounter(Long activationCounter) {
 		this.activationCounter = activationCounter;
 	}
 
+	/**
+	 * Get activation status.
+	 * @return Activation status.
+	 */
 	public ActivationStatus getActivationStatus() {
 		return activationStatus;
 	}
 
+	/**
+	 * Set activation status.
+	 * @param activationStatus Activation status.
+	 */
 	public void setActivationStatus(ActivationStatus activationStatus) {
 		this.activationStatus = activationStatus;
 	}
 
+	/**
+	 * Get Base64 encoded data that entered the signature.
+	 * @return Base64 encoded data that entered the signature.
+	 */
 	public String getDataBase64() {
 		return dataBase64;
 	}
 
+	/**
+	 * Set Base64 encoded data that entered the signature.
+	 * @param dataBase64 Base64 encoded data that entered the signature.
+	 */
 	public void setDataBase64(String dataBase64) {
 		this.dataBase64 = dataBase64;
 	}
 
+	/**
+	 * Get signature audit record note.
+	 * @return Signature audit record note.
+	 */
 	public String getNote() {
 		return note;
 	}
 
+	/**
+	 * Set signature audit record note.
+	 * @param note Signature audit record note.
+	 */
 	public void setNote(String note) {
 		this.note = note;
 	}
 
+	/**
+	 * Get signature type.
+	 * @return Signature type.
+	 */
 	public String getSignatureType() {
 		return signatureType;
 	}
 
+	/**
+	 * Set signature type.
+	 * @param signatureType Signature type.
+	 */
 	public void setSignatureType(String signatureType) {
 		this.signatureType = signatureType;
 	}
 
+	/**
+	 * Get signature.
+	 * @return Signature.
+	 */
 	public String getSignature() {
 		return signature;
 	}
 
+	/**
+	 * Set signature.
+	 * @param signature Signature.
+	 */
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
 
+	/**
+	 * Get if the signature was valid or not.
+	 * @return Signature evaluation result.
+	 */
 	public Boolean getValid() {
 		return valid;
 	}
 
+	/**
+	 * Set value based on if the signature was valid or not.
+	 * @param valid Signature evaluation result.
+	 */
 	public void setValid(Boolean valid) {
 		this.valid = valid;
 	}
 
+	/**
+	 * Get created timestamp.
+	 * @return Created timestamp.
+	 */
 	public Date getTimestampCreated() {
 		return timestampCreated;
 	}
 
+	/**
+	 * Set created timestamp.
+	 * @param timestampCreated Created timestamp.
+	 */
 	public void setTimestampCreated(Date timestampCreated) {
 		this.timestampCreated = timestampCreated;
 	}

@@ -27,26 +27,50 @@ public class RESTErrorModel {
     private String message;
     private String localizedMessage;
 
+    /**
+     * Get error code.
+     * @return Error code.
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * Set error code.
+     * @param code Error code.
+     */
     public void setCode(String code) {
         this.code = code;
     }
 
+    /**
+     * Get message (not localized).
+     * @return Message.
+     */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * Set message (not localized).
+     * @param message Message.
+     */
     public void setMessage(String message) {
         this.message = message;
     }
 
+    /**
+     * Get localized message.
+     * @return Localized message.
+     */
     public String getLocalizedMessage() {
         return localizedMessage;
     }
 
+    /**
+     * Set localized message.
+     * @param localizedMessage Localized message.
+     */
     public void setLocalizedMessage(String localizedMessage) {
         this.localizedMessage = localizedMessage;
     }
