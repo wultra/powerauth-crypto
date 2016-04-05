@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.common.collect.Lists;
+
 import io.getlime.powerauth.soap.CreateApplicationResponse;
 import io.getlime.powerauth.soap.GetApplicationDetailResponse;
 import io.getlime.powerauth.soap.GetApplicationListResponse;
@@ -125,7 +127,7 @@ public class ApplicationController {
 		model.put("id", applicationDetails.getApplicationId());
 		model.put("name", applicationDetails.getApplicationName());
 		model.put("masterPublicKey", applicationDetails.getMasterPublicKey());
-		model.put("versions", applicationDetails.getVersions());
+		model.put("versions", Lists.reverse(applicationDetails.getVersions()));
 		return "applicationDetail";
 	}
 
