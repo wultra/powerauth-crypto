@@ -127,6 +127,12 @@ You can then use these values in your PowerAuth 2.0 Client application. Read the
 
 PowerAuth 2.0 Standard RESTful API is a Java EE application (packaged as an executable WAR file) responsible for exposing the [RESTful API according to the specification](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/api.md). It exposes services for end-user applications (PowerAuth 2.0 Clients), such as the mobile banking app or mobile token app.
 
+### Downloading PowerAuth 2.0 Standard RESTful API
+
+You can download the latest `powerauth-restful-server.war` at the releases page:
+
+- https://github.com/lime-company/lime-security-powerauth/releases
+
 ### Configuring PowerAuth 2.0 Standard RESTful API
 
 The default implementation of a PowerAuth 2.0 Standard RESTful API has only one proprietary configuration parameter `powerauth.service.url` that configures the SOAP endpoint location of a PowerAuth 2.0 Server. The default value for this property points to `localhost`:
@@ -134,12 +140,6 @@ The default implementation of a PowerAuth 2.0 Standard RESTful API has only one 
 ```bash
 powerauth.service.url=http://localhost:8080/powerauth-java-server/soap
 ```
-
-### Downloading PowerAuth 2.0 Standard RESTful API
-
-You can download the latest `powerauth-restful-server.war` at the releases page:
-
-- https://github.com/lime-company/lime-security-powerauth/releases
 
 ### Deploying PowerAuth 2.0 Standard RESTful API
 
@@ -159,20 +159,8 @@ java -jar powerauth-restful-server.war
 
 _Note: If you launch both PowerAuth 2.0 Server and PowerAuth 2.0 Standard RESTful API using the 'java -jar' spell, you will get a conflict of the ports - only one application may use 8080 port at the time. You can overwrite the port using `-Dserver.port=8090` parameter_
 
-## Integrating PowerAuth 2.0 with mobile API
-
-Read the full tutorial here:
+## Related integration tutorials
 
 - [Integrate PowerAuth 2.0 Server with a mobile banking server app](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/mobile-api.md)
-
-## Integrating PowerAuth 2.0 with internet banking
-
-Read the full tutorial here:
-
 - [Integrate PowerAuth 2.0 Server with an Internet banking server app](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/internet-banking.md)
-
-## Testing the integration using PowerAuth 2.0 Reference Client
-
-Read the full tutorial here:
-
 - [Using PowerAuth 2.0 Reference Client](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/console-client-app.md)
