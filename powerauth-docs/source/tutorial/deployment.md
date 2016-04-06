@@ -46,6 +46,17 @@ spring.jpa.hibernate.ddl-auto=none
 
 These parameters are of course only for the testing purposes, they are not suitable for production environment. They should be overridden for your production environment using a standard [Spring database connectivity related properties](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-connect-to-production-database).
 
+### PowerAuth 2.0 Server configuration
+
+_(optional)_ Optionally, you may set up following properties in order to configure your PowerAuth 2.0 Server instance:
+
+```sh
+powerauth.service.applicationName=powerauth
+powerauth.service.applicationDisplayName=PowerAuth 2.0 Server
+```
+
+These properties are returned when calling the `getSystemStatus` method of the SOAP interface.
+
 ### Deploying PowerAuth 2.0 Server WAR file
 
 You can deploy PowerAuth 2.0 Server WAR into any Java EE container.
