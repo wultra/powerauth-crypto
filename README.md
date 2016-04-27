@@ -23,6 +23,10 @@ A typical use-case for PowerAuth 2.0 protocol would be assuring the security of 
 - [Integrate PowerAuth 2.0 Server with an Internet banking server app](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/internet-banking.md)
 - [Using PowerAuth 2.0 Reference Client](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/console-client-app.md)
 
+## Reference manual
+
+- [SOAP interface methods](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/reference/soap.md)
+
 ## How to build from sources
 
 Project can be easily build using Maven with JDK 7 or 8.
