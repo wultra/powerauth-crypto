@@ -2,6 +2,33 @@
 
 This is a reference documentation of the methods published by the PowerAuth 2.0 Server SOAP service. It reflects the SOAP service methods as they are defined in the [WSDL file](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-java-client/src/main/resources/soap/wsdl/service.wsdl).
 
+Following methods are published using the service:
+
+- System status
+    - getStatus
+- Application management
+    - getApplicationList
+    - getApplicationDetail
+    - createApplication
+    - createApplicationVersion
+    - unsupportApplicationVersion
+    - supportApplicationVersion
+- Activation management
+    - getActivationListForUser
+    - initActivation
+    - prepareActivation
+    - commitActivation
+    - getActivationStatus
+    - removeActivation
+    - blockActivation
+    - unblockActivation
+- Signature verification
+    - verifySignature
+- Vault unlocking
+    - vaultUnlock
+- Signature audit log
+    - getSignatureAuditLog
+
 ## System status
 
 Methods used for getting the PowerAuth 2.0 Server system status.
@@ -391,7 +418,7 @@ Unblock activation with given ID. Activations can be unblocked in BLOCKED state 
 | `String` | `activationId` | An identifier of an activation |
 | `ActivationStatus` | `activationStatus` | An activation status |
 
-## Signature validation
+## Signature verification
 
 Methods related to signature verification.
 
@@ -423,7 +450,7 @@ Verify signature correctness for given activation, application key, data and sig
 | `Integer` | `remainingAttempts` | How many attempts are left for authentication using this activation |
 | `Boolean` | `signatureValid` | Indicates if the signature was correctly validated or if it was invalid (incorrect) |
 
-## Vault unlock
+## Vault unlocking
 
 Methods related to secure vault.
 
@@ -491,12 +518,12 @@ Get the signature audit log for given user, application and date range. In case 
 | `String` | `userId` | An identifier of a user |
 | `Long` | `applicationId` | An identifier of an application |
 | `String` | `activationId` | An identifier of an activation |
-| `Long` | `activationCounter` | A counter value at the moment of a signature validation |
-| `ActivationStatus` | `activationStatus` | An activation status at the moment of a signature validation |
+| `Long` | `activationCounter` | A counter value at the moment of a signature verification |
+| `ActivationStatus` | `activationStatus` | An activation status at the moment of a signature verification |
 | `String` | `dataBase64` | A base64 encoded data sent with the signature |
 | `String` | `signatureType` | Requested signature type |
 | `String` | `signature` | Submitted value of a signature |
-| `String` | `note` | Extra info about the result of the signature validation |
+| `String` | `note` | Extra info about the result of the signature verification |
 | `Boolean` | `valid` | Flag indicating if the provided signature was valid |
 | `DateTime` | `timestampCreated` | Timestamp when the record was created |
 
