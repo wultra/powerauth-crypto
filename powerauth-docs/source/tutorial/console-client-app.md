@@ -23,10 +23,10 @@ usage: java -jar powerauth-java-cmd.jar
  -a,--activation-code <arg>   In case a specified method is 'prepare',
                               this field contains the activation key (a
                               concatenation of a short activation ID and
-                              activation OTP)
+                              activation OTP).
  -c,--config-file <arg>       Specifies a path to the config file with
                               Base64 encoded server master public key,
-                              application ID and application secret
+                              application ID and application secret.
  -d,--data-file <arg>         In case a specified method is 'sign', this
                               field specifies a file with the input data
                               to be signed and verified with the server,
@@ -34,7 +34,9 @@ usage: java -jar powerauth-java-cmd.jar
  -e,--endpoint <arg>          In case a specified method is 'sign', this
                               field specifies a URI identifier, as
                               specified in PowerAuth signature process.
- -h,--help                    Print this help manual
+ -h,--help                    Print this help manual.
+ -i,--invalidSsl              Client may accept invalid SSL certificate
+                              in HTTPS communication.
  -l,--signature-type <arg>    In case a specified method is 'sign', this
                               field specifies a signature type, as
                               specified in PowerAuth signature process.
@@ -49,7 +51,7 @@ usage: java -jar powerauth-java-cmd.jar
                               field specifies a HTTP method, as specified
                               in PowerAuth signature process.
  -u,--url <arg>               Base URL of the PowerAuth 2.0 Standard
-                              RESTful API
+                              RESTful API.
 ```
 ## Config and status files
 
@@ -134,3 +136,9 @@ _Note: If a `--password` option is not provided, this method requires interactiv
 ```bash
 java -jar powerauth-java-cmd.jar --url "http://localhost:8080/powerauth-restful-server" --status-file "/tmp/pa_status.json" --config-file "/tmp/pamk.json" --method "unlock" --signature-type "possession_knowledge" --password "1234"
 ```
+
+## Troubleshooting
+
+**Everything should be deployed correctly but utility cannot connect.**
+
+If you are using HTTPS, make sure you are using valid SSL certificate or that you use "-i" option.
