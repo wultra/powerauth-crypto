@@ -19,6 +19,7 @@
             	<xs:element name="status" type="xs:string" minOccurs="1" maxOccurs="1"/>
 	            <xs:element name="applicationName" type="xs:string" minOccurs="1" maxOccurs="1"/>
 	            <xs:element name="applicationDisplayName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	            <xs:element name="applicationEnvironment" type="xs:string" minOccurs="1" maxOccurs="1"/>
 	            <xs:element name="timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
         	</xs:sequence>
         </xs:complexType>

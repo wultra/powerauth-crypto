@@ -118,6 +118,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 		response.setStatus("OK");
 		response.setApplicationName(powerAuthServiceConfiguration.getApplicationName());
 		response.setApplicationDisplayName(powerAuthServiceConfiguration.getApplicationDisplayName());
+		response.setApplicationEnvironment(powerAuthServiceConfiguration.getApplicationEnvironment());
 		response.setTimestamp(ModelUtil.calendarWithDate(new Date()));
 		return response;
 	}

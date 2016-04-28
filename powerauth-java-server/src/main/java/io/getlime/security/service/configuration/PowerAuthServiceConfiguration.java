@@ -19,6 +19,9 @@ public class PowerAuthServiceConfiguration {
 	@Value("${powerauth.service.applicationDisplayName}")
 	private String applicationDisplayName;
 	
+	@Value("${powerauth.service.applicationEnvironment}")
+	private String applicationEnvironment;
+	
 	/**
 	 * Get application name, usually used as a "unique code" for the application within
 	 * a server infrastructure.
@@ -51,6 +54,22 @@ public class PowerAuthServiceConfiguration {
 	 */
 	public void setApplicationDisplayName(String applicationDisplayName) {
 		this.applicationDisplayName = applicationDisplayName;
+	}
+	
+	/**
+	 * Get the application environment name.
+	 * @return Application environment name.
+	 */
+	public String getApplicationEnvironment() {
+		return applicationEnvironment;
+	}
+	
+	/**
+	 * Set the application environment name.
+	 * @param applicationEnvironment Application environment name.
+	 */
+	public void setApplicationEnvironment(String applicationEnvironment) {
+		this.applicationEnvironment = applicationEnvironment;
 	}
 	
 }
