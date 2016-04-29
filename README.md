@@ -40,3 +40,7 @@ $ mvn compile
 In case you need to build project using IDE, make sure you are creating a new Maven project, not just a freeform project from existing sources. Maven is required since `powerauth-java-server` project uses [`jaxb2-maven-plugin`](http://www.mojohaus.org/jaxb2-maven-plugin/Documentation/v2.2/) to generate SOAP/REST transport object from an XSD file.
 
 Read more about how Maven dependencies are organized at [Maven modules](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/maven-modules.md) documentation.
+
+# License
+
+All sources are licensed using Apache license, you can use them with no restriction. If you are using PowerAuth 2.0, please let us know. We will be happy to share and promote your project.
