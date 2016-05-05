@@ -1,7 +1,9 @@
 package io.getlime.security.service.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 /**
  * Class holding the configuration data of this PowerAuth 2.0 Server
@@ -15,13 +17,13 @@ public class PowerAuthServiceConfiguration {
 
 	@Value("${powerauth.service.applicationName}")
 	private String applicationName;
-	
+
 	@Value("${powerauth.service.applicationDisplayName}")
 	private String applicationDisplayName;
-	
+
 	@Value("${powerauth.service.applicationEnvironment}")
 	private String applicationEnvironment;
-	
+
 	/**
 	 * Get application name, usually used as a "unique code" for the application within
 	 * a server infrastructure.
@@ -30,7 +32,7 @@ public class PowerAuthServiceConfiguration {
 	public String getApplicationName() {
 		return applicationName;
 	}
-	
+
 	/**
 	 * Set application name.
 	 * @param applicationName Application name.
@@ -38,7 +40,7 @@ public class PowerAuthServiceConfiguration {
 	public void setApplicationName(String applicationName) {
 		this.applicationName = applicationName;
 	}
-	
+
 	/**
 	 * Get application display name, usually used as a "visual representation" of the
 	 * application within a server infrastructure.
@@ -47,7 +49,7 @@ public class PowerAuthServiceConfiguration {
 	public String getApplicationDisplayName() {
 		return applicationDisplayName;
 	}
-	
+
 	/**
 	 * Set application display name.
 	 * @param applicationDisplayName Application display name.
@@ -55,7 +57,7 @@ public class PowerAuthServiceConfiguration {
 	public void setApplicationDisplayName(String applicationDisplayName) {
 		this.applicationDisplayName = applicationDisplayName;
 	}
-	
+
 	/**
 	 * Get the application environment name.
 	 * @return Application environment name.
@@ -63,7 +65,7 @@ public class PowerAuthServiceConfiguration {
 	public String getApplicationEnvironment() {
 		return applicationEnvironment;
 	}
-	
+
 	/**
 	 * Set the application environment name.
 	 * @param applicationEnvironment Application environment name.
@@ -71,5 +73,13 @@ public class PowerAuthServiceConfiguration {
 	public void setApplicationEnvironment(String applicationEnvironment) {
 		this.applicationEnvironment = applicationEnvironment;
 	}
-	
+
+	@Bean
+	public ResourceBundleMessageSource messageSource() {
+		ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+		source.setBasename("/i18n/errors_");
+		source.setUseCodeAsDefaultMessage(true);
+		return source;
+	}
+
 }

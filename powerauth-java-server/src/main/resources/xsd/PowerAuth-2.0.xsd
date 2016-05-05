@@ -24,6 +24,31 @@
         	</xs:sequence>
         </xs:complexType>
     </xs:element>
+    
+    <!-- Server error code list -->
+    
+    <xs:element name="GetErrorCodeListRequest">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element name="language" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetErrorCodeListResponse">
+        <xs:complexType>
+        	<xs:sequence>
+            	<xs:element name="errors" minOccurs="0" maxOccurs="unbounded">
+            		<xs:complexType>
+        	        	<xs:sequence>
+    	       				<xs:element name="code" type="xs:string" minOccurs="1" maxOccurs="1"/>
+	            			<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+           				</xs:sequence>
+        			</xs:complexType>
+        		</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
            
     <!-- List applications //-->
     

@@ -45,7 +45,9 @@ import io.getlime.security.repository.model.entity.ApplicationVersionEntity;
 import io.getlime.security.repository.model.entity.MasterKeyPairEntity;
 import io.getlime.security.service.PowerAuthServiceImpl;
 import io.getlime.security.service.exceptions.GenericServiceException;
+import io.getlime.security.service.i18n.LocalizationProvider;
 import io.getlime.security.service.util.ModelUtil;
+import io.getlime.security.service.util.model.ServiceError;
 
 /**
  * Behavior class implementing processes related with activations. Used to move the
@@ -65,6 +67,9 @@ public class ActivationServiceBehavior {
 	
 	@Autowired
 	private ApplicationVersionRepository applicationVersionRepository;
+	
+	@Autowired
+	private LocalizationProvider localizationProvider;
 
 	private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
 	private final PowerAuthServerActivation powerAuthServerActivation = new PowerAuthServerActivation();
@@ -271,11 +276,11 @@ public class ActivationServiceBehavior {
 		Date timestamp = new Date();
 
 		if (userId == null) {
-			throw new GenericServiceException("ERROR_USER", "No user ID set.");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0001);
 		}
 
 		if (applicationId == 0L) {
-			throw new GenericServiceException("ERROR_APPLICATION", "No application ID set.");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0002);
 		}
 
 		// Get number of max attempts from request or from constants, if not provided
@@ -293,14 +298,14 @@ public class ActivationServiceBehavior {
 		// Fetch the latest master private key
 		MasterKeyPairEntity masterKeyPair = masterKeyPairRepository.findFirstByApplicationIdOrderByTimestampCreatedDesc(applicationId);
 		if (masterKeyPair == null) {
-			GenericServiceException ex = new GenericServiceException("No master server key pair configured in database");
+			GenericServiceException ex = localizationProvider.buildExceptionForCode(ServiceError.ERR0003);
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw ex;
 		}
 		byte[] masterPrivateKeyBytes = BaseEncoding.base64().decode(masterKeyPair.getMasterKeyPrivateBase64());
 		PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes);
 		if (masterPrivateKey == null) {
-			GenericServiceException ex = new GenericServiceException("Master server key pair contains private key in incorrect format");
+			GenericServiceException ex = localizationProvider.buildExceptionForCode(ServiceError.ERR0004);
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw ex;
 		}
@@ -316,7 +321,7 @@ public class ActivationServiceBehavior {
 			} // ... else this activation ID has a collision, reset it and try to find another one
 		}
 		if (activationId == null) {
-			throw new GenericServiceException("ERROR_GENERIC_ACTIVATION_ID", "Too many failed attempts to generate activation ID.");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0005);
 		}
 
 		// Generate a unique short activation ID for created and OTP used states
@@ -333,7 +338,7 @@ public class ActivationServiceBehavior {
 			}
 		}
 		if (activationIdShort == null) {
-			throw new GenericServiceException("ERROR_GENERIC_ACTIVATION_ID_SHORT", "Too many failed attempts to generate short activation ID.");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0006);
 		}
 
 		// Generate activation OTP
@@ -406,13 +411,13 @@ public class ActivationServiceBehavior {
 		ApplicationVersionEntity applicationVersion = applicationVersionRepository.findByApplicationKey(applicationKey);
 		// if there is no such application, exit
 		if (applicationVersion == null || applicationVersion.getSupported() == false) {
-			throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0007);
 		}
 		
 		ApplicationEntity application = applicationVersion.getApplication();
 		// if there is no such application, exit
 		if (application == null) {
-			throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0007);
 		}
 
 		// Fetch the current activation by short activation ID
@@ -421,7 +426,7 @@ public class ActivationServiceBehavior {
 
 		// if there is no such activation or application does not match the activation application, exit 
 		if (activation == null || (activation.getApplication().getId() != application.getId())) {
-			throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0007);
 		}
 
 		// Decrypt the device public key
@@ -437,7 +442,7 @@ public class ActivationServiceBehavior {
 				BaseEncoding.base64().decode(applicationKey), 
 				BaseEncoding.base64().decode(applicationVersion.getApplicationSecret()), 
 				applicationSignatureBytes)) {
-			throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0007);
 		}
 
 		// Update and persist the activation record
@@ -496,7 +501,7 @@ public class ActivationServiceBehavior {
 			// Check already deactivated activation
 			deactivatePendingActivation(timestamp, activation);
 			if (activation.getActivationStatus().equals(ActivationStatus.REMOVED)) {
-				throw new GenericServiceException("ERROR_ACTIVATION_EXPIRED", "This activation is already expired.");
+				throw localizationProvider.buildExceptionForCode(ServiceError.ERR0007);
 			}
 
 			// Activation is in correct state
@@ -512,12 +517,12 @@ public class ActivationServiceBehavior {
 				response.setActivated(activated);
 				return response;
 			} else {
-				throw new GenericServiceException("ERROR_ACTIVATION_COMMIT_STATE", "Only activations in OTP_USED state can be commited");
+				throw localizationProvider.buildExceptionForCode(ServiceError.ERR0008);
 			}
 
 		} else {
 			// Activation does not exist
-			throw new GenericServiceException("ERROR_ACTIVATION_NOT_FOUND", "Activation with given activation ID was not found");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0009);
 		}
 	}
 
@@ -540,7 +545,7 @@ public class ActivationServiceBehavior {
 			response.setRemoved(removed);
 			return response;
 		} else {
-			throw new GenericServiceException("ERROR_ACTIVATION_NOT_FOUND", "Activation with given activation ID was not found");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0009);
 		}
 	}
 
@@ -553,7 +558,7 @@ public class ActivationServiceBehavior {
 	public BlockActivationResponse blockActivation(String activationId) throws GenericServiceException {
 		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 		if (activation == null) {
-			throw new GenericServiceException("ERROR_ACTIVATION_NOT_FOUND", "Activation with given activation ID was not found");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0009);
 		}
 
 		// does the record even exist, is it in correct state?
@@ -576,7 +581,7 @@ public class ActivationServiceBehavior {
 	public UnblockActivationResponse unblockActivation(String activationId) throws GenericServiceException {
 		ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
 		if (activation == null) {
-			throw new GenericServiceException("Activation with given activation ID was not found");
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0009);
 		}
 		// does the record even exist, is it in correct state?
 		if (activation != null && activation.getActivationStatus().equals(ActivationStatus.BLOCKED)) {

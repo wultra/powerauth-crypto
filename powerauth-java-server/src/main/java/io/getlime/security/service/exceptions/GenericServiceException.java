@@ -30,24 +30,20 @@ public class GenericServiceException extends Exception {
     private static final long serialVersionUID = 7185138483623356230L;
 
     private String code;
-
-    /**
-     * Default constructor, just with the error message.
-     * @param message Error message.
-     */
-    public GenericServiceException(String message) {
-        super(message);
-        this.code = "GENERIC";
-    }
+    private String message;
+    private String localizedMessage;
 
     /**
      * Constructor with error code and error message
      * @param code Error code
      * @param message Error message
+     * @param localizedMessage Localized error message
      */
-    public GenericServiceException(String code, String message) {
-        super(message);
+    public GenericServiceException(String code, String message, String localizedMessage) {
+        super();
         this.code = code;
+        this.message = message;
+        this.message = localizedMessage;
     }
 
     /**
@@ -64,6 +60,16 @@ public class GenericServiceException extends Exception {
      */
     public void setCode(String code) {
         this.code = code;
+    }
+    
+    @Override
+    public String getMessage() {
+    	return this.message;
+    }
+    
+    @Override
+    public String getLocalizedMessage() {
+    	return this.localizedMessage;
     }
 
 }

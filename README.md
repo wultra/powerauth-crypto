@@ -26,6 +26,8 @@ A typical use-case for PowerAuth 2.0 protocol would be assuring the security of 
 ## Reference manual
 
 - [SOAP interface methods](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/reference/soap.md)
+- [PowerAuth 2.0 Server Error Codes](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/reference/errors.md)
+
 
 ## How to build from sources
 

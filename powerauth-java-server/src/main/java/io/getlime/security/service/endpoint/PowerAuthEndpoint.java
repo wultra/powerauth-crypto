@@ -31,6 +31,8 @@ import io.getlime.security.powerauth.GetApplicationDetailRequest;
 import io.getlime.security.powerauth.GetApplicationDetailResponse;
 import io.getlime.security.powerauth.GetApplicationListRequest;
 import io.getlime.security.powerauth.GetApplicationListResponse;
+import io.getlime.security.powerauth.GetErrorCodeListRequest;
+import io.getlime.security.powerauth.GetErrorCodeListResponse;
 import io.getlime.security.powerauth.GetSystemStatusRequest;
 import io.getlime.security.powerauth.GetSystemStatusResponse;
 import io.getlime.security.powerauth.InitActivationRequest;
@@ -83,6 +85,19 @@ public class PowerAuthEndpoint {
     @ResponsePayload
     public GetSystemStatusResponse getSystemStatus(@RequestPayload GetSystemStatusRequest request) throws Exception {
         return powerAuthService.getSystemStatus(request);
+    }
+    
+    /**
+     * Call {@link PowerAuthService#getErrorCodeList(GetErrorCodeListRequest)} method and
+     * return the response.
+     * @param request Request for list of error codes indicating a language to be returned in.
+     * @return Response with the list of error codes..
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetErrorCodeListRequest")
+    @ResponsePayload
+    public GetErrorCodeListResponse getErrorCodeList(@RequestPayload GetErrorCodeListRequest request) throws Exception {
+        return powerAuthService.getErrorCodeList(request);
     }
 
     /**

@@ -31,6 +31,8 @@ import io.getlime.security.powerauth.GetApplicationDetailRequest;
 import io.getlime.security.powerauth.GetApplicationDetailResponse;
 import io.getlime.security.powerauth.GetApplicationListRequest;
 import io.getlime.security.powerauth.GetApplicationListResponse;
+import io.getlime.security.powerauth.GetErrorCodeListRequest;
+import io.getlime.security.powerauth.GetErrorCodeListResponse;
 import io.getlime.security.powerauth.GetSystemStatusRequest;
 import io.getlime.security.powerauth.GetSystemStatusResponse;
 import io.getlime.security.powerauth.InitActivationRequest;
@@ -84,6 +86,14 @@ public interface PowerAuthService {
      * @throws Exception In case of a business logic error.
      */
     public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception;
+    
+    /**
+     * Get the list of error codes for given language.
+     * @param request Error code list request object.
+     * @return Error code list.
+     * @throws Exception In case of a business logic error.
+     */
+    public GetErrorCodeListResponse getErrorCodeList(GetErrorCodeListRequest request) throws Exception;
 
     /**
      * Initiate a new activation for a given application and user ID. The new activation record is in

@@ -38,6 +38,8 @@ import io.getlime.security.powerauth.GetApplicationDetailRequest;
 import io.getlime.security.powerauth.GetApplicationDetailResponse;
 import io.getlime.security.powerauth.GetApplicationListRequest;
 import io.getlime.security.powerauth.GetApplicationListResponse;
+import io.getlime.security.powerauth.GetErrorCodeListRequest;
+import io.getlime.security.powerauth.GetErrorCodeListResponse;
 import io.getlime.security.powerauth.GetSystemStatusRequest;
 import io.getlime.security.powerauth.GetSystemStatusResponse;
 import io.getlime.security.powerauth.InitActivationRequest;
@@ -83,6 +85,18 @@ public class PowerAuthController {
     @RequestMapping(value = "/status", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<GetSystemStatusResponse> getSystemStatus(@RequestBody RESTRequestWrapper<GetSystemStatusRequest> request) throws Exception {
         return new RESTResponseWrapper<>("OK", powerAuthService.getSystemStatus(request.getRequestObject()));
+    }
+    
+    /**
+     * Call {@link PowerAuthService#getErrorCodeList(GetErrorCodeListRequest)} method and
+     * return the response.
+     * @param request Request for list of error codes indicating a language to be returned in.
+     * @return Response with the list of error codes..
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/error/list", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetErrorCodeListResponse> getErrorCodeList(@RequestBody RESTRequestWrapper<GetErrorCodeListRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.getErrorCodeList(request.getRequestObject()));
     }
 
     /**
