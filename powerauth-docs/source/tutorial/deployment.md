@@ -36,6 +36,12 @@ spring.jpa.hibernate.ddl-auto=none
 
 These parameters are of course only for the testing purposes, they are not suitable for production environment. They should be overridden for your production environment using a standard [Spring database connectivity related properties](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-connect-to-production-database).
 
+Note that some database engines (for example MySQL) let you specify the default schema as a part of a URL. Other engines (for example Oracle) do not allow this. In order to specify the correct schema, you need to use following property:
+
+```sh
+spring.jpa.properties.hibernate.default_schema=powerauth
+```
+
 ## PowerAuth 2.0 Server configuration
 
 _(optional)_ Optionally, you may set up following properties in order to configure your PowerAuth 2.0 Server instance:
