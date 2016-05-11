@@ -6,6 +6,7 @@ Following methods are published using the service:
 
 - System status
     - getStatus
+    - getErrorCodeList
 - Application management
     - getApplicationList
     - getApplicationDetail
@@ -54,6 +55,33 @@ Get the server status information.
 | `String` | `applicationDisplayName` | A human readable name of the application, default value is "PowerAuth 2.0 Server". The value may be overriden by setting `powerauth.service.applicationDisplayName` property. |
 | `String` | `applicationEnvironment` | An identifier of the environment, by default, the value is empty. The value may be overriden by setting `powerauth.service.applicationEnvironment` property. |
 | `DateTime` | `timestamp` | A current system timestamp.""
+
+### Method 'getErrorCodeList'
+
+Get the list of all error codes that PowerAuth 2.0 Server can return.
+
+#### Request
+
+`GetErrorCodeListRequest`
+
+| Type | Name | Description |
+|------|------|-------------|
+| `String` | `language` | Language code (ISO). |
+
+#### Response
+
+`GetErrorCodeListResponse`
+
+| Type | Name | Description |
+|------|------|-------------|
+| `Error[]` | `errors` | A collection of errors. |
+
+`GetErrorCodeListResponse.Error`
+
+| Type | Name | Description |
+|------|------|-------------|
+| `String` | `code` | A code of the error. |
+| `String` | `value` | A localized message for the error code. |
 
 ## Application management
 
