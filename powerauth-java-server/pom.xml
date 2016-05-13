@@ -7,13 +7,13 @@
 	<description>PowerAuth 2.0 Server</description>
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-server</artifactId>
-	<version>0.0.9</version>
+	<version>${powerauth.version}</version>
 	<packaging>war</packaging>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.0.9</version>
+		<version>${powerauth.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -55,8 +55,9 @@
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java</artifactId>
-			<version>0.0.9</version>
+			<version>${powerauth.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-ext-jdk15on</artifactId>

@@ -4,7 +4,7 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-http</artifactId>
-	<version>0.0.9</version>
+	<version>${powerauth.version}</version>
 	<name>powerauth-java-http</name>
 	<description>PowerAuth 2.0 utility module for HTTP support</description>
 	<packaging>jar</packaging>
@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.0.9</version>
+		<version>${powerauth.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
