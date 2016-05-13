@@ -81,7 +81,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 			Logger.getLogger(PowerAuthAuthenticationProvider.class.getName()).log(Level.SEVERE, null, ex);
 			return null;
 		}
-
+		
 		VerifySignatureResponse soapResponse = powerAuthClient.verifySignature(soapRequest);
 
 		if (soapResponse.isSignatureValid()) {
@@ -102,7 +102,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Validate the signature from the PowerAuth 2.0 HTTP header against the provided HTTP method, request body and URI identifier.
 	 * Make sure to accept only allowed signatures.
@@ -123,6 +123,11 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 
 		// Parse HTTP header
 		Map<String, String> httpHeaderInfo = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(httpAuthorizationHeader);
+		
+		// Check if the parsing was successful
+		if (httpHeaderInfo == null) {
+			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
+		}
 		
 		// Fetch HTTP header attributes
 		String activationId = httpHeaderInfo.get(PowerAuthHttpHeader.ACTIVATION_ID);
