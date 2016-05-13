@@ -141,7 +141,7 @@ public class VerifySignatureStep {
 
 		// Prepare HTTP headers
 		MultiValueMap<String, String> headers = new HttpHeaders();
-		headers.add("X-PowerAuth-Authorization", httpAuhtorizationHeader);
+		headers.add(PowerAuthHttpHeader.HEADER_NAME, httpAuhtorizationHeader);
 		
 		// Parse HTTP method
 		HttpMethod httpMethod = HttpMethod.valueOf(httpMethodString);

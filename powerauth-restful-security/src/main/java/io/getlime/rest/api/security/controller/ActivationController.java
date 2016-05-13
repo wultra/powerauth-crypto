@@ -40,6 +40,7 @@ import io.getlime.rest.api.security.application.PowerAuthApplicationConfiguratio
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
+import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import io.getlime.security.soap.client.PowerAuthServiceClient;
 
 /**
@@ -131,7 +132,7 @@ public class ActivationController {
 	 * @throws Exception In case the signature validation fails. 
 	 */
 	@RequestMapping(value = "remove", method = RequestMethod.POST)
-	public @ResponseBody PowerAuthAPIResponse<ActivationRemoveResponse> removeActivation(@RequestBody PowerAuthAPIRequest<ActivationRemoveRequest> request, @RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader, HttpServletRequest servletRequest) throws Exception {
+	public @ResponseBody PowerAuthAPIResponse<ActivationRemoveResponse> removeActivation(@RequestBody PowerAuthAPIRequest<ActivationRemoveRequest> request, @RequestHeader(value = PowerAuthHttpHeader.HEADER_NAME, required = true) String signatureHeader, HttpServletRequest servletRequest) throws Exception {
 
 		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.validateRequestSignature("POST", null, "/pa/activation/remove", signatureHeader);
 		

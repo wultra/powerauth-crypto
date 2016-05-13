@@ -61,7 +61,7 @@ public class SecureVaultController {
 	@RequestMapping(value = "unlock", method = RequestMethod.POST)
 	public @ResponseBody PowerAuthAPIResponse<VaultUnlockResponse> unlockVault(
 			@RequestBody PowerAuthAPIRequest<VaultUnlockRequest> request, 
-			@RequestHeader(value = "X-PowerAuth-Authorization", required = true, defaultValue = "unknown") String signatureHeader) 
+			@RequestHeader(value = PowerAuthHttpHeader.HEADER_NAME, required = true, defaultValue = "unknown") String signatureHeader) 
 					throws PowerAuthAuthenticationException, UnsupportedEncodingException {
 		
 		Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signatureHeader);

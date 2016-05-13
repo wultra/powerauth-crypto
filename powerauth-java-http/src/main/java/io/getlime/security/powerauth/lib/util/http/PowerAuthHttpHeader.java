@@ -58,6 +58,11 @@ public class PowerAuthHttpHeader {
 	 */
 	public static final String VERSION = "pa_version";
 	
+	/**
+	 * Name of the PowerAuth authorization header, "X-PowerAuth-Authorization".
+	 */
+	public static final String HEADER_NAME = "X-PowerAuth-Authorization";
+	
 	private static final String POWERAUTH_PREFIX = "PowerAuth ";
 
 	/**

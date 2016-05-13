@@ -141,7 +141,7 @@ public class VaultUnlockStep {
 
 		// Prepare HTTP headers
 		MultiValueMap<String, String> headers = new HttpHeaders();
-		headers.add("X-PowerAuth-Authorization", httpAuhtorizationHeader);
+		headers.add(PowerAuthHttpHeader.HEADER_NAME, httpAuhtorizationHeader);
 		
 		PowerAuthAPIRequest<VaultUnlockRequest> requestObject = new PowerAuthAPIRequest<>();
 		requestObject.setRequestObject(new VaultUnlockRequest());

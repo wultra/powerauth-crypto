@@ -131,7 +131,7 @@ public class RemoveStep {
 
 		// Prepare HTTP headers
 		MultiValueMap<String, String> headers = new HttpHeaders();
-		headers.add("X-PowerAuth-Authorization", httpAuhtorizationHeader);
+		headers.add(PowerAuthHttpHeader.HEADER_NAME, httpAuhtorizationHeader);
 
 		// Send the activation status request to the server
 		PowerAuthAPIRequest<ActivationRemoveRequest> body = new PowerAuthAPIRequest<>();
