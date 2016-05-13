@@ -27,22 +27,22 @@
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java</artifactId>
-			<version>0.0.9</version>
+			<version>${powerauth.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java-http</artifactId>
-			<version>0.0.9</version>
+			<version>${powerauth.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-restful-model</artifactId>
-			<version>0.0.9</version>
+			<version>${powerauth.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java-client</artifactId>
-			<version>0.0.9</version>
+			<version>${powerauth.version}</version>
 		</dependency>
 	</dependencies>
 
