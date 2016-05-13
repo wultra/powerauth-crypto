@@ -59,7 +59,7 @@ public class ActivationController {
 	@Autowired
 	private PowerAuthAuthenticationProvider authenticationProvider;
 	
-	@Autowired
+	@Autowired(required=false)
 	private PowerAuthApplicationConfiguration applicationConfiguration;
 
 	/**
@@ -114,7 +114,9 @@ public class ActivationController {
 		ActivationStatusResponse response = new ActivationStatusResponse();
 		response.setActivationId(soapResponse.getActivationId());
 		response.setEncryptedStatusBlob(soapResponse.getEncryptedStatusBlob());
-		response.setCustomObject(applicationConfiguration.statusServiceCustomObject());
+		if (applicationConfiguration != null) {
+			response.setCustomObject(applicationConfiguration.statusServiceCustomObject());
+		}
 
 		return new PowerAuthAPIResponse<ActivationStatusResponse>("OK", response);
 		

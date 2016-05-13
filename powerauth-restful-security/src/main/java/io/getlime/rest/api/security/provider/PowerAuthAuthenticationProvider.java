@@ -56,7 +56,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 	@Autowired
 	private PowerAuthServiceClient powerAuthClient;
 
-	@Autowired
+	@Autowired(required=false)
 	private PowerAuthApplicationConfiguration applicationConfiguration;
 
 	@Override
@@ -146,10 +146,12 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 			throw new PowerAuthAuthenticationException("POWER_AUTH_APPLICATION_EMPTY");
 		}
 		
-		// Check if the application is allowed
-		boolean isApplicationAllowed = applicationConfiguration.isAllowedApplicationKey(applicationId);
-		if (!isApplicationAllowed) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_APPLICATION_ID");
+		// Check if the application is allowed, "true" is the default behavior
+		if (applicationConfiguration != null) {
+			boolean isApplicationAllowed = applicationConfiguration.isAllowedApplicationKey(applicationId);
+			if (!isApplicationAllowed) {
+				throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_APPLICATION_ID");
+			}
 		}
 		
 		// Check if the signature type is allowed
