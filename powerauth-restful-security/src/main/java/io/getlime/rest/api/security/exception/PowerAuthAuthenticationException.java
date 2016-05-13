@@ -25,15 +25,17 @@ public class PowerAuthAuthenticationException extends Exception {
 
 	private static final long serialVersionUID = 4280095091435126237L;
 	
+	private static final String DEFAULT_ERROR = "POWER_AUTH_SIGNATURE_INVALID";
+	
 	/**
 	 * Default constructor
 	 */
 	public PowerAuthAuthenticationException() {
-		super();
+		super(DEFAULT_ERROR);
 	}
 	
 	/**
-	 * Contructor with error message
+	 * Constructor with a custom error message
 	 * @param message Error message
 	 */
 	public PowerAuthAuthenticationException(String message) {
