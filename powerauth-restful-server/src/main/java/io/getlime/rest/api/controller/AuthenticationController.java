@@ -15,19 +15,14 @@
  */
 package io.getlime.rest.api.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
+import io.getlime.rest.api.security.annotation.PowerAuth;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
-import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
-import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 
 /**
  * Sample end-point demonstrating how PowerAuth signature validation works.
@@ -39,9 +34,6 @@ import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 @RequestMapping(value = "/pa/signature")
 public class AuthenticationController {
 
-	@Autowired
-	private PowerAuthAuthenticationProvider authenticationProvider;
-
 	/**
 	 * Validate any data sent to this end-point.
 	 * @param signatureHeader HTTP header with PowerAuth signature.
@@ -50,19 +42,15 @@ public class AuthenticationController {
 	 * @throws Exception In case any error occurs, including during signature validation.
 	 */
 	@RequestMapping(value = "validate", method = RequestMethod.POST)
-	public @ResponseBody PowerAuthAPIResponse<String> login(
-			@RequestHeader(value = "X-PowerAuth-Authorization", required = true) String signatureHeader,
-			HttpServletRequest servletRequest) throws Exception {
+	@PowerAuth(resourceId = "/pa/signature/validate")
+	public @ResponseBody PowerAuthAPIResponse<String> login(PowerAuthApiAuthentication apiAuthentication) {
 
-		PowerAuthApiAuthentication apiAuthentication = authenticationProvider.validateRequestSignature(servletRequest, "/pa/signature/validate", signatureHeader);
-
-		if (apiAuthentication != null && apiAuthentication.getUserId() != null) {
-			// ##EXAMPLE: Here, we could store the authentication in the session like this:
-			// ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
-			return new PowerAuthAPIResponse<String>("OK", "Hooray!");
-		} else {
-			throw new PowerAuthAuthenticationException("INCORRECT SIGNATURE");
-		}
+		// ##EXAMPLE: Here, we could store the authentication in the session like this:
+		// ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
+		// ##EXAMPLE: ... or you can grab a user ID like this and use it for querying back-end:
+		// ##EXAMPLE: String userId = apiAuthentication.getUserId();
+		
+		return new PowerAuthAPIResponse<String>("OK", "Hooray!");
 
 	}
 

@@ -15,11 +15,17 @@
  */
 package io.getlime.rest.api.configuration;
 
+import java.util.List;
+
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import io.getlime.rest.api.security.annotation.PowerAuthInterceptor;
+import io.getlime.rest.api.security.annotation.PowerAuthWebArgumentResolver;
 import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
 
 /**
@@ -32,6 +38,28 @@ import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
  */
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
+	
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+		argumentResolvers.add(powerAuthWebArgumentResolver());
+		super.addArgumentResolvers(argumentResolvers);
+	}
+	
+	@Bean
+	public PowerAuthWebArgumentResolver powerAuthWebArgumentResolver() {
+		return new PowerAuthWebArgumentResolver();
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(powerAuthInterceptor());
+		super.addInterceptors(registry);
+	}
+	
+	@Bean
+	public PowerAuthInterceptor powerAuthInterceptor() {
+		return new PowerAuthInterceptor();
+	}
 
 	/**
 	 * Register a new PowerAuthRequestFilter and map it to /pa/signature/validate end-point.
