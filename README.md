@@ -14,14 +14,17 @@ A typical use-case for PowerAuth 2.0 protocol would be assuring the security of 
 - [Implementation notes](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/notes.md)
 
 
-## Integration tutorials
+## Deployment tutorials
 
 - [Deploying PowerAuth 2.0 Server](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/deployment.md)
 - [Deploying PowerAuth 2.0 Admin](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/deployment-admin.md)
 - [Deploying PowerAuth 2.0 Standard RESTful API](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/deployment-rest-api.md)
+- [Using PowerAuth 2.0 Reference Client](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/console-client-app.md)
+
+## Integration tutorials
+
 - [Integrate PowerAuth 2.0 Server with a mobile banking server app](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/mobile-api.md)
 - [Integrate PowerAuth 2.0 Server with an Internet banking server app](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/internet-banking.md)
-- [Using PowerAuth 2.0 Reference Client](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/console-client-app.md)
 
 ## Reference manual
 
