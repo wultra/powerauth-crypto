@@ -23,7 +23,6 @@ public class PowerAuthWebArgumentResolver implements HandlerMethodArgumentResolv
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 		PowerAuthApiAuthentication authentication = (PowerAuthApiAuthentication) request.getAttribute(PowerAuth.AUTHENTICATION_OBJECT);
-		System.out.println("DEBUG>>> 2 >>> >>> " + authentication.toString());
 		return authentication;
 	}
 
