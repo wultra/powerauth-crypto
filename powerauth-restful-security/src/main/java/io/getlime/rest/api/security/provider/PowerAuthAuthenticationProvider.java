@@ -216,7 +216,7 @@ public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 	public PowerAuthApiAuthentication validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader, List<PowerAuthSignatureTypes> allowedSignatureTypes) throws Exception {
 		// Get HTTP method and body bytes
 		String requestMethod = servletRequest.getMethod().toUpperCase();
-		String requestBodyString = ((String) servletRequest.getAttribute(PowerAuthRequestFilter.HTTP_BODY));
+		String requestBodyString = ((String) servletRequest.getAttribute(PowerAuthRequestFilter.POWERAUTH_SIGNATURE_BASE_STRING));
 		byte[] requestBodyBytes = requestBodyString == null ? null : BaseEncoding.base64().decode(requestBodyString);
 		return this.validateRequestSignature(requestMethod, requestBodyBytes, requestUriIdentifier, httpAuthorizationHeader, allowedSignatureTypes);
 	}

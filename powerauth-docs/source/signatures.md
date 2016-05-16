@@ -82,18 +82,19 @@ _Note: Note that the `APPLICATION_SECRET` is technically outside the request dat
 
 - `${REQUEST_METHOD}` - HTTP method written in upper-case, such as GET or POST.
 - `${REQUEST_URI_IDENTIFIER}` - identifier of given URI of the resource encoded as Base64 with UTF-8 encoding, for example `Base64.encode("/api/payment".getBytes("UTF-8"))`. The hashed value (in the example before, the "/api/payment" string) should be uniquely chosen for each URI, but can be of an arbitrary format (if not specified otherwise).
-- `${APPLICATION_SECRET}` - An application secret key, used to bind an application identification in the signature explicitly. This value is 16B encoded as Base64 using UTF-8 encoding (see implementation notes).
 - `${NONCE}` - Random 16 bytes (suggested length) encoded as Base64 using UTF-8 encoding, serving as a cryptographic nonce.
-- `${REQUEST_BODY}` - Request body from the HTTP request
+- `${REQUEST_DATA}` - Request body from the HTTP request
 	- In case of request without body (such as GET and DELETE requests), the request data is constructed from the URL query parameters (for example, GET request parameters) in a following way:
 		1. Take all URL query parameters as key-value pairs:
 			- `PARAM[i] = (KEY[i], VALUE[i]), i = 0 .. N`
 		1. Sort all these key-value pairs according to `KEY[i]` first, then sort duplicate keys according to the `VALUE[i]`
-		1. Construct data as concatenation of the sorted key-value pairs, key is separated from value using "=" character, individual key-value pairs are separated using "&" character:
+			- _Note: In real world situations, duplicate keys should not occur and they are most likely a result of an implementation error._
+		1. Construct data as a Base64 encoded concatenation of the sorted key-value pairs, key is separated from value using "=" character, individual key-value pairs are separated using "&" character:
 			- `REQUEST_DATA = BASE64.encode(CONCAT_ALL(CONCAT(KEY[j], VALUE[j], "="), "&", j = 0 .. N))` (let's assume that `j` are sorted indexes)
 		1. _Note: The GET request normalization is inspired by the OAuth 1.0a request normalization._
 	- In case of request with body (such as POST and PUT requests), data from the resource body (bytes) are encoded using Base64 with UTF-8 encoding and appended:
 		- `REQUEST_DATA = BASE64.encode(ByteUtils.getBytes(HTTP['body']))`
+- `${APPLICATION_SECRET}` - An application secret key, used to bind an application identification in the signature explicitly. This value is 16B encoded as Base64 using UTF-8 encoding (see implementation notes).
 
 ## Validating the signature
 
