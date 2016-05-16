@@ -6,34 +6,35 @@ A typical use-case for PowerAuth 2.0 protocol would be assuring the security of 
 
 ## PowerAuth 2.0 Specification
 
-- [[Basic definitions|Basic-definitions]]
-- [[Activation|Activation]]
-- [[Key Derivation|Key-derivation]]
-- [[Computing and Validating Signatures|Computing-and-validating-signatures]]
-- [[Standard RESTful API|Standard-restful-api]]
-- [[Implementation notes|Implementation-notes]]
+- [Basic definitions](https://github.com/lime-company/lime-security-powerauth/wiki/Basic-definitions)
+- [Activation](https://github.com/lime-company/lime-security-powerauth/wiki/Activation)
+- [Key Derivation](https://github.com/lime-company/lime-security-powerauth/wiki/Key-derivation)
+- [Computing and Validating Signatures](https://github.com/lime-company/lime-security-powerauth/wiki/Computing-and-Validating-Signatures)
+- [Standard RESTful API](https://github.com/lime-company/lime-security-powerauth/wiki/Standard-RESTful-API)
+- [Implementation notes](https://github.com/lime-company/lime-security-powerauth/wiki/Implementation-notes)
+
 
 ## Deployment tutorials
 
-- [[Deploying PowerAuth 2.0 Server|Deploying-PowerAuth-2.0-Server]]
-- [[Deploying PowerAuth 2.0 Admin|Deploying-PowerAuth-2.0-Admin]]
-- [[Deploying PowerAuth 2.0 Standard RESTful API|Deploying-PowerAuth-2.0-Standard-RESTful-API]]
-- [[Using PowerAuth 2.0 Reference Client|Using-PowerAuth-2.0-Reference-Client]]
+- [Deploying PowerAuth 2.0 Server](https://github.com/lime-company/lime-security-powerauth/wiki/Deploying-PowerAuth-2.0-Server)
+- [Deploying PowerAuth 2.0 Admin](https://github.com/lime-company/lime-security-powerauth/wiki/Deploying-PowerAuth-2.0-Admin)
+- [Deploying PowerAuth 2.0 Standard RESTful API](https://github.com/lime-company/lime-security-powerauth/wiki/Deploying-PowerAuth-2.0-Standard-RESTful-API)
+- [Using PowerAuth 2.0 Reference Client](https://github.com/lime-company/lime-security-powerauth/wiki/Using-PowerAuth-2.0-Reference-Client)
 
 ## Integration tutorials
 
-- [[Integrate PowerAuth 2.0 Server with a mobile banking server app|Mobile-Banking-API]]
-- [[Integrate PowerAuth 2.0 Server with an Internet banking server app|Internet-banking-integration]]
+- [Integrate PowerAuth 2.0 Server with a mobile banking server app](https://github.com/lime-company/lime-security-powerauth/wiki/Mobile-Banking-API)
+- [Integrate PowerAuth 2.0 Server with an Internet banking server app](https://github.com/lime-company/lime-security-powerauth/wiki/Internet-banking-integration)
 
 ## Reference manual
 
-- [[SOAP interface methods|SOAP-service-methods]]
-- [[PowerAuth 2.0 Database Structure|Database-Structure]]
-- [[PowerAuth 2.0 Server Error Codes|Server-Error-Codes]]
+- [SOAP interface methods](https://github.com/lime-company/lime-security-powerauth/wiki/SOAP-service-methods)
+- [PowerAuth 2.0 Database Structure](https://github.com/lime-company/lime-security-powerauth/wiki/Database-Structure)
+- [PowerAuth 2.0 Server Error Codes](https://github.com/lime-company/lime-security-powerauth/wiki/Server-Error-Codes)
 
 # Development
 
-In order to start developing PowerAuth 2.0, read our [[Developer documentation|Development]].
+In order to start developing PowerAuth 2.0, read our [Developer documentation](https://github.com/lime-company/lime-security-powerauth/wiki/Development).
 
 # License
 
