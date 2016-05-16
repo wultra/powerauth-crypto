@@ -104,7 +104,7 @@ public class PowerAuthRequestFilter extends OncePerRequestFilter {
 			for (Map<String, String> pair : items) {
 				String key = pair.get(KEY);
 				String val = pair.get(VAL);
-				if (firstSkipped) {
+				if (firstSkipped) { // ... for all items except for the first one, prepend "&"
 					signatureBaseString += "&";
 				} else {
 					firstSkipped = true;
