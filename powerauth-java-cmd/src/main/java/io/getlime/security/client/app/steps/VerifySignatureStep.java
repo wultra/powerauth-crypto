@@ -47,6 +47,7 @@ import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
+import io.getlime.security.powerauth.lib.util.http.PowerAuthRequestCanonizationUtils;
 
 /**
  * Helper class with signature verification logics.
@@ -87,8 +88,7 @@ public class VerifySignatureStep {
 		System.out.println();
 
 		// Prepare the activation URI
-		String fullURIString = uriString;
-		URI uri = new URI(fullURIString);
+		URI uri = new URI(uriString);
 
 		// Get data from status
 		String activationId = (String) resultStatusObject.get("activationId");
@@ -114,18 +114,33 @@ public class VerifySignatureStep {
 
 		// Generate nonce
 		byte[] pa_nonce = keyGenerator.generateRandomBytes(16);
-
-		// Read data input file
+		
+		// Parse HTTP method
+		HttpMethod httpMethod = HttpMethod.valueOf(httpMethodString);
+		
+		// Construct the signature base string data part based on HTTP method (GET requires different code).
 		byte[] dataFileBytes = null;
-		if (dataFileName != null && Files.exists(Paths.get(dataFileName))) {
-			dataFileBytes = Files.readAllBytes(Paths.get(dataFileName));
-		} else {
-			System.out.println("[WARN] Data file was not found!");
-			System.out.println();
+		if (HttpMethod.GET.equals(httpMethod)) {
+			String query = uri.getRawQuery();
+			String canonizedQuery = PowerAuthRequestCanonizationUtils.canonizeGetParameters(query);
+			if (canonizedQuery != null) {
+				dataFileBytes = canonizedQuery.getBytes("UTF-8");
+			} else {
+				System.out.println("[WARN] No GET query parameters found!");
+				System.out.println();
+			}
+		} else {	
+			// Read data input file
+			if (dataFileName != null && Files.exists(Paths.get(dataFileName))) {
+				dataFileBytes = Files.readAllBytes(Paths.get(dataFileName));
+			} else {
+				System.out.println("[WARN] Data file was not found!");
+				System.out.println();
+			}
 		}
 
 		// Compute the current PowerAuth 2.0 signature for possession and knowledge factor
-		String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(httpMethodString, endpoint, pa_nonce, dataFileBytes) + "&" + applicationSecret;
+		String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(httpMethod.name().toUpperCase(), endpoint, pa_nonce, dataFileBytes) + "&" + applicationSecret;
 		String pa_signature = signature.signatureForData(signatureBaseString.getBytes("UTF-8"), keyFactory.keysForSignatureType(signatureType, signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), counter);
 		String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, BaseEncoding.base64().encode(pa_nonce), PowerAuthSignatureTypes.getEnumFromString(signatureType).toString(), pa_signature, "2.0");
 
@@ -142,16 +157,13 @@ public class VerifySignatureStep {
 		// Prepare HTTP headers
 		MultiValueMap<String, String> headers = new HttpHeaders();
 		headers.add(PowerAuthHttpHeader.HEADER_NAME, httpAuhtorizationHeader);
-		
-		// Parse HTTP method
-		HttpMethod httpMethod = HttpMethod.valueOf(httpMethodString);
 
 		RequestEntity<byte[]> request = new RequestEntity<byte[]>(dataFileBytes, headers, httpMethod, uri);
 		
 		RestTemplate template = new RestTemplate();
 
 		// Call the server with activation data
-		System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + fullURIString + " ...");
+		System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + uriString + " ...");
 		System.out.println("Request headers: " + request.getHeaders().toString());
 		System.out.println("Request method: " + httpMethod.toString());
 		if (dataFileBytes != null) {
