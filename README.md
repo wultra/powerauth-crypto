@@ -6,35 +6,34 @@ A typical use-case for PowerAuth 2.0 protocol would be assuring the security of 
 
 ## PowerAuth 2.0 Specification
 
-- [Basic definitions](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/definitions.md)
-- [Activation](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/activation.md)
-- [Key Derivation](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/key-derivation.md)
-- [Computing and Validating Signatures](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/signatures.md)
-- [Standard RESTful API](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/api.md)
-- [Implementation notes](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/notes.md)
-
+- [[Basic definitions|Basic-definitions]]
+- [[Activation|Activation]]
+- [[Key Derivation|Key-derivation]]
+- [[Computing and Validating Signatures|Computing-and-validating-signatures]]
+- [[Standard RESTful API|Standard-restful-api]]
+- [[Implementation notes|Implementation-notes]]
 
 ## Deployment tutorials
 
-- [Deploying PowerAuth 2.0 Server](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/deployment.md)
-- [Deploying PowerAuth 2.0 Admin](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/deployment-admin.md)
-- [Deploying PowerAuth 2.0 Standard RESTful API](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/deployment-rest-api.md)
-- [Using PowerAuth 2.0 Reference Client](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/console-client-app.md)
+- [[Deploying PowerAuth 2.0 Server|Deploying-PowerAuth-2.0-Server]]
+- [[Deploying PowerAuth 2.0 Admin|Deploying-PowerAuth-2.0-Admin]]
+- [[Deploying PowerAuth 2.0 Standard RESTful API|Deploying-PowerAuth-2.0-Standard-RESTful-API]]
+- [[Using PowerAuth 2.0 Reference Client|Using-PowerAuth-2.0-Reference-Client]]
 
 ## Integration tutorials
 
-- [Integrate PowerAuth 2.0 Server with a mobile banking server app](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/mobile-api.md)
-- [Integrate PowerAuth 2.0 Server with an Internet banking server app](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/tutorial/internet-banking.md)
+- [[Integrate PowerAuth 2.0 Server with a mobile banking server app|Mobile-Banking-API]]
+- [[Integrate PowerAuth 2.0 Server with an Internet banking server app|Internet-banking-integration]]
 
 ## Reference manual
 
-- [SOAP interface methods](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/reference/soap.md)
-- [PowerAuth 2.0 Database Structure](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/reference/database.md)
-- [PowerAuth 2.0 Server Error Codes](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/reference/errors.md)
+- [[SOAP interface methods|SOAP-service-methods]]
+- [[PowerAuth 2.0 Database Structure|Database-Structure]]
+- [[PowerAuth 2.0 Server Error Codes|Server-Error-Codes]]
 
 # Development
 
-In order to start developing PowerAuth 2.0, read our [Developer documentation](https://github.com/lime-company/lime-security-powerauth/blob/master/powerauth-docs/source/development.md).
+In order to start developing PowerAuth 2.0, read our [[Developer documentation|Development]].
 
 # License
 
