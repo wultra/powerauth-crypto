@@ -23,6 +23,7 @@ A typical use-case for PowerAuth 2.0 protocol would be assuring the security of 
 
 ## Integration tutorials
 
+- [Overview of system integration](https://github.com/lime-company/lime-security-powerauth/wiki/Integration-tutorials)
 - [Integrate PowerAuth 2.0 Server with a mobile banking server app](https://github.com/lime-company/lime-security-powerauth/wiki/Mobile-Banking-API)
 - [Integrate PowerAuth 2.0 Server with an Internet banking server app](https://github.com/lime-company/lime-security-powerauth/wiki/Internet-banking-integration)
 
