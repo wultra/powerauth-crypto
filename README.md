@@ -1,6 +1,7 @@
 # PowerAuth 2.0
 
 [![SRC:CLR](https://img.shields.io/badge/SRC%3ACLR-No%20vulnerabilities-brightgreen.svg)](http://srcclr.com/)
+[![Build Status](https://travis-ci.org/lime-company/lime-security-powerauth.svg?branch=master)](https://travis-ci.org/lime-company/lime-security-powerauth)
 [![GitHub issues](https://img.shields.io/github/issues/lime-company/lime-security-powerauth.svg?maxAge=2592000)](https://github.com/lime-company/lime-security-powerauth/issues)
 [![Maven Central](https://img.shields.io/maven-central/v/io.getlime.security/powerauth-parent.svg?maxAge=2592000)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.getlime.security%22)
 [![Twitter](https://img.shields.io/badge/twitter-@lime_company-blue.svg?style=flat)](http://twitter.com/lime_company)
