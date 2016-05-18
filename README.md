@@ -16,7 +16,8 @@ A typical use-case for PowerAuth 2.0 protocol would be assuring the security of 
 - [Key Derivation](https://github.com/lime-company/lime-security-powerauth/wiki/Key-derivation)
 - [Computing and Validating Signatures](https://github.com/lime-company/lime-security-powerauth/wiki/Computing-and-Validating-Signatures)
 - [Standard RESTful API](https://github.com/lime-company/lime-security-powerauth/wiki/Standard-RESTful-API)
-- [Implementation notes](https://github.com/lime-company/lime-security-powerauth/wiki/Implementation-notes)
+- [Implementation details](https://github.com/lime-company/lime-security-powerauth/wiki/Implementation-notes)
+- [List of used keys](https://github.com/lime-company/lime-security-powerauth/wiki/List-of-used-keys)
 
 
 ## Deployment tutorials
