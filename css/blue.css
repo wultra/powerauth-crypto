@@ -45,18 +45,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-selection {
-  color: #818892;
-  background: #f9f6f0;
+  color: white;
+  background: #333333;
 }
 
 ::-moz-selection {
-  color: #818892;
-  background: #f9f6f0;
+  color: white;
+  background: #333333;
 }
 
 ::selection {
-  color: #818892;
-  background: #f9f6f0;
+  color: white;
+  background: #333333;
 }
 
 #fh5co-header {

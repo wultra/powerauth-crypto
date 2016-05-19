@@ -3,7 +3,7 @@
 
     'use strict';
 
-    // iPad and iPod detection	
+    // iPad and iPod detection
     var isiPad = function () {
         return (navigator.platform.indexOf("iPad") != -1);
     };
@@ -42,6 +42,8 @@
             items: 1,
             loop: false,
             singleItem : true,
+            mouseDrag: false,
+            touchDrag: false,
             margin: 0,
             responsiveClass: true,
             nav: false,
