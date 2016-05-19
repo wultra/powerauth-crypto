@@ -41,7 +41,6 @@ public class QRUtil {
 			byte[] bytes = baos.toByteArray();
 			return "data:image/png;base64," + BaseEncoding.base64().encode(bytes);
 		} catch (WriterException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
