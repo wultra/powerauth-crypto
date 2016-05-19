@@ -7,7 +7,7 @@
 }
 /* =======================================================
 *
-* 	Template Style 
+* 	Template Style
 *	Edit this section
 *
 * ======================================================= */
@@ -615,7 +615,8 @@ h1, h2, h3, h4, h5, h6 {
   right: 0;
   bottom: 0;
   top: 0;
-  background-size: cover;
+  background-color: #001840;
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: 50%;
 }
