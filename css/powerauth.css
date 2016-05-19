@@ -5,3 +5,32 @@
 #fh5co-testimonials {
     background-color: #001840;
 }
+
+.padder-40 {
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+}
+
+.error-404 {
+  margin-top: 60px;
+  padding: 20px 80px;
+  border: 1px solid #AAA;
+  color: #777;
+  border-radius: 5px;
+  font-family: "Courier New", monospace;
+  max-width: 700px;
+  width: 60%;
+}
+
+.error-404 h1 {
+  font-size: 32pt;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 40px;
+  margin-top: 0;
+}
+
+.error-404 h2 {
+  margin-top: 0;
+  margin-bottom: 40px;
+}
