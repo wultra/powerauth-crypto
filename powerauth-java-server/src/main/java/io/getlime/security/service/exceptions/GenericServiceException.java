@@ -43,7 +43,7 @@ public class GenericServiceException extends Exception {
         super();
         this.code = code;
         this.message = message;
-        this.message = localizedMessage;
+        this.localizedMessage = localizedMessage;
     }
 
     /**
