@@ -81,7 +81,7 @@ public class ConfigurationUtils {
 	 * @return Master public key.
 	 */
 	public static PublicKey getMasterKey(JSONObject clientConfigObject) {
-		if (clientConfigObject.get("masterPublicKey") != null) {
+		if (clientConfigObject != null && clientConfigObject.get("masterPublicKey") != null) {
 			try {
 				byte[] masterKeyBytes = BaseEncoding.base64().decode((String) clientConfigObject.get("masterPublicKey"));
 				return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(masterKeyBytes);

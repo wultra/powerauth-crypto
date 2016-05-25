@@ -73,7 +73,7 @@ public class PowerAuthHttpHeader {
 	public static Map<String, String> parsePowerAuthSignatureHTTPHeader(String xPowerAuthSignatureHeader) {
 		xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.trim();
 		if (!xPowerAuthSignatureHeader.startsWith(POWERAUTH_PREFIX)) {
-			return null;
+			return new HashMap<>(); // invalid map with empty values works better than null here 
 		}
 		xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.substring(POWERAUTH_PREFIX.length()).trim();
 		
