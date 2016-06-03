@@ -67,7 +67,7 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   margin-top: 20px;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 990px) {
   #fh5co-header {
     margin-top: 0;
     background: #fff;
@@ -205,7 +205,7 @@ h1, h2, h3, h4, h5, h6 {
   -ms-border-radius: 0px;
   border-radius: 0px;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 990px) {
   #fh5co-header .navbar-default {
     margin-top: 0px;
     padding-right: 0px;
@@ -721,7 +721,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 44px;
   border-bottom: none !important;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 990px) {
   .fh5co-nav-toggle {
     display: block;
   }
@@ -984,8 +984,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 @media screen and (max-width: 768px) {
   .owl-carousel-fullwidth .item, .owl-carousel-fullwidth .fh5co-owl-text-wrap {
-    height: inherit;
-    padding: 5em 0;
+    height: 500px;
+    padding: 0;
+    padding-top: 40px;
   }
 }
 .owl-carousel-fullwidth .fh5co-owl-text-wrap {

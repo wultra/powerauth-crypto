@@ -102,11 +102,15 @@
     var clickMenu = function () {
 
         $('a:not([class="external"])').click(function (event) {
-            var section = $(this).data('nav-section'),
-                    navbar = $('#navbar');
-            $('html, body').animate({
-                scrollTop: $('[data-section="' + section + '"]').offset().top
-            }, $(this).data('nav-slow-animate') == null ? 750 : 1000);
+            var section = $(this).data('nav-section'), navbar = $('#navbar');
+            var offset = $('[data-section="' + section + '"]').offset();
+            if (offset !== undefined) {
+                $('html, body').animate({
+                    scrollTop: offset.top
+                }, 750);
+            } else {
+                return true;
+            }
 
             if (navbar.is(':visible')) {
                 navbar.removeClass('in');
