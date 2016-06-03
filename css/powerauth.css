@@ -6,6 +6,10 @@
     background-color: #001840;
 }
 
+.bg-purple {
+    background-color: #C0007F !important;
+}
+
 .padder-40 {
   padding-top: 40px !important;
   padding-bottom: 40px !important;

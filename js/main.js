@@ -106,7 +106,7 @@
                     navbar = $('#navbar');
             $('html, body').animate({
                 scrollTop: $('[data-section="' + section + '"]').offset().top
-            }, 500);
+            }, $(this).data('nav-slow-animate') == null ? 750 : 1000);
 
             if (navbar.is(':visible')) {
                 navbar.removeClass('in');
