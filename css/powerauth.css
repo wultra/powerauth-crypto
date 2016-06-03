@@ -10,6 +10,14 @@
     background-color: #C0007F !important;
 }
 
+.bg-blue {
+    background-color: #0A7FEE !important;
+}
+
+.bg-green {
+    background-color: #7FC000 !important;
+}
+
 .padder-40 {
   padding-top: 40px !important;
   padding-bottom: 40px !important;
