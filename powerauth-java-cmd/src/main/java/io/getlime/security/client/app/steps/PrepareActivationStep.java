@@ -21,6 +21,8 @@ import java.net.URI;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.crypto.SecretKey;
 
@@ -79,7 +81,7 @@ public class PrepareActivationStep {
 		String applicationSecret = (String) context.get("APPLICATION_SECRET");
 		String uriString = (String) context.get("URI_STRING");
 		PublicKey masterPublicKey = (PublicKey) context.get("MASTER_PUBLIC_KEY");
-		String activationCode = (String) context.get("ACTIVATION_CODE");
+		String activationCode = ((String) context.get("ACTIVATION_CODE")).toUpperCase();
 		JSONObject resultStatusObject = (JSONObject) context.get("STATUS_OBJECT");
 		String statusFileName = (String)context.get("STATUS_FILENAME");
 		String passwordProvided = (String)context.get("PASSWORD");
@@ -92,6 +94,15 @@ public class PrepareActivationStep {
 		URI uri = new URI(fullURIString);
 
 		// Fetch and parse the activation code
+		Pattern p = Pattern.compile("^[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}(#.*)?$");
+		Matcher m = p.matcher(activationCode);
+		if (!m.find()) {
+			System.out.println("Activation code has invalid format");
+			System.out.println();
+			System.out.println("### Failed.");
+			System.out.println();
+			System.exit(1);
+		}
 		String activationIdShort = activationCode.substring(0, 11);
 		String activationOTP = activationCode.substring(12, 23);
 
