@@ -1,245 +1,224 @@
 {
 	"description": "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth 2.0 keys from master shared secret key (masterSecretKey) => (signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey, transportKey, vaultEncryptionKey).",
-	"data": [
-		{
-			"input": {
-				"masterSecretKey": "r4jI0o6dYSLmxnflVJu00w=="
-			},
-			"output": {
-				"signaturePossessionKey": "vti5kIWUDawfAOIxAtbkdw==",
-				"signatureKnowledgeKey": "Br9CLYI/x31snBCx+TWJSg==",
-				"signatureBiometryKey": "05XTJqhHj66xZUyxE4Pcww==",
-				"transportKey": "cvG7pIw8jftsYrrncnDNwQ==",
-				"vaultEncryptionKey": "s95dXphOydXUHCkAesG4/g=="
-			}
+	"data": [{
+		"input": {
+			"masterSecretKey": "H0eFgDSODwztB6kypY920A=="
 		},
-		{
-			"input": {
-				"masterSecretKey": "OWVVPsRTkyBUKQNDDLGbag=="
-			},
-			"output": {
-				"signaturePossessionKey": "JHZySD/6mWJCSjXOLz8xbQ==",
-				"signatureKnowledgeKey": "H00eMXbXoEIHLNSkTfAlMg==",
-				"signatureBiometryKey": "cDu+LrE99UWWFlVrLdyJfA==",
-				"transportKey": "mA1kwvhVIo7BClzZJ96jog==",
-				"vaultEncryptionKey": "IAzO2/Lrmb5kzUFRTGm4eQ=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "UP1K8FvMvlO+JzGTC1g5rw=="
-			},
-			"output": {
-				"signaturePossessionKey": "yjgT3TiYa0usZu7i0sq7mQ==",
-				"signatureKnowledgeKey": "4bATXU8FQHRGUFL4HC8KYQ==",
-				"signatureBiometryKey": "P7w4N0gQYizqomhc3S8/jA==",
-				"transportKey": "8rxvnULvndDbdlQE9G7PDQ==",
-				"vaultEncryptionKey": "9o9nrxTySzxJNTx3PmJ49A=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "+nlIR2TPrD3XfzRWmeQuqQ=="
-			},
-			"output": {
-				"signaturePossessionKey": "5BPrSrRokA/yWpHq8Hv/8A==",
-				"signatureKnowledgeKey": "VgRc3+C9ZCWGn1QiM0b6Xw==",
-				"signatureBiometryKey": "aa3wkw00cakdf0DAyfd0FA==",
-				"transportKey": "E9bQ+TGrjIbKoJWYtmuP5Q==",
-				"vaultEncryptionKey": "s95+s4vW3wjCVQuGRFYiDg=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "DSScZjcy1sM0jUZOJlzKKA=="
-			},
-			"output": {
-				"signaturePossessionKey": "A7afgSgNM7cg+yEJWGLUEQ==",
-				"signatureKnowledgeKey": "zZl4J0HNVNjshnpFPuHzKw==",
-				"signatureBiometryKey": "vYVbGcEaTDQcD14eWsK1rA==",
-				"transportKey": "RB3Tg4h3jaP4N8X4BrFVHg==",
-				"vaultEncryptionKey": "kprMUZNR5GX6YOXvyIQ7eg=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "ib1aVCGfpXRdoYdqgblkow=="
-			},
-			"output": {
-				"signaturePossessionKey": "PgLkU0UKV+Nb1DqDzco3oA==",
-				"signatureKnowledgeKey": "u/Ru31Ip7N/B7Enl+hyj7g==",
-				"signatureBiometryKey": "E5LTaLk9gRiJRbX6qMjeUQ==",
-				"transportKey": "5eCXwV1oTE5GdCK7vrek7w==",
-				"vaultEncryptionKey": "kGQbv55mebIwv4nBPcD0Qg=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "IaiDCentXP9vDeGZM1K6IQ=="
-			},
-			"output": {
-				"signaturePossessionKey": "sgrf8dTE92F2YGp7o0dDgQ==",
-				"signatureKnowledgeKey": "VU27U2hFw0ZwbZ7SOcZEqA==",
-				"signatureBiometryKey": "K/fSWg9yWXp5QbYW9QA6Yw==",
-				"transportKey": "NGp1xEDohHXoPDEtYT1hBQ==",
-				"vaultEncryptionKey": "NK1lU2BymHWmB+2+2AQQKw=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "gTjX28R5pKPbaLqQRlwGVA=="
-			},
-			"output": {
-				"signaturePossessionKey": "q94CtHISk40AjoPn8fkCcw==",
-				"signatureKnowledgeKey": "P67u+ROMBWE9vSupGXigcQ==",
-				"signatureBiometryKey": "ZrEFQjZ3MTkbU2Tq8i6mDA==",
-				"transportKey": "eNurpIuTGYtUe5KSmG3Heg==",
-				"vaultEncryptionKey": "T674RlomuCYAl4sVuY6iZg=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "ADCWkodb4WOT8MXmiwy3TA=="
-			},
-			"output": {
-				"signaturePossessionKey": "5DInc5G//4HRbBwmM3ALjg==",
-				"signatureKnowledgeKey": "8Vyfb1Ak1wgHQ9mXhVEPdw==",
-				"signatureBiometryKey": "jOiNnLH0xMF8m+5h4npWgA==",
-				"transportKey": "I896JrbupEyztGmON2/gwQ==",
-				"vaultEncryptionKey": "zOm2yIRUEFfl0Sa/nRAoKQ=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "noFcuCTj77SYM1ZPkxlMoA=="
-			},
-			"output": {
-				"signaturePossessionKey": "9n0tUa3CsBvzaZAQ3PL87g==",
-				"signatureKnowledgeKey": "7VCvKlNUnsgCrHilsGPHmQ==",
-				"signatureBiometryKey": "0pv4g51RGlVL9HiT5ZmPBw==",
-				"transportKey": "FXuXPD62tAdINuuSxRIX6A==",
-				"vaultEncryptionKey": "i6+zfCLR3YUTFGjPMWqk0Q=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "iAs9u5407OPGTGu4BHGDkg=="
-			},
-			"output": {
-				"signaturePossessionKey": "tLWMk+PTHoK/yxJtPhReFQ==",
-				"signatureKnowledgeKey": "e5/1GEolvWPtvQZNdUeMDg==",
-				"signatureBiometryKey": "dXriiXXFRm2wzb6nPZAscA==",
-				"transportKey": "lBtYFPMqGjVFqJKdzSkG1g==",
-				"vaultEncryptionKey": "olLBjzU+QP2aHM45m3dhoA=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "42rkJZ1FwtzLgYa1vEq8Rg=="
-			},
-			"output": {
-				"signaturePossessionKey": "/EIf5y9Yq0o/b4YKqLQYyA==",
-				"signatureKnowledgeKey": "xfV0bdd0FTuCayDcEZHJLA==",
-				"signatureBiometryKey": "t27Pl0SZy43IRiCYsKFSNg==",
-				"transportKey": "4hh/mblc4ZxHKOKvnofMAw==",
-				"vaultEncryptionKey": "CcFPmfZPvzCSgMR0otov+Q=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "BubTR5u3gLASYyUlXuNcXw=="
-			},
-			"output": {
-				"signaturePossessionKey": "E/LWQFjXsm7rDjNyzeTpbw==",
-				"signatureKnowledgeKey": "lNW36p2heN1b15NL1qiw5Q==",
-				"signatureBiometryKey": "S/9Kikb7SPWhR/UQ16pJFA==",
-				"transportKey": "S+slsLf9BNWkQyPQOJNEnw==",
-				"vaultEncryptionKey": "f+WjpmVWdo7AZxBxy+BNsA=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "VRGQ1MwqPGPCb4qMHHx6MQ=="
-			},
-			"output": {
-				"signaturePossessionKey": "0gEaIa6hWVogap4iJkpp5A==",
-				"signatureKnowledgeKey": "AouV7GtKTtvC+LRTVU6lhw==",
-				"signatureBiometryKey": "msAgfHHrHteI35IQDbs1Eg==",
-				"transportKey": "1sOsvR5DMG3QdQNQbgeY3Q==",
-				"vaultEncryptionKey": "aBpHUyjBqesCV13ctoLcwg=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "4vHfwYUNehZDanZ4Glo8eg=="
-			},
-			"output": {
-				"signaturePossessionKey": "0ocdwFsZ7pUNvxKMJhN6HQ==",
-				"signatureKnowledgeKey": "/T//Pa1F56M+QvR+b6zhHA==",
-				"signatureBiometryKey": "VjYfiPGk25WJsv0ekdsn8w==",
-				"transportKey": "QwIbb4x9PSCrIx2hj9rvPQ==",
-				"vaultEncryptionKey": "fT/HSvw77Bg7TQi4sBdW+g=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "n27xkHnL1ZEEipPTupy7SA=="
-			},
-			"output": {
-				"signaturePossessionKey": "IWstubi7B3VKarH1eGINPg==",
-				"signatureKnowledgeKey": "xiHA46283GlvSdMu9ovC5Q==",
-				"signatureBiometryKey": "rc8IfPWeqCx2K4Ldnlb+6Q==",
-				"transportKey": "dsc/fcsQJjVHZxdRrXfieg==",
-				"vaultEncryptionKey": "O/EG4qVnWl5BVWu4IchORQ=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "iEy/aGhP3J1a9B+jmZ8HKw=="
-			},
-			"output": {
-				"signaturePossessionKey": "f0mToifgA36pzFdy0V/P8Q==",
-				"signatureKnowledgeKey": "DqN0hOkEjIL6lzKutizByg==",
-				"signatureBiometryKey": "LY+gctPXa+MVlUIXpxh8sg==",
-				"transportKey": "ROknxISylNq5cR9MhopaPg==",
-				"vaultEncryptionKey": "Lzf/6+ilX3hZRXMrtkFkdA=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "MgQlOG984wbZu3qX18U81A=="
-			},
-			"output": {
-				"signaturePossessionKey": "5iRgYw2JVKs7vQcrHnTvUA==",
-				"signatureKnowledgeKey": "NEtHsrdPj3znszA7N3roYA==",
-				"signatureBiometryKey": "alK6sXDm1BeeVLeP8FJAfQ==",
-				"transportKey": "VMUsk3BEDRqF/yDU8h16Lg==",
-				"vaultEncryptionKey": "aXua9Ep0NTbuJ9zelemXdw=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "PskHh3STHChF8Js4oZ6SBQ=="
-			},
-			"output": {
-				"signaturePossessionKey": "lgtHTMlg7kp+D4NlH/xGyQ==",
-				"signatureKnowledgeKey": "8V9y+qtQZj/GF/RkJIoDuA==",
-				"signatureBiometryKey": "016YuxyJqrc5xBGokxnhbg==",
-				"transportKey": "tOaW46uepnQr6xe1wXIcEA==",
-				"vaultEncryptionKey": "Z+0FrGUMg7x94fUGw8Q18w=="
-			}
-		},
-		{
-			"input": {
-				"masterSecretKey": "ED+cSuisVnqkc2+wHwhXbg=="
-			},
-			"output": {
-				"signaturePossessionKey": "eKZAwernbMyLQTwURPTlnw==",
-				"signatureKnowledgeKey": "iY+gjrm5wX3fscQKabnBGw==",
-				"signatureBiometryKey": "iX/ybcgH7hKsVYpHGkzcLA==",
-				"transportKey": "EnMr9hzcOvy+mjVxBbRwmw==",
-				"vaultEncryptionKey": "bfz2Ue0ZSKX3kkeEqRPVRA=="
-			}
+		"output": {
+			"signaturePossessionKey": "x13RSfgIgsmbNe8M7dz2lg==",
+			"signatureKnowledgeKey": "sTXzoFkvv0g0ZviwKRH5Tg==",
+			"signatureBiometryKey": "WHR0b7eUWLqE8BvQozNvyg==",
+			"transportKey": "SwqX1DalSONoFaC+hA4eUA==",
+			"vaultEncryptionKey": "7E5o4RYWqgImz/lAv8XvSg=="
 		}
-	]
+	}, {
+		"input": {
+			"masterSecretKey": "Gz4q6c5PIq1FnvcbUw6lng=="
+		},
+		"output": {
+			"signaturePossessionKey": "l+u1De8sM1KP/itPRcSopg==",
+			"signatureKnowledgeKey": "wkgTXPkKCG8tT8zUrC2uvA==",
+			"signatureBiometryKey": "VQsCKztoc0YFXZ2mQQ0/ZA==",
+			"transportKey": "XllDr//G4QSW5yO6pbvQbQ==",
+			"vaultEncryptionKey": "zDsl5hPmyB1wOWZ9OVoyOA=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "SxgwZ/paKQw0q+ODV0wGbQ=="
+		},
+		"output": {
+			"signaturePossessionKey": "ykLxX0S0ITUiKNA/6STwxA==",
+			"signatureKnowledgeKey": "rr4RNvjeXvPhM8eePRCSqw==",
+			"signatureBiometryKey": "0AMAqjveNYY6xcrSuE7TCw==",
+			"transportKey": "rb6rmOtDv4x3Ajp4fD/JSQ==",
+			"vaultEncryptionKey": "+tceU5jZTSXIh56cRKu97Q=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "7pmpW1/PyKdXFy2zkB8Etg=="
+		},
+		"output": {
+			"signaturePossessionKey": "fYjo6r3NSPv311WkG8Urdg==",
+			"signatureKnowledgeKey": "9eaFaQPjM13Rg7fKp+V7Fw==",
+			"signatureBiometryKey": "H7WuOdZDy+M2jMNuymVHvA==",
+			"transportKey": "ONLQjRjtnuFWu/q/tB/AUg==",
+			"vaultEncryptionKey": "IRG6UcZHur06cUDXA4vT6g=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "4+f8o62IQoV1aw0vK1ahpg=="
+		},
+		"output": {
+			"signaturePossessionKey": "IsDgW+W6kc2twWYro2skoA==",
+			"signatureKnowledgeKey": "frhxuB9BKYMdvoCpaF3EHg==",
+			"signatureBiometryKey": "cQo1Smn7t3tNpZuW6cliLA==",
+			"transportKey": "sBfftXQzTX/YLhhd524QhQ==",
+			"vaultEncryptionKey": "uz0ynVxPEcK+9/WJOL4cEg=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "PUFun7M0q/Ivi4SfciVacQ=="
+		},
+		"output": {
+			"signaturePossessionKey": "JqTn+DuzK437WVeV7Y/YLQ==",
+			"signatureKnowledgeKey": "2r8Fm/gbLX+/vv0Qd9rz3Q==",
+			"signatureBiometryKey": "lGZ//wjcYo1WkZgHePXGCQ==",
+			"transportKey": "k4o+8rl8t8MrqcY1l0xbIg==",
+			"vaultEncryptionKey": "2nPmLpQERvGnNk1+8l9JJw=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "r0dM6K66BP3xCDYiyppv2A=="
+		},
+		"output": {
+			"signaturePossessionKey": "vI4BdLmIqJaTFhUcizcR8g==",
+			"signatureKnowledgeKey": "2KLlGiDtUmP1v7TNwcBi3A==",
+			"signatureBiometryKey": "FsQn+5PSibdclySHJDvnqA==",
+			"transportKey": "e02SdDwSmprK51h3r1Jkfg==",
+			"vaultEncryptionKey": "Vp3yR3ud3U8rH3juEfwOpA=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "npitUvsLJfRii0Zn37egeQ=="
+		},
+		"output": {
+			"signaturePossessionKey": "EqkGxueetY69NGXmO73YKw==",
+			"signatureKnowledgeKey": "D9z4nirOY/WgM0PHuKTFcA==",
+			"signatureBiometryKey": "92GBL9qAVC3flM4mKDPXdA==",
+			"transportKey": "PiVvsFX4jkpvuIZbzMZgVQ==",
+			"vaultEncryptionKey": "mluzman3HtwQVoPU8uXKHA=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "g+KCyR7puPqYGXVADvwGOA=="
+		},
+		"output": {
+			"signaturePossessionKey": "hEAQbUX3SRzxmNSxOdXLWg==",
+			"signatureKnowledgeKey": "WS9rjkCFbA0GPyIr4kVN8g==",
+			"signatureBiometryKey": "cncThzKzmowZ+k668xeXnA==",
+			"transportKey": "lwrvk+/qk6FEfH54UOz9rw==",
+			"vaultEncryptionKey": "rK8y/BegKDoM/33QZu00RQ=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "aDLBn6IWMdKZGaNb1KEDdw=="
+		},
+		"output": {
+			"signaturePossessionKey": "Xo7d9IaILnVRdKDPAadIug==",
+			"signatureKnowledgeKey": "EqyAhxsOKZ6aFoh1zCtfdQ==",
+			"signatureBiometryKey": "O1Dlm374enelNQQDSnTKPQ==",
+			"transportKey": "1kCJ9kmiKnis0M7MHaTYag==",
+			"vaultEncryptionKey": "l4TyzB/2dHbvgiNCkjkG9Q=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "QnjSyAulUsyhEcQhMx3P6Q=="
+		},
+		"output": {
+			"signaturePossessionKey": "W3CGEwKg+ONk4wPB16PWDg==",
+			"signatureKnowledgeKey": "EN+efmfzk0U9gux+B3oCVQ==",
+			"signatureBiometryKey": "BUWlq6XuLhV42Un0f2/atg==",
+			"transportKey": "LPoSUK4u7U7/UzAMP5hzNQ==",
+			"vaultEncryptionKey": "dWrrkyUnhFEwdypHv5A6Ww=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "LAcHFRTgrcs1SptraEjPPQ=="
+		},
+		"output": {
+			"signaturePossessionKey": "lUFca3bfG/9SdFWuLBx4ow==",
+			"signatureKnowledgeKey": "P2n8oT8J9ADn06EA5mMicg==",
+			"signatureBiometryKey": "TdcLZvHthhQvCjGYvrjWTg==",
+			"transportKey": "ZA67+/a6B7NjMHQHgs8srg==",
+			"vaultEncryptionKey": "V9DS3lsIPYpmKN/zGkOHHA=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "Gwnq13n7OclOxIDzDBxk/Q=="
+		},
+		"output": {
+			"signaturePossessionKey": "oDno3jy18mh6vbEH94nN8Q==",
+			"signatureKnowledgeKey": "clbofoWZQ/GHxl81/dUB/g==",
+			"signatureBiometryKey": "eCGl6ubDR9hIBQZ2hNgLKg==",
+			"transportKey": "8Skn/DEpRqdRhKspnC/MHQ==",
+			"vaultEncryptionKey": "qsh4YikfxdL/pqqeAoD4rQ=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "3kLsSX9PbrlMspGCgyAWVQ=="
+		},
+		"output": {
+			"signaturePossessionKey": "2zx2LFek05UwjDqvD7/55Q==",
+			"signatureKnowledgeKey": "inOZs8U7I//U4x+Jc3UzQQ==",
+			"signatureBiometryKey": "Ao9osndJ6df95x1HOP9s/Q==",
+			"transportKey": "EfulI9siNnk3mbw6v8EeLQ==",
+			"vaultEncryptionKey": "5+4c9ZddLsOg1O8p7KTyFA=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "YhQTkIlAXYjbpKZ3kXvCSw=="
+		},
+		"output": {
+			"signaturePossessionKey": "vhwHamUM7kKBKAuKXdewLg==",
+			"signatureKnowledgeKey": "c/PIq7tdv6tW914XzGnmrg==",
+			"signatureBiometryKey": "ttmJSrDJ3Xp2NlJsdi9bjw==",
+			"transportKey": "vkBcFr1ghxa7C1Ew8JIJRw==",
+			"vaultEncryptionKey": "yDLYSK3dRfsXiMa/7caSVQ=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "LypPY+olvV5W3zVlBfIfhA=="
+		},
+		"output": {
+			"signaturePossessionKey": "SOVZtlIzYHcsLCUSXvxxpA==",
+			"signatureKnowledgeKey": "q0o2oTAzjeSbtwvhbcXfHA==",
+			"signatureBiometryKey": "PZP60xa4HA4bRlg//09dpw==",
+			"transportKey": "s0mdjKlfuWCfKst6ypx83A==",
+			"vaultEncryptionKey": "zM25hvQED2IPZf/HFeYRDg=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "FbwIPCaY4geN5Ntv4GMtNg=="
+		},
+		"output": {
+			"signaturePossessionKey": "uBhnMfs/BpIgDDcA8a1Pyw==",
+			"signatureKnowledgeKey": "x2+QVTRGBKnb6X4Hp3qzIg==",
+			"signatureBiometryKey": "vKhjy67QfKvAmoGlXUKvcQ==",
+			"transportKey": "JsFqugZZgr9uNTUAIao2Ag==",
+			"vaultEncryptionKey": "GnMW9CDyQ5XFhiGfaxlBaw=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "XgHRHjKM9e0EfSYMr9R0Ag=="
+		},
+		"output": {
+			"signaturePossessionKey": "h5l4wO87aHiw48VBGOspmg==",
+			"signatureKnowledgeKey": "qzzeNKdOtMNskHUPUDSOqQ==",
+			"signatureBiometryKey": "sGQwfbkpwIKUZLt+acSjHQ==",
+			"transportKey": "Kdj5grrcv+zBLB+lX2Vzcg==",
+			"vaultEncryptionKey": "oyAfKmgEFkzpyP475IksRg=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "igf/zaBmFp+nAag+Lmc2uA=="
+		},
+		"output": {
+			"signaturePossessionKey": "Apbm+yDyZqj7WfbRFxbW/Q==",
+			"signatureKnowledgeKey": "i6ksgct2sFL3xCO+aFr7hw==",
+			"signatureBiometryKey": "u1XNqWtry1l4M0snh5/tbg==",
+			"transportKey": "TA2xucwGNh41QcuFG6YOOg==",
+			"vaultEncryptionKey": "QMRJYv5gS50i+YEXwBpIEg=="
+		}
+	}, {
+		"input": {
+			"masterSecretKey": "6eo/a6h2dPgtb3oZRPBFfQ=="
+		},
+		"output": {
+			"signaturePossessionKey": "1BVQlu3PBFv1UVYN0OGn0w==",
+			"signatureKnowledgeKey": "Pg2WYyfz5wAEmi8wgp5Tiw==",
+			"signatureBiometryKey": "E+kRVIxlhdbLeXhJGyD3Vg==",
+			"transportKey": "19tAnRFWcKdV2Szh0CieDA==",
+			"vaultEncryptionKey": "t1AxncsRgkp5mRynyY8Swg=="
+		}
+	}]
 }
