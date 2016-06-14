@@ -453,6 +453,11 @@ public class ActivationServiceBehavior {
 				activation.getActivationOTP(), 
 				activationNonce
 		);
+		
+		if (devicePublicKey == null) { // invalid key was sent, return error 
+			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0009);
+		}
+		
 		byte[] applicationSignatureBytes = BaseEncoding.base64().decode(applicationSignature);
 		
 		if (!powerAuthServerActivation.validateApplicationSignature(
@@ -487,6 +492,9 @@ public class ActivationServiceBehavior {
 
 		// Get encrypted public key signature
 		byte[] C_serverPubKeySignature = powerAuthServerActivation.computeServerDataSignature(activation.getActivationId(), C_serverPublicKey, masterPrivateKey);
+		if (C_serverPubKeySignature == null) { // in case there is a technical error with signing and null is returned, return random bytes
+			C_serverPubKeySignature = new KeyGenerator().generateRandomBytes(71);
+		}
 
 		// Compute the response
 		PrepareActivationResponse response = new PrepareActivationResponse();
