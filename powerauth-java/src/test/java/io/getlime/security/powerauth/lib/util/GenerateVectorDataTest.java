@@ -103,6 +103,8 @@ public class GenerateVectorDataTest {
 
 		System.out.println("## Encrypt Device Public Key");
 		System.out.println("[");
+		
+		KeyPair masterKeyPair = new KeyGenerator().generateKeyPair();
 
 		int max = 20;
 		for (int i = 0; i < max; i++) {
@@ -112,8 +114,10 @@ public class GenerateVectorDataTest {
 			PublicKey publicKey = new KeyGenerator().generateKeyPair().getPublic();
 			byte[] applicationKey = new KeyGenerator().generateRandomBytes(16);
 			byte[] applicationSecret = new KeyGenerator().generateRandomBytes(16);
+			
+			KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
 
-			byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, activationOTP, activationIdShort, activationNonce);
+			byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, ephemeralKeyPair.getPrivate(), masterKeyPair.getPublic(), activationOTP, activationIdShort, activationNonce);
 			byte[] applicationSignature = activation.computeApplicationSignature(activationIdShort, activationNonce, cDevicePublicKey, applicationKey, applicationSecret);
 
 			System.out.println("    {");
@@ -121,6 +125,8 @@ public class GenerateVectorDataTest {
 			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
 			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
 			System.out.println("            \"activationNonce\": \"" + BaseEncoding.base64().encode(activationNonce) + "\",");
+			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterKeyPair.getPublic())) + "\",");
+			System.out.println("            \"ephemeralPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(ephemeralKeyPair.getPrivate())) + "\",");
 			System.out.println("            \"applicationKey\": \"" + BaseEncoding.base64().encode(applicationKey) + "\",");
 			System.out.println("            \"applicationSecret\": \"" + BaseEncoding.base64().encode(applicationSecret) + "\",");
 			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)) + "\"");

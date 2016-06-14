@@ -18,13 +18,14 @@ package io.getlime.rest.api.model;
 /**
  * Request object for /pa/activation/create end-point.
  * 
- * @author Petr Dvirak
+ * @author Petr Dvorak
  *
  */
 public class ActivationCreateRequest {
 	
 	private String activationIdShort;
 	private String activationNonce;
+	private String ephemeralPublicKey;
 	private String encryptedDevicePublicKey;
 	private String activationName;
 	private String extras;
@@ -61,6 +62,22 @@ public class ActivationCreateRequest {
 	 */
 	public void setActivationNonce(String activationNonce) {
 		this.activationNonce = activationNonce;
+	}
+	
+	/**
+	 * Get the ephemeral public key.
+	 * @return Ephemeral public key.
+	 */
+	public String getEphemeralPublicKey() {
+		return ephemeralPublicKey;
+	}
+	
+	/**
+	 * Set the ephemeral public key.
+	 * @param ephemeralPublicKey Ephemeral public key.
+	 */
+	public void setEphemeralPublicKey(String ephemeralPublicKey) {
+		this.ephemeralPublicKey = ephemeralPublicKey;
 	}
 	
 	/**

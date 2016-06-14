@@ -100,13 +100,28 @@ public class PowerAuthActivationTest {
 
 			// CLIENT: Generate and send public key
 			KeyPair deviceKeyPair = clientActivation.generateDeviceKeyPair();
+			KeyPair clientEphemeralKeyPair = keyGenerator.generateKeyPair();
 			PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 			PublicKey devicePublicKey = deviceKeyPair.getPublic();
 			byte[] clientNonce = clientActivation.generateActivationNonce();
-			byte[] c_devicePublicKey = clientActivation.encryptDevicePublicKey(devicePublicKey, activationOTP, activationIdShort, clientNonce);
+			byte[] c_devicePublicKey = clientActivation.encryptDevicePublicKey(
+					devicePublicKey, 
+					clientEphemeralKeyPair.getPrivate(), 
+					masterPublicKey, 
+					activationOTP, 
+					activationIdShort, 
+					clientNonce
+			);
 
 			// SERVER: Decrypt device public key
-			PublicKey decryptedDevicePublicKey = serverActivation.decryptDevicePublicKey(c_devicePublicKey, activationIdShort, activationOTP, clientNonce);
+			PublicKey decryptedDevicePublicKey = serverActivation.decryptDevicePublicKey(
+					c_devicePublicKey, 
+					activationIdShort, 
+					masterPrivateKey, 
+					clientEphemeralKeyPair.getPublic(), 
+					activationOTP, 
+					clientNonce
+			);
 			assertEquals(devicePublicKey, decryptedDevicePublicKey);
 
 			// SERVER: Encrypt and send encrypted server public and it's signature
@@ -148,12 +163,18 @@ public class PowerAuthActivationTest {
 		String activationIdShort = "IFA6F-3NPAZ";
 		byte[] activationNonce = BaseEncoding.base64().decode("grDwkvXrgfUdKBsqg0xYYw==");
 		byte[] publicKeyBytes = BaseEncoding.base64().decode("BJXfJMCANX+T9FzsG6Hi0KTYPN64i7HxMiWoMYPd17DYfBR+IwzOesTh/jj/B3trL9m3O1oODYil+8ssJzDt/QA=");
+		byte[] ephemeralPrivateKeyBytes = BaseEncoding.base64().decode("AKeMTtivK/XRiQPhfJYxAw1L62ah4lGTQ4JKqRrr0fnC");
+		byte[] masterPublicKey = BaseEncoding.base64().decode("BFOqvpLNi15eHDt8fkFxFe034Buw/i8gR3ax4fKiIQynt5K858oBBYhqLVH8FhNmMnlysnRd2UsPJSQxzoPhEn8=");
+		
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+		PrivateKey eph = keyConvertor.convertBytesToPrivateKey(ephemeralPrivateKeyBytes);
+		PublicKey mpk = keyConvertor.convertBytesToPublicKey(masterPublicKey);
 
 		PublicKey publicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(publicKeyBytes);
 		PowerAuthClientActivation activation = new PowerAuthClientActivation();
 
-		byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, activationOTP, activationIdShort, activationNonce);
-		assertArrayEquals(cDevicePublicKey, BaseEncoding.base64().decode("el8ZgYcenmCPsu2eITa4T/cmTwFxKbHRotmEW0veOyi81RSBPCy4n/WZTOFvvHdIM/IUwUyBTI8+xjKcQ9g14RUuwvnxwqbH3DoMEDWKAx8="));
+		byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, eph, mpk, activationOTP, activationIdShort, activationNonce);
+		assertArrayEquals(cDevicePublicKey, BaseEncoding.base64().decode("tnAyB0C5I9xblLlFCPONUT4GtABvutPkRvvx2oTeGIuUMAmUYTqJluKn/Zge+vbq+VArIVNYVTd+0yuBZGVtkkd1mTcc2eTDhqZSQJS6mMgmKeCqv64c6E4dm4INOkxh"));
 		
 	}
 

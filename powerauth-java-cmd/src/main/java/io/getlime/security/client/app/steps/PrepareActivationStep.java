@@ -97,11 +97,21 @@ public class PrepareActivationStep {
 
 		System.out.println("Activation ID Short: " + activationIdShort);
 		System.out.println("Activation OTP: " + activationOTP);
+		
+		// Generate device key pair and encrypt the device public key
+		KeyPair clientEphemeralKeyPair = keyGenerator.generateKeyPair();
 
 		// Generate device key pair and encrypt the device public key
 		KeyPair deviceKeyPair = activation.generateDeviceKeyPair();
 		byte[] nonceDeviceBytes = activation.generateActivationNonce();
-		byte[] cDevicePublicKeyBytes = activation.encryptDevicePublicKey(deviceKeyPair.getPublic(), activationOTP, activationIdShort, nonceDeviceBytes);
+		byte[] cDevicePublicKeyBytes = activation.encryptDevicePublicKey(
+				deviceKeyPair.getPublic(), 
+				clientEphemeralKeyPair.getPrivate(), 
+				masterPublicKey, 
+				activationOTP, 
+				activationIdShort, 
+				nonceDeviceBytes
+		);
 		byte[] signature = activation.computeApplicationSignature(
 				activationIdShort, 
 				nonceDeviceBytes, 
@@ -109,6 +119,7 @@ public class PrepareActivationStep {
 				BaseEncoding.base64().decode(applicationId), 
 				BaseEncoding.base64().decode(applicationSecret)
 		);
+		byte[] ephemeralPublicKeyBytes = keyConversion.convertPublicKeyToBytes(clientEphemeralKeyPair.getPublic());
 
 		// Prepare the server request
 		ActivationCreateRequest requestObject = new ActivationCreateRequest();
@@ -116,6 +127,7 @@ public class PrepareActivationStep {
 		requestObject.setApplicationKey(applicationId);
 		requestObject.setActivationName(activationName);
 		requestObject.setActivationNonce(BaseEncoding.base64().encode(nonceDeviceBytes));
+		requestObject.setEphemeralPublicKey(BaseEncoding.base64().encode(ephemeralPublicKeyBytes));
 		requestObject.setEncryptedDevicePublicKey(BaseEncoding.base64().encode(cDevicePublicKeyBytes));
 		requestObject.setApplicationSignature(BaseEncoding.base64().encode(signature));
 		PowerAuthAPIRequest<ActivationCreateRequest> body = new PowerAuthAPIRequest<>();

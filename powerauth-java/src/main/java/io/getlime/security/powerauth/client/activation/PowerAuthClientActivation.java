@@ -119,20 +119,24 @@ public class PowerAuthClientActivation {
 	 * Encrypt a device public key using the activation OTP.
 	 *
 	 * @param devicePublicKey Device public key to be encrypted.
+	 * @param clientEphemeralPrivateKey Ephemeral private key.
+	 * @param masterPublicKey Master public key.
 	 * @param activationOTP Activation OTP value.
 	 * @param activationIdShort Short activation ID.
 	 * @param activationNonce Activation nonce, used as an initialization vector for AES encryption.
 	 * @return An encrypted device public key.
 	 * @throws InvalidKeyException In case provided public key is invalid.
 	 */
-	public byte[] encryptDevicePublicKey(PublicKey devicePublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException {
+	public byte[] encryptDevicePublicKey(PublicKey devicePublicKey, PrivateKey clientEphemeralPrivateKey, PublicKey masterPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException {
 		try {
 			KeyGenerator keyGenerator = new KeyGenerator();
 			byte[] activationIdShortBytes = activationIdShort.getBytes("UTF-8");
 			SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
 			byte[] devicePubKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(devicePublicKey);
+			SecretKey ephemeralKey = keyGenerator.computeSharedKey(clientEphemeralPrivateKey, masterPublicKey);
 			AESEncryptionUtils aes = new AESEncryptionUtils();
-			return aes.encrypt(devicePubKeyBytes, activationNonce, otpBasedSymmetricKey);
+			byte[] tmpData = aes.encrypt(devicePubKeyBytes, activationNonce, otpBasedSymmetricKey);
+			return aes.encrypt(tmpData, activationNonce, ephemeralKey);
 		} catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException ex) {
 			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
 		}

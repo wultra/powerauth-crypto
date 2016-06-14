@@ -163,24 +163,42 @@ public class PowerAuthServerActivation {
      *
      * @param C_devicePublicKey Encrypted device public key.
      * @param activationIdShort Short activation ID.
+     * @param masterPrivateKey Server master private key.
+     * @param ephemeralPublicKey Ephemeral public key. 
      * @param activationOTP Activation OTP value.
      * @param activationNonce Activation nonce, used as an initialization vector
      * for AES encryption.
      * @return A decrypted public key.
      */
-    public PublicKey decryptDevicePublicKey(byte[] C_devicePublicKey, String activationIdShort, String activationOTP,
-            byte[] activationNonce) {
+    public PublicKey decryptDevicePublicKey(byte[] C_devicePublicKey, String activationIdShort, PrivateKey masterPrivateKey, PublicKey ephemeralPublicKey, String activationOTP, byte[] activationNonce) {
         try {
             // Derive longer key from short activation ID and activation OTP
             byte[] activationIdShortBytes = activationIdShort.getBytes("UTF-8");
-            SecretKey otpBasedSymmetricKey = new KeyGenerator().deriveSecretKeyFromPassword(activationOTP,
-                    activationIdShortBytes);
+            SecretKey otpBasedSymmetricKey = new KeyGenerator().deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
+            
+            if (ephemeralPublicKey != null) { // is an extra ephemeral key encryption included?
+            	
+            	// Compute ephemeral secret key
+            	KeyGenerator keyGenerator = new KeyGenerator();
+            	SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(masterPrivateKey, ephemeralPublicKey);
+            	
+            	// Decrypt device public key
+                AESEncryptionUtils aes = new AESEncryptionUtils();
+                byte[] decryptedTMP = aes.decrypt(C_devicePublicKey, activationNonce, ephemeralSymmetricKey);
+                byte[] decryptedPublicKeyBytes = aes.decrypt(decryptedTMP, activationNonce, otpBasedSymmetricKey);
+                PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
+                return devicePublicKey;
+                
+            } else { // extra encryption is not present, only OTP based key is used
+            	
+            	// Decrypt device public key
+                AESEncryptionUtils aes = new AESEncryptionUtils();
+                byte[] decryptedPublicKeyBytes = aes.decrypt(C_devicePublicKey, activationNonce, otpBasedSymmetricKey);
+                PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
+                return devicePublicKey;
+                
+            }
 
-            // Decrypt device public key
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] decryptedPublicKeyBytes = aes.decrypt(C_devicePublicKey, activationNonce, otpBasedSymmetricKey);
-            PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
-            return devicePublicKey;
         } catch (IllegalBlockSizeException | InvalidKeySpecException | BadPaddingException | InvalidKeyException | UnsupportedEncodingException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
         }

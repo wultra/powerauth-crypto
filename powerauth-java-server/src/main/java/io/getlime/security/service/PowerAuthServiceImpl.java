@@ -205,10 +205,11 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 			String activationNonceBase64 = request.getActivationNonce();
 			String cDevicePublicKeyBase64 = request.getEncryptedDevicePublicKey();
 			String activationName = request.getActivationName();
+			String ephemeralPublicKey = request.getEphemeralPublicKey();
 			String applicationId = request.getApplicationKey();
 			String applicationSignature = request.getApplicationSignature();
 			String extras = request.getExtras();
-			return activationServiceBehavior.prepareActivation(activationIdShort, activationNonceBase64, cDevicePublicKeyBase64, activationName, extras, applicationId, applicationSignature, keyConversionUtilities);
+			return activationServiceBehavior.prepareActivation(activationIdShort, activationNonceBase64, ephemeralPublicKey, cDevicePublicKeyBase64, activationName, extras, applicationId, applicationSignature, keyConversionUtilities);
 		} catch (IllegalArgumentException ex) {
 			Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
 			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0011);

@@ -169,11 +169,12 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
 	 * @param extras Additional, application specific information.
 	 * @return {@link PrepareActivationResponse}
 	 */
-	public PrepareActivationResponse prepareActivation(String activationIdShort, String activationName, String activationNonce, String cDevicePublicKey, String extras, String applicationKey, String applicationSignature) {
+	public PrepareActivationResponse prepareActivation(String activationIdShort, String activationName, String activationNonce, String ephemeralPublicKey, String cDevicePublicKey, String extras, String applicationKey, String applicationSignature) {
 		PrepareActivationRequest request = new PrepareActivationRequest();
 		request.setActivationIdShort(activationIdShort);
 		request.setActivationName(activationName);
 		request.setActivationNonce(activationNonce);
+		request.setEphemeralPublicKey(ephemeralPublicKey);
 		request.setEncryptedDevicePublicKey(cDevicePublicKey);
 		request.setExtras(extras);
 		request.setApplicationKey(applicationKey);

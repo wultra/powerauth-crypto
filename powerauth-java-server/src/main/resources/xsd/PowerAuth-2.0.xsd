@@ -276,6 +276,7 @@
                 <xs:element name="activationName" type="xs:string" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="extras" type="xs:string" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="activationNonce" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="ephemeralPublicKey" type="xs:string" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="encryptedDevicePublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="applicationSignature" type="xs:string" minOccurs="1" maxOccurs="1"/>

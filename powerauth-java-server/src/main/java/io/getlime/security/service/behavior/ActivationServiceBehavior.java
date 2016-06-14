@@ -391,6 +391,7 @@ public class ActivationServiceBehavior {
 	 * Prepare activation with given parameters
 	 * @param activationIdShort Short activation ID
 	 * @param activationNonceBase64 Activation nonce encoded as Base64
+	 * @param clientEphemeralPublicKeyBase64 Client ephemeral public key encoded as Base64
 	 * @param cDevicePublicKeyBase64 Encrypted device public key encoded as Base64
 	 * @param activationName Activation name
 	 * @param extras Extra parameter
@@ -403,7 +404,7 @@ public class ActivationServiceBehavior {
 	 * @throws InvalidKeyException If invalid key was provided
 	 * @throws UnsupportedEncodingException If UTF-8 is not supported on the system
 	 */
-	public PrepareActivationResponse prepareActivation(String activationIdShort, String activationNonceBase64, String cDevicePublicKeyBase64, String activationName, String extras, String applicationKey, String applicationSignature, CryptoProviderUtil keyConversionUtilities) throws GenericServiceException, InvalidKeySpecException, InvalidKeyException, UnsupportedEncodingException {
+	public PrepareActivationResponse prepareActivation(String activationIdShort, String activationNonceBase64, String clientEphemeralPublicKeyBase64, String cDevicePublicKeyBase64, String activationName, String extras, String applicationKey, String applicationSignature, CryptoProviderUtil keyConversionUtilities) throws GenericServiceException, InvalidKeySpecException, InvalidKeyException, UnsupportedEncodingException {
 
 		// Get current timestamp
 		Date timestamp = new Date();
@@ -428,11 +429,30 @@ public class ActivationServiceBehavior {
 		if (activation == null || (activation.getApplication().getId() != application.getId())) {
 			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0007);
 		}
+		
+		// Get master private key
+		String masterPrivateKeyBase64 = activation.getMasterKeyPair().getMasterKeyPrivateBase64();
+		byte[] masterPrivateKeyBytes = BaseEncoding.base64().decode(masterPrivateKeyBase64);
+		PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes);
+		
+		// Get client ephemeral public key
+		PublicKey clientEphemeralPublicKey = null;
+		if (clientEphemeralPublicKeyBase64 != null) { // additional encryption is used
+			byte[] clientEphemeralPublicKeyBytes = BaseEncoding.base64().decode(clientEphemeralPublicKeyBase64);
+			clientEphemeralPublicKey = keyConversionUtilities.convertBytesToPublicKey(clientEphemeralPublicKeyBytes);
+		}
 
 		// Decrypt the device public key
 		byte[] C_devicePublicKey = BaseEncoding.base64().decode(cDevicePublicKeyBase64);
 		byte[] activationNonce = BaseEncoding.base64().decode(activationNonceBase64);
-		PublicKey devicePublicKey = powerAuthServerActivation.decryptDevicePublicKey(C_devicePublicKey, activationIdShort, activation.getActivationOTP(), activationNonce);
+		PublicKey devicePublicKey = powerAuthServerActivation.decryptDevicePublicKey(
+				C_devicePublicKey,
+				activationIdShort,
+				masterPrivateKey,
+				clientEphemeralPublicKey,
+				activation.getActivationOTP(), 
+				activationNonce
+		);
 		byte[] applicationSignatureBytes = BaseEncoding.base64().decode(applicationSignature);
 		
 		if (!powerAuthServerActivation.validateApplicationSignature(
@@ -460,9 +480,6 @@ public class ActivationServiceBehavior {
 		PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
 		PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
 		byte[] ephemeralPublicKeyBytes = keyConversionUtilities.convertPublicKeyToBytes(ephemeralPublicKey);
-		String masterPrivateKeyBase64 = activation.getMasterKeyPair().getMasterKeyPrivateBase64();
-		byte[] masterPrivateKeyBytes = BaseEncoding.base64().decode(masterPrivateKeyBase64);
-		PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes);
 		String activationOtp = activation.getActivationOTP();
 
 		// Encrypt the public key

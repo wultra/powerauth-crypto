@@ -78,11 +78,13 @@ public class ActivationController {
 		String extras = request.getRequestObject().getExtras();
 		String applicationKey = request.getRequestObject().getApplicationKey();
 		String applicationSignature = request.getRequestObject().getApplicationSignature();
+		String clientEphemeralKey = request.getRequestObject().getEphemeralPublicKey();
 		
 		PrepareActivationResponse soapResponse = powerAuthClient.prepareActivation(
 				activationIDShort,
 				activationName,
 				activationNonce,
+				clientEphemeralKey,
 				cDevicePublicKey,
 				extras,
 				applicationKey,
