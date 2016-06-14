@@ -454,7 +454,9 @@ public class ActivationServiceBehavior {
 				activationNonce
 		);
 		
-		if (devicePublicKey == null) { // invalid key was sent, return error 
+		if (devicePublicKey == null) { // invalid key was sent, return error
+			activation.setActivationStatus(ActivationStatus.REMOVED);
+			powerAuthRepository.save(activation);
 			throw localizationProvider.buildExceptionForCode(ServiceError.ERR0009);
 		}
 		
