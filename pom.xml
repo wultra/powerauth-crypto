@@ -8,7 +8,7 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-parent</artifactId>
-	<version>${powerauth.version}</version>
+	<version>0.11.0</version>
 	<packaging>pom</packaging>
 
 	<parent>
@@ -72,7 +72,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		<powerauth.version>0.11.0</powerauth.version>
 	</properties>
 
 	<build>
