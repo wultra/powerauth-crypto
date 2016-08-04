@@ -6,6 +6,10 @@
     background-color: #001840;
 }
 
+.blue {
+    color: #0A7FEE !important;
+}
+
 .bg-purple {
     background-color: #C0007F !important;
 }
@@ -49,6 +53,12 @@
 
 .btn-mobile-full {
     margin-right: 10px;
+}
+
+.promo-image {
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid #EEE;
 }
 
 @media (max-width: 768px) {
