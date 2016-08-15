@@ -28,7 +28,7 @@ import io.getlime.security.powerauth.server.activation.PowerAuthServerActivation
 
 /**
  * Generate test vectors
- * 
+ *
  * @author Petr Dvorak
  *
  */
@@ -57,7 +57,7 @@ public class GenerateVectorDataTest {
 
 		System.out.println("## Verify Activation Data Signature");
 		System.out.println("[");
-		
+
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 		int max = 20;
@@ -92,18 +92,18 @@ public class GenerateVectorDataTest {
 	}
 
 	/**
-	 * Generate test data for public key encryption. 
+	 * Generate test data for public key encryption.
 	 * @throws Exception In case any unknown error occurs.
 	 */
 	@Test
 	public void testEncryptDevicePublicKey() throws Exception {
 		PowerAuthClientActivation activation = new PowerAuthClientActivation();
-		
+
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 		System.out.println("## Encrypt Device Public Key");
 		System.out.println("[");
-		
+
 		KeyPair masterKeyPair = new KeyGenerator().generateKeyPair();
 
 		int max = 20;
@@ -114,7 +114,7 @@ public class GenerateVectorDataTest {
 			PublicKey publicKey = new KeyGenerator().generateKeyPair().getPublic();
 			byte[] applicationKey = new KeyGenerator().generateRandomBytes(16);
 			byte[] applicationSecret = new KeyGenerator().generateRandomBytes(16);
-			
+
 			KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
 
 			byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, ephemeralKeyPair.getPrivate(), masterKeyPair.getPublic(), activationOTP, activationIdShort, activationNonce);
@@ -146,7 +146,7 @@ public class GenerateVectorDataTest {
 	}
 
 	/**
-	 * Generate test data for master key derivation. 
+	 * Generate test data for master key derivation.
 	 * @throws Exception In case any unknown error occurs.
 	 */
 	@Test
@@ -154,7 +154,7 @@ public class GenerateVectorDataTest {
 
 		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
 		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-		
+
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 		System.out.println("## Deduce Master Secret Key");
@@ -170,7 +170,7 @@ public class GenerateVectorDataTest {
 			System.out.println("        \"input\": {");
 			System.out.println("            \"devicePrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())) + "\",");
 			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(deviceKeyPair.getPublic())) + "\",");
-			System.out.println("            \"serverePrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(serverKeyPair.getPrivate())) + "\",");
+			System.out.println("            \"serverPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(serverKeyPair.getPrivate())) + "\",");
 			System.out.println("            \"serverPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverKeyPair.getPublic())) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
@@ -188,7 +188,7 @@ public class GenerateVectorDataTest {
 	}
 
 	/**
-	 * Generate test data for key derivation. 
+	 * Generate test data for key derivation.
 	 * @throws Exception In case any unknown error occurs.
 	 */
 	@Test
@@ -196,7 +196,7 @@ public class GenerateVectorDataTest {
 
 		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
 		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-		
+
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
 		System.out.println("## Derive Keys From Master Secret");
@@ -233,7 +233,7 @@ public class GenerateVectorDataTest {
 	}
 
 	/**
-	 * Generate test data for decrypting server public key. 
+	 * Generate test data for decrypting server public key.
 	 * @throws Exception In case any unknown error occurs.
 	 */
 	@Test
@@ -372,7 +372,7 @@ public class GenerateVectorDataTest {
 	}
 
 	/**
-	 * Generate test data for signature validation 
+	 * Generate test data for signature validation
 	 * @throws Exception In case any unknown error occurs.
 	 */
 	@Test
@@ -401,7 +401,7 @@ public class GenerateVectorDataTest {
 			PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
 			for (int i = 0; i < key_max; i++) {
-				
+
 				// compute data signature
 				SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
 				SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
@@ -454,7 +454,7 @@ public class GenerateVectorDataTest {
 					System.out.println("    },");
 
 				}
-				
+
 				for (int ctr = 0; ctr < ctr_max; ctr++) {
 
 					// generate random data
