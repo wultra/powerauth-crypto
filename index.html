@@ -30,7 +30,7 @@
     <meta property="og:type" content="article" />
     <meta property="og:url" content="http://www.powerauth.com/" />
     <meta property="og:image" content="http://www.powerauth.com/images/social.png?version=2016-06-05" />
-    <meta property="og:description" content="Open-source solution for authentication in mobile and Internet banking." />
+    <meta property="og:description" content="Open-source solution for authentication in mobile banking, Internet banking and fintech apps." />
 
     <link rel="stylesheet" href="css/animate.css">
     <link rel="stylesheet" href="css/icomoon.css">
@@ -84,8 +84,8 @@
                         <div class="col-md-7 col-sm-7 col-xs-12">
                             <div class="fh5co-owl-text-wrap">
                                 <div class="fh5co-owl-text">
-                                    <h1 class="fh5co-lead to-animate">Secure your banking</h1>
-                                    <h2 class="fh5co-sub-lead to-animate">Open-source solution for authentication in mobile and Internet banking.</h2>
+                                    <h1 class="fh5co-lead to-animate">Security for your<br/><span id="typed-solutions"></span></h1>
+                                    <h2 class="fh5co-sub-lead to-animate">Open-source solution for authentication, secure storage and end-to-end encryption on mobile.</h2>
                                         <p class="to-animate-2">
                                             <a href="#" data-nav-section="contact" data-nav-slow-animate="true" class="btn btn-primary btn-lg bg-purple btn-mobile-full">
                                                 Contact us
@@ -386,7 +386,7 @@
                                 <li class="hidden-xs">&nbsp;</li>
                                 <li class="hidden-xs">&nbsp;</li>
                             </ul>
-                            <a href="https://lime.recurly.com/subscribe/powerauth-basic" class="btn btn-default btn-sm">Order support</a>
+                            <a href="#contact" data-nav-section="contact" class="btn btn-default btn-sm">Contact us</a>
                         </div>
                     </div>
                     <div class="clearfix visible-sm-block"></div>
@@ -408,7 +408,7 @@
                                 <li class="hidden-xs">&nbsp;</li>
                                 <li class="hidden-xs">&nbsp;</li>
                             </ul>
-                            <a href="https://lime.recurly.com/subscribe/powerauth-standard" class="btn btn-primary btn-sm">Order support</a>
+                            <a href="#contact" data-nav-section="contact" class="btn btn-default btn-primary btn-sm">Contact us</a>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-3 col-sm-6">
@@ -428,7 +428,7 @@
                                 <li>Free QR Token customization</li>
                                 <li>Integration audit</li>
                             </ul>
-                            <a href="https://lime.recurly.com/subscribe/powerauth-goliath" class="btn btn-default btn-sm">Order support</a>
+                            <a href="#contact" data-nav-section="contact" class="btn btn-default btn-sm">Contact us</a>
                         </div>
                     </div>
 
@@ -446,7 +446,7 @@
                             <div class="row">
                                 <div class="subtext col-md-8 col-md-offset-2">
                                     <h3>
-                                        Drop us a quick message and we will get in touch with you within one business day.
+                                        Do you need to talk to a tech expert or a sales person? Drop us a quick message and we will get in touch with you within one business day.
                                     </h3>
                                 </div>
                             </div>
@@ -514,6 +514,7 @@
         <script src="js/bootstrap.min.js"></script>
         <script src="js/jquery.waypoints.min.js"></script>
         <script src="js/owl.carousel.min.js"></script>
+        <script src="js/typed.min.js"></script>
         <script src="js/main.js"></script>
         <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -523,7 +524,17 @@
 
         ga('create', 'UA-54778052-6', 'auto');
         ga('send', 'pageview');
-
+        </script>
+        <script type="text/javascript">
+        $(function(){
+            $("#typed-solutions").typed({
+                strings: ["mobile banking", "Internet banking", "fintech apps", "enterprise apps"],
+                loop: true,
+                typeSpeed: 20,
+                startDelay: 500,
+                backDelay: 2000
+            });
+        });
         </script>
 
     </body>
