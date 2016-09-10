@@ -18,7 +18,7 @@ package io.getlime.rest.api.configuration;
 import io.getlime.rest.api.security.annotation.PowerAuthInterceptor;
 import io.getlime.rest.api.security.annotation.PowerAuthWebArgumentResolver;
 import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
