@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,6 @@
  */
 package io.getlime.security.powerauth.lib.provider;
 
-import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
@@ -35,22 +24,30 @@ import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.math.BigInteger;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Crypto provider based on BouncyCastle crypto provider.
- * 
+ *
  * @author Petr Dvorak
  *
  */
 public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
-	
-	/**
-	 * Get the provider name, for example "BC" for Bouncy Castle.
-	 * @return Name of the provider, for example "BC" for Boucy Castle.
-	 */
-	@Override
-	public String getProviderName() {
-		return "BC";
-	}
+
+    /**
+     * Get the provider name, for example "BC" for Bouncy Castle.
+     * @return Name of the provider, for example "BC" for Boucy Castle.
+     */
+    @Override
+    public String getProviderName() {
+        return "BC";
+    }
 
     /**
      * Converts an EC public key to a byte array by encoding Q point parameter.
@@ -59,7 +56,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @return A byte array representation of the EC public key.
      */
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) {
-        return ((ECPublicKey)publicKey).getQ().getEncoded(false);
+        return ((ECPublicKey) publicKey).getQ().getEncoded(false);
     }
 
     /**
@@ -76,6 +73,9 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
 
             ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
+            if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
+                return null;
+            }
             ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
             ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
 
@@ -141,7 +141,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @return An instance of the secret key by decoding from provided bytes.
      */
     public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) {
-    	return new SecretKeySpec(bytesSecretKey, "AES/ECB/NoPadding");
+        return new SecretKeySpec(bytesSecretKey, "AES/ECB/NoPadding");
     }
 
 }

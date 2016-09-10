@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,26 +15,25 @@
  */
 package io.getlime.security.service.util;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Utility class used for conversion between model data types.
- * 
+ *
  * @author Petr Dvorak
  *
  */
 public class ModelUtil {
 
-	/**
-	 * Convert between activation status repository and SOAP service enum.
-	 * @param repositoryStatus Repository status representation.
-	 * @return SOAP service status representation.
-	 */
+    /**
+     * Convert between activation status repository and SOAP service enum.
+     * @param repositoryStatus Repository status representation.
+     * @return SOAP service status representation.
+     */
     public static io.getlime.security.powerauth.ActivationStatus toServiceStatus(
             io.getlime.security.repository.model.ActivationStatus repositoryStatus) {
         switch (repositoryStatus) {
@@ -51,7 +50,7 @@ public class ModelUtil {
         }
         return io.getlime.security.powerauth.ActivationStatus.REMOVED;
     }
-    
+
     /**
      * Convert between Date and XMLGregorianCalendar.
      * @param date Date instance
@@ -59,15 +58,15 @@ public class ModelUtil {
      * @throws DatatypeConfigurationException In case data conversion fails
      */
     public static XMLGregorianCalendar calendarWithDate(Date date) throws DatatypeConfigurationException {
-    	if (date == null) {
-    		return null;
-    	}
-    	GregorianCalendar c = new GregorianCalendar();
-    	c.setTime(date);
-    	XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-    	return date2;
+        if (date == null) {
+            return null;
+        }
+        GregorianCalendar c = new GregorianCalendar();
+        c.setTime(date);
+        XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+        return date2;
     }
-    
+
     /**
      * Convert between Date and XMLGregorianCalendar.
      * @param calendar XMLGregorianCalendar instance
@@ -75,10 +74,10 @@ public class ModelUtil {
      * @throws DatatypeConfigurationException In case data conversion fails
      */
     public static Date dateWithCalendar(XMLGregorianCalendar calendar) throws DatatypeConfigurationException {
-    	if (calendar == null) {
-    		return null;
-    	}
-    	return calendar.toGregorianCalendar().getTime();
+        if (calendar == null) {
+            return null;
+        }
+        return calendar.toGregorianCalendar().getTime();
     }
 
 }

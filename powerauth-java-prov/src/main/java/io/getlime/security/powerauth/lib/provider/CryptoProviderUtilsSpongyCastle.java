@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 package io.getlime.security.powerauth.lib.provider;
-
-import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.spongycastle.jce.ECNamedCurveTable;
 import org.spongycastle.jce.interfaces.ECPrivateKey;
@@ -36,22 +24,30 @@ import org.spongycastle.jce.spec.ECPrivateKeySpec;
 import org.spongycastle.jce.spec.ECPublicKeySpec;
 import org.spongycastle.math.ec.ECPoint;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.math.BigInteger;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Crypto provider based on SpongyCastle crypto provider.
- * 
+ *
  * @author Petr Dvorak
  *
  */
 public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
-	
-	/**
-	 * Get the provider name, for example "BC" for Bouncy Castle.
-	 * @return Name of the provider, for example "BC" for Boucy Castle.
-	 */
-	@Override
-	public String getProviderName() {
-		return "SC";
-	}
+
+    /**
+     * Get the provider name, for example "BC" for Bouncy Castle.
+     * @return Name of the provider, for example "BC" for Boucy Castle.
+     */
+    @Override
+    public String getProviderName() {
+        return "SC";
+    }
 
     /**
      * Converts an EC public key to a byte array by encoding Q point parameter.
@@ -59,9 +55,9 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param publicKey An EC public key to be converted.
      * @return A byte array representation of the EC public key.
      */
-	@Override
+    @Override
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) {
-        return ((ECPublicKey)publicKey).getQ().getEncoded(false);
+        return ((ECPublicKey) publicKey).getQ().getEncoded(false);
     }
 
     /**
@@ -73,12 +69,15 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @throws InvalidKeySpecException When provided bytes are not a correct key
      * representation.
      */
-	@Override
+    @Override
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException {
         try {
             KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
 
             ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
+            if (ecSpec == null) { // can happen with incorrectly initialized crypto provider
+                return null;
+            }
             ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
             ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
 
@@ -96,7 +95,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param privateKey An EC private key to be converted to bytes.
      * @return A byte array containing the representation of the EC private key.
      */
-	@Override
+    @Override
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
         byte[] pkBytes = ((ECPrivateKey) privateKey).getD().toByteArray();
         return pkBytes;
@@ -111,7 +110,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @throws InvalidKeySpecException The provided key bytes are not a valid EC
      * private key.
      */
-	@Override
+    @Override
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException {
         try {
             KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
@@ -134,7 +133,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param sharedSecretKey A shared key to be converted to bytes.
      * @return A byte array representation of the shared secret key.
      */
-	@Override
+    @Override
     public byte[] convertSharedSecretKeyToBytes(SecretKey sharedSecretKey) {
         return sharedSecretKey.getEncoded();
     }
@@ -146,9 +145,9 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param bytesSecretKey Bytes representing the shared key.
      * @return An instance of the secret key by decoding from provided bytes.
      */
-	@Override
+    @Override
     public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) {
-    	return new SecretKeySpec(bytesSecretKey, "AES/ECB/NoPadding");
+        return new SecretKeySpec(bytesSecretKey, "AES/ECB/NoPadding");
     }
 
 }

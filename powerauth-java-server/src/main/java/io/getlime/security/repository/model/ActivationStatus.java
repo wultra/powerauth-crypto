@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,13 @@ import io.getlime.security.service.PowerAuthService;
 
 /**
  * Enum representing possible activation states. Following values are supported:
- * 
+ *
  * - CREATED = 1
  * - OTP_USED = 2
  * - ACTIVE = 3
  * - BLOCKED = 4
  * - REMOVED = 5
- * 
+ *
  * @author Petr Dvorak
  *
  */
@@ -36,14 +36,14 @@ public enum ActivationStatus {
      * {@link PowerAuthService#initActivation(io.getlime.security.powerauth.InitActivationRequest)}.
      */
     CREATED((byte) 1),
-    
+
     /**
      * OTP_USED - status right after PowerAuth 2.0 Server receives PowerAuth 2.0 Client public
      * key, via {@link PowerAuthService#prepareActivation(io.getlime.security.powerauth.PrepareActivationRequest)}
      * method. 
      */
     OTP_USED((byte) 2),
-    
+
     /**
      * ACTIVE - status after the activation record was committed by calling
      * {@link PowerAuthService#commitActivation(io.getlime.security.powerauth.CommitActivationRequest)},
@@ -51,14 +51,14 @@ public enum ActivationStatus {
      * {@link PowerAuthService#unblockActivation(io.getlime.security.powerauth.UnblockActivationRequest)}.
      */
     ACTIVE((byte) 3),
-    
+
     /**
      * BLOCKED - status after the activation record was blocked by calling
      * {@link PowerAuthService#blockActivation(io.getlime.security.powerauth.BlockActivationRequest)} or
      * after too many authentication failed attempt occurred.
      */
     BLOCKED((byte) 4),
-    
+
     /**
      * REMOVED - status after the activation record was removed by calling
      * {@link PowerAuthService#removeActivation(io.getlime.security.powerauth.RemoveActivationRequest)}.

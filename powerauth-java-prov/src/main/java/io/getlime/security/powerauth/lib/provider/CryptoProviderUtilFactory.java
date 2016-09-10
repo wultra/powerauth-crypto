@@ -4,7 +4,7 @@ import java.security.Security;
 
 /**
  * Factory class for building the correct crypto provider instances.
- * 
+ *
  * @author Tomáš Vondráček (tomas.vondracek@gmail.com)
  */
 public final class CryptoProviderUtilFactory {
@@ -13,6 +13,7 @@ public final class CryptoProviderUtilFactory {
 
     /**
      * Return shared (singleton) instance of crypto provider utilities.
+     *
      * @return Crypto provider utilities.
      */
     public static synchronized CryptoProviderUtil getCryptoProviderUtils() {
