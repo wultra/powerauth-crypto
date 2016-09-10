@@ -52,12 +52,12 @@ public class SignatureUtils {
      */
     public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, SignatureException {
         try {
-            Signature ecdsa = Signature.getInstance("SHA256withECDSA");
+            Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             ecdsa.initSign(masterPrivateKey);
             ecdsa.update(bytes);
             byte[] signature = ecdsa.sign();
             return signature;
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(SignatureUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
