@@ -36,12 +36,12 @@ import java.util.logging.Logger;
  * Crypto provider based on SpongyCastle crypto provider.
  *
  * @author Petr Dvorak
- *
  */
 public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
 
     /**
      * Get the provider name, for example "BC" for Bouncy Castle.
+     *
      * @return Name of the provider, for example "BC" for Boucy Castle.
      */
     @Override
@@ -67,7 +67,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param keyBytes Bytes to be converted to EC public key.
      * @return An instance of the EC public key on success, or null on failure.
      * @throws InvalidKeySpecException When provided bytes are not a correct key
-     * representation.
+     *                                 representation.
      */
     @Override
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException {
@@ -108,7 +108,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      * @param keyBytes Bytes to be converted to the EC private key.
      * @return An instance of EC private key decoded from the input bytes.
      * @throws InvalidKeySpecException The provided key bytes are not a valid EC
-     * private key.
+     *                                 private key.
      */
     @Override
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException {

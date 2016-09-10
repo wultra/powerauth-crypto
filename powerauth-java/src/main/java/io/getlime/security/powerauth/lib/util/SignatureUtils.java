@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,27 +15,20 @@
  */
 package io.getlime.security.powerauth.lib.util;
 
-import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.crypto.SecretKey;
-
 import com.google.common.base.Joiner;
-
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 
+import javax.crypto.SecretKey;
+import java.nio.ByteBuffer;
+import java.security.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Utility class for signature calculation and validation used both on client and server.
- *  
+ *
  * @author Petr Dvorak
  *
  */
@@ -94,41 +87,41 @@ public class SignatureUtils {
      * @param signatureKeys Keys for computing the signature.
      * @param counter Counter / derived key index.
      * @return PowerAuth 2.0 signature for given data.
-     * 
+     *
      */
     public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, long counter) {
-    	// Prepare a hash
-    	HMACHashUtilities hmac = new HMACHashUtilities();
-    	
-    	// Prepare a counter
+        // Prepare a hash
+        HMACHashUtilities hmac = new HMACHashUtilities();
+
+        // Prepare a counter
         byte[] ctr = ByteBuffer.allocate(16).putLong(8, counter).array();
 
         // Prepare holder for signature components
         String[] signatureComponents = new String[signatureKeys.size()];
-        
+
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-            
+
         for (int i = 0; i < signatureKeys.size(); i++) {
-           	byte[] signatureKey = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(i));
-           	byte[] derivedKey = hmac.hash(signatureKey, ctr);
-           	
-           	for (int j = 0; j < i; j++) {
-           		byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
-            	byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctr);
+            byte[] signatureKey = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(i));
+            byte[] derivedKey = hmac.hash(signatureKey, ctr);
+
+            for (int j = 0; j < i; j++) {
+                byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
+                byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctr);
                 derivedKey = hmac.hash(derivedKeyInner, derivedKey);
             }
-            	
+
             byte[] signatureLong = hmac.hash(derivedKey, data);
-            	
+
             if (signatureLong.length < 4) { // assert
                 throw new IndexOutOfBoundsException();
             }
             int index = signatureLong.length - 4;
             int number = (ByteBuffer.wrap(signatureLong).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.SIGNATURE_LENGTH));
             String signature = String.format("%0" + PowerAuthConfiguration.SIGNATURE_LENGTH + "d", number);
-        	signatureComponents[i] = signature;
+            signatureComponents[i] = signature;
         }
-        
+
         return Joiner.on("-").join(signatureComponents);
     }
 

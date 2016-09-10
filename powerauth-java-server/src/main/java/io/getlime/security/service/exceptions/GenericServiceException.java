@@ -22,7 +22,6 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
  * Exception for any SOAP interface error.
  *
  * @author Petr Dvorak
- *
  */
 @SoapFault(faultCode = FaultCode.SERVER)
 public class GenericServiceException extends Exception {
@@ -35,8 +34,9 @@ public class GenericServiceException extends Exception {
 
     /**
      * Constructor with error code and error message
-     * @param code Error code
-     * @param message Error message
+     *
+     * @param code             Error code
+     * @param message          Error message
      * @param localizedMessage Localized error message
      */
     public GenericServiceException(String code, String message, String localizedMessage) {
@@ -48,6 +48,7 @@ public class GenericServiceException extends Exception {
 
     /**
      * Get the error code
+     *
      * @return Error code
      */
     public String getCode() {
@@ -56,6 +57,7 @@ public class GenericServiceException extends Exception {
 
     /**
      * Get the error message
+     *
      * @param code Error message
      */
     public void setCode(String code) {

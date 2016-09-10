@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,42 +17,43 @@ package io.getlime.rest.api.model;
 
 /**
  * Generic class for all PowerAuth RESTful API Requests.
- * 
+ *
  * @author Petr Dvorak
  *
  * @param <T> Type used as a request object in the request.
  */
 public class PowerAuthAPIRequest<T> {
-	
-	private T requestObject;
-	
-	/**
-	 * Default constructor
-	 */
-	public PowerAuthAPIRequest() {
+
+    private T requestObject;
+
+    /**
+     * Default constructor
+     */
+    public PowerAuthAPIRequest() {
     }
-	
-	/**
-	 * Constructor with a given request object
-	 * @param requestObject Request object
-	 */
-	public PowerAuthAPIRequest(T requestObject) {
-		this.requestObject = requestObject;
-	}
-	
-	/**
-	 * Get request object
-	 * @return Request object
-	 */
-	public T getRequestObject() {
-		return requestObject;
-	}
-	/**
-	 * Set request object
-	 * @param requestObject Request object
-	 */
-	public void setRequestObject(T requestObject) {
-		this.requestObject = requestObject;
-	}
+
+    /**
+     * Constructor with a given request object
+     * @param requestObject Request object
+     */
+    public PowerAuthAPIRequest(T requestObject) {
+        this.requestObject = requestObject;
+    }
+
+    /**
+     * Get request object
+     * @return Request object
+     */
+    public T getRequestObject() {
+        return requestObject;
+    }
+
+    /**
+     * Set request object
+     * @param requestObject Request object
+     */
+    public void setRequestObject(T requestObject) {
+        this.requestObject = requestObject;
+    }
 
 }

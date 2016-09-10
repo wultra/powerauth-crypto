@@ -31,7 +31,6 @@ import org.springframework.xml.xsd.XsdSchema;
  * PowerAuth 2.0 Server default web service configuration.
  *
  * @author Petr Dvorak
- *
  */
 @EnableWs
 @Configuration
@@ -39,6 +38,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
     /**
      * Map the SOAP interface to ${CONTEXT_PATH}/soap path.
+     *
      * @param applicationContext Application context.
      * @return New servlet registration with correct context.
      */
@@ -53,6 +53,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     /**
      * Specify SOAP service parameters from WSDL file. Map service WSDP to
      * ${CONTEXT_PATH}/soap/service.wsdl address.
+     *
      * @param powerAuthSchema XSD schema with PowerAuth service objects.
      * @return WSDL definition.
      */

@@ -30,7 +30,6 @@ import java.util.List;
  * order).
  *
  * @author Petr Dvorak
- *
  */
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {

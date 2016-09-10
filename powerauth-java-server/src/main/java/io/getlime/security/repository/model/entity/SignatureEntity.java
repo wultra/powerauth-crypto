@@ -27,7 +27,6 @@ import java.util.Objects;
  * Entity representing a single signature audit log.
  *
  * @author Petr Dvorak
- *
  */
 @Entity(name = "pa_signature_audit")
 public class SignatureEntity implements Serializable {
@@ -76,16 +75,17 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Constructor with all properties.
-     * @param id Signature audit item record ID.
-     * @param activation Associated activation, or null of no related activation was found.
+     *
+     * @param id                Signature audit item record ID.
+     * @param activation        Associated activation, or null of no related activation was found.
      * @param activationCounter Activation counter at the time of signature computation attempt, or 0 if activation is null.
-     * @param activationStatus Activation status at the time of signature computation attempt.
-     * @param dataBase64 Data that were sent alongside the signature.
-     * @param signatureType Requested signature type.
-     * @param signature Signature value.
-     * @param note Signature audit log note, with more information about the log reason.
-     * @param valid True if the signature was valid, false otherwise.
-     * @param timestampCreated Created timestapm.
+     * @param activationStatus  Activation status at the time of signature computation attempt.
+     * @param dataBase64        Data that were sent alongside the signature.
+     * @param signatureType     Requested signature type.
+     * @param signature         Signature value.
+     * @param note              Signature audit log note, with more information about the log reason.
+     * @param valid             True if the signature was valid, false otherwise.
+     * @param timestampCreated  Created timestapm.
      */
     public SignatureEntity(Long id, ActivationRecordEntity activation, Long activationCounter, ActivationStatus activationStatus, String dataBase64, String signatureType, String signature, String note, Boolean valid, Date timestampCreated) {
         super();
@@ -103,6 +103,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get record ID.
+     *
      * @return Record ID.
      */
     public Long getId() {
@@ -111,6 +112,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set record ID.
+     *
      * @param id Record ID.
      */
     public void setId(Long id) {
@@ -119,6 +121,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get related activation.
+     *
      * @return Related activation.
      */
     public ActivationRecordEntity getActivation() {
@@ -127,6 +130,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set related activation.
+     *
      * @param activation Related activation.
      */
     public void setActivation(ActivationRecordEntity activation) {
@@ -135,6 +139,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get activation counter value.
+     *
      * @return Activation counter value.
      */
     public Long getActivationCounter() {
@@ -143,6 +148,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set activation counter value.
+     *
      * @param activationCounter Activation counter value.
      */
     public void setActivationCounter(Long activationCounter) {
@@ -151,6 +157,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get activation status.
+     *
      * @return Activation status.
      */
     public ActivationStatus getActivationStatus() {
@@ -159,6 +166,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set activation status.
+     *
      * @param activationStatus Activation status.
      */
     public void setActivationStatus(ActivationStatus activationStatus) {
@@ -167,6 +175,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get Base64 encoded data that entered the signature.
+     *
      * @return Base64 encoded data that entered the signature.
      */
     public String getDataBase64() {
@@ -175,6 +184,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set Base64 encoded data that entered the signature.
+     *
      * @param dataBase64 Base64 encoded data that entered the signature.
      */
     public void setDataBase64(String dataBase64) {
@@ -183,6 +193,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get signature audit record note.
+     *
      * @return Signature audit record note.
      */
     public String getNote() {
@@ -191,6 +202,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set signature audit record note.
+     *
      * @param note Signature audit record note.
      */
     public void setNote(String note) {
@@ -199,6 +211,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get signature type.
+     *
      * @return Signature type.
      */
     public String getSignatureType() {
@@ -207,6 +220,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set signature type.
+     *
      * @param signatureType Signature type.
      */
     public void setSignatureType(String signatureType) {
@@ -215,6 +229,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get signature.
+     *
      * @return Signature.
      */
     public String getSignature() {
@@ -223,6 +238,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set signature.
+     *
      * @param signature Signature.
      */
     public void setSignature(String signature) {
@@ -231,6 +247,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get if the signature was valid or not.
+     *
      * @return Signature evaluation result.
      */
     public Boolean getValid() {
@@ -239,6 +256,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set value based on if the signature was valid or not.
+     *
      * @param valid Signature evaluation result.
      */
     public void setValid(Boolean valid) {
@@ -247,6 +265,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Get created timestamp.
+     *
      * @return Created timestamp.
      */
     public Date getTimestampCreated() {
@@ -255,6 +274,7 @@ public class SignatureEntity implements Serializable {
 
     /**
      * Set created timestamp.
+     *
      * @param timestampCreated Created timestamp.
      */
     public void setTimestampCreated(Date timestampCreated) {

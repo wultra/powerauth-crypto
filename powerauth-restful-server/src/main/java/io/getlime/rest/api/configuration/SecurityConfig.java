@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,34 +15,33 @@
  */
 package io.getlime.rest.api.configuration;
 
+import io.getlime.rest.api.security.entrypoint.PowerAuthApiAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-import io.getlime.rest.api.security.entrypoint.PowerAuthApiAuthenticationEntryPoint;
-
 /**
  * Spring Security default configuration maps the default "entry-point" to all
  * end-points on /secured/** context path, disables HTTP basic and disables CSRF.
- *  
+ *
  * @author Petr Dvorak
  *
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    
+
     @Autowired
     private PowerAuthApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-    	http.authorizeRequests().antMatchers("/secured/**").fullyAuthenticated();
-    	http.httpBasic().disable();
-    	http.csrf().disable();
-    	http.exceptionHandling().authenticationEntryPoint(apiAuthenticationEntryPoint);
+        http.authorizeRequests().antMatchers("/secured/**").fullyAuthenticated();
+        http.httpBasic().disable();
+        http.csrf().disable();
+        http.exceptionHandling().authenticationEntryPoint(apiAuthenticationEntryPoint);
     }
 
 }

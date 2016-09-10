@@ -20,9 +20,8 @@ import javax.validation.constraints.NotNull;
 /**
  * Base class for RESTful request object.
  *
+ * @param <T> Type of the request object instance.
  * @author Petr Dvorak
- *
- * @param <T> Type of the request object instance. 
  */
 public class RESTRequestWrapper<T> {
 
@@ -37,6 +36,7 @@ public class RESTRequestWrapper<T> {
 
     /**
      * Constructor with a correctly typed request object instance.
+     *
      * @param requestObject Request object.
      */
     public RESTRequestWrapper(@NotNull T requestObject) {
@@ -45,6 +45,7 @@ public class RESTRequestWrapper<T> {
 
     /**
      * Get request object.
+     *
      * @return Request object.
      */
     @NotNull
@@ -54,6 +55,7 @@ public class RESTRequestWrapper<T> {
 
     /**
      * Set request object.
+     *
      * @param requestObject Request object.
      */
     public void setRequestObject(T requestObject) {

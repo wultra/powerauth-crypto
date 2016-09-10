@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,23 +15,7 @@
  */
 package io.getlime.rest.api.security.provider;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.stereotype.Component;
-
 import com.google.common.io.BaseEncoding;
-
-import javax.servlet.http.HttpServletRequest;
-
 import io.getlime.powerauth.soap.VerifySignatureRequest;
 import io.getlime.powerauth.soap.VerifySignatureResponse;
 import io.getlime.rest.api.security.application.PowerAuthApplicationConfiguration;
@@ -43,198 +27,211 @@ import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import io.getlime.security.soap.client.PowerAuthServiceClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implementation of PowerAuth authentication provider.
- * 
+ *
  * @author Petr Dvorak
  *
  */
 @Component
 public class PowerAuthAuthenticationProvider implements AuthenticationProvider {
 
-	@Autowired
-	private PowerAuthServiceClient powerAuthClient;
+    @Autowired
+    private PowerAuthServiceClient powerAuthClient;
 
-	@Autowired(required=false)
-	private PowerAuthApplicationConfiguration applicationConfiguration;
+    @Autowired(required = false)
+    private PowerAuthApplicationConfiguration applicationConfiguration;
 
-	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-		PowerAuthAuthentication powerAuthAuthentication = (PowerAuthAuthentication) authentication;
+        PowerAuthAuthentication powerAuthAuthentication = (PowerAuthAuthentication) authentication;
 
-		VerifySignatureRequest soapRequest = new VerifySignatureRequest();
-		soapRequest.setActivationId(powerAuthAuthentication.getActivationId());
-		soapRequest.setApplicationKey(powerAuthAuthentication.getApplicationKey());
-		soapRequest.setSignature(powerAuthAuthentication.getSignature());
-		soapRequest.setSignatureType(powerAuthAuthentication.getSignatureType());
-		try {
-			String payload = PowerAuthHttpBody.getSignatureBaseString(
-					powerAuthAuthentication.getHttpMethod(),
-					powerAuthAuthentication.getRequestUri(),
-					powerAuthAuthentication.getNonce(),
-					powerAuthAuthentication.getData()
-			);
-			soapRequest.setData(payload);
-		} catch (UnsupportedEncodingException ex) {
-			Logger.getLogger(PowerAuthAuthenticationProvider.class.getName()).log(Level.SEVERE, null, ex);
-			return null;
-		}
-		
-		VerifySignatureResponse soapResponse = powerAuthClient.verifySignature(soapRequest);
+        VerifySignatureRequest soapRequest = new VerifySignatureRequest();
+        soapRequest.setActivationId(powerAuthAuthentication.getActivationId());
+        soapRequest.setApplicationKey(powerAuthAuthentication.getApplicationKey());
+        soapRequest.setSignature(powerAuthAuthentication.getSignature());
+        soapRequest.setSignatureType(powerAuthAuthentication.getSignatureType());
+        try {
+            String payload = PowerAuthHttpBody.getSignatureBaseString(
+                    powerAuthAuthentication.getHttpMethod(),
+                    powerAuthAuthentication.getRequestUri(),
+                    powerAuthAuthentication.getNonce(),
+                    powerAuthAuthentication.getData()
+            );
+            soapRequest.setData(payload);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(PowerAuthAuthenticationProvider.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
 
-		if (soapResponse.isSignatureValid()) {
-			PowerAuthApiAuthentication apiAuthentication = new PowerAuthApiAuthentication();
-			apiAuthentication.setActivationId(soapResponse.getActivationId());
-			apiAuthentication.setUserId(soapResponse.getUserId());
-			apiAuthentication.setAuthenticated(true);
-			return apiAuthentication;
-		} else {
-			return null;
-		}
-	}
+        VerifySignatureResponse soapResponse = powerAuthClient.verifySignature(soapRequest);
 
-	@Override
-	public boolean supports(Class<?> authentication) {
-		if (authentication == PowerAuthAuthentication.class) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Validate the signature from the PowerAuth 2.0 HTTP header against the provided HTTP method, request body and URI identifier.
-	 * Make sure to accept only allowed signatures.
-	 * @param httpMethod HTTP method (GET, POST, ...)
-	 * @param httpBody Body of the HTTP request.
-	 * @param requestUriIdentifier Request URI identifier.
-	 * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
-	 * @param allowedSignatureTypes Allowed types of the signature.
-	 * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-	 * @throws Exception In case authorization fails, exception is raised.
-	 */
-	public PowerAuthApiAuthentication validateRequestSignature(String httpMethod, byte[] httpBody, String requestUriIdentifier, String httpAuthorizationHeader, List<PowerAuthSignatureTypes> allowedSignatureTypes) throws Exception {
+        if (soapResponse.isSignatureValid()) {
+            PowerAuthApiAuthentication apiAuthentication = new PowerAuthApiAuthentication();
+            apiAuthentication.setActivationId(soapResponse.getActivationId());
+            apiAuthentication.setUserId(soapResponse.getUserId());
+            apiAuthentication.setAuthenticated(true);
+            return apiAuthentication;
+        } else {
+            return null;
+        }
+    }
 
-		// Check for HTTP PowerAuth signature header
-		if (httpAuthorizationHeader == null || httpAuthorizationHeader.equals("undefined")) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
-		}
+    @Override
+    public boolean supports(Class<?> authentication) {
+        if (authentication == PowerAuthAuthentication.class) {
+            return true;
+        }
+        return false;
+    }
 
-		// Parse HTTP header
-		Map<String, String> httpHeaderInfo = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(httpAuthorizationHeader);
-		
-		// Check if the parsing was successful
-		if (httpHeaderInfo == null) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
-		}
-		
-		// Fetch HTTP header attributes
-		String activationId = httpHeaderInfo.get(PowerAuthHttpHeader.ACTIVATION_ID);
-		if (activationId == null) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_ACTIVATION_ID_EMPTY");
-		}
-		String nonce = httpHeaderInfo.get(PowerAuthHttpHeader.NONCE);
-		if (nonce == null) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_NONCE_EMPTY");
-		}
-		String signatureType = httpHeaderInfo.get(PowerAuthHttpHeader.SIGNATURE_TYPE);
-		if (signatureType == null) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_TYPE_EMPTY");
-		}
-		String signature = httpHeaderInfo.get(PowerAuthHttpHeader.SIGNATURE);
-		if (signature == null) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_EMPTY");
-		}
-		String applicationId = httpHeaderInfo.get(PowerAuthHttpHeader.APPLICATION_ID);
-		if (applicationId == null) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_APPLICATION_EMPTY");
-		}
-		
-		// Check if the application is allowed, "true" is the default behavior
-		if (applicationConfiguration != null) {
-			boolean isApplicationAllowed = applicationConfiguration.isAllowedApplicationKey(applicationId);
-			if (!isApplicationAllowed) {
-				throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_APPLICATION_ID");
-			}
-		}
-		
-		// Check if the signature type is allowed
-		PowerAuthSignatureTypes expectedSignatureType = PowerAuthSignatureTypes.getEnumFromString(signatureType);
-		if (!allowedSignatureTypes.contains(expectedSignatureType)) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_TYPE_INVALID");
-		}
-		
-		// Configure PowerAuth authentication object
-		PowerAuthAuthentication powerAuthAuthentication = new PowerAuthAuthentication();
-		powerAuthAuthentication.setActivationId(activationId);
-		powerAuthAuthentication.setApplicationKey(applicationId);
-		powerAuthAuthentication.setNonce(BaseEncoding.base64().decode(nonce));
-		powerAuthAuthentication.setSignatureType(signatureType);
-		powerAuthAuthentication.setSignature(signature);
-		powerAuthAuthentication.setHttpMethod(httpMethod);
-		powerAuthAuthentication.setRequestUri(requestUriIdentifier);
-		powerAuthAuthentication.setData(httpBody);
+    /**
+     * Validate the signature from the PowerAuth 2.0 HTTP header against the provided HTTP method, request body and URI identifier.
+     * Make sure to accept only allowed signatures.
+     * @param httpMethod HTTP method (GET, POST, ...)
+     * @param httpBody Body of the HTTP request.
+     * @param requestUriIdentifier Request URI identifier.
+     * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
+     * @param allowedSignatureTypes Allowed types of the signature.
+     * @return Instance of a PowerAuthApiAuthentication on successful authorization.
+     * @throws Exception In case authorization fails, exception is raised.
+     */
+    public PowerAuthApiAuthentication validateRequestSignature(String httpMethod, byte[] httpBody, String requestUriIdentifier, String httpAuthorizationHeader, List<PowerAuthSignatureTypes> allowedSignatureTypes) throws Exception {
 
-		// Call the authentication
-		PowerAuthApiAuthentication auth = (PowerAuthApiAuthentication) this.authenticate(powerAuthAuthentication);
+        // Check for HTTP PowerAuth signature header
+        if (httpAuthorizationHeader == null || httpAuthorizationHeader.equals("undefined")) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
+        }
 
-		// In case authentication is null, throw PowerAuth exception
-		if (auth == null) {
-			throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_VALUE");
-		}
+        // Parse HTTP header
+        Map<String, String> httpHeaderInfo = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(httpAuthorizationHeader);
 
-		return auth;
-	}
-	
-	/**
-	 * The same as {{@link #validateRequestSignature(String, byte[], String, String, List)} but uses default accepted signature type (2FA or 3FA).
-	 * @param httpMethod HTTP method (GET, POST, ...)
-	 * @param httpBody Request body
-	 * @param requestUriIdentifier Request URI identifier.
-	 * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
-	 * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-	 * @throws Exception In case authorization fails, exception is raised.
-	 */
-	public PowerAuthApiAuthentication validateRequestSignature(String httpMethod, byte[] httpBody, String requestUriIdentifier, String httpAuthorizationHeader) throws Exception {
-		List<PowerAuthSignatureTypes> defaultAllowedSignatureTypes = new ArrayList<>();
-		defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE);
-		defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_BIOMETRY);
-		defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY);
-		return this.validateRequestSignature(httpMethod, httpBody, requestUriIdentifier, httpAuthorizationHeader, defaultAllowedSignatureTypes);
-	}
+        // Check if the parsing was successful
+        if (httpHeaderInfo == null) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
+        }
 
-	/**
-	 * Validate a request signature, make sure only supported signature types are used. 
-	 * @param servletRequest HTTPServletRequest with signed data.
-	 * @param requestUriIdentifier Request URI identifier.
-	 * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header. 
-	 * @param allowedSignatureTypes Allowed types of signatures.
-	 * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-	 * @throws Exception In case authorization fails, exception is raised.
-	 */
-	public PowerAuthApiAuthentication validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader, List<PowerAuthSignatureTypes> allowedSignatureTypes) throws Exception {
-		// Get HTTP method and body bytes
-		String requestMethod = servletRequest.getMethod().toUpperCase();
-		String requestBodyString = ((String) servletRequest.getAttribute(PowerAuthRequestFilter.POWERAUTH_SIGNATURE_BASE_STRING));
-		byte[] requestBodyBytes = requestBodyString == null ? null : BaseEncoding.base64().decode(requestBodyString);
-		return this.validateRequestSignature(requestMethod, requestBodyBytes, requestUriIdentifier, httpAuthorizationHeader, allowedSignatureTypes);
-	}
-	
-	/**
-	 * The same as {{@link #validateRequestSignature(HttpServletRequest, String, String, List)} but uses default accepted signature type (2FA or 3FA).
-	 * @param servletRequest HTTPServletRequest with signed data.
-	 * @param requestUriIdentifier Request URI identifier.
-	 * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
-	 * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-	 * @throws Exception In case authorization fails, exception is raised.
-	 */
-	public PowerAuthApiAuthentication validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader) throws Exception {
-		List<PowerAuthSignatureTypes> defaultAllowedSignatureTypes = new ArrayList<>();
-		defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE);
-		defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_BIOMETRY);
-		defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY);
-		return this.validateRequestSignature(servletRequest, requestUriIdentifier, httpAuthorizationHeader, defaultAllowedSignatureTypes);
-	}
+        // Fetch HTTP header attributes
+        String activationId = httpHeaderInfo.get(PowerAuthHttpHeader.ACTIVATION_ID);
+        if (activationId == null) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_ACTIVATION_ID_EMPTY");
+        }
+        String nonce = httpHeaderInfo.get(PowerAuthHttpHeader.NONCE);
+        if (nonce == null) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_NONCE_EMPTY");
+        }
+        String signatureType = httpHeaderInfo.get(PowerAuthHttpHeader.SIGNATURE_TYPE);
+        if (signatureType == null) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_TYPE_EMPTY");
+        }
+        String signature = httpHeaderInfo.get(PowerAuthHttpHeader.SIGNATURE);
+        if (signature == null) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_EMPTY");
+        }
+        String applicationId = httpHeaderInfo.get(PowerAuthHttpHeader.APPLICATION_ID);
+        if (applicationId == null) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_APPLICATION_EMPTY");
+        }
+
+        // Check if the application is allowed, "true" is the default behavior
+        if (applicationConfiguration != null) {
+            boolean isApplicationAllowed = applicationConfiguration.isAllowedApplicationKey(applicationId);
+            if (!isApplicationAllowed) {
+                throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_APPLICATION_ID");
+            }
+        }
+
+        // Check if the signature type is allowed
+        PowerAuthSignatureTypes expectedSignatureType = PowerAuthSignatureTypes.getEnumFromString(signatureType);
+        if (!allowedSignatureTypes.contains(expectedSignatureType)) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_TYPE_INVALID");
+        }
+
+        // Configure PowerAuth authentication object
+        PowerAuthAuthentication powerAuthAuthentication = new PowerAuthAuthentication();
+        powerAuthAuthentication.setActivationId(activationId);
+        powerAuthAuthentication.setApplicationKey(applicationId);
+        powerAuthAuthentication.setNonce(BaseEncoding.base64().decode(nonce));
+        powerAuthAuthentication.setSignatureType(signatureType);
+        powerAuthAuthentication.setSignature(signature);
+        powerAuthAuthentication.setHttpMethod(httpMethod);
+        powerAuthAuthentication.setRequestUri(requestUriIdentifier);
+        powerAuthAuthentication.setData(httpBody);
+
+        // Call the authentication
+        PowerAuthApiAuthentication auth = (PowerAuthApiAuthentication) this.authenticate(powerAuthAuthentication);
+
+        // In case authentication is null, throw PowerAuth exception
+        if (auth == null) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_INVALID_VALUE");
+        }
+
+        return auth;
+    }
+
+    /**
+     * The same as {{@link #validateRequestSignature(String, byte[], String, String, List)} but uses default accepted signature type (2FA or 3FA).
+     * @param httpMethod HTTP method (GET, POST, ...)
+     * @param httpBody Request body
+     * @param requestUriIdentifier Request URI identifier.
+     * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
+     * @return Instance of a PowerAuthApiAuthentication on successful authorization.
+     * @throws Exception In case authorization fails, exception is raised.
+     */
+    public PowerAuthApiAuthentication validateRequestSignature(String httpMethod, byte[] httpBody, String requestUriIdentifier, String httpAuthorizationHeader) throws Exception {
+        List<PowerAuthSignatureTypes> defaultAllowedSignatureTypes = new ArrayList<>();
+        defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE);
+        defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_BIOMETRY);
+        defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY);
+        return this.validateRequestSignature(httpMethod, httpBody, requestUriIdentifier, httpAuthorizationHeader, defaultAllowedSignatureTypes);
+    }
+
+    /**
+     * Validate a request signature, make sure only supported signature types are used.
+     * @param servletRequest HTTPServletRequest with signed data.
+     * @param requestUriIdentifier Request URI identifier.
+     * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
+     * @param allowedSignatureTypes Allowed types of signatures.
+     * @return Instance of a PowerAuthApiAuthentication on successful authorization.
+     * @throws Exception In case authorization fails, exception is raised.
+     */
+    public PowerAuthApiAuthentication validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader, List<PowerAuthSignatureTypes> allowedSignatureTypes) throws Exception {
+        // Get HTTP method and body bytes
+        String requestMethod = servletRequest.getMethod().toUpperCase();
+        String requestBodyString = ((String) servletRequest.getAttribute(PowerAuthRequestFilter.POWERAUTH_SIGNATURE_BASE_STRING));
+        byte[] requestBodyBytes = requestBodyString == null ? null : BaseEncoding.base64().decode(requestBodyString);
+        return this.validateRequestSignature(requestMethod, requestBodyBytes, requestUriIdentifier, httpAuthorizationHeader, allowedSignatureTypes);
+    }
+
+    /**
+     * The same as {{@link #validateRequestSignature(HttpServletRequest, String, String, List)} but uses default accepted signature type (2FA or 3FA).
+     * @param servletRequest HTTPServletRequest with signed data.
+     * @param requestUriIdentifier Request URI identifier.
+     * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
+     * @return Instance of a PowerAuthApiAuthentication on successful authorization.
+     * @throws Exception In case authorization fails, exception is raised.
+     */
+    public PowerAuthApiAuthentication validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader) throws Exception {
+        List<PowerAuthSignatureTypes> defaultAllowedSignatureTypes = new ArrayList<>();
+        defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE);
+        defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_BIOMETRY);
+        defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY);
+        return this.validateRequestSignature(servletRequest, requestUriIdentifier, httpAuthorizationHeader, defaultAllowedSignatureTypes);
+    }
 
 }

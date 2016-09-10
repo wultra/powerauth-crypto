@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,36 +15,30 @@
  */
 package io.getlime.security.powerauth.server.activation;
 
+import com.google.common.io.BaseEncoding;
+import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.lib.util.SignatureUtils;
-import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
-import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.SecretKey;
-
-import com.google.common.io.BaseEncoding;
 
 /**
  * Class implementing cryptography used on a server side in order to assure
  * PowerAuth Server activation related processes.
- * 
+ *
  * @author Petr Dvorak
  *
  */
@@ -113,7 +107,7 @@ public class PowerAuthServerActivation {
      * @throws InvalidKeyException In case Master Private Key is invalid.
      */
     public byte[] generateActivationSignature(String activationIdShort, String activationOTP,
-            PrivateKey masterPrivateKey) throws InvalidKeyException {
+                                              PrivateKey masterPrivateKey) throws InvalidKeyException {
         try {
             byte[] bytes = (activationIdShort + "-" + activationOTP).getBytes("UTF-8");
             byte[] signature = signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
@@ -132,31 +126,31 @@ public class PowerAuthServerActivation {
     public byte[] generateActivationNonce() {
         return new KeyGenerator().generateRandomBytes(16);
     }
-    
+
     /**
-	 * Method validates the signature of the activation data in order to prove that a correct
-	 * client application is attempting to complete the activation.
-	 * @param activationIdShort Short activation ID.
-	 * @param activationNonce Client activation nonce.
-	 * @param encryptedDevicePublicKey Encrypted device public key.
-	 * @param applicationKey Application identifier.
-	 * @param applicationSecret Application secret.
-	 * @param signature Signature to be checked against.
-	 * @return True if the signature is correct, false otherwise.
-	 */
-	public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) {
-		try {
-			String signatureBaseString = activationIdShort + "&"
-					+ BaseEncoding.base64().encode(activationNonce) + "&"
-					+ BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
-					+ BaseEncoding.base64().encode(applicationKey);
-			byte[] signatureExpected = new HMACHashUtilities().hash(applicationSecret, signatureBaseString.getBytes("UTF-8"));
-			return Arrays.equals(signatureExpected, signature);
-		} catch (UnsupportedEncodingException ex) {
-			Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return false;
-	}
+     * Method validates the signature of the activation data in order to prove that a correct
+     * client application is attempting to complete the activation.
+     * @param activationIdShort Short activation ID.
+     * @param activationNonce Client activation nonce.
+     * @param encryptedDevicePublicKey Encrypted device public key.
+     * @param applicationKey Application identifier.
+     * @param applicationSecret Application secret.
+     * @param signature Signature to be checked against.
+     * @return True if the signature is correct, false otherwise.
+     */
+    public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) {
+        try {
+            String signatureBaseString = activationIdShort + "&"
+                    + BaseEncoding.base64().encode(activationNonce) + "&"
+                    + BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
+                    + BaseEncoding.base64().encode(applicationKey);
+            byte[] signatureExpected = new HMACHashUtilities().hash(applicationSecret, signatureBaseString.getBytes("UTF-8"));
+            return Arrays.equals(signatureExpected, signature);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 
     /**
      * Decrypt the device public key using activation OTP.
@@ -175,28 +169,28 @@ public class PowerAuthServerActivation {
             // Derive longer key from short activation ID and activation OTP
             byte[] activationIdShortBytes = activationIdShort.getBytes("UTF-8");
             SecretKey otpBasedSymmetricKey = new KeyGenerator().deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
-            
+
             if (ephemeralPublicKey != null) { // is an extra ephemeral key encryption included?
-            	
-            	// Compute ephemeral secret key
-            	KeyGenerator keyGenerator = new KeyGenerator();
-            	SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(masterPrivateKey, ephemeralPublicKey);
-            	
-            	// Decrypt device public key
+
+                // Compute ephemeral secret key
+                KeyGenerator keyGenerator = new KeyGenerator();
+                SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(masterPrivateKey, ephemeralPublicKey);
+
+                // Decrypt device public key
                 AESEncryptionUtils aes = new AESEncryptionUtils();
                 byte[] decryptedTMP = aes.decrypt(C_devicePublicKey, activationNonce, ephemeralSymmetricKey);
                 byte[] decryptedPublicKeyBytes = aes.decrypt(decryptedTMP, activationNonce, otpBasedSymmetricKey);
                 PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
                 return devicePublicKey;
-                
+
             } else { // extra encryption is not present, only OTP based key is used
-            	
-            	// Decrypt device public key
+
+                // Decrypt device public key
                 AESEncryptionUtils aes = new AESEncryptionUtils();
                 byte[] decryptedPublicKeyBytes = aes.decrypt(C_devicePublicKey, activationNonce, otpBasedSymmetricKey);
                 PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
                 return devicePublicKey;
-                
+
             }
 
         } catch (IllegalBlockSizeException | InvalidKeySpecException | BadPaddingException | InvalidKeyException | UnsupportedEncodingException ex) {
@@ -221,7 +215,7 @@ public class PowerAuthServerActivation {
      * @throws InvalidKeyException In case some of the provided keys is invalid.
      */
     public byte[] encryptServerPublicKey(PublicKey serverPublicKey, PublicKey devicePublicKey,
-            PrivateKey ephemeralPrivateKey, String activationOTP, String activationIdShort, byte[] activationNonce)
+                                         PrivateKey ephemeralPrivateKey, String activationOTP, String activationIdShort, byte[] activationNonce)
             throws InvalidKeyException {
         try {
 
@@ -266,7 +260,7 @@ public class PowerAuthServerActivation {
             byte[] statusBlob = ByteBuffer.allocate(32)
                     .putInt(0xDEC0DED1)     // 4 bytes
                     .put(statusByte)        // 1 byte
-                    .putLong(counter) 	    // 8 bytes
+                    .putLong(counter)        // 8 bytes
                     .put(failedAttempts)    // 1 byte
                     .put(maxFailedAttempts) // 1 byte
                     .put(padding)           // 17 bytes
@@ -295,10 +289,10 @@ public class PowerAuthServerActivation {
     public byte[] computeServerDataSignature(String activationId, byte[] C_serverPublicKey, PrivateKey masterPrivateKey)
             throws InvalidKeyException, UnsupportedEncodingException {
         try {
-        	byte[] activationIdBytes = activationId.getBytes("UTF-8");
-        	String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
-			String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
-			byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes("UTF-8");
+            byte[] activationIdBytes = activationId.getBytes("UTF-8");
+            String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
+            String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
+            byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes("UTF-8");
             return signatureUtils.computeECDSASignature(result, masterPrivateKey);
         } catch (SignatureException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);

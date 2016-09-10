@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,21 +15,20 @@
  */
 package io.getlime.rest.api.security.filter;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
+import com.google.common.primitives.Bytes;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-
-import com.google.common.primitives.Bytes;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Resettable HTTP servlet request stream.
- * 
+ *
  * @author Petr Dvorak
  *
  */
@@ -71,7 +70,7 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
 
         return requestBody;
     }
-    
+
     @Override
     public ServletInputStream getInputStream() throws IOException {
         return new CustomServletInputStream(getRequestBody());
@@ -90,21 +89,21 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
             return buffer.read();
         }
 
-		@Override
-		public boolean isFinished() {
-			return buffer.available() == 0;
-		}
+        @Override
+        public boolean isFinished() {
+            return buffer.available() == 0;
+        }
 
-		@Override
-		public boolean isReady() {
-			return true;
-		}
+        @Override
+        public boolean isReady() {
+            return true;
+        }
 
-		@Override
-		public void setReadListener(ReadListener arg0) {
-			 throw new RuntimeException("Not implemented");
-		}
+        @Override
+        public void setReadListener(ReadListener arg0) {
+            throw new RuntimeException("Not implemented");
+        }
 
     }
-    
+
 }

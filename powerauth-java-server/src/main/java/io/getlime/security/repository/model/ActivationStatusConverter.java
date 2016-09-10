@@ -24,7 +24,6 @@ import javax.persistence.Converter;
  * Converter between {@link ActivationStatus} and integer values.
  *
  * @author Petr Dvorak
- *
  */
 @Converter
 @Component

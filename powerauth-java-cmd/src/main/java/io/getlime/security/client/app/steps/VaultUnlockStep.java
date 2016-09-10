@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,29 +15,8 @@
  */
 package io.getlime.security.client.app.steps;
 
-import java.io.Console;
-import java.io.FileWriter;
-import java.net.URI;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Map;
-
-import javax.crypto.SecretKey;
-
-import org.json.simple.JSONObject;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.BaseEncoding;
-
 import io.getlime.rest.api.model.PowerAuthAPIRequest;
 import io.getlime.rest.api.model.PowerAuthAPIResponse;
 import io.getlime.rest.api.model.VaultUnlockRequest;
@@ -53,163 +32,181 @@ import io.getlime.security.powerauth.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
+import org.json.simple.JSONObject;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+
+import javax.crypto.SecretKey;
+import java.io.Console;
+import java.io.FileWriter;
+import java.net.URI;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Map;
 
 /**
  * Helper class with vault unlock logics.
- * 
+ *
  * @author Petr Dvorak
  *
  */
 public class VaultUnlockStep {
-	
-	private static final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-	private static final KeyGenerator keyGenerator = new KeyGenerator();
-	private static final PowerAuthClientSignature signature = new PowerAuthClientSignature();
-	private static final PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
-	private static final ObjectMapper mapper = new ObjectMapper();
 
-	/**
-	 * Execute this step with given context
-	 * @param context Provided context
-	 * @return Result status object, null in case of failure.
-	 * @throws Exception In case of any error.
-	 */
-	@SuppressWarnings("unchecked")
-	public static JSONObject execute(Map<String, Object> context) throws Exception {
-		
-		// Read properties from "context"
-		String uriString = (String) context.get("URI_STRING");
-		JSONObject resultStatusObject = (JSONObject) context.get("STATUS_OBJECT");
-		String statusFileName = (String)context.get("STATUS_FILENAME");
-		String applicationId = (String)context.get("APPLICATION_ID");
-		String applicationSecret = (String)context.get("APPLICATION_SECRET");
-		String signatureType = (String)context.get("SIGNATURE_TYPE");
-		String passwordProvided = (String)context.get("PASSWORD");
-		
-		System.out.println("### PowerAuth 2.0 Client Vault Unlock");
-		System.out.println();
+    private static final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+    private static final KeyGenerator keyGenerator = new KeyGenerator();
+    private static final PowerAuthClientSignature signature = new PowerAuthClientSignature();
+    private static final PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-		// Prepare the activation URI
-		String fullURIString = uriString + "/pa/vault/unlock";
-		URI uri = new URI(fullURIString);
+    /**
+     * Execute this step with given context
+     * @param context Provided context
+     * @return Result status object, null in case of failure.
+     * @throws Exception In case of any error.
+     */
+    @SuppressWarnings("unchecked")
+    public static JSONObject execute(Map<String, Object> context) throws Exception {
 
-		// Get data from status
-		String activationId = (String) resultStatusObject.get("activationId");
-		long counter = (long) resultStatusObject.get("counter");
-		byte[] signaturePossessionKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signaturePossessionKey"));
-		byte[] signatureBiometryKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureBiometryKey"));
-		byte[] signatureKnowledgeKeySalt = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureKnowledgeKeySalt"));
-		byte[] signatureKnowledgeKeyEncryptedBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureKnowledgeKeyEncrypted"));
-		byte[] transportMasterKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("transportMasterKey"));
-		byte[] encryptedDevicePrivateKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("encryptedDevicePrivateKey"));
-		byte[] serverPublicKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("serverPublicKey"));
+        // Read properties from "context"
+        String uriString = (String) context.get("URI_STRING");
+        JSONObject resultStatusObject = (JSONObject) context.get("STATUS_OBJECT");
+        String statusFileName = (String) context.get("STATUS_FILENAME");
+        String applicationId = (String) context.get("APPLICATION_ID");
+        String applicationSecret = (String) context.get("APPLICATION_SECRET");
+        String signatureType = (String) context.get("SIGNATURE_TYPE");
+        String passwordProvided = (String) context.get("PASSWORD");
 
-		// Ask for the password to unlock knowledge factor key
-		char[] password = null;
-		if (passwordProvided == null) {
-			Console console = System.console();
-			password = console.readPassword("Enter your password to unlock the knowledge related key: ");
-		} else {
-			password = passwordProvided.toCharArray();
-		}
+        System.out.println("### PowerAuth 2.0 Client Vault Unlock");
+        System.out.println();
 
-		// Get the signature keys
-		SecretKey signaturePossessionKey = keyConversion.convertBytesToSharedSecretKey(signaturePossessionKeyBytes);
-		SecretKey signatureKnowledgeKey = EncryptedStorageUtil.getSignatureKnowledgeKey(password, signatureKnowledgeKeyEncryptedBytes, signatureKnowledgeKeySalt, keyGenerator);
-		SecretKey signatureBiometryKey = keyConversion.convertBytesToSharedSecretKey(signatureBiometryKeyBytes);
-		
-		// Get the transport key
-		SecretKey transportMasterKey = keyConversion.convertBytesToSharedSecretKey(transportMasterKeyBytes);
+        // Prepare the activation URI
+        String fullURIString = uriString + "/pa/vault/unlock";
+        URI uri = new URI(fullURIString);
 
-		// Generate nonce
-		byte[] pa_nonce = keyGenerator.generateRandomBytes(16);
+        // Get data from status
+        String activationId = (String) resultStatusObject.get("activationId");
+        long counter = (long) resultStatusObject.get("counter");
+        byte[] signaturePossessionKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signaturePossessionKey"));
+        byte[] signatureBiometryKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureBiometryKey"));
+        byte[] signatureKnowledgeKeySalt = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureKnowledgeKeySalt"));
+        byte[] signatureKnowledgeKeyEncryptedBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("signatureKnowledgeKeyEncrypted"));
+        byte[] transportMasterKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("transportMasterKey"));
+        byte[] encryptedDevicePrivateKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("encryptedDevicePrivateKey"));
+        byte[] serverPublicKeyBytes = BaseEncoding.base64().decode((String) resultStatusObject.get("serverPublicKey"));
 
-		// Compute the current PowerAuth 2.0 signature for possession and knowledge factor
-		String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString("post", "/pa/vault/unlock", pa_nonce, null) + "&" + applicationSecret;
-		String pa_signature = signature.signatureForData(signatureBaseString.getBytes("UTF-8"), keyFactory.keysForSignatureType(signatureType, signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), counter);
-		String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, BaseEncoding.base64().encode(pa_nonce), PowerAuthSignatureTypes.getEnumFromString(signatureType).toString(), pa_signature, "2.0");
+        // Ask for the password to unlock knowledge factor key
+        char[] password = null;
+        if (passwordProvided == null) {
+            Console console = System.console();
+            password = console.readPassword("Enter your password to unlock the knowledge related key: ");
+        } else {
+            password = passwordProvided.toCharArray();
+        }
 
-		// Increment the counter
-		counter += 1;
-		resultStatusObject.put("counter", new Long(counter));
+        // Get the signature keys
+        SecretKey signaturePossessionKey = keyConversion.convertBytesToSharedSecretKey(signaturePossessionKeyBytes);
+        SecretKey signatureKnowledgeKey = EncryptedStorageUtil.getSignatureKnowledgeKey(password, signatureKnowledgeKeyEncryptedBytes, signatureKnowledgeKeySalt, keyGenerator);
+        SecretKey signatureBiometryKey = keyConversion.convertBytesToSharedSecretKey(signatureBiometryKeyBytes);
 
-		// Store the activation status (updated counter)
-		String formatted = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultStatusObject);
-		try (FileWriter file = new FileWriter(statusFileName)) {
-			file.write(formatted);
-		}
+        // Get the transport key
+        SecretKey transportMasterKey = keyConversion.convertBytesToSharedSecretKey(transportMasterKeyBytes);
 
-		// Prepare HTTP headers
-		MultiValueMap<String, String> headers = new HttpHeaders();
-		headers.add(PowerAuthHttpHeader.HEADER_NAME, httpAuhtorizationHeader);
-		
-		PowerAuthAPIRequest<VaultUnlockRequest> requestObject = new PowerAuthAPIRequest<>();
-		requestObject.setRequestObject(new VaultUnlockRequest());
-		RequestEntity<PowerAuthAPIRequest<VaultUnlockRequest>> request = new RequestEntity<PowerAuthAPIRequest<VaultUnlockRequest>>(requestObject, headers, HttpMethod.POST, uri);
-		
-		RestTemplate template = RestTemplateFactory.defaultRestTemplate();
+        // Generate nonce
+        byte[] pa_nonce = keyGenerator.generateRandomBytes(16);
 
-		// Call the server with activation data
-		System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + fullURIString + " ...");
-		System.out.println("Request headers: " + request.getHeaders().toString());
-		System.out.println();
-		try {
-			ResponseEntity<PowerAuthAPIResponse<VaultUnlockResponse>> response = template.exchange(request, new ParameterizedTypeReference<PowerAuthAPIResponse<VaultUnlockResponse>>() {
-			});
-			System.out.println("Done.");
-			System.out.println();
-			
-			String activationIdServer = response.getBody().getResponseObject().getActivationId();
-			byte[] encryptedVaultEncryptionKey = BaseEncoding.base64().decode(response.getBody().getResponseObject().getEncryptedVaultEncryptionKey());
-			
-			PowerAuthClientVault vault = new PowerAuthClientVault();
-			SecretKey vaultEncryptionKey = vault.decryptVaultEncryptionKey(encryptedVaultEncryptionKey, transportMasterKey, counter);
-			PrivateKey devicePrivateKey = vault.decryptDevicePrivateKey(encryptedDevicePrivateKeyBytes, vaultEncryptionKey);
-			PublicKey serverPublicKey = keyConversion.convertBytesToPublicKey(serverPublicKeyBytes);
-			
-			SecretKey masterSecretKey = keyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
-			SecretKey transportKeyDeduced = keyFactory.generateServerTransportKey(masterSecretKey);
-			boolean equal = transportKeyDeduced.equals(transportMasterKey);
+        // Compute the current PowerAuth 2.0 signature for possession and knowledge factor
+        String signatureBaseString = PowerAuthHttpBody.getSignatureBaseString("post", "/pa/vault/unlock", pa_nonce, null) + "&" + applicationSecret;
+        String pa_signature = signature.signatureForData(signatureBaseString.getBytes("UTF-8"), keyFactory.keysForSignatureType(signatureType, signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), counter);
+        String httpAuhtorizationHeader = PowerAuthHttpHeader.getPowerAuthSignatureHTTPHeader(activationId, applicationId, BaseEncoding.base64().encode(pa_nonce), PowerAuthSignatureTypes.getEnumFromString(signatureType).toString(), pa_signature, "2.0");
 
-			// Print the results
-			System.out.println("Activation ID: " + activationId);
-			System.out.println("Server activation ID: " + activationIdServer);
-			System.out.println("Encrypted vault encryption key: " + BaseEncoding.base64().encode(encryptedVaultEncryptionKey));
-			System.out.println("Transport master key: " + BaseEncoding.base64().encode(keyConversion.convertSharedSecretKeyToBytes(transportMasterKey)));
-			System.out.println("Vault encryption key: " + BaseEncoding.base64().encode(keyConversion.convertSharedSecretKeyToBytes(vaultEncryptionKey)));
-			System.out.println("Device Private Key: " + BaseEncoding.base64().encode(keyConversion.convertPrivateKeyToBytes(devicePrivateKey)));
-			System.out.println("Result: " + (equal ? "OK" : "Broken"));
-			System.out.println();
-			System.out.println("Vault unlocking complete.");
-			System.out.println("### Done.");
-			System.out.println();
-			return resultStatusObject;
-		} catch (HttpClientErrorException exception) {
-			String responseString = exception.getResponseBodyAsString();
-			try {
-				Map<String, Object> errorMap = mapper.readValue(responseString, Map.class);
-				System.out.println(((Map<String, Object>) errorMap.get("error")).get("message"));
-			} catch (Exception e) {
-				System.out.println("Service error - HTTP " + exception.getStatusCode().toString() + ": " + exception.getStatusText());
-			}
-			System.out.println();
-			System.out.println("### Failed.");
-			System.out.println();
-			System.exit(1);
-		} catch (ResourceAccessException exception) {
-			System.out.println("Connection error - connection refused");
-			System.out.println();
-			System.out.println("### Failed.");
-			System.out.println();
-			System.exit(1);
-		} catch (Exception exception) {
-			System.out.println("Unknown error - " + exception.getLocalizedMessage());
-			System.out.println();
-			System.out.println("### Failed.");
-			System.out.println();
-			System.exit(1);
-		}
-		return null;
-	}
-	
+        // Increment the counter
+        counter += 1;
+        resultStatusObject.put("counter", new Long(counter));
+
+        // Store the activation status (updated counter)
+        String formatted = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultStatusObject);
+        try (FileWriter file = new FileWriter(statusFileName)) {
+            file.write(formatted);
+        }
+
+        // Prepare HTTP headers
+        MultiValueMap<String, String> headers = new HttpHeaders();
+        headers.add(PowerAuthHttpHeader.HEADER_NAME, httpAuhtorizationHeader);
+
+        PowerAuthAPIRequest<VaultUnlockRequest> requestObject = new PowerAuthAPIRequest<>();
+        requestObject.setRequestObject(new VaultUnlockRequest());
+        RequestEntity<PowerAuthAPIRequest<VaultUnlockRequest>> request = new RequestEntity<PowerAuthAPIRequest<VaultUnlockRequest>>(requestObject, headers, HttpMethod.POST, uri);
+
+        RestTemplate template = RestTemplateFactory.defaultRestTemplate();
+
+        // Call the server with activation data
+        System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + fullURIString + " ...");
+        System.out.println("Request headers: " + request.getHeaders().toString());
+        System.out.println();
+        try {
+            ResponseEntity<PowerAuthAPIResponse<VaultUnlockResponse>> response = template.exchange(request, new ParameterizedTypeReference<PowerAuthAPIResponse<VaultUnlockResponse>>() {
+            });
+            System.out.println("Done.");
+            System.out.println();
+
+            String activationIdServer = response.getBody().getResponseObject().getActivationId();
+            byte[] encryptedVaultEncryptionKey = BaseEncoding.base64().decode(response.getBody().getResponseObject().getEncryptedVaultEncryptionKey());
+
+            PowerAuthClientVault vault = new PowerAuthClientVault();
+            SecretKey vaultEncryptionKey = vault.decryptVaultEncryptionKey(encryptedVaultEncryptionKey, transportMasterKey, counter);
+            PrivateKey devicePrivateKey = vault.decryptDevicePrivateKey(encryptedDevicePrivateKeyBytes, vaultEncryptionKey);
+            PublicKey serverPublicKey = keyConversion.convertBytesToPublicKey(serverPublicKeyBytes);
+
+            SecretKey masterSecretKey = keyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+            SecretKey transportKeyDeduced = keyFactory.generateServerTransportKey(masterSecretKey);
+            boolean equal = transportKeyDeduced.equals(transportMasterKey);
+
+            // Print the results
+            System.out.println("Activation ID: " + activationId);
+            System.out.println("Server activation ID: " + activationIdServer);
+            System.out.println("Encrypted vault encryption key: " + BaseEncoding.base64().encode(encryptedVaultEncryptionKey));
+            System.out.println("Transport master key: " + BaseEncoding.base64().encode(keyConversion.convertSharedSecretKeyToBytes(transportMasterKey)));
+            System.out.println("Vault encryption key: " + BaseEncoding.base64().encode(keyConversion.convertSharedSecretKeyToBytes(vaultEncryptionKey)));
+            System.out.println("Device Private Key: " + BaseEncoding.base64().encode(keyConversion.convertPrivateKeyToBytes(devicePrivateKey)));
+            System.out.println("Result: " + (equal ? "OK" : "Broken"));
+            System.out.println();
+            System.out.println("Vault unlocking complete.");
+            System.out.println("### Done.");
+            System.out.println();
+            return resultStatusObject;
+        } catch (HttpClientErrorException exception) {
+            String responseString = exception.getResponseBodyAsString();
+            try {
+                Map<String, Object> errorMap = mapper.readValue(responseString, Map.class);
+                System.out.println(((Map<String, Object>) errorMap.get("error")).get("message"));
+            } catch (Exception e) {
+                System.out.println("Service error - HTTP " + exception.getStatusCode().toString() + ": " + exception.getStatusText());
+            }
+            System.out.println();
+            System.out.println("### Failed.");
+            System.out.println();
+            System.exit(1);
+        } catch (ResourceAccessException exception) {
+            System.out.println("Connection error - connection refused");
+            System.out.println();
+            System.out.println("### Failed.");
+            System.out.println();
+            System.exit(1);
+        } catch (Exception exception) {
+            System.out.println("Unknown error - " + exception.getLocalizedMessage());
+            System.out.println();
+            System.out.println("### Failed.");
+            System.out.println();
+            System.exit(1);
+        }
+        return null;
+    }
+
 }

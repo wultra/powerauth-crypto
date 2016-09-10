@@ -47,7 +47,6 @@ import java.util.logging.Logger;
  * responsible for individual processes.
  *
  * @author Petr Dvorak
- *
  */
 @Component
 public class PowerAuthServiceImpl implements PowerAuthService {

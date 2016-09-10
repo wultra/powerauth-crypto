@@ -24,7 +24,6 @@ import java.util.Objects;
  * Entity class representing Master Key Pair in the database.
  *
  * @author Petr Dvorak
- *
  */
 @Entity(name = "pa_master_keypair")
 public class MasterKeyPairEntity implements Serializable {
@@ -60,11 +59,12 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Constructor for new master key pair entity.
-     * @param id Master Key Pair ID
-     * @param name Name
+     *
+     * @param id                     Master Key Pair ID
+     * @param name                   Name
      * @param masterKeyPrivateBase64 Private part encoded as Base64
-     * @param masterKeyPublicBase64 Public part encoded as Base64
-     * @param timestampCreated Created timestamp.
+     * @param masterKeyPublicBase64  Public part encoded as Base64
+     * @param timestampCreated       Created timestamp.
      */
     public MasterKeyPairEntity(Long id, String name, String masterKeyPrivateBase64, String masterKeyPublicBase64, Date timestampCreated) {
         this.id = id;
@@ -76,6 +76,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Get master key pair ID
+     *
      * @return Master key pair ID
      */
     public Long getId() {
@@ -84,6 +85,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Set master key pair ID
+     *
      * @param id Master key pair ID
      */
     public void setId(Long id) {
@@ -92,6 +94,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Get master key pair name
+     *
      * @return Master key pair name
      */
     public String getName() {
@@ -100,6 +103,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Set master key pair name
+     *
      * @param name Master key pair name
      */
     public void setName(String name) {
@@ -108,6 +112,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Get master key pair private part encoded as Base64.
+     *
      * @return Master key pair private part encoded as Base64.
      */
     public String getMasterKeyPrivateBase64() {
@@ -116,6 +121,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Set master key pair private part encoded as Base64.
+     *
      * @param masterKeyPrivateBase64 Master key pair private part encoded as Base64.
      */
     public void setMasterKeyPrivateBase64(String masterKeyPrivateBase64) {
@@ -124,6 +130,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Get master key pair public part encoded as Base64.
+     *
      * @return Master key pair public part encoded as Base64.
      */
     public String getMasterKeyPublicBase64() {
@@ -132,6 +139,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Get master key pair public part encoded as Base64.
+     *
      * @param masterKeyPublicBase64 Master key pair public part encoded as Base64.
      */
     public void setMasterKeyPublicBase64(String masterKeyPublicBase64) {
@@ -140,6 +148,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Get master key pair created timestamp.
+     *
      * @return Master key pair created timestamp
      */
     public Date getTimestampCreated() {
@@ -148,6 +157,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Set master key pair created timestamp.
+     *
      * @param timestampCreated Master key pair created timestamp
      */
     public void setTimestampCreated(Date timestampCreated) {
@@ -156,6 +166,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Get master key pair associated application.
+     *
      * @return Master key pair associated application
      */
     public ApplicationEntity getApplication() {
@@ -164,6 +175,7 @@ public class MasterKeyPairEntity implements Serializable {
 
     /**
      * Set master key pair associated application.
+     *
      * @param application Master key pair associated application
      */
     public void setApplication(ApplicationEntity application) {

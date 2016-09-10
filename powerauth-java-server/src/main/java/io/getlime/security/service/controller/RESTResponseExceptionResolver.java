@@ -34,7 +34,6 @@ import java.util.List;
  * the same format as the application logics exceptions.
  *
  * @author Petr Dvorak
- *
  */
 @Component
 public class RESTResponseExceptionResolver extends DefaultHandlerExceptionResolver {

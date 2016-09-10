@@ -19,7 +19,7 @@ import io.getlime.security.service.PowerAuthService;
 
 /**
  * Enum representing possible activation states. Following values are supported:
- *
+ * <p>
  * - CREATED = 1
  * - OTP_USED = 2
  * - ACTIVE = 3
@@ -27,7 +27,6 @@ import io.getlime.security.service.PowerAuthService;
  * - REMOVED = 5
  *
  * @author Petr Dvorak
- *
  */
 public enum ActivationStatus {
 
@@ -40,7 +39,7 @@ public enum ActivationStatus {
     /**
      * OTP_USED - status right after PowerAuth 2.0 Server receives PowerAuth 2.0 Client public
      * key, via {@link PowerAuthService#prepareActivation(io.getlime.security.powerauth.PrepareActivationRequest)}
-     * method. 
+     * method.
      */
     OTP_USED((byte) 2),
 
@@ -73,7 +72,8 @@ public enum ActivationStatus {
 
     /**
      * Get byte representation of the enum value.
-     * @return Byte representing enum value. 
+     *
+     * @return Byte representing enum value.
      */
     public byte getByte() {
         return value;

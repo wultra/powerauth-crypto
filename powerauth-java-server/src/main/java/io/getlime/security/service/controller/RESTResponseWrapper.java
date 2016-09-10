@@ -20,9 +20,8 @@ import javax.validation.constraints.NotNull;
 /**
  * Base class for RESTful response object.
  *
- * @author Petr Dvorak
- *
  * @param <T> Type of the response object instance.
+ * @author Petr Dvorak
  */
 public class RESTResponseWrapper<T> {
 
@@ -40,7 +39,8 @@ public class RESTResponseWrapper<T> {
 
     /**
      * Constructor with status and response object.
-     * @param status Status - "OK" or "ERROR".
+     *
+     * @param status         Status - "OK" or "ERROR".
      * @param responseObject Response object instance.
      */
     public RESTResponseWrapper(@NotNull String status, @NotNull T responseObject) {
@@ -50,6 +50,7 @@ public class RESTResponseWrapper<T> {
 
     /**
      * Get response object.
+     *
      * @return Response object.
      */
     public T getResponseObject() {
@@ -58,6 +59,7 @@ public class RESTResponseWrapper<T> {
 
     /**
      * Set response object.
+     *
      * @param responseObject Response object.
      */
     public void setResponseObject(T responseObject) {
@@ -66,6 +68,7 @@ public class RESTResponseWrapper<T> {
 
     /**
      * Get response status.
+     *
      * @return Status.
      */
     public String getStatus() {
@@ -74,6 +77,7 @@ public class RESTResponseWrapper<T> {
 
     /**
      * Set response status.
+     *
      * @param status Status.
      */
     public void setStatus(String status) {

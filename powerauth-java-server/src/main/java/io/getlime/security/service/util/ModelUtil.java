@@ -25,12 +25,12 @@ import java.util.GregorianCalendar;
  * Utility class used for conversion between model data types.
  *
  * @author Petr Dvorak
- *
  */
 public class ModelUtil {
 
     /**
      * Convert between activation status repository and SOAP service enum.
+     *
      * @param repositoryStatus Repository status representation.
      * @return SOAP service status representation.
      */
@@ -53,6 +53,7 @@ public class ModelUtil {
 
     /**
      * Convert between Date and XMLGregorianCalendar.
+     *
      * @param date Date instance
      * @return XMLGregorianCalendar instance
      * @throws DatatypeConfigurationException In case data conversion fails
@@ -69,6 +70,7 @@ public class ModelUtil {
 
     /**
      * Convert between Date and XMLGregorianCalendar.
+     *
      * @param calendar XMLGregorianCalendar instance
      * @return Date instance
      * @throws DatatypeConfigurationException In case data conversion fails

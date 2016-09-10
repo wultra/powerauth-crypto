@@ -25,25 +25,26 @@ import java.util.List;
  * Database repository for accessing signature audit log data.
  *
  * @author Petr Dvorak
- *
  */
 public interface SignatureAuditRepository extends CrudRepository<SignatureEntity, Long> {
 
     /**
      * Return signature audit records for given user and date range.
-     * @param userId User ID.
+     *
+     * @param userId       User ID.
      * @param startingDate Starting date (date "from").
-     * @param endingDate Ending date (date "to").
+     * @param endingDate   Ending date (date "to").
      * @return List of {@link SignatureEntity} instances.
      */
     List<SignatureEntity> findByActivation_UserIdAndTimestampCreatedBetween(String userId, Date startingDate, Date endingDate);
 
     /**
      * Return signature audit records for given user, application and date range.
+     *
      * @param applicationId Application ID.
-     * @param userId User ID.
-     * @param startingDate Starting date (date "from").
-     * @param endingDate Ending date (date "to").
+     * @param userId        User ID.
+     * @param startingDate  Starting date (date "from").
+     * @param endingDate    Ending date (date "to").
      * @return List of {@link SignatureEntity} instances.
      */
     List<SignatureEntity> findByActivation_ApplicationIdAndActivation_UserIdAndTimestampCreatedBetween(Long applicationId, String userId, Date startingDate, Date endingDate);

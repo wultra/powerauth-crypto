@@ -19,7 +19,6 @@ package io.getlime.security.service.controller;
  * Class representing an error returned by RESTful API
  *
  * @author Petr Dvorak, petr@lime-company.eu
- *
  */
 public class RESTErrorModel {
 
@@ -29,6 +28,7 @@ public class RESTErrorModel {
 
     /**
      * Get error code.
+     *
      * @return Error code.
      */
     public String getCode() {
@@ -37,6 +37,7 @@ public class RESTErrorModel {
 
     /**
      * Set error code.
+     *
      * @param code Error code.
      */
     public void setCode(String code) {
@@ -45,6 +46,7 @@ public class RESTErrorModel {
 
     /**
      * Get message (not localized).
+     *
      * @return Message.
      */
     public String getMessage() {
@@ -53,6 +55,7 @@ public class RESTErrorModel {
 
     /**
      * Set message (not localized).
+     *
      * @param message Message.
      */
     public void setMessage(String message) {
@@ -61,6 +64,7 @@ public class RESTErrorModel {
 
     /**
      * Get localized message.
+     *
      * @return Localized message.
      */
     public String getLocalizedMessage() {
@@ -69,6 +73,7 @@ public class RESTErrorModel {
 
     /**
      * Set localized message.
+     *
      * @param localizedMessage Localized message.
      */
     public void setLocalizedMessage(String localizedMessage) {

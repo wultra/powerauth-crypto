@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Class implementing the RESTful controller for PowerAuth service.
  *
  * @author Petr Dvorak
- *
  */
 @Controller
 @RequestMapping(value = "/rest/pa")
@@ -40,6 +39,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#getSystemStatus(GetSystemStatusRequest)} method and
      * return the response.
+     *
      * @param request Get system status request.
      * @return System status response.
      * @throws Exception In case the service throws exception.
@@ -52,6 +52,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#getErrorCodeList(GetErrorCodeListRequest)} method and
      * return the response.
+     *
      * @param request Request for list of error codes indicating a language to be returned in.
      * @return Response with the list of error codes..
      * @throws Exception In case the service throws exception.
@@ -64,6 +65,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#initActivation(InitActivationRequest)} method and
      * return the response.
+     *
      * @param request Init activation request.
      * @return Init activation response.
      * @throws Exception In case the service throws exception.
@@ -76,6 +78,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#prepareActivation(PrepareActivationRequest)} method and
      * return the response.
+     *
      * @param request Prepare activation request.
      * @return Prepare activation response.
      * @throws Exception In case the service throws exception.
@@ -88,8 +91,9 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#commitActivation(CommitActivationRequest)} method and
      * return the response.
+     *
      * @param request Commit activation request.
-     * @return Commit activation response.     
+     * @return Commit activation response.
      * @throws Exception In case the service throws exception.
      */
     @RequestMapping(value = "/activation/commit", method = RequestMethod.POST)
@@ -100,6 +104,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#getActivationStatus(GetActivationStatusRequest)} method and
      * return the response.
+     *
      * @param request Activation status request.
      * @return Activation status response.
      * @throws Exception In case the service throws exception.
@@ -112,6 +117,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#removeActivation(RemoveActivationRequest)} method and
      * return the response.
+     *
      * @param request Remove activation request.
      * @return Remove activation response.
      * @throws Exception In case the service throws exception.
@@ -124,6 +130,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#getActivatioListForUser(GetActivationListForUserRequest)} method and
      * return the response.
+     *
      * @param request Activation list request.
      * @return Activation list response.
      * @throws Exception In case the service throws exception.
@@ -136,6 +143,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#verifySignature(VerifySignatureRequest)} method and
      * return the response.
+     *
      * @param request Verify signature request.
      * @return Verify signature response.
      * @throws Exception In case the service throws exception.
@@ -148,6 +156,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#getSignatureAuditLog(SignatureAuditRequest)} method and
      * return the response.
+     *
      * @param request Signature audit request.
      * @return Signature audit response.
      * @throws Exception In case the service throws exception.
@@ -160,6 +169,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#blockActivation(BlockActivationRequest)} method and
      * return the response.
+     *
      * @param request Block activation request.
      * @return Block activation response.
      * @throws Exception In case the service throws exception.
@@ -172,6 +182,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#unblockActivation(UnblockActivationRequest)} method and
      * return the response.
+     *
      * @param request Unblock activation request.
      * @return Unblock activation response.
      * @throws Exception In case the service throws exception.
@@ -184,6 +195,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#vaultUnlock(VaultUnlockRequest)} method and
      * return the response.
+     *
      * @param request Vault unlock request.
      * @return Vault unlock response.
      * @throws Exception In case the service throws exception.
@@ -196,6 +208,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#getApplicationList(GetApplicationListRequest)} method and
      * return the response.
+     *
      * @param request Application list request.
      * @return Application list response.
      * @throws Exception In case the service throws exception.
@@ -208,6 +221,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#getApplicationDetail(GetApplicationDetailRequest)} method and
      * return the response.
+     *
      * @param request Application detail request.
      * @return Application detail response.
      * @throws Exception In case the service throws exception.
@@ -220,6 +234,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#createApplication(CreateApplicationRequest)} method and
      * return the response.
+     *
      * @param request Create application request.
      * @return Create application response.
      * @throws Exception In case the service throws exception.
@@ -232,6 +247,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#createApplicationVersion(CreateApplicationVersionRequest)} method and
      * return the response.
+     *
      * @param request Create application version request.
      * @return Create application version response.
      * @throws Exception In case the service throws exception.
@@ -244,6 +260,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#unsupportApplicationVersion(UnsupportApplicationVersionRequest)} method and
      * return the response.
+     *
      * @param request Unsupport application version request.
      * @return Unsupport application version response.
      * @throws Exception In case the service throws exception.
@@ -256,6 +273,7 @@ public class PowerAuthController {
     /**
      * Call {@link PowerAuthService#supportApplicationVersion(SupportApplicationVersionRequest)} method and
      * return the response.
+     *
      * @param request Support application version request.
      * @return Support application version response.
      * @throws Exception In case the service throws exception.

@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,30 +15,26 @@
  */
 package io.getlime.security.powerauth.lib.util;
 
+import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
+
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-
-import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 
 /**
  * A utility class for AES encryption.
- * 
+ *
  * @author Petr Dvorak
  *
  */
 public class AESEncryptionUtils {
-	
-	/**
+
+    /**
      * Encrypt given data using given padding with given initialization
      * vector and secret key.
      *
@@ -78,7 +74,7 @@ public class AESEncryptionUtils {
     public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         return this.encrypt(bytes, iv, secret, "AES/CBC/PKCS7Padding");
     }
-    
+
     /**
      * Decrypt given data using give padding with given initialization
      * vector and secret key.
@@ -103,7 +99,7 @@ public class AESEncryptionUtils {
         }
         return null;
     }
-    
+
     /**
      * Decrypt given data using AES/CBC/PKCS7Padding with given initialization
      * vector and secret key.

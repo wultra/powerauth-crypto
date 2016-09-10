@@ -30,15 +30,15 @@ import java.util.List;
  * Class used for handling RESTful service errors.
  *
  * @author Petr Dvorak
- *
  */
 @ControllerAdvice
 public class RESTControllerAdvice {
 
     /**
      * Handle all exceptions using the same error format. Response has a status code 400 Bad Request.
+     *
      * @param req Underlying HttpServletRequest.
-     * @param e Service exception.
+     * @param e   Service exception.
      * @return REST response with error collection.
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)

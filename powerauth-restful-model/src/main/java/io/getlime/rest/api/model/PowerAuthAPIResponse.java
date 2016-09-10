@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,79 +17,79 @@ package io.getlime.rest.api.model;
 
 /**
  * Generic response object for all PowerAuth RESTful API responses.
- * 
+ *
  * @author Petr Dvorak
  *
  * @param <T> Type of the response object
  */
 public class PowerAuthAPIResponse<T> {
-	
-	/**
-	 * Response status string
-	 */
-	public class Status {
-		
-		/**
-		 * In case response was OK
-		 */
-		public static final String OK = "OK";
-		
-		/**
-		 * In case an error response is sent
-		 */
-		public static final String ERROR = "ERROR";
-		
-	}
 
-	private String status;
-	private T responseObject;
-	
-	/**
-	 * Default constructor
-	 */
-	public PowerAuthAPIResponse() {
+    /**
+     * Response status string
+     */
+    public class Status {
+
+        /**
+         * In case response was OK
+         */
+        public static final String OK = "OK";
+
+        /**
+         * In case an error response is sent
+         */
+        public static final String ERROR = "ERROR";
+
     }
-	
-	/**
-	 * Constructor with response status and response object
-	 * @param status Response status, use static constant from {@link Status} class.
-	 * @param responseObject Response object.
-	 */
-	public PowerAuthAPIResponse(String status, T responseObject) {
-		this.status = status;
-		this.responseObject = responseObject;
-	}
-	
-	/**
-	 * Get response status.
-	 * @return Response status.
-	 */
-	public String getStatus() {
-		return status;
-	}
-	
-	/**
-	 * Get response object
-	 * @return Response object
-	 */
-	public T getResponseObject() {
-		return responseObject;
-	}
-	
-	/**
-	 * Set response status
-	 * @param status Response status
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
-	/**
-	 * Set response object
-	 * @param responseObject Response object
-	 */
-	public void setResponseObject(T responseObject) {
-		this.responseObject = responseObject;
-	}
-	
+
+    private String status;
+    private T responseObject;
+
+    /**
+     * Default constructor
+     */
+    public PowerAuthAPIResponse() {
+    }
+
+    /**
+     * Constructor with response status and response object
+     * @param status Response status, use static constant from {@link Status} class.
+     * @param responseObject Response object.
+     */
+    public PowerAuthAPIResponse(String status, T responseObject) {
+        this.status = status;
+        this.responseObject = responseObject;
+    }
+
+    /**
+     * Get response status.
+     * @return Response status.
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Get response object
+     * @return Response object
+     */
+    public T getResponseObject() {
+        return responseObject;
+    }
+
+    /**
+     * Set response status
+     * @param status Response status
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /**
+     * Set response object
+     * @param responseObject Response object
+     */
+    public void setResponseObject(T responseObject) {
+        this.responseObject = responseObject;
+    }
+
 }
