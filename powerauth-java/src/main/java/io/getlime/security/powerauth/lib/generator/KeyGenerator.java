@@ -141,11 +141,11 @@ public class KeyGenerator {
     public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt) {
         try {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PowerAuthConfiguration.PBKDF_ITERATIONS, 128);
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
             SecretKey encryptionKey = new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");
             return encryptionKey;
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
             Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;

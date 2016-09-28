@@ -48,8 +48,7 @@ public class SignatureUtils {
             Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             ecdsa.initSign(masterPrivateKey);
             ecdsa.update(bytes);
-            byte[] signature = ecdsa.sign();
-            return signature;
+            return ecdsa.sign();
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(SignatureUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -71,8 +70,7 @@ public class SignatureUtils {
             Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             ecdsa.initVerify(masterPublicKey);
             ecdsa.update(signedBytes);
-            boolean isValid = ecdsa.verify(signature);
-            return isValid;
+            return ecdsa.verify(signature);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(SignatureUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
