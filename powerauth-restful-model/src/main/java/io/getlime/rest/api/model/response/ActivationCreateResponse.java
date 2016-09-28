@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.rest.api.model;
+package io.getlime.rest.api.model.response;
 
 /**
  * Response object for /pa/activation/create end-point.

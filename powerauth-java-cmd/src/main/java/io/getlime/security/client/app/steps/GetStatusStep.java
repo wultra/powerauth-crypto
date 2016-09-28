@@ -17,10 +17,10 @@ package io.getlime.security.client.app.steps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.BaseEncoding;
-import io.getlime.rest.api.model.ActivationStatusRequest;
-import io.getlime.rest.api.model.ActivationStatusResponse;
-import io.getlime.rest.api.model.PowerAuthAPIRequest;
-import io.getlime.rest.api.model.PowerAuthAPIResponse;
+import io.getlime.rest.api.model.request.ActivationStatusRequest;
+import io.getlime.rest.api.model.response.ActivationStatusResponse;
+import io.getlime.rest.api.model.base.PowerAuthApiRequest;
+import io.getlime.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.client.app.util.RestTemplateFactory;
 import io.getlime.security.powerauth.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
@@ -79,16 +79,16 @@ public class GetStatusStep {
         // Send the activation status request to the server
         ActivationStatusRequest requestObject = new ActivationStatusRequest();
         requestObject.setActivationId(activationId);
-        PowerAuthAPIRequest<ActivationStatusRequest> body = new PowerAuthAPIRequest<>();
+        PowerAuthApiRequest<ActivationStatusRequest> body = new PowerAuthApiRequest<>();
         body.setRequestObject(requestObject);
-        RequestEntity<PowerAuthAPIRequest<ActivationStatusRequest>> request = new RequestEntity<PowerAuthAPIRequest<ActivationStatusRequest>>(body, HttpMethod.POST, uri);
+        RequestEntity<PowerAuthApiRequest<ActivationStatusRequest>> request = new RequestEntity<PowerAuthApiRequest<ActivationStatusRequest>>(body, HttpMethod.POST, uri);
 
         RestTemplate template = RestTemplateFactory.defaultRestTemplate();
 
         // Call the server with activation data
         System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + fullURIString + " ...");
         try {
-            ResponseEntity<PowerAuthAPIResponse<ActivationStatusResponse>> response = template.exchange(request, new ParameterizedTypeReference<PowerAuthAPIResponse<ActivationStatusResponse>>() {
+            ResponseEntity<PowerAuthApiResponse<ActivationStatusResponse>> response = template.exchange(request, new ParameterizedTypeReference<PowerAuthApiResponse<ActivationStatusResponse>>() {
             });
             System.out.println("Done.");
             System.out.println();

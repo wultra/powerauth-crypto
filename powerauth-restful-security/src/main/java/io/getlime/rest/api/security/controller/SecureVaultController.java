@@ -16,10 +16,9 @@
 package io.getlime.rest.api.security.controller;
 
 import com.google.common.io.BaseEncoding;
-import io.getlime.rest.api.model.PowerAuthAPIRequest;
-import io.getlime.rest.api.model.PowerAuthAPIResponse;
-import io.getlime.rest.api.model.VaultUnlockRequest;
-import io.getlime.rest.api.model.VaultUnlockResponse;
+import io.getlime.rest.api.model.base.PowerAuthApiRequest;
+import io.getlime.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.rest.api.model.response.VaultUnlockResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
@@ -34,8 +33,8 @@ import java.util.Map;
 /**
  * Controller implementing secure vault related end-points from the
  * PowerAuth Standard API.
- * @author Petr Dvorak
  *
+ * @author Petr Dvorak, petr@lime-company.eu
  */
 @Controller
 @RequestMapping(value = "/pa/vault")
@@ -46,15 +45,13 @@ public class SecureVaultController {
 
     /**
      * Request the vault unlock key.
-     * @param request PowerAuth RESTful request with {@link VaultUnlockRequest} payload.
      * @param signatureHeader PowerAuth signature HTTP header.
      * @return PowerAuth RESTful response with {@link VaultUnlockResponse} payload.
      * @throws PowerAuthAuthenticationException In case authentication fails.
      * @throws UnsupportedEncodingException In case UTF-8 is not supported.
      */
     @RequestMapping(value = "unlock", method = RequestMethod.POST)
-    public @ResponseBody PowerAuthAPIResponse<VaultUnlockResponse> unlockVault(
-            @RequestBody PowerAuthAPIRequest<VaultUnlockRequest> request,
+    public @ResponseBody PowerAuthApiResponse<VaultUnlockResponse> unlockVault(
             @RequestHeader(value = PowerAuthHttpHeader.HEADER_NAME, required = true, defaultValue = "unknown") String signatureHeader)
             throws PowerAuthAuthenticationException, UnsupportedEncodingException {
 
@@ -77,7 +74,7 @@ public class SecureVaultController {
         response.setActivationId(soapResponse.getActivationId());
         response.setEncryptedVaultEncryptionKey(soapResponse.getEncryptedVaultEncryptionKey());
 
-        return new PowerAuthAPIResponse<VaultUnlockResponse>("OK", response);
+        return new PowerAuthApiResponse<>("OK", response);
     }
 
 }

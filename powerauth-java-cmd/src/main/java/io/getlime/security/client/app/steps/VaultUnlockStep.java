@@ -17,10 +17,9 @@ package io.getlime.security.client.app.steps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.BaseEncoding;
-import io.getlime.rest.api.model.PowerAuthAPIRequest;
-import io.getlime.rest.api.model.PowerAuthAPIResponse;
-import io.getlime.rest.api.model.VaultUnlockRequest;
-import io.getlime.rest.api.model.VaultUnlockResponse;
+import io.getlime.rest.api.model.base.PowerAuthApiRequest;
+import io.getlime.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.rest.api.model.response.VaultUnlockResponse;
 import io.getlime.security.client.app.util.EncryptedStorageUtil;
 import io.getlime.security.client.app.util.RestTemplateFactory;
 import io.getlime.security.powerauth.client.keyfactory.PowerAuthClientKeyFactory;
@@ -140,9 +139,7 @@ public class VaultUnlockStep {
         MultiValueMap<String, String> headers = new HttpHeaders();
         headers.add(PowerAuthHttpHeader.HEADER_NAME, httpAuhtorizationHeader);
 
-        PowerAuthAPIRequest<VaultUnlockRequest> requestObject = new PowerAuthAPIRequest<>();
-        requestObject.setRequestObject(new VaultUnlockRequest());
-        RequestEntity<PowerAuthAPIRequest<VaultUnlockRequest>> request = new RequestEntity<PowerAuthAPIRequest<VaultUnlockRequest>>(requestObject, headers, HttpMethod.POST, uri);
+        RequestEntity<Void> request = new RequestEntity<>(null, headers, HttpMethod.POST, uri);
 
         RestTemplate template = RestTemplateFactory.defaultRestTemplate();
 
@@ -151,7 +148,7 @@ public class VaultUnlockStep {
         System.out.println("Request headers: " + request.getHeaders().toString());
         System.out.println();
         try {
-            ResponseEntity<PowerAuthAPIResponse<VaultUnlockResponse>> response = template.exchange(request, new ParameterizedTypeReference<PowerAuthAPIResponse<VaultUnlockResponse>>() {
+            ResponseEntity<PowerAuthApiResponse<VaultUnlockResponse>> response = template.exchange(request, new ParameterizedTypeReference<PowerAuthApiResponse<VaultUnlockResponse>>() {
             });
             System.out.println("Done.");
             System.out.println();

@@ -1,4 +1,4 @@
-package io.getlime.rest.api.model;
+package io.getlime.rest.api.model.entity;
 
 /**
  * Transport object representing an error instance.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.rest.api.model;
+package io.getlime.rest.api.model.base;
 
 /**
  * Generic response object for all PowerAuth RESTful API responses.
@@ -22,7 +22,7 @@ package io.getlime.rest.api.model;
  *
  * @param <T> Type of the response object
  */
-public class PowerAuthAPIResponse<T> {
+public class PowerAuthApiResponse<T> {
 
     /**
      * Response status string
@@ -47,7 +47,7 @@ public class PowerAuthAPIResponse<T> {
     /**
      * Default constructor
      */
-    public PowerAuthAPIResponse() {
+    public PowerAuthApiResponse() {
     }
 
     /**
@@ -55,7 +55,7 @@ public class PowerAuthAPIResponse<T> {
      * @param status Response status, use static constant from {@link Status} class.
      * @param responseObject Response object.
      */
-    public PowerAuthAPIResponse(String status, T responseObject) {
+    public PowerAuthApiResponse(String status, T responseObject) {
         this.status = status;
         this.responseObject = responseObject;
     }

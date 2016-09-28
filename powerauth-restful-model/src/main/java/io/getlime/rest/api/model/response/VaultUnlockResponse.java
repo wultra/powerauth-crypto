@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.rest.api.model;
+package io.getlime.rest.api.model.response;
 
 /**
- * Response object for /pa/activation/remove end-point
+ * Response object for /pa/vault/unlock end-point.
  *
  * @author Petr Dvorak
  *
  */
-public class ActivationRemoveResponse {
+public class VaultUnlockResponse {
 
     private String activationId;
+    private String encryptedVaultEncryptionKey;
 
     /**
      * Get activation ID
@@ -39,6 +40,22 @@ public class ActivationRemoveResponse {
      */
     public void setActivationId(String activationId) {
         this.activationId = activationId;
+    }
+
+    /**
+     * Get encrypted vault encryption key (using a key derived from the master transport key).
+     * @return Encrypted vault encryption key.
+     */
+    public String getEncryptedVaultEncryptionKey() {
+        return encryptedVaultEncryptionKey;
+    }
+
+    /**
+     * Set encrypted vault encryption key (using a key derived from the master transport key).
+     * @param encryptedVaultEncryptionKey Encrypted vault encryption key.
+     */
+    public void setEncryptedVaultEncryptionKey(String encryptedVaultEncryptionKey) {
+        this.encryptedVaultEncryptionKey = encryptedVaultEncryptionKey;
     }
 
 }

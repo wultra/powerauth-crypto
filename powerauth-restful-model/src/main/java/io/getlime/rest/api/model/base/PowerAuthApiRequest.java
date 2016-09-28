@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.rest.api.model;
+package io.getlime.rest.api.model.base;
 
 /**
  * Generic class for all PowerAuth RESTful API Requests.
@@ -22,21 +22,21 @@ package io.getlime.rest.api.model;
  *
  * @param <T> Type used as a request object in the request.
  */
-public class PowerAuthAPIRequest<T> {
+public class PowerAuthApiRequest<T> {
 
     private T requestObject;
 
     /**
      * Default constructor
      */
-    public PowerAuthAPIRequest() {
+    public PowerAuthApiRequest() {
     }
 
     /**
      * Constructor with a given request object
      * @param requestObject Request object
      */
-    public PowerAuthAPIRequest(T requestObject) {
+    public PowerAuthApiRequest(T requestObject) {
         this.requestObject = requestObject;
     }
 

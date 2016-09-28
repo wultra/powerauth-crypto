@@ -17,10 +17,9 @@ package io.getlime.security.client.app.steps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.BaseEncoding;
-import io.getlime.rest.api.model.ActivationRemoveRequest;
-import io.getlime.rest.api.model.ActivationRemoveResponse;
-import io.getlime.rest.api.model.PowerAuthAPIRequest;
-import io.getlime.rest.api.model.PowerAuthAPIResponse;
+import io.getlime.rest.api.model.response.ActivationRemoveResponse;
+import io.getlime.rest.api.model.base.PowerAuthApiRequest;
+import io.getlime.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.client.app.util.EncryptedStorageUtil;
 import io.getlime.security.client.app.util.RestTemplateFactory;
 import io.getlime.security.powerauth.client.signature.PowerAuthClientSignature;
@@ -131,16 +130,14 @@ public class RemoveStep {
         headers.add(PowerAuthHttpHeader.HEADER_NAME, httpAuhtorizationHeader);
 
         // Send the activation status request to the server
-        PowerAuthAPIRequest<ActivationRemoveRequest> body = new PowerAuthAPIRequest<>();
-        body.setRequestObject(new ActivationRemoveRequest());
-        RequestEntity<PowerAuthAPIRequest<ActivationRemoveRequest>> request = new RequestEntity<PowerAuthAPIRequest<ActivationRemoveRequest>>(body, headers, HttpMethod.POST, uri);
+        RequestEntity<Void> request = new RequestEntity<>(null, headers, HttpMethod.POST, uri);
 
         RestTemplate template = RestTemplateFactory.defaultRestTemplate();
 
         // Call the server with activation data
         System.out.println("Calling PowerAuth 2.0 Standard RESTful API at " + fullURIString + " ...");
         try {
-            ResponseEntity<PowerAuthAPIResponse<ActivationRemoveResponse>> response = template.exchange(request, new ParameterizedTypeReference<PowerAuthAPIResponse<ActivationRemoveResponse>>() {
+            ResponseEntity<PowerAuthApiResponse<ActivationRemoveResponse>> response = template.exchange(request, new ParameterizedTypeReference<PowerAuthApiResponse<ActivationRemoveResponse>>() {
             });
             System.out.println("Done.");
             System.out.println();
