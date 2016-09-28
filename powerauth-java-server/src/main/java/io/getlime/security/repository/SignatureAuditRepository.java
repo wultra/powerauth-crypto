@@ -36,7 +36,7 @@ public interface SignatureAuditRepository extends CrudRepository<SignatureEntity
      * @param endingDate   Ending date (date "to").
      * @return List of {@link SignatureEntity} instances.
      */
-    List<SignatureEntity> findByActivation_UserIdAndTimestampCreatedBetween(String userId, Date startingDate, Date endingDate);
+    List<SignatureEntity> findByActivation_UserIdAndTimestampCreatedBetweenOrderByTimestampCreatedDesc(String userId, Date startingDate, Date endingDate);
 
     /**
      * Return signature audit records for given user, application and date range.
@@ -47,6 +47,6 @@ public interface SignatureAuditRepository extends CrudRepository<SignatureEntity
      * @param endingDate    Ending date (date "to").
      * @return List of {@link SignatureEntity} instances.
      */
-    List<SignatureEntity> findByActivation_ApplicationIdAndActivation_UserIdAndTimestampCreatedBetween(Long applicationId, String userId, Date startingDate, Date endingDate);
+    List<SignatureEntity> findByActivation_ApplicationIdAndActivation_UserIdAndTimestampCreatedBetweenOrderByTimestampCreatedDesc(Long applicationId, String userId, Date startingDate, Date endingDate);
 
 }

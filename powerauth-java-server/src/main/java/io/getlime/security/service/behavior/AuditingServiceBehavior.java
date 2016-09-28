@@ -15,15 +15,19 @@ import java.util.List;
 
 /**
  * Behavior class associated with process of a server auditing. Every time server attempts to compute a signature,
- * a log record is created. This class separates logics from the main service class.
+ * a log record is created. This class separates logic from the main service class.
  *
  * @author Petr Dvorak
  */
 @Component
 public class AuditingServiceBehavior {
 
-    @Autowired
     private SignatureAuditRepository signatureAuditRepository;
+
+    @Autowired
+    public AuditingServiceBehavior(SignatureAuditRepository signatureAuditRepository) {
+        this.signatureAuditRepository = signatureAuditRepository;
+    }
 
     /**
      * List records from the signature audit log for given user
@@ -37,11 +41,11 @@ public class AuditingServiceBehavior {
      */
     public SignatureAuditResponse getSignatureAuditLog(String userId, Long applicationId, Date startingDate, Date endingDate) throws DatatypeConfigurationException {
 
-        List<SignatureEntity> signatureAuditEntityList = null;
+        List<SignatureEntity> signatureAuditEntityList;
         if (applicationId == null) {
-            signatureAuditEntityList = signatureAuditRepository.findByActivation_UserIdAndTimestampCreatedBetween(userId, startingDate, endingDate);
+            signatureAuditEntityList = signatureAuditRepository.findByActivation_UserIdAndTimestampCreatedBetweenOrderByTimestampCreatedDesc(userId, startingDate, endingDate);
         } else {
-            signatureAuditEntityList = signatureAuditRepository.findByActivation_ApplicationIdAndActivation_UserIdAndTimestampCreatedBetween(applicationId, userId, startingDate, endingDate);
+            signatureAuditEntityList = signatureAuditRepository.findByActivation_ApplicationIdAndActivation_UserIdAndTimestampCreatedBetweenOrderByTimestampCreatedDesc(applicationId, userId, startingDate, endingDate);
         }
 
         SignatureAuditResponse response = new SignatureAuditResponse();
@@ -81,7 +85,7 @@ public class AuditingServiceBehavior {
      * @param note             Record additional info (for example, reason for signature validation failure)
      * @param currentTimestamp Record timestamp
      */
-    public void logSignatureAuditRecord(ActivationRecordEntity activation, String signatureType, String signature, byte[] data, Boolean valid, String note, Date currentTimestamp) {
+    void logSignatureAuditRecord(ActivationRecordEntity activation, String signatureType, String signature, byte[] data, Boolean valid, String note, Date currentTimestamp) {
         // Audit the signature
         SignatureEntity signatureAuditRecord = new SignatureEntity();
         signatureAuditRecord.setActivation(activation);
