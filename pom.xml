@@ -55,7 +55,6 @@
 	</issueManagement>
 
 	<modules>
-		<module>powerauth-android</module>
 		<module>powerauth-java-prov</module>
 		<module>powerauth-java</module>
 		<module>powerauth-java-http</module>
