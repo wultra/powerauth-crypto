@@ -1,5 +1,6 @@
 package io.getlime.security.service.configuration;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,9 @@ public class PowerAuthServiceConfiguration {
 
     @Value("${powerauth.service.applicationEnvironment}")
     private String applicationEnvironment;
+
+    @Value("${powerauth.service.restrictAccess}")
+    private Boolean restrictAccess;
 
     /**
      * Get application name, usually used as a "unique code" for the application within
@@ -77,6 +81,26 @@ public class PowerAuthServiceConfiguration {
      */
     public void setApplicationEnvironment(String applicationEnvironment) {
         this.applicationEnvironment = applicationEnvironment;
+    }
+
+    /**
+     * Get the value of a flag that indicates that access to the PA2.0 Server should be restricted
+     * to predefined integrations.
+     *
+     * @return Flag with access restriction information.
+     */
+    public Boolean getRestrictAccess() {
+        return restrictAccess;
+    }
+
+    /**
+     * Set the value of a flag that indicates that access to the PA2.0 Server should be restricted
+     * to predefined integrations.
+     *
+     * @param restrictAccess Flag with access restriction information.
+     */
+    public void setRestrictAccess(Boolean restrictAccess) {
+        this.restrictAccess = restrictAccess;
     }
 
     @Bean

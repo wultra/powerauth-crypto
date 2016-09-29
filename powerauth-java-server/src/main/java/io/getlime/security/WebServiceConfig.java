@@ -15,26 +15,95 @@
  */
 package io.getlime.security;
 
+import io.getlime.security.service.configuration.PowerAuthServiceConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.server.EndpointInterceptor;
+import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
+import org.springframework.ws.soap.security.wss4j2.callback.SpringSecurityPasswordValidationCallbackHandler;
+import org.springframework.ws.soap.security.xwss.callback.SpringDigestPasswordValidationCallbackHandler;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
 
+import java.util.List;
+
 /**
- * PowerAuth 2.0 Server default web service configuration.
+ * PowerAuth 2.0 Server default web service configuration. Configures both basic endpoint information
+ * (service, port, xsd) and security (WS-Security, with UsernameToken authentication) in case it is
+ * enabled in application configuration ("powerauth.service.restrictAccess").
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  */
 @EnableWs
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
+
+    private UserDetailsService userDetailsService;
+
+    private PowerAuthServiceConfiguration configuration;
+
+    /**
+     * Setter for configuration injection.
+     * @param configuration Configuration.
+     */
+    @Autowired
+    public void setConfiguration(PowerAuthServiceConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+    /**
+     * Constructor that accepts an instance of UserDetailsServicce for autowiring.
+     * @param userDetailsService UserDetailsService instance.
+     */
+    @Autowired
+    public WebServiceConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    /**
+     * Callback handler that uses autowired UserDetailsService to accommodate authentication.
+     * @return Password validation callback handler.
+     */
+    @Bean
+    public SpringSecurityPasswordValidationCallbackHandler securityCallbackHandler() {
+        SpringSecurityPasswordValidationCallbackHandler callbackHandler = new SpringSecurityPasswordValidationCallbackHandler();
+        callbackHandler.setUserDetailsService(userDetailsService);
+        return callbackHandler;
+    }
+
+    /**
+     * Default implementation of WS-Security interceptor that uses "UsernameToken" authentication.
+     * @return Default WS-Security interceptor.
+     */
+    @Bean
+    public Wss4jSecurityInterceptor securityInterceptor(){
+        Wss4jSecurityInterceptor securityInterceptor = new Wss4jSecurityInterceptor();
+        securityInterceptor.setValidationActions("UsernameToken");
+        securityInterceptor.setValidationCallbackHandler(securityCallbackHandler());
+        return securityInterceptor;
+    }
+
+    /**
+     * Specify security interceptor in case restricted access is enabled in configuration.
+     * @param interceptors Interceptor list, to be enriched with custom interceptor.
+     */
+    @Override
+    public void addInterceptors(List<EndpointInterceptor> interceptors) {
+        // If a restricted access is required, add a security interceptor...
+        if (configuration.getRestrictAccess()) {
+            interceptors.add(securityInterceptor());
+        }
+        super.addInterceptors(interceptors);
+    }
 
     /**
      * Map the SOAP interface to ${CONTEXT_PATH}/soap path.
