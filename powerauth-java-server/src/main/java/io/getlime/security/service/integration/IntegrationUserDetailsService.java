@@ -54,7 +54,7 @@ public class IntegrationUserDetailsService implements UserDetailsService {
      * Method to load user details from the database table "pa_integration" according to "clientToken".
      * @param username Username, represented by Client Token value in the "pa_integration" table.
      * @return User details - an instance of new User object.
-     * @throws UsernameNotFoundException In case username was not found.
+     * @throws UsernameNotFoundException When integration with given Client Token was not found.
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
