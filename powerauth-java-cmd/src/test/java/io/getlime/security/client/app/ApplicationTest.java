@@ -62,7 +62,7 @@ public class ApplicationTest {
 			assertNotNull(knowledgeSecret3);
 			assertEquals(knowledgeSecret.getEncoded().length, knowledgeSecret3.getEncoded().length);
 			
-			knowledgeSecret3 = EncryptedStorageUtil.getSignatureKnowledgeKey("".toCharArray(), encrypted, salt, new KeyGenerator());
+			knowledgeSecret3 = EncryptedStorageUtil.getSignatureKnowledgeKey(" ".toCharArray(), encrypted, salt, new KeyGenerator());
 			assertNotEquals(knowledgeSecret, knowledgeSecret3);
 			assertNotNull(knowledgeSecret3);
 			assertEquals(knowledgeSecret.getEncoded().length, knowledgeSecret3.getEncoded().length);
