@@ -483,4 +483,61 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
         return this.supportApplicationVersion(request);
     }
 
+    /**
+     * Create a new integration with given name.
+     * @param request Request specifying the integration name.
+     * @return New integration information.
+     */
+    public CreateIntegrationResponse createIntegration(CreateIntegrationRequest request) {
+        return (CreateIntegrationResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+
+    /**
+     * Create a new integration with given name.
+     * @param name Integration name.
+     * @return New integration information.
+     */
+    public CreateIntegrationResponse createIntegration(String name) {
+        CreateIntegrationRequest request = new CreateIntegrationRequest();
+        request.setName(name);
+        return this.createIntegration(request);
+    }
+
+    /**
+     * Get the list of integrations.
+     * @param request SOAP request object.
+     * @return List of integrations.
+     */
+    public GetIntegrationListResponse getIntegrationList(GetIntegrationListRequest request) {
+        return (GetIntegrationListResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+
+    /**
+     * Get the list of integrations.
+     * @return List of integrations.
+     */
+    public List<GetIntegrationListResponse.Items> getIntegrationList() {
+        return this.getIntegrationList(new GetIntegrationListRequest()).getItems();
+    }
+
+    /**
+     * Remove integration with given ID.
+     * @param request SOAP object with integration ID to be removed.
+     * @return Removal status.
+     */
+    public RemoveIntegrationResponse removeIntegration(RemoveIntegrationRequest request) {
+        return (RemoveIntegrationResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+
+    /**
+     * Remove integration with given ID.
+     * @param id ID of integration to be removed.
+     * @return Removal status.
+     */
+    public RemoveIntegrationResponse removeIntegration(String id) {
+        RemoveIntegrationRequest request = new RemoveIntegrationRequest();
+        request.setId(id);
+        return this.removeIntegration(request);
+    }
+
 }
