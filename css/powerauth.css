@@ -3,11 +3,28 @@
 }
 
 #fh5co-testimonials {
-    background-color: #001840;
+    background-color: #333333;
+}
+
+.hero {
+    background-image:url(../images/background-map.png);
+    background-position: center center !important;
+}
+
+.black {
+    color: #000 !important;
 }
 
 .blue {
     color: #0A7FEE !important;
+}
+
+.font-regular {
+    font-style: normal;
+}
+
+.no-border {
+    border: 0 !important;
 }
 
 .bg-purple {
@@ -20,6 +37,14 @@
 
 .bg-green {
     background-color: #7FC000 !important;
+}
+
+.bg-lightgray {
+    background-color: #EEE !important;
+}
+
+.bg-white {
+    background-color: white !important;
 }
 
 .padder-40 {
@@ -112,6 +137,13 @@
     .collapsing {
         overflow: hidden!important;
     }
+
+    .hero {
+        background-color: #001840;
+        background-image: none;
+        background-position: center center !important;
+    }
+
 }
 
 .typed-cursor{

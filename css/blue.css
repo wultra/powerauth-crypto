@@ -1004,7 +1004,8 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: #001840;
+  opacity: 0.8;
   z-index: 8;
 }
 .owl-carousel-fullwidth .item img {

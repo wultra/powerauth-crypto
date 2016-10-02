@@ -1,0 +1,29 @@
+.anim-svg {
+    position: absolute;
+    top: 25px;
+    left: 0;
+    margin-right: 0;
+}
+
+.anim-svg path {
+    fill: none;
+    stroke: #333;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+}
+
+.animated .anim-svg path {
+    animation: dash 500ms cubic-bezier(.6,.25,.25,.9) forwards;
+    -webkit-animation: dash 500ms cubic-bezier(.6,.25,.25,.9) forwards;
+    animation-delay: 2s;
+    -webkit-animation-delay: 2s;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 0;
+    }
+}

@@ -1,0 +1,35 @@
+@keyframes heartbeat {
+    0% {
+        transform: scale( 1);
+    }
+    20% {
+        transform: scale( 1.1);
+    }
+    40% {
+        transform: scale( 1);
+    }
+    60% {
+        transform: scale( 1.1);
+    }
+    80% {
+        transform: scale( 1);
+    }
+    100% {
+        transform: scale( 1);
+    }
+}
+
+#heart {
+    width:  40px;
+    height: 40px;
+    margin-left: 10px;
+    margin-top: -10px;
+}
+
+.heart-offset {
+    padding-left: 30px;
+}
+
+#heart.beating {
+    animation: heartbeat 1.5s infinite;
+}
