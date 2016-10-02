@@ -179,6 +179,7 @@ public class ActivationServiceBehavior {
                 response.setActivationIdShort(activation.getActivationIdShort());
                 response.setActivationOTP(activation.getActivationOTP());
                 response.setActivationSignature(BaseEncoding.base64().encode(activationSignature));
+                response.setDevicePublicKeyFingerprint(null);
                 return response;
 
             } else {
@@ -192,6 +193,9 @@ public class ActivationServiceBehavior {
                 // there is not device public key in the database - we need to handle
                 // that case by defaulting the C_statusBlob to random value...
                 byte[] C_statusBlob = new KeyGenerator().generateRandomBytes(16);
+
+                // Prepare a value for the device public key fingerprint
+                String activationFingerPrint = null;
 
                 // There is a device public key available, therefore we can compute
                 // the real C_statusBlob value.
@@ -212,6 +216,9 @@ public class ActivationServiceBehavior {
                             transportKey
                     );
 
+                    // Assign the activation fingerprint
+                    activationFingerPrint = String.valueOf(powerAuthServerActivation.computeDevicePublicKeyFingerprint(devicePublicKey));
+
                 }
 
                 // return the data
@@ -228,6 +235,7 @@ public class ActivationServiceBehavior {
                 response.setActivationIdShort(null);
                 response.setActivationOTP(null);
                 response.setActivationSignature(null);
+                response.setDevicePublicKeyFingerprint(activationFingerPrint);
 
                 return response;
 
@@ -252,6 +260,7 @@ public class ActivationServiceBehavior {
             response.setActivationIdShort(null);
             response.setActivationOTP(null);
             response.setActivationSignature(null);
+            response.setDevicePublicKeyFingerprint(null);
             return response;
         }
     }
