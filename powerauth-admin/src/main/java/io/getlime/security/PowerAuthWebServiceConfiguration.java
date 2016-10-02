@@ -29,6 +29,18 @@ public class PowerAuthWebServiceConfiguration {
     private String clientSecret;
 
     /**
+     * Checks if given client token is the current client token.
+     * @param clientToken Client Token to be checked.
+     * @return True if the provided client token is the same one as the one being used, false otherwise.
+     */
+    public boolean isCurrentSecuritySettings(String clientToken) {
+        if (this.clientToken == null) {
+            return false;
+        }
+        return this.clientToken.equals(clientToken);
+    }
+
+    /**
      * Return WS-Security interceptor instance using UsernameToken authentication.
      * @return Wss4jSecurityInterceptor instance.
      */

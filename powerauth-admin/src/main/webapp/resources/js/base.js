@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
 	
 	$(".action-remove").click(function (e) {
-		if (!confirm("Are you sure you want to permanently remove this activation?")) {
+		if (!confirm("Are you sure you want to permanently remove this item?")) {
 			e.stopPropagation();
 			e.preventDefault();
 		}
