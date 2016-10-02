@@ -213,4 +213,28 @@ public interface PowerAuthService {
      */
     public SupportApplicationVersionResponse supportApplicationVersion(SupportApplicationVersionRequest request) throws Exception;
 
+    /**
+     * Create a new credentials for integration with given name. Automatically generates appropriate credentials.
+     * @param request Request with integration name.
+     * @return Newly created integration details.
+     * @throws Exception In case of a business logic error.
+     */
+    public CreateIntegrationResponse createIntegration(CreateIntegrationRequest request) throws Exception;
+
+    /**
+     * Get the list of currently present integrations.
+     * @param request SOAP method request.
+     * @return List of currently present integrations.
+     * @throws Exception In case of a business logic error.
+     */
+    public GetIntegrationListResponse getIntegrationList(GetIntegrationListRequest request) throws Exception;
+
+    /**
+     * Remove integration with given ID.
+     * @param request Request with integration ID.
+     * @return Removal status information.
+     * @throws Exception In case of a business logic error.
+     */
+    public RemoveIntegrationResponse removeIntegration(RemoveIntegrationRequest request) throws Exception;
+
 }

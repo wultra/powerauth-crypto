@@ -70,6 +70,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     private VaultUnlockServiceBehavior vaultUnlockServiceBehavior;
 
     @Autowired
+    private IntegrationBehavior integrationBehavior;
+
+    @Autowired
     private LocalizationProvider localizationProvider;
 
     private final CryptoProviderUtil keyConversionUtilities = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
@@ -352,6 +355,24 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     @Transactional
     public SupportApplicationVersionResponse supportApplicationVersion(SupportApplicationVersionRequest request) throws Exception {
         return applicationServiceBehavior.supportApplicationVersion(request.getApplicationVersionId());
+    }
+
+    @Override
+    @Transactional
+    public CreateIntegrationResponse createIntegration(CreateIntegrationRequest request) throws Exception {
+        return integrationBehavior.createIntegration(request);
+    }
+
+    @Override
+    @Transactional
+    public GetIntegrationListResponse getIntegrationList(GetIntegrationListRequest request) throws Exception {
+        return integrationBehavior.getIntegrationList(request);
+    }
+
+    @Override
+    @Transactional
+    public RemoveIntegrationResponse removeIntegration(RemoveIntegrationRequest request) throws Exception {
+        return integrationBehavior.removeIntegration(request);
     }
 
 }

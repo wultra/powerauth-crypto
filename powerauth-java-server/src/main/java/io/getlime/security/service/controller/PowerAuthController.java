@@ -283,4 +283,43 @@ public class PowerAuthController {
         return new RESTResponseWrapper<>("OK", powerAuthService.supportApplicationVersion(request.getRequestObject()));
     }
 
+    /**
+     * Call {@link PowerAuthService#createIntegration(CreateIntegrationRequest)} method and
+     * return the response.
+     *
+     * @param request Create integration request.
+     * @return Create integration response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/integration/create", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<CreateIntegrationResponse> createIntegration(@RequestBody RESTRequestWrapper<CreateIntegrationRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.createIntegration(request.getRequestObject()));
+    }
+
+    /**
+     * Call {@link PowerAuthService#getIntegrationList(GetIntegrationListRequest)} method and
+     * return the response.
+     *
+     * @param request Get integration list request.
+     * @return Get integration list response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/integration/list", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetIntegrationListResponse> getIntegrationList(@RequestBody RESTRequestWrapper<GetIntegrationListRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.getIntegrationList(request.getRequestObject()));
+    }
+
+    /**
+     * Call {@link PowerAuthService#removeIntegration(RemoveIntegrationRequest)} method and
+     * return the response.
+     *
+     * @param request Remove integration request.
+     * @return Remove integration response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/integration/remove", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<RemoveIntegrationResponse> removeIntegration(@RequestBody RESTRequestWrapper<RemoveIntegrationRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.removeIntegration(request.getRequestObject()));
+    }
+
 }

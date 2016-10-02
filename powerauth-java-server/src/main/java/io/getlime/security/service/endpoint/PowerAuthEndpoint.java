@@ -302,4 +302,46 @@ public class PowerAuthEndpoint {
         return powerAuthService.supportApplicationVersion(request);
     }
 
+    /**
+     * Call {@link PowerAuthService#createIntegration(CreateIntegrationRequest)} method and
+     * return the response.
+     *
+     * @param request Create integration request.
+     * @return Create integration response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "CreateIntegrationRequest")
+    @ResponsePayload
+    public CreateIntegrationResponse createIntegration(@RequestPayload CreateIntegrationRequest request) throws Exception {
+        return powerAuthService.createIntegration(request);
+    }
+
+    /**
+     * Call {@link PowerAuthService#getIntegrationList(GetIntegrationListRequest)} method and
+     * return the response.
+     *
+     * @param request Get integration list request.
+     * @return Get integration list response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetIntegrationListRequest")
+    @ResponsePayload
+    public GetIntegrationListResponse getIntegrationList(@RequestPayload GetIntegrationListRequest request) throws Exception {
+        return powerAuthService.getIntegrationList(request);
+    }
+
+    /**
+     * Call {@link PowerAuthService#removeIntegration(RemoveIntegrationRequest)}  method and
+     * return the response.
+     *
+     * @param request Remove integration request.
+     * @return Remove integration response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RemoveIntegrationRequest")
+    @ResponsePayload
+    public RemoveIntegrationResponse removeIntegration(@RequestPayload RemoveIntegrationRequest request) throws Exception {
+        return powerAuthService.removeIntegration(request);
+    }
+
 }

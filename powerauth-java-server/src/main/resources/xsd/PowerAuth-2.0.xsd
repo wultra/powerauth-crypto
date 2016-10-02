@@ -12,7 +12,7 @@
         	<xs:documentation>Request for getting the system status information.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-    		<xs:sequence></xs:sequence>
+    		<xs:sequence/>
     	</xs:complexType>
     </xs:element>
     
@@ -69,7 +69,7 @@
         	<xs:documentation>Request for getting the application list.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
-    		<xs:sequence></xs:sequence>
+    		<xs:sequence/>
     	</xs:complexType>
     </xs:element>
     
@@ -580,6 +580,89 @@
         			</xs:complexType>
         		</xs:element>
         	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Create a new integration //-->
+
+    <xs:element name="CreateIntegrationRequest">
+        <xs:annotation>
+            <xs:documentation>Request for creating a new integration record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateIntegrationResponse">
+        <xs:annotation>
+            <xs:documentation>Response for creating a new integration record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="clientToken" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="clientSecret" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Get integration list //-->
+
+    <xs:element name="GetIntegrationListRequest">
+        <xs:annotation>
+            <xs:documentation>Request for getting the list of integrations.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetIntegrationListResponse">
+        <xs:annotation>
+            <xs:documentation>Response for getting the list of integrations.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="items" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                            <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="clientToken" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                            <xs:element name="clientSecret" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Remove integration //-->
+
+    <xs:element name="RemoveIntegrationRequest">
+        <xs:annotation>
+            <xs:documentation>Request for removing an integration record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="RemoveIntegrationResponse">
+        <xs:annotation>
+            <xs:documentation>Response for removing an integration record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="removed" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 
