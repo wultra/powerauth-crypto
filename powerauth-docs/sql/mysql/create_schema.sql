@@ -84,3 +84,15 @@ CREATE TABLE `pa_signature_audit` (
   KEY `K_ACTIVATION_ID` (`activation_id`),
   CONSTRAINT `FK_ACTIVATION_ID` FOREIGN KEY (`activation_id`) REFERENCES `pa_activation` (`activation_id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Create a table for integration credentials
+--
+
+CREATE TABLE `pa_integration` (
+  `id` varchar(37) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `client_token` varchar(37) DEFAULT NULL,
+  `client_secret` varchar(37) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
