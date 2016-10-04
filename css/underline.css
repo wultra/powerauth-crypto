@@ -8,7 +8,7 @@
 
 .anim-svg path {
     fill: none;
-    stroke: #333;
+    stroke: #0A7FEE;
     stroke-width: 4;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -19,8 +19,8 @@
 .animated .anim-svg path {
     animation: dash 500ms cubic-bezier(.6,.25,.25,.9) forwards;
     -webkit-animation: dash 500ms cubic-bezier(.6,.25,.25,.9) forwards;
-    animation-delay: 3.7s;
-    -webkit-animation-delay: 3.7s;
+    animation-delay: 1.5s;
+    -webkit-animation-delay: 1.5s;
 }
 
 @keyframes dash {
