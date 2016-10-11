@@ -3,6 +3,7 @@ package io.getlime.security.service.behavior;
 import io.getlime.security.powerauth.*;
 import io.getlime.security.repository.IntegrationRepository;
 import io.getlime.security.repository.model.entity.IntegrationEntity;
+import io.getlime.security.service.configuration.PowerAuthServiceConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +18,16 @@ import java.util.UUID;
 public class IntegrationBehavior {
 
     private IntegrationRepository integrationRepository;
+    private PowerAuthServiceConfiguration configuration;
 
     @Autowired
     public IntegrationBehavior(IntegrationRepository integrationRepository) {
         this.integrationRepository = integrationRepository;
+    }
+
+    @Autowired
+    public void setConfiguration(PowerAuthServiceConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     /**
@@ -50,6 +57,7 @@ public class IntegrationBehavior {
     public GetIntegrationListResponse getIntegrationList(GetIntegrationListRequest request) {
         final Iterable<IntegrationEntity> integrations = integrationRepository.findAll();
         GetIntegrationListResponse response = new GetIntegrationListResponse();
+        response.setRestrictedAccess(configuration.getRestrictAccess());
         for (IntegrationEntity i: integrations) {
             GetIntegrationListResponse.Items item = new GetIntegrationListResponse.Items();
             item.setId(i.getId());

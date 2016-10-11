@@ -34,8 +34,10 @@ public class IntegrationController {
      */
     @RequestMapping(value = "/integration/list")
     public String integrationList(Map<String, Object> model) {
-        final List<GetIntegrationListResponse.Items> integrationList = client.getIntegrationList();
-        model.put("integrations", integrationList);
+        GetIntegrationListRequest request = new GetIntegrationListRequest();
+        GetIntegrationListResponse integrationListResponse = client.getIntegrationList(request);
+        model.put("restrictedAccess", integrationListResponse.isRestrictedAccess());
+        model.put("integrations", integrationListResponse.getItems());
         return "integrations";
     }
 

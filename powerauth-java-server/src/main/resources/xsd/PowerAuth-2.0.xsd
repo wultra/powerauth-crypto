@@ -654,6 +654,7 @@
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="restrictedAccess" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="items" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
