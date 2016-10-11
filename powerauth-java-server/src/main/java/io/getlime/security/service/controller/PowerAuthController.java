@@ -154,6 +154,19 @@ public class PowerAuthController {
     }
 
     /**
+     * Call {@link PowerAuthService#verifyECDSASignature(VerifyECDSASignatureRequest)} method and
+     * return the response.
+     *
+     * @param request Verify ECDSA signature request.
+     * @return Verify ECDSA signature response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/signature/ecdsa/verify", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<VerifyECDSASignatureResponse> verifyECDSASignature(@RequestBody RESTRequestWrapper<VerifyECDSASignatureRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.verifyECDSASignature(request.getRequestObject()));
+    }
+
+    /**
      * Call {@link PowerAuthService#getSignatureAuditLog(SignatureAuditRequest)} method and
      * return the response.
      *

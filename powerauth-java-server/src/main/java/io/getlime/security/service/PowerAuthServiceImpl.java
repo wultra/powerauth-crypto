@@ -73,6 +73,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     private IntegrationBehavior integrationBehavior;
 
     @Autowired
+    private AsymmetricSignatureServiceBehavior asymmetricSignatureServiceBehavior;
+
+    @Autowired
     private LocalizationProvider localizationProvider;
 
     private final CryptoProviderUtil keyConversionUtilities = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
@@ -296,6 +299,23 @@ public class PowerAuthServiceImpl implements PowerAuthService {
         } catch (GenericServiceException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
+        } catch (Exception ex) {
+            Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public VerifyECDSASignatureResponse verifyECDSASignature(VerifyECDSASignatureRequest request) throws Exception {
+        try {
+            String activationId = request.getActivationId();
+            String signedData = request.getData();
+            String signature  = request.getSignature();
+            boolean matches = asymmetricSignatureServiceBehavior.verifyECDSASignature(activationId, signedData, signature, keyConversionUtilities);
+            VerifyECDSASignatureResponse response = new VerifyECDSASignatureResponse();
+            response.setSignatureValid(matches);
+            return response;
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());

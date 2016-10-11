@@ -352,6 +352,7 @@
                 <xs:element maxOccurs="1" minOccurs="0" name="activationIdShort" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="0" name="activationOTP" type="xs:string"/>
                 <xs:element maxOccurs="1" minOccurs="0" name="activationSignature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="devicePublicKeyFingerprint" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -535,6 +536,32 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+
+    <!-- Asymmetric ECDSA signature validation -->
+
+    <xs:element name="VerifyECDSASignatureRequest">
+        <xs:annotation>
+            <xs:documentation>Request for the asymmetric signature (ECDSA) validation procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="data" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="VerifyECDSASignatureResponse">
+        <xs:annotation>
+            <xs:documentation>Response for the asymmetric signature (ECDSA) validation procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
     
     <!-- Signature Audit Access //-->
     
@@ -688,6 +715,10 @@
     <wsdl:part element="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="VerifyECDSASignatureRequest">
+    <wsdl:part element="tns:VerifyECDSASignatureRequest" name="VerifyECDSASignatureRequest">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="CommitActivationRequest">
     <wsdl:part element="tns:CommitActivationRequest" name="CommitActivationRequest">
     </wsdl:part>
@@ -762,6 +793,10 @@
   </wsdl:message>
   <wsdl:message name="UnblockActivationResponse">
     <wsdl:part element="tns:UnblockActivationResponse" name="UnblockActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VerifyECDSASignatureResponse">
+    <wsdl:part element="tns:VerifyECDSASignatureResponse" name="VerifyECDSASignatureResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="GetSystemStatusRequest">
@@ -867,6 +902,12 @@
       <wsdl:input message="tns:GetSystemStatusRequest" name="GetSystemStatusRequest">
     </wsdl:input>
       <wsdl:output message="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerifyECDSASignature">
+      <wsdl:input message="tns:VerifyECDSASignatureRequest" name="VerifyECDSASignatureRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:VerifyECDSASignatureResponse" name="VerifyECDSASignatureResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CommitActivation">
@@ -1007,6 +1048,15 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetSystemStatusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerifyECDSASignature">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="VerifyECDSASignatureRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="VerifyECDSASignatureResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

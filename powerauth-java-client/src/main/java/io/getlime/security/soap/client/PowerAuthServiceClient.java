@@ -322,6 +322,30 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
     }
 
     /**
+     * Call the verifyECDSASignature method of the PowerAuth 2.0 Server SOAP interface.
+     * @param request {@link VerifyECDSASignatureRequest} instance.
+     * @return {@link VerifyECDSASignatureResponse}
+     */
+    public VerifyECDSASignatureResponse verifyECDSASignature(VerifyECDSASignatureRequest request) {
+        return (VerifyECDSASignatureResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+
+    /**
+     * Call the verifyECDSASignature method of the PowerAuth 2.0 Server SOAP interface.
+     * @param activationId Activation ID of activation to be used for authentication.
+     * @param data Data that were signed by ECDSA algorithm.
+     * @param signature Request signature.
+     * @return Verify ECDSA signature and return SOAP response with the verification results.
+     */
+    public VerifyECDSASignatureResponse verifyECDSASignature(String activationId, String data, String signature) {
+        VerifyECDSASignatureRequest request = new VerifyECDSASignatureRequest();
+        request.setActivationId(activationId);
+        request.setData(data);
+        request.setSignature(signature);
+        return this.verifyECDSASignature(request);
+    }
+
+    /**
      * Call the getSignatureAuditLog method of the PowerAuth 2.0 Server SOAP interface.
      * @param request {@link SignatureAuditRequest} instance.
      * @return {@link SignatureAuditResponse}

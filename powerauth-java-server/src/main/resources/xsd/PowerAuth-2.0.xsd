@@ -539,6 +539,32 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+
+    <!-- Asymmetric ECDSA signature validation -->
+
+    <xs:element name="VerifyECDSASignatureRequest">
+        <xs:annotation>
+            <xs:documentation>Request for the asymmetric signature (ECDSA) validation procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="data" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="signature" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="VerifyECDSASignatureResponse">
+        <xs:annotation>
+            <xs:documentation>Response for the asymmetric signature (ECDSA) validation procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="signatureValid" type="xs:boolean"  minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
     
     <!-- Signature Audit Access //-->
     

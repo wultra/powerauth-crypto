@@ -163,6 +163,20 @@ public class PowerAuthEndpoint {
     }
 
     /**
+     * Call {@link PowerAuthService#verifyECDSASignature(VerifyECDSASignatureRequest)} method and
+     * return the response.
+     *
+     * @param request Verify ECDSA signature request.
+     * @return Verify ECDSA signature response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "VerifyECDSASignatureRequest")
+    @ResponsePayload
+    public VerifyECDSASignatureResponse verifySignature(@RequestPayload VerifyECDSASignatureRequest request) throws Exception {
+        return powerAuthService.verifyECDSASignature(request);
+    }
+
+    /**
      * Call {@link PowerAuthService#getSignatureAuditLog(SignatureAuditRequest)} method and
      * return the response.
      *

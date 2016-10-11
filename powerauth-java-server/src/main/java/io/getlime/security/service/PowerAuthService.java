@@ -32,7 +32,7 @@ public interface PowerAuthService {
      * @return System status.
      * @throws Exception In case of a business logic error.
      */
-    public GetSystemStatusResponse getSystemStatus(GetSystemStatusRequest request) throws Exception;
+    GetSystemStatusResponse getSystemStatus(GetSystemStatusRequest request) throws Exception;
 
     /**
      * Get activations for a given user.
@@ -41,7 +41,7 @@ public interface PowerAuthService {
      * @return Activation list.
      * @throws Exception In case of a business logic error.
      */
-    public GetActivationListForUserResponse getActivatioListForUser(GetActivationListForUserRequest request) throws Exception;
+    GetActivationListForUserResponse getActivatioListForUser(GetActivationListForUserRequest request) throws Exception;
 
     /**
      * Get activation status for given activation ID.
@@ -50,7 +50,7 @@ public interface PowerAuthService {
      * @return Activation status.
      * @throws Exception In case of a business logic error.
      */
-    public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception;
+    GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception;
 
     /**
      * Get the list of error codes for given language.
@@ -59,7 +59,7 @@ public interface PowerAuthService {
      * @return Error code list.
      * @throws Exception In case of a business logic error.
      */
-    public GetErrorCodeListResponse getErrorCodeList(GetErrorCodeListRequest request) throws Exception;
+    GetErrorCodeListResponse getErrorCodeList(GetErrorCodeListRequest request) throws Exception;
 
     /**
      * Initiate a new activation for a given application and user ID. The new activation record is in
@@ -69,7 +69,7 @@ public interface PowerAuthService {
      * @return Activation init data.
      * @throws Exception In case of a business logic error.
      */
-    public InitActivationResponse initActivation(InitActivationRequest request) throws Exception;
+    InitActivationResponse initActivation(InitActivationRequest request) throws Exception;
 
     /**
      * Receive a PowerAuth 2.0 Client public key and return own PowerAuth 2.0 Server public key. The
@@ -79,7 +79,7 @@ public interface PowerAuthService {
      * @return Prepare activation response.
      * @throws Exception In case of a business logic error.
      */
-    public PrepareActivationResponse prepareActivation(PrepareActivationRequest request) throws Exception;
+    PrepareActivationResponse prepareActivation(PrepareActivationRequest request) throws Exception;
 
     /**
      * Verify signature against provided data using activation with given ID. Each call to this method
@@ -92,7 +92,7 @@ public interface PowerAuthService {
      * @return Signature verification response.
      * @throws Exception In case of a business logic error.
      */
-    public VerifySignatureResponse verifySignature(VerifySignatureRequest request) throws Exception;
+    VerifySignatureResponse verifySignature(VerifySignatureRequest request) throws Exception;
 
     /**
      * Commit a created activation. Only activations in OTP_USED state can be committed - in case activation
@@ -103,7 +103,7 @@ public interface PowerAuthService {
      * @return Activation commit response.
      * @throws Exception In case of a business logic error.
      */
-    public CommitActivationResponse commitActivation(CommitActivationRequest request) throws Exception;
+    CommitActivationResponse commitActivation(CommitActivationRequest request) throws Exception;
 
     /**
      * Remove activation with given ID - change it's status to REMOVED. Activations in any state can be removed.
@@ -112,7 +112,7 @@ public interface PowerAuthService {
      * @return Activation remove response.
      * @throws Exception In case of a business logic error.
      */
-    public RemoveActivationResponse removeActivation(RemoveActivationRequest request) throws Exception;
+    RemoveActivationResponse removeActivation(RemoveActivationRequest request) throws Exception;
 
     /**
      * Block activation with given ID. Activation moves to BLOCKED state, only activations in ACTIVE state
@@ -122,7 +122,7 @@ public interface PowerAuthService {
      * @return Block activation response.
      * @throws Exception In case of a business logic error.
      */
-    public BlockActivationResponse blockActivation(BlockActivationRequest request) throws Exception;
+    BlockActivationResponse blockActivation(BlockActivationRequest request) throws Exception;
 
     /**
      * Unblock activation with given ID. Activation moves to ACTIVE state, only activations in BLOCKED state
@@ -132,7 +132,7 @@ public interface PowerAuthService {
      * @return Unblock activation response.
      * @throws Exception In case of a business logic error.
      */
-    public UnblockActivationResponse unblockActivation(UnblockActivationRequest request) throws Exception;
+    UnblockActivationResponse unblockActivation(UnblockActivationRequest request) throws Exception;
 
     /**
      * Return the data for the vault unlock request. Part of the vault unlock process is performing a signature
@@ -144,7 +144,15 @@ public interface PowerAuthService {
      * @return Vault unlock response.
      * @throws Exception In case of a business logic error.
      */
-    public VaultUnlockResponse vaultUnlock(VaultUnlockRequest request) throws Exception;
+    VaultUnlockResponse vaultUnlock(VaultUnlockRequest request) throws Exception;
+
+    /**
+     * Validate incoming ECDSA signature for provided data using a public device key associated with given activation.
+     * @param request Request for signature validation.
+     * @return Response with the signature validation status.
+     * @throws Exception In case of a business logic error.
+     */
+    VerifyECDSASignatureResponse verifyECDSASignature(VerifyECDSASignatureRequest request) throws Exception;
 
     /**
      * Get records from the signature audit log.
@@ -153,7 +161,7 @@ public interface PowerAuthService {
      * @return Signature audit log response.
      * @throws Exception In case of a business logic error.
      */
-    public SignatureAuditResponse getSignatureAuditLog(SignatureAuditRequest request) throws Exception;
+    SignatureAuditResponse getSignatureAuditLog(SignatureAuditRequest request) throws Exception;
 
     /**
      * Get all applications in the system.
@@ -162,7 +170,7 @@ public interface PowerAuthService {
      * @return Application list response.
      * @throws Exception In case of a business logic error.
      */
-    public GetApplicationListResponse getApplicationList(GetApplicationListRequest request) throws Exception;
+    GetApplicationListResponse getApplicationList(GetApplicationListRequest request) throws Exception;
 
     /**
      * Get application detail, including application version list.
@@ -171,7 +179,7 @@ public interface PowerAuthService {
      * @return Application detail response.
      * @throws Exception In case of a business logic error.
      */
-    public GetApplicationDetailResponse getApplicationDetail(GetApplicationDetailRequest request) throws Exception;
+    GetApplicationDetailResponse getApplicationDetail(GetApplicationDetailRequest request) throws Exception;
 
     /**
      * Create a new application with given name. Master key pair and default application version is automatically
@@ -181,7 +189,7 @@ public interface PowerAuthService {
      * @return Created application information response.
      * @throws Exception In case of a business logic error.
      */
-    public CreateApplicationResponse createApplication(CreateApplicationRequest request) throws Exception;
+    CreateApplicationResponse createApplication(CreateApplicationRequest request) throws Exception;
 
     /**
      * Create a new application version with given name. Each application version has its own APPLICATION_KEY
@@ -191,7 +199,7 @@ public interface PowerAuthService {
      * @return Application version create response.
      * @throws Exception In case of a business logic error.
      */
-    public CreateApplicationVersionResponse createApplicationVersion(CreateApplicationVersionRequest request) throws Exception;
+    CreateApplicationVersionResponse createApplicationVersion(CreateApplicationVersionRequest request) throws Exception;
 
     /**
      * Unsupport an application version. If an application is unsupported, it's APPLICATION_KEY and APPLICATION_SECRET
@@ -201,7 +209,7 @@ public interface PowerAuthService {
      * @return Unsupport application version response.
      * @throws Exception In case of a business logic error.
      */
-    public UnsupportApplicationVersionResponse unsupportApplicationVersion(UnsupportApplicationVersionRequest request) throws Exception;
+    UnsupportApplicationVersionResponse unsupportApplicationVersion(UnsupportApplicationVersionRequest request) throws Exception;
 
     /**
      * Support an application version. If an application is supported, it's APPLICATION_KEY and APPLICATION_SECRET
@@ -211,7 +219,7 @@ public interface PowerAuthService {
      * @return Support application version response.
      * @throws Exception In case of a business logic error.
      */
-    public SupportApplicationVersionResponse supportApplicationVersion(SupportApplicationVersionRequest request) throws Exception;
+    SupportApplicationVersionResponse supportApplicationVersion(SupportApplicationVersionRequest request) throws Exception;
 
     /**
      * Create a new credentials for integration with given name. Automatically generates appropriate credentials.
@@ -219,7 +227,7 @@ public interface PowerAuthService {
      * @return Newly created integration details.
      * @throws Exception In case of a business logic error.
      */
-    public CreateIntegrationResponse createIntegration(CreateIntegrationRequest request) throws Exception;
+    CreateIntegrationResponse createIntegration(CreateIntegrationRequest request) throws Exception;
 
     /**
      * Get the list of currently present integrations.
@@ -227,7 +235,7 @@ public interface PowerAuthService {
      * @return List of currently present integrations.
      * @throws Exception In case of a business logic error.
      */
-    public GetIntegrationListResponse getIntegrationList(GetIntegrationListRequest request) throws Exception;
+    GetIntegrationListResponse getIntegrationList(GetIntegrationListRequest request) throws Exception;
 
     /**
      * Remove integration with given ID.
@@ -235,6 +243,6 @@ public interface PowerAuthService {
      * @return Removal status information.
      * @throws Exception In case of a business logic error.
      */
-    public RemoveIntegrationResponse removeIntegration(RemoveIntegrationRequest request) throws Exception;
+    RemoveIntegrationResponse removeIntegration(RemoveIntegrationRequest request) throws Exception;
 
 }
