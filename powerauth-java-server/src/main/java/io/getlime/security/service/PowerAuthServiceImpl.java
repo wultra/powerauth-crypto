@@ -70,6 +70,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     private VaultUnlockServiceBehavior vaultUnlockServiceBehavior;
 
     @Autowired
+    private EncryptionServiceBehavior encryptionServiceBehavior;
+
+    @Autowired
     private IntegrationBehavior integrationBehavior;
 
     @Autowired
@@ -124,7 +127,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             return activationServiceBehavior.getActivationList(applicationId, userId);
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
     }
 
@@ -136,7 +139,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             return activationServiceBehavior.getActivationStatus(activationId, keyConversionUtilities);
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
 
     }
@@ -155,7 +158,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             throw ex;
         } catch (InvalidKeySpecException | InvalidKeyException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw localizationProvider.buildExceptionForCode(ServiceError.ERR0010);
+            throw localizationProvider.buildExceptionForCode(ServiceError.INVALID_KEY_FORMAT);
         }
     }
 
@@ -175,13 +178,13 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             return activationServiceBehavior.prepareActivation(activationIdShort, activationNonceBase64, ephemeralPublicKey, cDevicePublicKeyBase64, activationName, extras, applicationId, applicationSignature, keyConversionUtilities);
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw localizationProvider.buildExceptionForCode(ServiceError.ERR0011);
+            throw localizationProvider.buildExceptionForCode(ServiceError.INVALID_INPUT_FORMAT);
         } catch (GenericServiceException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
     }
 
@@ -205,7 +208,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             return this.verifySignatureImplNonTransaction(request);
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
     }
 
@@ -220,7 +223,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             throw ex;
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
     }
 
@@ -232,7 +235,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             return activationServiceBehavior.removeActivation(activationId);
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
     }
 
@@ -247,7 +250,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             throw ex;
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
     }
 
@@ -262,7 +265,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             throw ex;
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
 
     }
@@ -283,7 +286,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             if (signatureType.equals(PowerAuthSignatureTypes.BIOMETRY.toString())
                     || signatureType.equals(PowerAuthSignatureTypes.KNOWLEDGE.toString())
                     || signatureType.equals(PowerAuthSignatureTypes.POSSESSION.toString())) {
-                throw localizationProvider.buildExceptionForCode(ServiceError.ERR0012);
+                throw localizationProvider.buildExceptionForCode(ServiceError.INVALID_SIGNATURE);
             }
 
             // Verify the signature
@@ -301,8 +304,14 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             throw ex;
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
+    }
+
+    @Override
+    @Transactional
+    public GetEncryptionKeyResponse generateE2EEncryptionKey(GetEncryptionKeyRequest request) throws Exception {
+        return encryptionServiceBehavior.generateEncryptionKeyForActivation(request.getActivationId(), keyConversionUtilities);
     }
 
     @Override
@@ -318,7 +327,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             return response;
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
     }
 
@@ -336,7 +345,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new GenericServiceException(ServiceError.ERR0000, ex.getMessage(), ex.getLocalizedMessage());
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
         }
 
     }

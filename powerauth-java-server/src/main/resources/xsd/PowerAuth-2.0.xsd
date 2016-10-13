@@ -694,6 +694,32 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- End-to-End Encryption Support //-->
+
+    <xs:element name="GetEncryptionKeyRequest">
+        <xs:annotation>
+            <xs:documentation>Request for obtaining a derived end-to-end encryption key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetEncryptionKeyResponse">
+        <xs:annotation>
+            <xs:documentation>Response for obtaining a derived end-to-end encryption key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="encryptionKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="encryptionKeyIndex" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <!-- PowerAuth 2.0 Enumerations //-->
     
     <xs:simpleType name="ActivationStatus">

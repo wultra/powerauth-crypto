@@ -147,6 +147,14 @@ public interface PowerAuthService {
     VaultUnlockResponse vaultUnlock(VaultUnlockRequest request) throws Exception;
 
     /**
+     * Generate an activation specific transport key with given index for the purpose of end-to-end encryption.
+     * @param request Request with an activation ID.
+     * @return Response with derived transport key and its index.
+     * @throws Exception In cese of a business logic error.
+     */
+    GetEncryptionKeyResponse generateE2EEncryptionKey(GetEncryptionKeyRequest request) throws Exception;
+
+    /**
      * Validate incoming ECDSA signature for provided data using a public device key associated with given activation.
      * @param request Request for signature validation.
      * @return Response with the signature validation status.

@@ -154,6 +154,32 @@ public class PowerAuthController {
     }
 
     /**
+     * Call {@link PowerAuthService#vaultUnlock(VaultUnlockRequest)} method and
+     * return the response.
+     *
+     * @param request Vault unlock request.
+     * @return Vault unlock response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/vault/unlock", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<VaultUnlockResponse> vaultUnlock(@RequestBody RESTRequestWrapper<VaultUnlockRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.vaultUnlock(request.getRequestObject()));
+    }
+
+    /**
+     * Call {@link PowerAuthService#generateE2EEncryptionKey(GetEncryptionKeyRequest)} method and
+     * return the response.
+     *
+     * @param request E2E encryption key request.
+     * @return E2E encryption key response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/encryption/key/create", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetEncryptionKeyResponse> generateE2EEncryptionKey(@RequestBody RESTRequestWrapper<GetEncryptionKeyRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.generateE2EEncryptionKey(request.getRequestObject()));
+    }
+
+    /**
      * Call {@link PowerAuthService#verifyECDSASignature(VerifyECDSASignatureRequest)} method and
      * return the response.
      *
@@ -203,19 +229,6 @@ public class PowerAuthController {
     @RequestMapping(value = "/activation/unblock", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<UnblockActivationResponse> unblockActivation(@RequestBody RESTRequestWrapper<UnblockActivationRequest> request) throws Exception {
         return new RESTResponseWrapper<>("OK", powerAuthService.unblockActivation(request.getRequestObject()));
-    }
-
-    /**
-     * Call {@link PowerAuthService#vaultUnlock(VaultUnlockRequest)} method and
-     * return the response.
-     *
-     * @param request Vault unlock request.
-     * @return Vault unlock response.
-     * @throws Exception In case the service throws exception.
-     */
-    @RequestMapping(value = "/vault/unlock", method = RequestMethod.POST)
-    public @ResponseBody RESTResponseWrapper<VaultUnlockResponse> vaultUnlock(@RequestBody RESTRequestWrapper<VaultUnlockRequest> request) throws Exception {
-        return new RESTResponseWrapper<>("OK", powerAuthService.vaultUnlock(request.getRequestObject()));
     }
 
     /**

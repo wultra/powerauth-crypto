@@ -163,6 +163,34 @@ public class PowerAuthEndpoint {
     }
 
     /**
+     * Call {@link PowerAuthService#vaultUnlock(VaultUnlockRequest)} method and
+     * return the response.
+     *
+     * @param request Vault unlock request.
+     * @return Vault unlock response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "VaultUnlockRequest")
+    @ResponsePayload
+    public VaultUnlockResponse vaultUnlock(@RequestPayload VaultUnlockRequest request) throws Exception {
+        return powerAuthService.vaultUnlock(request);
+    }
+
+    /**
+     * Call {@link PowerAuthService#generateE2EEncryptionKey(GetEncryptionKeyRequest)} method and
+     * return the response.
+     *
+     * @param request E2E encryption key request.
+     * @return E2E encryption key response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetEncryptionKeyRequest")
+    @ResponsePayload
+    public GetEncryptionKeyResponse generateE2EEncryptionKey(@RequestPayload GetEncryptionKeyRequest request) throws Exception {
+        return powerAuthService.generateE2EEncryptionKey(request);
+    }
+
+    /**
      * Call {@link PowerAuthService#verifyECDSASignature(VerifyECDSASignatureRequest)} method and
      * return the response.
      *
@@ -216,20 +244,6 @@ public class PowerAuthEndpoint {
     @ResponsePayload
     public UnblockActivationResponse unblockActivation(@RequestPayload UnblockActivationRequest request) throws Exception {
         return powerAuthService.unblockActivation(request);
-    }
-
-    /**
-     * Call {@link PowerAuthService#vaultUnlock(VaultUnlockRequest)} method and
-     * return the response.
-     *
-     * @param request Vault unlock request.
-     * @return Vault unlock response.
-     * @throws Exception In case the service throws exception.
-     */
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "VaultUnlockRequest")
-    @ResponsePayload
-    public VaultUnlockResponse vaultUnlock(@RequestPayload VaultUnlockRequest request) throws Exception {
-        return powerAuthService.vaultUnlock(request);
     }
 
     /**

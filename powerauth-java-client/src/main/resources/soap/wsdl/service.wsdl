@@ -691,6 +691,32 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- End-to-End Encryption Support //-->
+
+    <xs:element name="GetEncryptionKeyRequest">
+        <xs:annotation>
+            <xs:documentation>Request for obtaining a derived end-to-end encryption key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetEncryptionKeyResponse">
+        <xs:annotation>
+            <xs:documentation>Response for obtaining a derived end-to-end encryption key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptionKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptionKeyIndex" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <!-- PowerAuth 2.0 Enumerations //-->
     
     <xs:simpleType name="ActivationStatus">
@@ -714,6 +740,10 @@
   </wsdl:message>
   <wsdl:message name="GetSystemStatusResponse">
     <wsdl:part element="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetEncryptionKeyResponse">
+    <wsdl:part element="tns:GetEncryptionKeyResponse" name="GetEncryptionKeyResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="VerifyECDSASignatureRequest">
@@ -812,6 +842,10 @@
     <wsdl:part element="tns:GetActivationStatusRequest" name="GetActivationStatusRequest">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="GetEncryptionKeyRequest">
+    <wsdl:part element="tns:GetEncryptionKeyRequest" name="GetEncryptionKeyRequest">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="CreateApplicationVersionResponse">
     <wsdl:part element="tns:CreateApplicationVersionResponse" name="CreateApplicationVersionResponse">
     </wsdl:part>
@@ -903,6 +937,12 @@
       <wsdl:input message="tns:GetSystemStatusRequest" name="GetSystemStatusRequest">
     </wsdl:input>
       <wsdl:output message="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEncryptionKey">
+      <wsdl:input message="tns:GetEncryptionKeyRequest" name="GetEncryptionKeyRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetEncryptionKeyResponse" name="GetEncryptionKeyResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="VerifyECDSASignature">
@@ -1049,6 +1089,15 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetSystemStatusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEncryptionKey">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetEncryptionKeyRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetEncryptionKeyResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

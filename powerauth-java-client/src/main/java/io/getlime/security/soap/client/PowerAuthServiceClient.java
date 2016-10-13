@@ -346,6 +346,27 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
     }
 
     /**
+     * Call the generateE2EEncryptionKey method of the PowerAuth 2.0 Server SOAP interface.
+     * @param request {@link GetEncryptionKeyRequest} instance.
+     * @return {@link GetEncryptionKeyResponse}
+     */
+    public GetEncryptionKeyResponse generateE2EEncryptionKey(GetEncryptionKeyRequest request) {
+        return (GetEncryptionKeyResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+
+    /**
+     * Call the generateE2EEncryptionKey method of the PowerAuth 2.0 Server SOAP interface and get
+     * newly generated derived encryption key.
+     * @param activationId Activation ID used for the key generation.
+     * @return {@link GetEncryptionKeyResponse}
+     */
+    public GetEncryptionKeyResponse generateE2EEncryptionKey(String activationId) {
+        GetEncryptionKeyRequest request = new GetEncryptionKeyRequest();
+        request.setActivationId(activationId);
+        return this.generateE2EEncryptionKey(request);
+    }
+
+    /**
      * Call the getSignatureAuditLog method of the PowerAuth 2.0 Server SOAP interface.
      * @param request {@link SignatureAuditRequest} instance.
      * @return {@link SignatureAuditResponse}

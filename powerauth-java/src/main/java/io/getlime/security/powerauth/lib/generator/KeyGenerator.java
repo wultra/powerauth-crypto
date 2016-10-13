@@ -72,17 +72,29 @@ public class KeyGenerator {
             KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             keyAgreement.init(privateKey);
             keyAgreement.doPhase(publicKey, true);
-            // Generate 16B key from 32B key by applying XOR
             final byte[] sharedSecret = keyAgreement.generateSecret();
-            byte[] resultSecret = new byte[16];
-            for (int i = 0; i < 16; i++) {
-                resultSecret[i] = (byte) (sharedSecret[i] ^ sharedSecret[i + 16]);
-            }
+            final byte[] resultSecret = this.convert32Bto16B(sharedSecret);
             return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(resultSecret);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    /**
+     * Convert 32B byte long array to 16B long array by applying xor between first half and second half values.
+     * @param original Original byte array, 32B long.
+     * @return Result byte array, 16B long.
+     */
+    public byte[] convert32Bto16B(byte[] original) throws IllegalArgumentException {
+        if (original.length != 32) {
+            throw new IllegalArgumentException("Invalid byte array size, expected: 32, provided: " + original.length);
+        }
+        byte[] resultSecret = new byte[16];
+        for (int i = 0; i < 16; i++) {
+            resultSecret[i] = (byte) (original[i] ^ original[i + 16]);
+        }
+        return resultSecret;
     }
 
     /**
