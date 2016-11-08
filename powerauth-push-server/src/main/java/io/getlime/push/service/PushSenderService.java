@@ -132,26 +132,32 @@ public class PushSenderService {
 
                                     result.getIos().setTotal(result.getIos().getTotal() + 1);
 
-                                    if (!pushNotificationResponse.isAccepted()) {
-                                        Logger.getLogger(PushSenderService.class.getName()).log(Level.SEVERE, "Notification rejected by the APNs gateway: " + pushNotificationResponse.getRejectionReason());
-                                        sentMessage.setStatus(PushMessageEntity.Status.FAILED);
-                                        pushMessageRepository.save(sentMessage);
+                                    if (pushNotificationResponse != null) {
+                                        if (!pushNotificationResponse.isAccepted()) {
+                                            Logger.getLogger(PushSenderService.class.getName()).log(Level.SEVERE, "Notification rejected by the APNs gateway: " + pushNotificationResponse.getRejectionReason());
+                                            sentMessage.setStatus(PushMessageEntity.Status.FAILED);
+                                            pushMessageRepository.save(sentMessage);
 
-                                        result.getIos().setFailed(result.getIos().getFailed() + 1);
+                                            result.getIos().setFailed(result.getIos().getFailed() + 1);
 
-                                        if (pushNotificationResponse.getRejectionReason().equals("BadDeviceToken")) {
-                                            deviceRegistrationRepository.delete(registration);
-                                            Logger.getLogger(PushSenderService.class.getName()).log(Level.SEVERE, "\t... due to bad device token value.");
-                                        }
+                                            if (pushNotificationResponse.getRejectionReason().equals("BadDeviceToken")) {
+                                                deviceRegistrationRepository.delete(registration);
+                                                Logger.getLogger(PushSenderService.class.getName()).log(Level.SEVERE, "\t... due to bad device token value.");
+                                            }
 
-                                        if (pushNotificationResponse.getTokenInvalidationTimestamp() != null) {
-                                            deviceRegistrationRepository.delete(registration);
-                                            Logger.getLogger(PushSenderService.class.getName()).log(Level.SEVERE, "\t... and the token is invalid as of " + pushNotificationResponse.getTokenInvalidationTimestamp());
+                                            if (pushNotificationResponse.getTokenInvalidationTimestamp() != null) {
+                                                deviceRegistrationRepository.delete(registration);
+                                                Logger.getLogger(PushSenderService.class.getName()).log(Level.SEVERE, "\t... and the token is invalid as of " + pushNotificationResponse.getTokenInvalidationTimestamp());
+                                            }
+                                        } else {
+                                            sentMessage.setStatus(PushMessageEntity.Status.SENT);
+                                            pushMessageRepository.save(sentMessage);
+                                            result.getIos().setSent(result.getIos().getSent() + 1);
                                         }
                                     } else {
-                                        sentMessage.setStatus(PushMessageEntity.Status.SENT);
+                                        Logger.getLogger(PushSenderService.class.getName()).log(Level.SEVERE, "Notification rejected by the APNs gateway: unknown error, will retry");
+                                        sentMessage.setStatus(PushMessageEntity.Status.PENDING);
                                         pushMessageRepository.save(sentMessage);
-                                        result.getIos().setSent(result.getIos().getSent() + 1);
                                     }
                                 } catch (final ExecutionException e) {
                                     if (e.getCause() instanceof ClientNotConnectedException) {
