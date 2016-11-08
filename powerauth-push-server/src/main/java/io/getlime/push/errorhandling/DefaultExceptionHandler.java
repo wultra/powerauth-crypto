@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.rest.api.errorhandling;
+package io.getlime.push.errorhandling;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Implementation of a default exception handler for the push server service.
@@ -25,5 +28,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 @ControllerAdvice
 public class DefaultExceptionHandler {
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 409
+    @ExceptionHandler(Exception.class)
+    public void handleConflict() {
+        // Nothing to do
+    }
 
 }
