@@ -16,7 +16,6 @@ import io.getlime.push.repository.model.DeviceRegistration;
 import io.getlime.push.repository.model.PushMessageEntity;
 import io.getlime.push.service.fcm.FcmNotification;
 import io.getlime.push.service.fcm.FcmSendRequest;
-import io.netty.handler.ssl.OpenSsl;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Phaser;
 import java.util.logging.Level;
@@ -49,8 +47,12 @@ public class PushSenderService {
     private DeviceRegistrationRepository deviceRegistrationRepository;
     private PushMessageRepository pushMessageRepository;
 
-    private final String fcmSendUrl = "https://fcm.googleapis.com/fcm/send";
-
+    /**
+     * Constructor that autowires required repositories.
+     * @param appCredentialsRepository Repository with app credentials.
+     * @param deviceRegistrationRepository Repository with device registrations.
+     * @param pushMessageRepository Repository with logged push messages.
+     */
     @Autowired
     public PushSenderService(AppCredentialsRepository appCredentialsRepository, DeviceRegistrationRepository deviceRegistrationRepository, PushMessageRepository pushMessageRepository) {
         this.appCredentialsRepository = appCredentialsRepository;
@@ -58,6 +60,14 @@ public class PushSenderService {
         this.pushMessageRepository = pushMessageRepository;
     }
 
+    /**
+     * Send push notifications to given application.
+     * @param appId App ID used for addressing push messages. Required so that appropriate APNs/FCM credentials can be obtained.
+     * @param pushMessageList List with push message objects.
+     * @return Result of this batch sending.
+     * @throws InterruptedException In case sending is interrupted.
+     * @throws IOException In case certificate data cannot be read.
+     */
     public PushSendResult send(Long appId, List<PushMessage> pushMessageList) throws InterruptedException, IOException {
 
         // Get APNs and FCM credentials
@@ -77,8 +87,10 @@ public class PushSenderService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "key=" + credentials.getAndroid());
 
+        // Prepare a phaser for async sending synchronization
         final Phaser phaser = new Phaser(1);
 
+        // Prepare a result object
         final PushSendResult result = new PushSendResult();
 
         // Send push message batch
@@ -172,6 +184,8 @@ public class PushSenderService {
 
                     } else if (platform.equals(DeviceRegistration.Platform.Android)) { // Android - FCM
 
+                        final String fcmSendUrl = "https://fcm.googleapis.com/fcm/send";
+
                         FcmSendRequest request = new FcmSendRequest();
                         request.setTo(registration.getPushToken());
                         request.setData(pushMessage.getMessage().getExtras());
@@ -220,6 +234,13 @@ public class PushSenderService {
         return result;
     }
 
+    /**
+     * Stores a push message in the database table `push_message`.
+     * @param pushMessage Push message to be stored.
+     * @param registrationId Device registration ID to be used for this message.
+     * @return New database entity with push message information.
+     * @throws JsonProcessingException In case message body JSON serialization fails.
+     */
     private PushMessageEntity storePushMessageInDatabase(PushMessage pushMessage, Long registrationId) throws JsonProcessingException {
         // Store the message in database
         PushMessageEntity entity = new PushMessageEntity();
@@ -237,6 +258,11 @@ public class PushSenderService {
         return pushMessageRepository.save(entity);
     }
 
+    /**
+     * Method to build APNs message payload.
+     * @param push Push message object with APNs data.
+     * @return String with APNs JSON payload.
+     */
     private String buildApnsPayload(PushMessage push) {
         final ApnsPayloadBuilder payloadBuilder = new ApnsPayloadBuilder();
         payloadBuilder.setAlertTitle(push.getMessage().getTitle());

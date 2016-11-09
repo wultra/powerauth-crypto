@@ -26,5 +26,4 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
-
 }

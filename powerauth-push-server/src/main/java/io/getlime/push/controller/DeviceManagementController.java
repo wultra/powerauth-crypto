@@ -58,6 +58,11 @@ public class DeviceManagementController {
         this.client = client;
     }
 
+    /**
+     * Create a new device registration.
+     * @param request Device registration request.
+     * @return Device registration status.
+     */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @Transactional
     public @ResponseBody StatusResponse createDevice(@RequestBody CreateDeviceRegistrationRequest request) {
@@ -99,6 +104,11 @@ public class DeviceManagementController {
         return response;
     }
 
+    /**
+     * Update status for given device registration.
+     * @param request Status update request.
+     * @return Status update response.
+     */
     @RequestMapping(value = "status/update", method = RequestMethod.POST)
     @Transactional
     public @ResponseBody  StatusResponse updateActivationStatus(@RequestBody UpdateStatusRequest request) {
@@ -119,6 +129,11 @@ public class DeviceManagementController {
         return response;
     }
 
+    /**
+     * Remove device registration with given push token.
+     * @param request Remove registration request.
+     * @return Removal status response.
+     */
     @RequestMapping(value = "remove", method = RequestMethod.POST)
     @Transactional
     public @ResponseBody StatusResponse deleteActivationStatus(@RequestBody RemoveDeviceRegistrationRequest request) {

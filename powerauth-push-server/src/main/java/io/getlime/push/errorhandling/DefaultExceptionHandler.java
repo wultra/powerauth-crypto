@@ -15,9 +15,11 @@
  */
 package io.getlime.push.errorhandling;
 
+import io.getlime.push.controller.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
@@ -28,10 +30,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class DefaultExceptionHandler {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 409
+    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
     @ExceptionHandler(Exception.class)
-    public void handleConflict() {
-        // Nothing to do
+    @ResponseBody
+    public ErrorResponse handleConflict(Exception e) {
+        ErrorResponse response = new ErrorResponse();
+        response.setMessage(e.getMessage());
+        return response;
     }
 
 }

@@ -12,6 +12,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AppCredentialsRepository extends CrudRepository<AppCredentials, Long> {
 
+    /**
+     * Find app push service credentials for given app ID.
+     * @param appId App ID.
+     * @return Push service app credentials.
+     */
     AppCredentials findFirstByAppId(Long appId);
 
 }

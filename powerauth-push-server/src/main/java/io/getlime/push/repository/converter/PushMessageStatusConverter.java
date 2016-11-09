@@ -7,7 +7,9 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * Created by petrdvorak on 02/11/2016.
+ * Converts push sending status to database column value and vice versa.
+ *
+ * @author Petr Dvorak, petr@lime-company.eu
  */
 @Component
 @Converter

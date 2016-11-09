@@ -3,7 +3,9 @@ package io.getlime.push.controller.model;
 import io.getlime.push.controller.model.entity.PushSendResult;
 
 /**
- * Created by petrdvorak on 06/11/2016.
+ * Class representing a push message sending response.
+ *
+ * @author Petr Dvorak, petr@lime-company.eu
  */
 public class SendMessageResponse extends StatusResponse {
 

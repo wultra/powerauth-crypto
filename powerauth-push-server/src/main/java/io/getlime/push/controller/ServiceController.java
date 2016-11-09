@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "push/service")
 public class ServiceController {
 
+    /**
+     * Basic "hello" controller, used to check the service.
+     * @return Basic OK response.
+     */
     @RequestMapping(value = "hello")
     public @ResponseBody StatusResponse hello() {
         StatusResponse response = new StatusResponse();
