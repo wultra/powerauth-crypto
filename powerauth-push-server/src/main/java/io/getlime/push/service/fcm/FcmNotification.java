@@ -10,6 +10,7 @@ public class FcmNotification {
     private String title;
     private String body;
     private String sound;
+    private String tag;
 
     public String getTitle() {
         return title;
@@ -35,4 +36,11 @@ public class FcmNotification {
         this.sound = sound;
     }
 
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 }

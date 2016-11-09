@@ -182,6 +182,7 @@ public class PushSenderService {
                             notification.setTitle(pushMessage.getMessage().getTitle());
                             notification.setBody(pushMessage.getMessage().getBody());
                             notification.setSound(pushMessage.getMessage().getSound());
+                            notification.setTag(pushMessage.getMessage().getCollapseKey());
                             request.setNotification(notification);
                         }
 
@@ -244,6 +245,7 @@ public class PushSenderService {
         payloadBuilder.setCategoryName(push.getMessage().getCategory());
         payloadBuilder.setSoundFileName(push.getMessage().getSound());
         payloadBuilder.setContentAvailable(push.getSilent());
+        payloadBuilder.addCustomProperty("thread-id", push.getMessage().getCollapseKey());
         Map<String, Object> extras = push.getMessage().getExtras();
         if (extras != null) {
             for (String key : extras.keySet()) {
