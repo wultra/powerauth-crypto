@@ -7,72 +7,66 @@
     padding-top: 8px;
 }
 
-.btn-success {
-	background-color: #7FC000 !important;
-	border-color: #7FC000 !important;
-}
-
-.btn-success:hover, .btn-success:focus, .btn-success:active {
-	background-color: #7FC000 !important;
-	border-color: #7FC000 !important;
-}
-
 .black {
-	color: #000000 !important;
+    color: #000000 !important;
 }
 
 .gray {
-	color: #777777 !important;
+    color: #777777 !important;
 }
 
 .green {
-	color: #7FC000 !important;
+    color: #7FC000 !important;
 }
 
 .orange {
-	color: #7F7F00 !important;
+    color: #7F7F00 !important;
 }
 
 .red {
-	color: #AC0B66 !important;
+    color: #AC0B66 !important;
 }
 
 .code {
-	font-family: Courier New;
-	font-size: 10pt;
+    font-family: "Courier New", monospace;
+    font-size: 10pt;
 }
 
 .wrap {
-  overflow-wrap: break-word !important;
-  word-wrap: break-word !important;
-  -ms-word-break: break-all !important;
-  word-break: break-all !important;
-  word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+    -ms-word-break: break-all !important;
+    word-break: break-all !important;
 }
 
 .w100 {
-	width: 100% !important;
+    width: 100% !important;
 }
 
 .padder20 {
-	padding-top: 20px;
-	padding-bottom: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .pull-right .btn {
-	margin-left: 10px !important;
+    margin-left: 10px !important;
 }
 
 .table-hover tr:hover {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 thead th {
-	border-bottom: none !important;
+    border-bottom: none !important;
 }
 
 table.table .btn {
-  padding: 2px 4px 1px 4px;
-  font-size: 10px;
-  margin-right: -3px;
+    padding: 2px 4px 1px 4px;
+    font-size: 10px;
+    margin-right: -3px;
+}
+
+.brand-logo {
+    height: 24px;
+    margin: -5px 20px -5px 0;
 }

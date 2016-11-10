@@ -13,12 +13,12 @@
 		<c:when test="${userId == null}">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Select a user</h3>
+					<h3 class="panel-title">User Selection</h3>
 				</div>
 				<div class="panel-body">
 					<form action="${pageContext.request.contextPath}/activation/list" method="GET" class="form-inline">
-						Enter a user ID: <input class="form-control" type="text" name="userId" value="<c:out value="${userId}"/>" />
-						<input class="form-field btn btn-success" type="submit" value="Select user" />
+						Enter a user ID <input class="form-control" type="text" name="userId" value="<c:out value="${userId}"/>" />
+						<input class="form-field btn btn-success" type="submit" value="Select User" />
 					</form>
 				</div>
 			</div>
@@ -26,13 +26,13 @@
 		<c:otherwise>
 		
 			<ol class="breadcrumb">
-				<li><a class="black" href="${pageContext.request.contextPath}/activation/list">User selection</a></li>
+				<li><a class="black" href="${pageContext.request.contextPath}/activation/list">User Selection</a></li>
 				<li class="active">User "<c:out value="${userId}"/>"</li>
 			</ol>
 			
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">New activation</h3>
+					<h3 class="panel-title">New Activation</h3>
 				</div>
 				<div class="panel-body">
 					<form action="${pageContext.request.contextPath}/activation/create?userId=<c:out value="${userId}"/>" class="form-inline pull-left">
@@ -45,7 +45,7 @@
 								</c:forEach>
 							</select>
 							<input type="hidden" name="userId" value="<c:out value="${userId}"/>"/>
-							<input type="submit" value="Create activation" class="btn btn-success"/>
+							<input type="submit" value="Create Activation" class="btn btn-success"/>
 						</div>
 					</form>
 				</div>
@@ -58,7 +58,7 @@
 						<form action="${pageContext.request.contextPath}/activation/list" method="GET" class="pull-right">
 							<input type="hidden" name="userId" value="<c:out value="${userId}"/>"/>
 							<label style="font-weight: normal; margin: 0;">
-								<input type="checkbox" name="showAll" <c:if test='${showAll}'>checked</c:if> onchange="this.form.submit()" /> Show all
+								<input type="checkbox" name="showAll" <c:if test='${showAll}'>checked</c:if> onchange="this.form.submit()" /> Show All
 							</label>
 						</form>
 						<div class="clearfix"></div>

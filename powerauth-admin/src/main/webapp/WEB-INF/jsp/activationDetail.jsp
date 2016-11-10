@@ -9,9 +9,9 @@
 </jsp:include>
 
 	<ol class="breadcrumb">
-		<li><a class="black" href="${pageContext.request.contextPath}/activation/list">User selection</a></li>
+		<li><a class="black" href="${pageContext.request.contextPath}/activation/list">User Selection</a></li>
 		<li><a class="black" href="${pageContext.request.contextPath}/activation/list?userId=<c:out value="${userId}"/>">User "<c:out value="${userId}"/>"</a></li>
-		<li class="active">Activation detail</li>
+		<li class="active">Activation Detail</li>
 	</ol>
 	
 	<div class="row">
@@ -20,21 +20,21 @@
 			<c:if test="${status == 'CREATED'}">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title pull-left">New client activation</h3>
+						<h3 class="panel-title pull-left">New Client Activation</h3>
 						<a href=""><span class="glyphicon glyphicon-refresh black pull-right"></span></a>
 						<div class="clearfix"></div>
 					</div>
 					<div class="panel-body gray">
 						<p>
-							Client activation code<br>
+							Client Activation Code<br>
 							<strong class="code black"><c:out value="${activationIdShort}"/>-<c:out value="${activationOtp}"/></strong>
 						</p>
 						<p>
-							Client activation code signature<br>
+							Client Activation Code Signature<br>
 							<strong class="code black wrap"><c:out value="${activationSignature}"/></strong>
 						</p>
 						<p>
-							<img src="<c:out value="${activationQR}"/>" class="w100" alt="Activation QR code" style="border: 1px solid #777777"/>
+							<img src="<c:out value="${activationQR}"/>" class="w100" alt="Activation QR Code" style="border: 1px solid #777777"/>
 						</p>
 					</div>
 				</div>
@@ -42,7 +42,7 @@
 		
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Basic activation information</h3>
+					<h3 class="panel-title">Basic Activation Information</h3>
 				</div>
 				<div class="panel-body gray">
 					<p>
@@ -65,7 +65,7 @@
 							</td>
 							<td>
 								<p>
-									LastUsed<br>
+									Last Used<br>
 									<span class="black"><fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${timestampLastUsed.toGregorianCalendar().time}" /></span>
 								</p>
 							</td>
@@ -102,7 +102,7 @@
 		<div class="col-md-8">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Last signatures</h3>
+					<h3 class="panel-title">Last Signatures</h3>
 				</div>
 				<table class="table w100">
 					<tbody>
@@ -163,7 +163,7 @@
 										</td>
 										<td>
 											<p class="wrap gray">
-												Signed data<br>
+												Signed Data<br>
 												<span class="black"><c:out value="${item.dataBase64}"/></span>
 											</p>
 										</td>

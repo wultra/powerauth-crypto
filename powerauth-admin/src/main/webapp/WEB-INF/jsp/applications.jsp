@@ -11,7 +11,7 @@
 		</jsp:include>
 		<div class="panel panel-default">		
 			<div class="panel-heading">
-				<h3 class="panel-title">Create a new application</h3>
+				<h3 class="panel-title">Create a New Application</h3>
 			</div>
 			<div class="panel-body">
 				<form class="form-inline" action="${pageContext.request.contextPath}/application/create/do.submit" method="POST">

@@ -8,19 +8,19 @@
 
 	<ol class="breadcrumb">
 		<li><a class="black" href="${pageContext.request.contextPath}/application/list">Applications</a></li>
-		<li class="active">New application</li>
+		<li class="active">New Application</li>
 	</ol>
 	
 	
 	<div class="panel panel-default">
 
 		<div class="panel-heading">
-			<h3 class="panel-title">Create a new application</h3>
+			<h3 class="panel-title">New Application</h3>
 		</div>
 		
 		<div class="panel-body">
 			<form class="form-inline" action="${pageContext.request.contextPath}/application/create/do.submit" method="POST">
-				Application name: <input type="text" name="name" class="form-control"> 
+				Application name <input type="text" name="name" class="form-control">
 				<input type="submit" value="Submit" class="btn btn-success" />
 			</form>
 		</div>

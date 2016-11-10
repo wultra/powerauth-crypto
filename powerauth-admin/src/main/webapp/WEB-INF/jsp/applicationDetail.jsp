@@ -8,7 +8,7 @@
 
 	<ol class="breadcrumb">
 		<li><a class="black" href="${pageContext.request.contextPath}/application/list">Applications</a></li>
-		<li class="active">Application detail</li>
+		<li class="active">Application Detail</li>
 	</ol>
 	
 	<div class="row">
