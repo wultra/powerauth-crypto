@@ -11,11 +11,11 @@
         </jsp:include>
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Create a New Integration</h3>
+                <h3 class="panel-title">New Integration</h3>
             </div>
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath}/integration/create/do.submit" method="POST">
-                    Integration name: <input type="text" name="name" class="form-control">
+                    Integration name <input type="text" name="name" class="form-control">
                     <input type="submit" value="Submit" class="btn btn-success" />
                 </form>
             </div>
