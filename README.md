@@ -6,6 +6,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/lime-company/lime-security-powerauth.svg?maxAge=2592000)](https://github.com/lime-company/lime-security-powerauth/issues)
 [![Maven Central](https://img.shields.io/maven-central/v/io.getlime.security/powerauth-parent.svg?maxAge=2592000)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.getlime.security%22)
 [![Twitter](https://img.shields.io/badge/twitter-@lime_company-blue.svg?style=flat)](http://twitter.com/lime_company)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/lime-company/lime-security-powerauth/blob/master/LICENSE.txt)
 
 PowerAuth 2.0 is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or identity management applications. It defines all items that are required for a complete security solution: a used cryptography, a security scheme and standard RESTful API end-points.
 
