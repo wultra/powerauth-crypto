@@ -41,7 +41,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
-			<artifactId>powerauth-java-client</artifactId>
+			<artifactId>powerauth-java-client-spring</artifactId>
 			<version>0.13.0</version>
 		</dependency>
 	</dependencies>

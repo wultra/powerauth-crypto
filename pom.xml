@@ -59,13 +59,14 @@
 		<module>powerauth-java</module>
 		<module>powerauth-java-http</module>
 		<module>powerauth-java-server</module>
-		<module>powerauth-java-client</module>
+        <module>powerauth-java-client-axis</module>
+        <module>powerauth-java-client-spring</module>
 		<module>powerauth-java-cmd</module>
 		<module>powerauth-restful-model</module>
 		<module>powerauth-restful-security</module>
 		<module>powerauth-restful-server</module>
 		<module>powerauth-admin</module>
-	</modules>
+    </modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
