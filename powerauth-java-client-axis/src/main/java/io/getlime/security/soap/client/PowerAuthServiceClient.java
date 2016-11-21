@@ -35,7 +35,14 @@ public class PowerAuthServiceClient {
 
     private PowerAuthPortServiceStub clientStub;
 
+    public PowerAuthServiceClient() {
+    }
+
     public PowerAuthServiceClient(PowerAuthPortServiceStub clientStub) {
+        this.clientStub = clientStub;
+    }
+
+    public void setClientStub(PowerAuthPortServiceStub clientStub) {
         this.clientStub = clientStub;
     }
 
