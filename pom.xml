@@ -65,7 +65,6 @@
 		<module>powerauth-restful-model</module>
 		<module>powerauth-restful-security</module>
 		<module>powerauth-restful-server</module>
-		<module>powerauth-admin</module>
     </modules>
 
 	<properties>
