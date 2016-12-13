@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Petr Dvorak
  */
 @Controller
-@RequestMapping(value = "/rest/pa")
+@RequestMapping(value = "/rest")
 public class PowerAuthController {
 
     @Autowired
@@ -346,6 +346,45 @@ public class PowerAuthController {
     @RequestMapping(value = "/integration/remove", method = RequestMethod.POST)
     public @ResponseBody RESTResponseWrapper<RemoveIntegrationResponse> removeIntegration(@RequestBody RESTRequestWrapper<RemoveIntegrationRequest> request) throws Exception {
         return new RESTResponseWrapper<>("OK", powerAuthService.removeIntegration(request.getRequestObject()));
+    }
+
+    /**
+     * Call {@link PowerAuthService#createCallbackUrl(CreateCallbackUrlRequest)} method and
+     * return the response.
+     *
+     * @param request Create callback URL request.
+     * @return Create callback URL response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/application/callback/create", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<CreateCallbackUrlResponse> createCallbackUrl(@RequestBody RESTRequestWrapper<CreateCallbackUrlRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.createCallbackUrl(request.getRequestObject()));
+    }
+
+    /**
+     * Call {@link PowerAuthService#getCallbackUrlList(GetCallbackUrlListRequest)} method and
+     * return the response.
+     *
+     * @param request Get callback URL list request.
+     * @return Get callback URL list response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/application/callback/list", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetCallbackUrlListResponse> getCallbackUrlList(@RequestBody RESTRequestWrapper<GetCallbackUrlListRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.getCallbackUrlList(request.getRequestObject()));
+    }
+
+    /**
+     * Call {@link PowerAuthService#removeCallbackUrl(RemoveCallbackUrlRequest)} method and
+     * return the response.
+     *
+     * @param request Remove callback URL request.
+     * @return Remove callback URL response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/application/callback/remove", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<RemoveCallbackUrlResponse> removeCallbackUrl(@RequestBody RESTRequestWrapper<RemoveCallbackUrlRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.removeCallbackUrl(request.getRequestObject()));
     }
 
 }

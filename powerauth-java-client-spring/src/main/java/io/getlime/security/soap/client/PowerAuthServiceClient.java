@@ -585,4 +585,68 @@ public class PowerAuthServiceClient extends WebServiceGatewaySupport {
         return this.removeIntegration(request);
     }
 
+    /**
+     * Create a new callback URL with given request object.
+     * @param request SOAP request object with callback URL details.
+     * @return Information about new callback URL object.
+     */
+    public CreateCallbackUrlResponse createCallbackUrl(CreateCallbackUrlRequest request) {
+        return (CreateCallbackUrlResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+
+    /**
+     * Create a new callback URL with given parameters.
+     * @param applicationId Application ID.
+     * @param name Callback URL display name.
+     * @param callbackUrl Callback URL value.
+     * @return Information about new callback URL object.
+     */
+    public CreateCallbackUrlResponse createCallbackUrl(Long applicationId, String name, String callbackUrl) {
+        CreateCallbackUrlRequest request = new CreateCallbackUrlRequest();
+        request.setApplicationId(applicationId);
+        request.setName(name);
+        request.setCallbackUrl(callbackUrl);
+        return this.createCallbackUrl(request);
+    }
+
+    /**
+     * Get the response with list of callback URL objects.
+     * @param request SOAP request object with application ID.
+     * @return Response with the list of all callback URLs for given application.
+     */
+    public GetCallbackUrlListResponse getCallbackUrlList(GetCallbackUrlListRequest request) {
+        return (GetCallbackUrlListResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+
+    /**
+     * Get the list of callback URL objects.
+     * @param applicationId Application ID.
+     * @return List of all callback URLs for given application.
+     */
+    public List<GetCallbackUrlListResponse.CallbackUrlList> getCallbackUrlList(Long applicationId) {
+        GetCallbackUrlListRequest request = new GetCallbackUrlListRequest();
+        request.setApplicationId(applicationId);
+        return getCallbackUrlList(request).getCallbackUrlList();
+    }
+
+    /**
+     * Remove callback URL.
+     * @param request Remove callback URL request.
+     * @return Information about removal status.
+     */
+    public RemoveCallbackUrlResponse removeCallbackUrl(RemoveCallbackUrlRequest request) {
+        return (RemoveCallbackUrlResponse) getWebServiceTemplate().marshalSendAndReceive(request);
+    }
+
+    /**
+     * Remove callback URL.
+     * @param callbackUrlId Callback URL ID.
+     * @return Information about removal status.
+     */
+    public RemoveCallbackUrlResponse removeCallbackUrl(String callbackUrlId) {
+        RemoveCallbackUrlRequest request = new RemoveCallbackUrlRequest();
+        request.setId(callbackUrlId);
+        return removeCallbackUrl(request);
+    }
+
 }

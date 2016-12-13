@@ -58,6 +58,9 @@ public class ActivationServiceBehavior {
     private ApplicationVersionRepository applicationVersionRepository;
 
     @Autowired
+    private CallbackUrlBehavior callbackUrlBehavior;
+
+    @Autowired
     private LocalizationProvider localizationProvider;
 
     private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
@@ -74,6 +77,7 @@ public class ActivationServiceBehavior {
         if ((activation.getActivationStatus().equals(ActivationStatus.CREATED) || activation.getActivationStatus().equals(ActivationStatus.OTP_USED)) && (timestamp.getTime() > activation.getTimestampActivationExpire().getTime())) {
             activation.setActivationStatus(ActivationStatus.REMOVED);
             powerAuthRepository.save(activation);
+            callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
         }
     }
 
@@ -388,6 +392,7 @@ public class ActivationServiceBehavior {
         activation.setTimestampLastUsed(timestamp);
         activation.setUserId(userId);
         powerAuthRepository.save(activation);
+        callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
 
         // Return the server response
         InitActivationResponse response = new InitActivationResponse();
@@ -472,6 +477,7 @@ public class ActivationServiceBehavior {
         if (devicePublicKey == null) { // invalid key was sent, return error
             activation.setActivationStatus(ActivationStatus.REMOVED);
             powerAuthRepository.save(activation);
+            callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
             throw localizationProvider.buildExceptionForCode(ServiceError.ACTIVATION_NOT_FOUND);
         }
 
@@ -493,6 +499,7 @@ public class ActivationServiceBehavior {
         activation.setActivationName(activationName);
         activation.setExtras(extras);
         powerAuthRepository.save(activation);
+        callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
 
         // Generate response data
         byte[] activationNonceServer = powerAuthServerActivation.generateActivationNonce();
@@ -554,6 +561,7 @@ public class ActivationServiceBehavior {
                 activated = true;
                 activation.setActivationStatus(ActivationStatus.ACTIVE);
                 powerAuthRepository.save(activation);
+                callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
 
                 CommitActivationResponse response = new CommitActivationResponse();
                 response.setActivationId(activationId);
@@ -578,12 +586,12 @@ public class ActivationServiceBehavior {
      */
     public RemoveActivationResponse removeActivation(String activationId) throws GenericServiceException {
         ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(activationId);
-        boolean removed = false;
+        boolean removed;
         if (activation != null) { // does the record even exist?
             removed = true;
             activation.setActivationStatus(ActivationStatus.REMOVED);
             powerAuthRepository.save(activation);
-
+            callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
             RemoveActivationResponse response = new RemoveActivationResponse();
             response.setActivationId(activationId);
             response.setRemoved(removed);
@@ -610,6 +618,7 @@ public class ActivationServiceBehavior {
         if (activation != null && activation.getActivationStatus().equals(ActivationStatus.ACTIVE)) {
             activation.setActivationStatus(ActivationStatus.BLOCKED);
             powerAuthRepository.save(activation);
+            callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
         }
         BlockActivationResponse response = new BlockActivationResponse();
         response.setActivationId(activationId);
@@ -634,6 +643,7 @@ public class ActivationServiceBehavior {
             activation.setActivationStatus(ActivationStatus.ACTIVE);
             activation.setFailedAttempts(0L);
             powerAuthRepository.save(activation);
+            callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
         }
         UnblockActivationResponse response = new UnblockActivationResponse();
         response.setActivationId(activationId);

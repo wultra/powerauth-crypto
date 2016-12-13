@@ -253,4 +253,28 @@ public interface PowerAuthService {
      */
     RemoveIntegrationResponse removeIntegration(RemoveIntegrationRequest request) throws Exception;
 
+    /**
+     * Create a new callback URL for given application.
+     * @param request Request with application ID and callback URL parameters.
+     * @return New callback URL information.
+     * @throws Exception In case of a business logic error.
+     */
+    CreateCallbackUrlResponse createCallbackUrl(CreateCallbackUrlRequest request) throws Exception;
+
+    /**
+     * Get the list of all callback URLs for given application.
+     * @param request Request with application ID.
+     * @return List of all callback URLs for given applications, ordered by name alphabetically.
+     * @throws Exception In case of a business logic error.
+     */
+    GetCallbackUrlListResponse getCallbackUrlList(GetCallbackUrlListRequest request) throws Exception;
+
+    /**
+     * Remove callback URL with given ID.
+     * @param request Request with callback URL with given ID.
+     * @return  Removal status information.
+     * @throws Exception In case of a business logic error.
+     */
+    RemoveCallbackUrlResponse removeCallbackUrl(RemoveCallbackUrlRequest request) throws Exception;
+
 }

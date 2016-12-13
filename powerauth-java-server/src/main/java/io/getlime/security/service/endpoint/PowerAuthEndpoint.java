@@ -372,4 +372,46 @@ public class PowerAuthEndpoint {
         return powerAuthService.removeIntegration(request);
     }
 
+    /**
+     * Call {@link PowerAuthService#createCallbackUrl(CreateCallbackUrlRequest)} method and
+     * return the response.
+     *
+     * @param request Create callback UR: request.
+     * @return Create callback URL response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "CreateCallbackUrlRequest")
+    @ResponsePayload
+    public CreateCallbackUrlResponse createCallbackUrl(@RequestPayload CreateCallbackUrlRequest request) throws Exception {
+        return powerAuthService.createCallbackUrl(request);
+    }
+
+    /**
+     * Call {@link PowerAuthService#getCallbackUrlList(GetCallbackUrlListRequest)}  method and
+     * return the response.
+     *
+     * @param request Get callback URL list request.
+     * @return Get callback URL list response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetCallbackUrlListRequest")
+    @ResponsePayload
+    public GetCallbackUrlListResponse getCallbackUrlList(@RequestPayload GetCallbackUrlListRequest request) throws Exception {
+        return powerAuthService.getCallbackUrlList(request);
+    }
+
+    /**
+     * Call {@link PowerAuthService#removeCallbackUrl(RemoveCallbackUrlRequest)} method and
+     * return the response.
+     *
+     * @param request Remove callback URL request.
+     * @return Remove callback URL response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RemoveCallbackUrlRequest")
+    @ResponsePayload
+    public RemoveCallbackUrlResponse removeIntegration(@RequestPayload RemoveCallbackUrlRequest request) throws Exception {
+        return powerAuthService.removeCallbackUrl(request);
+    }
+
 }

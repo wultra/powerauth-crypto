@@ -38,6 +38,9 @@ public class SignatureServiceBehavior {
     private AuditingServiceBehavior auditingServiceBehavior;
 
     @Autowired
+    private CallbackUrlBehavior callbackUrlBehavior;
+
+    @Autowired
     private ActivationRepository powerAuthRepository;
 
     @Autowired

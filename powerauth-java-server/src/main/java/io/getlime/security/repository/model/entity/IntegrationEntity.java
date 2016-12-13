@@ -89,7 +89,7 @@ public class IntegrationEntity implements Serializable {
 
     /**
      * Set the client secret value.
-     * @return Client secret.
+     * @param clientSecret Client secret.
      */
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;

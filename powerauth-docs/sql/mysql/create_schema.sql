@@ -96,3 +96,15 @@ CREATE TABLE `pa_integration` (
   `client_secret` varchar(37) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Create a table for callback URLs
+--
+
+CREATE TABLE `pa_application_callback` (
+  `id` varchar(37) NOT NULL,
+  `application_id` bigint(20) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `callback_url` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

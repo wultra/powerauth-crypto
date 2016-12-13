@@ -591,4 +591,69 @@ public class PowerAuthServiceClient {
     }
 
 
+    /**
+     * Create a new callback URL with given request object.
+     * @param request SOAP request object with callback URL details.
+     * @return Information about new callback URL object.
+     */
+    public PowerAuthPortServiceStub.CreateCallbackUrlResponse createCallbackUrl(PowerAuthPortServiceStub.CreateCallbackUrlRequest request) throws RemoteException {
+        return clientStub.createCallbackUrl(request);
+    }
+
+    /**
+     * Create a new callback URL with given parameters.
+     * @param applicationId Application ID.
+     * @param name Callback URL display name.
+     * @param callbackUrl Callback URL value.
+     * @return Information about new callback URL object.
+     */
+    public PowerAuthPortServiceStub.CreateCallbackUrlResponse createCallbackUrl(Long applicationId, String name, String callbackUrl) throws RemoteException {
+        PowerAuthPortServiceStub.CreateCallbackUrlRequest request = new PowerAuthPortServiceStub.CreateCallbackUrlRequest();
+        request.setApplicationId(applicationId);
+        request.setName(name);
+        request.setCallbackUrl(callbackUrl);
+        return this.createCallbackUrl(request);
+    }
+
+    /**
+     * Get the response with list of callback URL objects.
+     * @param request SOAP request object with application ID.
+     * @return Response with the list of all callback URLs for given application.
+     */
+    public PowerAuthPortServiceStub.GetCallbackUrlListResponse getCallbackUrlList(PowerAuthPortServiceStub.GetCallbackUrlListRequest request) throws RemoteException {
+        return clientStub.getCallbackUrlList(request);
+    }
+
+    /**
+     * Get the list of callback URL objects.
+     * @param applicationId Application ID.
+     * @return List of all callback URLs for given application.
+     */
+    public List<PowerAuthPortServiceStub.CallbackUrlList_type0> getCallbackUrlList(Long applicationId) throws RemoteException {
+        PowerAuthPortServiceStub.GetCallbackUrlListRequest request = new PowerAuthPortServiceStub.GetCallbackUrlListRequest();
+        request.setApplicationId(applicationId);
+        return Arrays.asList(getCallbackUrlList(request).getCallbackUrlList());
+    }
+
+    /**
+     * Remove callback URL.
+     * @param request Remove callback URL request.
+     * @return Information about removal status.
+     */
+    public PowerAuthPortServiceStub.RemoveCallbackUrlResponse removeCallbackUrl(PowerAuthPortServiceStub.RemoveCallbackUrlRequest request) throws RemoteException {
+        return clientStub.removeCallbackUrl(request);
+    }
+
+    /**
+     * Remove callback URL.
+     * @param callbackUrlId Callback URL ID.
+     * @return Information about removal status.
+     */
+    public PowerAuthPortServiceStub.RemoveCallbackUrlResponse removeCallbackUrl(String callbackUrlId) throws RemoteException {
+        PowerAuthPortServiceStub.RemoveCallbackUrlRequest request = new PowerAuthPortServiceStub.RemoveCallbackUrlRequest();
+        request.setId(callbackUrlId);
+        return removeCallbackUrl(request);
+    }
+
+
 }

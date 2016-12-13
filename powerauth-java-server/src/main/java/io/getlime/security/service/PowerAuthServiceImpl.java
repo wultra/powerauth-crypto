@@ -20,6 +20,7 @@ import io.getlime.security.powerauth.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.lib.provider.CryptoProviderUtilFactory;
+import io.getlime.security.repository.model.entity.ActivationRecordEntity;
 import io.getlime.security.service.behavior.*;
 import io.getlime.security.service.configuration.PowerAuthServiceConfiguration;
 import io.getlime.security.service.exceptions.GenericServiceException;
@@ -55,28 +56,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     private PowerAuthServiceConfiguration powerAuthServiceConfiguration;
 
     @Autowired
-    private ActivationServiceBehavior activationServiceBehavior;
-
-    @Autowired
-    private ApplicationServiceBehavior applicationServiceBehavior;
-
-    @Autowired
-    private AuditingServiceBehavior auditingServiceBehavior;
-
-    @Autowired
-    private SignatureServiceBehavior signatureServiceBehavior;
-
-    @Autowired
-    private VaultUnlockServiceBehavior vaultUnlockServiceBehavior;
-
-    @Autowired
-    private EncryptionServiceBehavior encryptionServiceBehavior;
-
-    @Autowired
-    private IntegrationBehavior integrationBehavior;
-
-    @Autowired
-    private AsymmetricSignatureServiceBehavior asymmetricSignatureServiceBehavior;
+    private ServiceBehaviors behavior;
 
     @Autowired
     private LocalizationProvider localizationProvider;
@@ -124,7 +104,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
         try {
             String userId = request.getUserId();
             Long applicationId = request.getApplicationId();
-            return activationServiceBehavior.getActivationList(applicationId, userId);
+            return behavior.getActivationServiceBehavior().getActivationList(applicationId, userId);
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
@@ -136,7 +116,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     public GetActivationStatusResponse getActivationStatus(GetActivationStatusRequest request) throws Exception {
         try {
             String activationId = request.getActivationId();
-            return activationServiceBehavior.getActivationStatus(activationId, keyConversionUtilities);
+            return behavior.getActivationServiceBehavior().getActivationStatus(activationId, keyConversionUtilities);
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
@@ -152,7 +132,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             Long applicationId = request.getApplicationId();
             Long maxFailedCount = request.getMaxFailureCount();
             Date activationExpireTimestamp = ModelUtil.dateWithCalendar(request.getTimestampActivationExpire());
-            return activationServiceBehavior.initActivation(applicationId, userId, maxFailedCount, activationExpireTimestamp, keyConversionUtilities);
+            return behavior.getActivationServiceBehavior().initActivation(applicationId, userId, maxFailedCount, activationExpireTimestamp, keyConversionUtilities);
         } catch (GenericServiceException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
@@ -175,7 +155,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             String applicationId = request.getApplicationKey();
             String applicationSignature = request.getApplicationSignature();
             String extras = request.getExtras();
-            return activationServiceBehavior.prepareActivation(activationIdShort, activationNonceBase64, ephemeralPublicKey, cDevicePublicKeyBase64, activationName, extras, applicationId, applicationSignature, keyConversionUtilities);
+            return behavior.getActivationServiceBehavior().prepareActivation(activationIdShort, activationNonceBase64, ephemeralPublicKey, cDevicePublicKeyBase64, activationName, extras, applicationId, applicationSignature, keyConversionUtilities);
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw localizationProvider.buildExceptionForCode(ServiceError.INVALID_INPUT_FORMAT);
@@ -197,7 +177,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
         String signature = request.getSignature();
         String signatureType = request.getSignatureType().toLowerCase();
 
-        return signatureServiceBehavior.verifySignature(activationId, signatureType, signature, dataString, applicationKey, keyConversionUtilities);
+        return behavior.getSignatureServiceBehavior().verifySignature(activationId, signatureType, signature, dataString, applicationKey, keyConversionUtilities);
 
     }
 
@@ -217,7 +197,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     public CommitActivationResponse commitActivation(CommitActivationRequest request) throws Exception {
         try {
             String activationId = request.getActivationId();
-            return activationServiceBehavior.commitActivation(activationId);
+            return behavior.getActivationServiceBehavior().commitActivation(activationId);
         } catch (GenericServiceException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
@@ -232,7 +212,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     public RemoveActivationResponse removeActivation(RemoveActivationRequest request) throws Exception {
         try {
             String activationId = request.getActivationId();
-            return activationServiceBehavior.removeActivation(activationId);
+            return behavior.getActivationServiceBehavior().removeActivation(activationId);
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
@@ -244,7 +224,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     public BlockActivationResponse blockActivation(BlockActivationRequest request) throws Exception {
         try {
             String activationId = request.getActivationId();
-            return activationServiceBehavior.blockActivation(activationId);
+            return behavior.getActivationServiceBehavior().blockActivation(activationId);
         } catch (GenericServiceException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
@@ -259,7 +239,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     public UnblockActivationResponse unblockActivation(UnblockActivationRequest request) throws Exception {
         try {
             String activationId = request.getActivationId();
-            return activationServiceBehavior.unblockActivation(activationId);
+            return behavior.getActivationServiceBehavior().unblockActivation(activationId);
         } catch (GenericServiceException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
@@ -298,7 +278,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             verifySignatureRequest.setSignatureType(signatureType);
             VerifySignatureResponse verifySignatureResponse = this.verifySignatureImplNonTransaction(verifySignatureRequest);
 
-            return vaultUnlockServiceBehavior.unlockVault(activationId, verifySignatureResponse.isSignatureValid(), keyConversionUtilities);
+            return behavior.getVaultUnlockServiceBehavior().unlockVault(activationId, verifySignatureResponse.isSignatureValid(), keyConversionUtilities);
         } catch (GenericServiceException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
@@ -311,7 +291,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     @Override
     @Transactional
     public GetEncryptionKeyResponse generateE2EEncryptionKey(GetEncryptionKeyRequest request) throws Exception {
-        return encryptionServiceBehavior.generateEncryptionKeyForActivation(request.getActivationId(), keyConversionUtilities);
+        return behavior.getEncryptionServiceBehavior().generateEncryptionKeyForActivation(request.getActivationId(), keyConversionUtilities);
     }
 
     @Override
@@ -321,7 +301,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             String activationId = request.getActivationId();
             String signedData = request.getData();
             String signature  = request.getSignature();
-            boolean matches = asymmetricSignatureServiceBehavior.verifyECDSASignature(activationId, signedData, signature, keyConversionUtilities);
+            boolean matches = behavior.getAsymmetricSignatureServiceBehavior().verifyECDSASignature(activationId, signedData, signature, keyConversionUtilities);
             VerifyECDSASignatureResponse response = new VerifyECDSASignatureResponse();
             response.setSignatureValid(matches);
             return response;
@@ -341,7 +321,7 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             Date startingDate = ModelUtil.dateWithCalendar(request.getTimestampFrom());
             Date endingDate = ModelUtil.dateWithCalendar(request.getTimestampTo());
 
-            return auditingServiceBehavior.getSignatureAuditLog(userId, applicationId, startingDate, endingDate);
+            return behavior.getAuditingServiceBehavior().getSignatureAuditLog(userId, applicationId, startingDate, endingDate);
 
         } catch (Exception ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -353,55 +333,73 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     @Override
     @Transactional
     public GetApplicationListResponse getApplicationList(GetApplicationListRequest request) throws Exception {
-        return applicationServiceBehavior.getApplicationList();
+        return behavior.getApplicationServiceBehavior().getApplicationList();
     }
 
     @Override
     @Transactional
     public GetApplicationDetailResponse getApplicationDetail(GetApplicationDetailRequest request) throws Exception {
-        return applicationServiceBehavior.getApplicationDetail(request.getApplicationId());
+        return behavior.getApplicationServiceBehavior().getApplicationDetail(request.getApplicationId());
     }
 
     @Override
     @Transactional
     public CreateApplicationResponse createApplication(CreateApplicationRequest request) throws Exception {
-        return applicationServiceBehavior.createApplication(request.getApplicationName(), keyConversionUtilities);
+        return behavior.getApplicationServiceBehavior().createApplication(request.getApplicationName(), keyConversionUtilities);
     }
 
     @Override
     @Transactional
     public CreateApplicationVersionResponse createApplicationVersion(CreateApplicationVersionRequest request) throws Exception {
-        return applicationServiceBehavior.createApplicationVersion(request.getApplicationId(), request.getApplicationVersionName());
+        return behavior.getApplicationServiceBehavior().createApplicationVersion(request.getApplicationId(), request.getApplicationVersionName());
     }
 
     @Override
     @Transactional
     public UnsupportApplicationVersionResponse unsupportApplicationVersion(UnsupportApplicationVersionRequest request) throws Exception {
-        return applicationServiceBehavior.unsupportApplicationVersion(request.getApplicationVersionId());
+        return behavior.getApplicationServiceBehavior().unsupportApplicationVersion(request.getApplicationVersionId());
     }
 
     @Override
     @Transactional
     public SupportApplicationVersionResponse supportApplicationVersion(SupportApplicationVersionRequest request) throws Exception {
-        return applicationServiceBehavior.supportApplicationVersion(request.getApplicationVersionId());
+        return behavior.getApplicationServiceBehavior().supportApplicationVersion(request.getApplicationVersionId());
     }
 
     @Override
     @Transactional
     public CreateIntegrationResponse createIntegration(CreateIntegrationRequest request) throws Exception {
-        return integrationBehavior.createIntegration(request);
+        return behavior.getIntegrationBehavior().createIntegration(request);
     }
 
     @Override
     @Transactional
     public GetIntegrationListResponse getIntegrationList(GetIntegrationListRequest request) throws Exception {
-        return integrationBehavior.getIntegrationList(request);
+        return behavior.getIntegrationBehavior().getIntegrationList(request);
     }
 
     @Override
     @Transactional
     public RemoveIntegrationResponse removeIntegration(RemoveIntegrationRequest request) throws Exception {
-        return integrationBehavior.removeIntegration(request);
+        return behavior.getIntegrationBehavior().removeIntegration(request);
+    }
+
+    @Override
+    @Transactional
+    public CreateCallbackUrlResponse createCallbackUrl(CreateCallbackUrlRequest request) throws Exception {
+        return behavior.getCallbackUrlBehavior().createCallbackUrl(request);
+    }
+
+    @Override
+    @Transactional
+    public GetCallbackUrlListResponse getCallbackUrlList(GetCallbackUrlListRequest request) throws Exception {
+        return behavior.getCallbackUrlBehavior().getCallbackUrlList(request);
+    }
+
+    @Override
+    @Transactional
+    public RemoveCallbackUrlResponse removeCallbackUrl(RemoveCallbackUrlRequest request) throws Exception {
+        return behavior.getCallbackUrlBehavior().removeIntegration(request);
     }
 
 }
