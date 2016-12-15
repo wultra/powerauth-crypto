@@ -17,6 +17,8 @@ package io.getlime.security.soap.client;
 
 
 import io.getlime.powerauth.soap.*;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
 
 import java.rmi.RemoteException;
 import java.util.Arrays;
@@ -35,15 +37,48 @@ public class PowerAuthServiceClient {
 
     private PowerAuthPortServiceStub clientStub;
 
-    public PowerAuthServiceClient() {
+    /**
+     * Create a SOAP service client with the default URL:
+     *
+     * - http://localhost:8080/powerauth-java-server/soap
+     *
+     * @throws AxisFault When the Axis2 setup fails.
+     */
+    public PowerAuthServiceClient() throws AxisFault {
+        this.clientStub = new PowerAuthPortServiceStub();
     }
 
+    /**
+     * Create a SOAP service client with the URL provided in parameter.
+     * @param serviceUri SOAP service URI.
+     * @throws AxisFault When the Axis2 setup fails.
+     */
+    public PowerAuthServiceClient(String serviceUri) throws AxisFault {
+        this.clientStub = new PowerAuthPortServiceStub(serviceUri);
+    }
+
+    /**
+     * Create a SOAP service client with the provided PowerAuthPortServiceStub instance.
+     * @param clientStub Axis2 client stub.
+     */
     public PowerAuthServiceClient(PowerAuthPortServiceStub clientStub) {
         this.clientStub = clientStub;
     }
 
+    /**
+     * Set the Axis2 client stub.
+     * @param clientStub Client stub.
+     */
     public void setClientStub(PowerAuthPortServiceStub clientStub) {
         this.clientStub = clientStub;
+    }
+
+    /**
+     * Set the SOAP service endpoint URL.
+     * @param uri SOAP service URL.
+     */
+    public void setServiceUri(String uri) {
+        clientStub._getServiceClient().getOptions().setTo(new EndpointReference(uri));
     }
 
     /**
