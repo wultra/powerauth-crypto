@@ -49,7 +49,7 @@ public class PowerAuthServiceClient {
     }
 
     /**
-     * Create a SOAP service client with the URL provided in parameter.
+     * Create a SOAP service client with the URI provided in parameter.
      * @param serviceUri SOAP service URI.
      * @throws AxisFault When the Axis2 setup fails.
      */
@@ -74,8 +74,8 @@ public class PowerAuthServiceClient {
     }
 
     /**
-     * Set the SOAP service endpoint URL.
-     * @param uri SOAP service URL.
+     * Set the SOAP service endpoint URI.
+     * @param uri SOAP service URI.
      */
     public void setServiceUri(String uri) {
         clientStub._getServiceClient().getOptions().setTo(new EndpointReference(uri));
