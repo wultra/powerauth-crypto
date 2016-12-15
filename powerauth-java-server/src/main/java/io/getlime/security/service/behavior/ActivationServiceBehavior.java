@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -250,6 +251,9 @@ public class ActivationServiceBehavior {
             // a random status blob
             byte[] randomStatusBlob = new KeyGenerator().generateRandomBytes(16);
 
+            // Generate date
+            XMLGregorianCalendar zeroDate = ModelUtil.calendarWithDate(new Date(0));
+
             // return the data
             GetActivationStatusResponse response = new GetActivationStatusResponse();
             response.setActivationId(activationId);
@@ -258,8 +262,8 @@ public class ActivationServiceBehavior {
             response.setUserId("unknown");
             response.setApplicationId(0L);
             response.setExtras(null);
-            response.setTimestampCreated(null);
-            response.setTimestampLastUsed(null);
+            response.setTimestampCreated(zeroDate);
+            response.setTimestampLastUsed(zeroDate);
             response.setEncryptedStatusBlob(BaseEncoding.base64().encode(randomStatusBlob));
             response.setActivationIdShort(null);
             response.setActivationOTP(null);
