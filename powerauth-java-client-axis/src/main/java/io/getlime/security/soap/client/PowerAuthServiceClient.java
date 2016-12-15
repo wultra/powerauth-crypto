@@ -1,12 +1,12 @@
 /*
- * Copyright 2015 Lime - HighTech Solutions s.r.o.
- * <p>
+ * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -94,8 +94,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the getSystemStatus method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.GetSystemStatusRequest} instance
-     * @return {@link PowerAuthPortServiceStub.GetSystemStatusResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetSystemStatusRequest} instance
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetSystemStatusResponse}
      */
     public PowerAuthPortServiceStub.GetSystemStatusResponse getSystemStatus(PowerAuthPortServiceStub.GetSystemStatusRequest request) throws RemoteException {
         return clientStub.getSystemStatus(request);
@@ -103,7 +103,7 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the getSystemStatus method of the PowerAuth 2.0 Server SOAP interface.
-     * @return {@link PowerAuthPortServiceStub.GetSystemStatusResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetSystemStatusResponse}
      */
     public PowerAuthPortServiceStub.GetSystemStatusResponse getSystemStatus() throws RemoteException {
         PowerAuthPortServiceStub.GetSystemStatusRequest request = new PowerAuthPortServiceStub.GetSystemStatusRequest();
@@ -112,8 +112,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the initActivation method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.InitActivationRequest} instance
-     * @return {@link PowerAuthPortServiceStub.InitActivationResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.InitActivationRequest} instance
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.InitActivationResponse}
      */
     public PowerAuthPortServiceStub.InitActivationResponse initActivation(PowerAuthPortServiceStub.InitActivationRequest request) throws RemoteException {
         return clientStub.initActivation(request);
@@ -123,7 +123,7 @@ public class PowerAuthServiceClient {
      * Call the initActivation method of the PowerAuth 2.0 Server SOAP interface.
      * @param userId User ID for which a new CREATED activation should be created.
      * @param applicationId Application ID for which a new CREATED activation should be created.
-     * @return {@link PowerAuthPortServiceStub.InitActivationResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.InitActivationResponse}
      */
     public PowerAuthPortServiceStub.InitActivationResponse initActivation(String userId, Long applicationId) throws RemoteException {
         return this.initActivation(userId, applicationId, null, null);
@@ -135,7 +135,7 @@ public class PowerAuthServiceClient {
      * @param applicationId Application ID for which a new CREATED activation should be created.
      * @param maxFailureCount How many failed attempts should be allowed for this activation.
      * @param timestampActivationExpire Timestamp until when the activation can be committed.
-     * @return {@link PowerAuthPortServiceStub.InitActivationResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.InitActivationResponse}
      */
     public PowerAuthPortServiceStub.InitActivationResponse initActivation(String userId, Long applicationId, Long maxFailureCount, Date timestampActivationExpire) throws RemoteException {
         PowerAuthPortServiceStub.InitActivationRequest request = new PowerAuthPortServiceStub.InitActivationRequest();
@@ -152,8 +152,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the prepareActivation method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.PrepareActivationRequest} instance
-     * @return {@link PowerAuthPortServiceStub.PrepareActivationResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.PrepareActivationRequest} instance
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.PrepareActivationResponse}
      */
     public PowerAuthPortServiceStub.PrepareActivationResponse prepareActivation(PowerAuthPortServiceStub.PrepareActivationRequest request) throws RemoteException {
         return clientStub.prepareActivation(request);
@@ -168,7 +168,7 @@ public class PowerAuthServiceClient {
      * @param applicationSignature Signature proving a correct application is sending the data.
      * @param cDevicePublicKey Device public key encrypted with activation OTP.
      * @param extras Additional, application specific information.
-     * @return {@link PowerAuthPortServiceStub.PrepareActivationResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.PrepareActivationResponse}
      */
     public PowerAuthPortServiceStub.PrepareActivationResponse prepareActivation(String activationIdShort, String activationName, String activationNonce, String ephemeralPublicKey, String cDevicePublicKey, String extras, String applicationKey, String applicationSignature) throws RemoteException {
         PowerAuthPortServiceStub.PrepareActivationRequest request = new PowerAuthPortServiceStub.PrepareActivationRequest();
@@ -185,8 +185,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the commitActivation method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.CommitActivationRequest} instance
-     * @return {@link PowerAuthPortServiceStub.CommitActivationResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CommitActivationRequest} instance
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CommitActivationResponse}
      */
     public PowerAuthPortServiceStub.CommitActivationResponse commitActivation(PowerAuthPortServiceStub.CommitActivationRequest request) throws RemoteException {
         return clientStub.commitActivation(request);
@@ -195,7 +195,7 @@ public class PowerAuthServiceClient {
     /**
      * Call the prepareActivation method of the PowerAuth 2.0 Server SOAP interface.
      * @param activationId Activation ID for activation to be committed.
-     * @return {@link PowerAuthPortServiceStub.CommitActivationResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CommitActivationResponse}
      */
     public PowerAuthPortServiceStub.CommitActivationResponse commitActivation(String activationId) throws RemoteException {
         PowerAuthPortServiceStub.CommitActivationRequest request = new PowerAuthPortServiceStub.CommitActivationRequest();
@@ -205,8 +205,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the getActivationStatus method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.GetActivationStatusRequest} instance
-     * @return {@link PowerAuthPortServiceStub.GetActivationStatusResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetActivationStatusRequest} instance
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetActivationStatusResponse}
      */
     public PowerAuthPortServiceStub.GetActivationStatusResponse getActivationStatus(PowerAuthPortServiceStub.GetActivationStatusRequest request) throws RemoteException {
         return clientStub.getActivationStatus(request);
@@ -215,7 +215,7 @@ public class PowerAuthServiceClient {
     /**
      * Call the getActivationStatus method of the PowerAuth 2.0 Server SOAP interface.
      * @param activationId Activation Id to lookup information for.
-     * @return {@link PowerAuthPortServiceStub.GetActivationStatusResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetActivationStatusResponse}
      */
     public PowerAuthPortServiceStub.GetActivationStatusResponse getActivationStatus(String activationId) throws RemoteException {
         PowerAuthPortServiceStub.GetActivationStatusRequest request = new PowerAuthPortServiceStub.GetActivationStatusRequest();
@@ -225,8 +225,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the getActivationListForUser method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.GetActivationListForUserRequest} instance
-     * @return {@link PowerAuthPortServiceStub.GetActivationListForUserResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetActivationListForUserRequest} instance
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetActivationListForUserResponse}
      */
     public PowerAuthPortServiceStub.GetActivationListForUserResponse getActivationListForUser(PowerAuthPortServiceStub.GetActivationListForUserRequest request) throws RemoteException {
         return clientStub.getActivationListForUser(request);
@@ -245,8 +245,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the removeActivation method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.RemoveActivationRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.RemoveActivationResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.RemoveActivationRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.RemoveActivationResponse}
      */
     public PowerAuthPortServiceStub.RemoveActivationResponse removeActivation(PowerAuthPortServiceStub.RemoveActivationRequest request) throws RemoteException {
         return clientStub.removeActivation(request);
@@ -255,7 +255,7 @@ public class PowerAuthServiceClient {
     /**
      * Call the removeActivation method of the PowerAuth 2.0 Server SOAP interface.
      * @param activationId Activation ID of activation to be removed.
-     * @return {@link PowerAuthPortServiceStub.RemoveActivationResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.RemoveActivationResponse}
      */
     public PowerAuthPortServiceStub.RemoveActivationResponse removeActivation(String activationId) throws RemoteException {
         PowerAuthPortServiceStub.RemoveActivationRequest request = new PowerAuthPortServiceStub.RemoveActivationRequest();
@@ -265,8 +265,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the blockActivation method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.BlockActivationRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.BlockActivationResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.BlockActivationRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.BlockActivationResponse}
      */
     public PowerAuthPortServiceStub.BlockActivationResponse blockActivation(PowerAuthPortServiceStub.BlockActivationRequest request) throws RemoteException {
         return clientStub.blockActivation(request);
@@ -275,7 +275,7 @@ public class PowerAuthServiceClient {
     /**
      * Call the blockActivation method of the PowerAuth 2.0 Server SOAP interface.
      * @param activationId Activation ID of activation to be blocked.
-     * @return {@link PowerAuthPortServiceStub.BlockActivationResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.BlockActivationResponse}
      */
     public PowerAuthPortServiceStub.BlockActivationResponse blockActivation(String activationId) throws RemoteException {
         PowerAuthPortServiceStub.BlockActivationRequest request = new PowerAuthPortServiceStub.BlockActivationRequest();
@@ -285,8 +285,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the unblockActivation method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.UnblockActivationRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.UnblockActivationResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.UnblockActivationRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.UnblockActivationResponse}
      */
     public PowerAuthPortServiceStub.UnblockActivationResponse unblockActivation(PowerAuthPortServiceStub.UnblockActivationRequest request) throws RemoteException {
         return clientStub.unblockActivation(request);
@@ -295,7 +295,7 @@ public class PowerAuthServiceClient {
     /**
      * Call the unblockActivation method of the PowerAuth 2.0 Server SOAP interface.
      * @param activationId Activation ID of activation to be unblocked.
-     * @return {@link PowerAuthPortServiceStub.UnblockActivationResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.UnblockActivationResponse}
      */
     public PowerAuthPortServiceStub.UnblockActivationResponse unblockActivation(String activationId) throws RemoteException {
         PowerAuthPortServiceStub.UnblockActivationRequest request = new PowerAuthPortServiceStub.UnblockActivationRequest();
@@ -305,8 +305,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the vaultUnlock method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.VaultUnlockRequest} instance
-     * @return {@link PowerAuthPortServiceStub.VaultUnlockResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.VaultUnlockRequest} instance
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.VaultUnlockResponse}
      */
     public PowerAuthPortServiceStub.VaultUnlockResponse unlockVault(PowerAuthPortServiceStub.VaultUnlockRequest request) throws RemoteException {
         return clientStub.vaultUnlock(request);
@@ -319,7 +319,7 @@ public class PowerAuthServiceClient {
      * @param data Data to be signed encoded in format as specified by PowerAuth 2.0 data normalization.
      * @param signature Vault opening request signature.
      * @param signatureType Vault opening request signature type.
-     * @return {@link PowerAuthPortServiceStub.VaultUnlockResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.VaultUnlockResponse}
      */
     public PowerAuthPortServiceStub.VaultUnlockResponse unlockVault(String activationId, String applicationKey, String data, String signature, String signatureType) throws RemoteException {
         PowerAuthPortServiceStub.VaultUnlockRequest request = new PowerAuthPortServiceStub.VaultUnlockRequest();
@@ -333,8 +333,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the verifySignature method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.VerifySignatureRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.VerifySignatureResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.VerifySignatureRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.VerifySignatureResponse}
      */
     public PowerAuthPortServiceStub.VerifySignatureResponse verifySignature(PowerAuthPortServiceStub.VerifySignatureRequest request) throws RemoteException {
         return clientStub.verifySignature(request);
@@ -361,8 +361,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the verifyECDSASignature method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.VerifyECDSASignatureRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.VerifyECDSASignatureResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.VerifyECDSASignatureRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.VerifyECDSASignatureResponse}
      */
     public PowerAuthPortServiceStub.VerifyECDSASignatureResponse verifyECDSASignature(PowerAuthPortServiceStub.VerifyECDSASignatureRequest request) throws RemoteException {
         return clientStub.verifyECDSASignature(request);
@@ -385,8 +385,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the generateE2EEncryptionKey method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.GetEncryptionKeyRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.GetEncryptionKeyResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetEncryptionKeyRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetEncryptionKeyResponse}
      */
     public PowerAuthPortServiceStub.GetEncryptionKeyResponse generateE2EEncryptionKey(PowerAuthPortServiceStub.GetEncryptionKeyRequest request) throws RemoteException {
         return clientStub.getEncryptionKey(request);
@@ -396,7 +396,7 @@ public class PowerAuthServiceClient {
      * Call the generateE2EEncryptionKey method of the PowerAuth 2.0 Server SOAP interface and get
      * newly generated derived encryption key.
      * @param activationId Activation ID used for the key generation.
-     * @return {@link PowerAuthPortServiceStub.GetEncryptionKeyResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetEncryptionKeyResponse}
      */
     public PowerAuthPortServiceStub.GetEncryptionKeyResponse generateE2EEncryptionKey(String activationId) throws RemoteException {
         PowerAuthPortServiceStub.GetEncryptionKeyRequest request = new PowerAuthPortServiceStub.GetEncryptionKeyRequest();
@@ -406,8 +406,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Call the getSignatureAuditLog method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link PowerAuthPortServiceStub.SignatureAuditRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.SignatureAuditResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.SignatureAuditRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.SignatureAuditResponse}
      */
     public PowerAuthPortServiceStub.SignatureAuditResponse getSignatureAuditLog(PowerAuthPortServiceStub.SignatureAuditRequest request) throws RemoteException {
         return clientStub.signatureAudit(request);
@@ -419,7 +419,7 @@ public class PowerAuthServiceClient {
      * @param userId User ID to query the audit log against.
      * @param startingDate Limit the results to given starting date (= "newer than")
      * @param endingDate Limit the results to given ending date (= "older than")
-     * @return List of signature audit items {@link PowerAuthPortServiceStub.Items_type0}
+     * @return List of signature audit items {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.Items_type0}
      */
     public List<PowerAuthPortServiceStub.Items_type0> getSignatureAuditLog(String userId, Date startingDate, Date endingDate) throws RemoteException {
         PowerAuthPortServiceStub.SignatureAuditRequest request = new PowerAuthPortServiceStub.SignatureAuditRequest();
@@ -436,7 +436,7 @@ public class PowerAuthServiceClient {
      * @param applicationId Application ID to query the audit log against.
      * @param startingDate Limit the results to given starting date (= "newer than")
      * @param endingDate Limit the results to given ending date (= "older than")
-     * @return List of signature audit items {@link PowerAuthPortServiceStub.Items_type0}
+     * @return List of signature audit items {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.Items_type0}
      */
     public List<PowerAuthPortServiceStub.Items_type0> getSignatureAuditLog(String userId, Long applicationId, Date startingDate, Date endingDate) throws RemoteException {
         PowerAuthPortServiceStub.SignatureAuditRequest request = new PowerAuthPortServiceStub.SignatureAuditRequest();
@@ -449,8 +449,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Get the list of all applications that are registered in PowerAuth 2.0 Server.
-     * @param request {@link PowerAuthPortServiceStub.GetApplicationListRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.GetApplicationListResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetApplicationListRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetApplicationListResponse}
      */
     public PowerAuthPortServiceStub.GetApplicationListResponse getApplicationList(PowerAuthPortServiceStub.GetApplicationListRequest request) throws RemoteException {
         return clientStub.getApplicationList(request);
@@ -467,8 +467,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Return the detail of given application, including all application versions.
-     * @param request {@link PowerAuthPortServiceStub.GetApplicationDetailRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.GetApplicationDetailResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetApplicationDetailRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetApplicationDetailResponse}
      */
     public PowerAuthPortServiceStub.GetApplicationDetailResponse getApplicationDetail(PowerAuthPortServiceStub.GetApplicationDetailRequest request) throws RemoteException {
         return clientStub.getApplicationDetail(request);
@@ -487,8 +487,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Create a new application with given name.
-     * @param request {@link PowerAuthPortServiceStub.CreateApplicationRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.CreateApplicationResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CreateApplicationRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CreateApplicationResponse}
      */
     public PowerAuthPortServiceStub.CreateApplicationResponse createApplication(PowerAuthPortServiceStub.CreateApplicationRequest request) throws RemoteException {
         return clientStub.createApplication(request);
@@ -507,8 +507,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Create a version with a given name for an application with given ID.
-     * @param request {@link PowerAuthPortServiceStub.CreateApplicationVersionRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.CreateApplicationVersionResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CreateApplicationVersionRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CreateApplicationVersionResponse}
      */
     public PowerAuthPortServiceStub.CreateApplicationVersionResponse createApplicationVersion(PowerAuthPortServiceStub.CreateApplicationVersionRequest request) throws RemoteException {
         return clientStub.createApplicationVersion(request);
@@ -529,8 +529,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Cancel the support for a given application version.
-     * @param request {@link PowerAuthPortServiceStub.UnsupportApplicationVersionRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.UnsupportApplicationVersionResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.UnsupportApplicationVersionRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.UnsupportApplicationVersionResponse}
      */
     public PowerAuthPortServiceStub.UnsupportApplicationVersionResponse unsupportApplicationVersion(PowerAuthPortServiceStub.UnsupportApplicationVersionRequest request) throws RemoteException {
         return clientStub.unsupportApplicationVersion(request);
@@ -549,8 +549,8 @@ public class PowerAuthServiceClient {
 
     /**
      * Renew the support for a given application version.
-     * @param request {@link PowerAuthPortServiceStub.SupportApplicationVersionRequest} instance.
-     * @return {@link PowerAuthPortServiceStub.SupportApplicationVersionResponse}
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.SupportApplicationVersionRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.SupportApplicationVersionResponse}
      */
     public PowerAuthPortServiceStub.SupportApplicationVersionResponse supportApplicationVersion(PowerAuthPortServiceStub.SupportApplicationVersionRequest request) throws RemoteException {
         return clientStub.supportApplicationVersion(request);
