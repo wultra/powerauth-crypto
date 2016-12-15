@@ -25,6 +25,11 @@
             <artifactId>axis2-adb</artifactId>
             <version>1.6.3</version>
         </dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-transport-local</artifactId>
+			<version>1.6.3</version>
+		</dependency>
         <dependency>
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-api</artifactId>
