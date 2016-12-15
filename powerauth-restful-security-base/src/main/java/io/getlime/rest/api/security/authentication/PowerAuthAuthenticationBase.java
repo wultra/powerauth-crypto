@@ -19,7 +19,7 @@ package io.getlime.rest.api.security.authentication;
  * PowerAuth authentication object used between PowerAuth Client and intermediate server
  * application (such as mobile banking API).
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public interface PowerAuthAuthenticationBase {

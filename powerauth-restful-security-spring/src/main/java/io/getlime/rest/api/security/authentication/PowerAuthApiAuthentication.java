@@ -27,7 +27,7 @@ import java.util.Collections;
  * PowerAuth API authentication object used between intermediate server application (such as mobile 
  * banking API) and core systems (such as banking core).
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public class PowerAuthApiAuthentication extends AbstractAuthenticationToken implements PowerAuthApiAuthenticationBase {

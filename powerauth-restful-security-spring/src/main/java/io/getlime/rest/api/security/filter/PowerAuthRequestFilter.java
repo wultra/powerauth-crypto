@@ -15,8 +15,6 @@
  */
 package io.getlime.rest.api.security.filter;
 
-import com.google.common.io.BaseEncoding;
-import io.getlime.security.powerauth.lib.util.http.PowerAuthRequestCanonizationUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -29,7 +27,7 @@ import java.io.IOException;
  * Request filter that intercepts the request body, forwards it to the controller 
  * as a request attribute named "X-PowerAuth-Request-Body" and resets the stream.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public class PowerAuthRequestFilter extends OncePerRequestFilter {
@@ -37,34 +35,7 @@ public class PowerAuthRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        ResettableStreamHttpServletRequest resettableRequest = new ResettableStreamHttpServletRequest(request);
-        if (request.getMethod().toUpperCase().equals("GET")) {
-            // Parse the query parameters
-            String queryString = request.getQueryString();
-
-            // Get the canonized form
-            String signatureBaseStringData = PowerAuthRequestCanonizationUtils.canonizeGetParameters(queryString);
-
-            // Pass the signature base string as the request attribute
-            if (signatureBaseStringData != null) {
-                resettableRequest.setAttribute(
-                        PowerAuthRequestFilterConstant.POWERAUTH_SIGNATURE_BASE_STRING,
-                        BaseEncoding.base64().encode(signatureBaseStringData.getBytes("UTF-8"))
-                );
-            }
-
-        } else { // ... handle POST, PUT, DELETE, ... method
-
-            // Get the request body and pass it as the signature base string as the request attribute
-            byte[] body = resettableRequest.getRequestBody();
-            if (body != null) {
-                resettableRequest.setAttribute(
-                        PowerAuthRequestFilterConstant.POWERAUTH_SIGNATURE_BASE_STRING,
-                        BaseEncoding.base64().encode(body)
-                );
-            }
-        }
-        super.doFilter(resettableRequest, response, filterChain);
+        super.doFilter(PowerAuthRequestFilterBase.filterRequest(request), response, filterChain);
     }
 
 }

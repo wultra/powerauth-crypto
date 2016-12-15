@@ -16,27 +16,18 @@
 package io.getlime.rest.api.security.provider;
 
 import com.google.common.io.BaseEncoding;
-import io.getlime.rest.api.security.application.PowerAuthApplicationConfiguration;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthenticationBase;
-import io.getlime.rest.api.security.authentication.PowerAuthAuthenticationBase;
-import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
-import io.getlime.rest.api.security.filter.PowerAuthRequestFilterConstant;
+import io.getlime.rest.api.security.filter.PowerAuthRequestFilterBase;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
-import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
-import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- * Implementation of PowerAuth authentication provider.
+ * Abstract class for PowerAuth 2.0 authentication provider.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public abstract class PowerAuthAuthenticationProviderBase {
@@ -89,7 +80,7 @@ public abstract class PowerAuthAuthenticationProviderBase {
     public PowerAuthApiAuthenticationBase validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader, List<PowerAuthSignatureTypes> allowedSignatureTypes) throws Exception {
         // Get HTTP method and body bytes
         String requestMethod = servletRequest.getMethod().toUpperCase();
-        String requestBodyString = ((String) servletRequest.getAttribute(PowerAuthRequestFilterConstant.POWERAUTH_SIGNATURE_BASE_STRING));
+        String requestBodyString = ((String) servletRequest.getAttribute(PowerAuthRequestFilterBase.POWERAUTH_SIGNATURE_BASE_STRING));
         byte[] requestBodyBytes = requestBodyString == null ? null : BaseEncoding.base64().decode(requestBodyString);
         return this.validateRequestSignature(requestMethod, requestBodyBytes, requestUriIdentifier, httpAuthorizationHeader, allowedSignatureTypes);
     }

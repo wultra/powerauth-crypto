@@ -21,7 +21,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
  * PowerAuth authentication object used between PowerAuth Client and intermediate server
  * application (such as mobile banking API).
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public class PowerAuthAuthentication extends AbstractAuthenticationToken implements PowerAuthAuthenticationBase {

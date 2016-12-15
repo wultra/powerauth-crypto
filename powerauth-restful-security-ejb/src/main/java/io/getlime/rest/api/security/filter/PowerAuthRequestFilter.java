@@ -15,12 +15,10 @@
  */
 package io.getlime.rest.api.security.filter;
 
-import com.google.common.io.BaseEncoding;
-import com.google.common.io.ByteStreams;
-import io.getlime.security.powerauth.lib.util.http.PowerAuthRequestCanonizationUtils;
-
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Context;
 import java.io.IOException;
 
 /**
@@ -32,35 +30,12 @@ import java.io.IOException;
  */
 public class PowerAuthRequestFilter implements ContainerRequestFilter {
 
+    @Context
+    private HttpServletRequest httpRequest;
+
     @Override
-    public void filter(ContainerRequestContext requestContext)
-            throws IOException {
-        if (requestContext.getMethod().toUpperCase().equals("GET")) {
-            // Parse the query parameters
-            String queryString = requestContext.getUriInfo().getAbsolutePath().getQuery();
-
-            // Get the canonized form
-            String signatureBaseStringData = PowerAuthRequestCanonizationUtils.canonizeGetParameters(queryString);
-
-            // Pass the signature base string as the request attribute
-            if (signatureBaseStringData != null) {
-                requestContext.setProperty(
-                        PowerAuthRequestFilterConstant.POWERAUTH_SIGNATURE_BASE_STRING,
-                        BaseEncoding.base64().encode(signatureBaseStringData.getBytes("UTF-8"))
-                );
-            }
-
-        } else { // ... handle POST, PUT, DELETE, ... method
-
-            // Get the request body and pass it as the signature base string as the request attribute
-            byte[] body = ByteStreams.toByteArray(requestContext.getEntityStream());
-            if (body != null) {
-                requestContext.setProperty(
-                        PowerAuthRequestFilterConstant.POWERAUTH_SIGNATURE_BASE_STRING,
-                        BaseEncoding.base64().encode(body)
-                );
-            }
-        }
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        PowerAuthRequestFilterBase.filterRequest(httpRequest);
     }
 
 }

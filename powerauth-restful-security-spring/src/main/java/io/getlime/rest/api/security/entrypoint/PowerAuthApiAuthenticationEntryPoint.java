@@ -29,7 +29,7 @@ import java.io.IOException;
 /**
  * Default PowerAuth authentication entry-point implementation.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 @Service

@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Interface providing method for PowerAuth behavior high-level customization.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public interface PowerAuthApplicationConfiguration {

@@ -18,7 +18,7 @@ package io.getlime.rest.api.security.exception;
 /**
  * Exception raised in case PowerAuth authentication fails.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public class PowerAuthAuthenticationException extends Exception {
