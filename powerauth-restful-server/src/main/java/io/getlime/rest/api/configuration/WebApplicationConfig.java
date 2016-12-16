@@ -15,7 +15,7 @@
  */
 package io.getlime.rest.api.configuration;
 
-import io.getlime.rest.api.security.annotation.PowerAuthInterceptor;
+import io.getlime.rest.api.security.annotation.PowerAuthAnnotationInterceptor;
 import io.getlime.rest.api.security.annotation.PowerAuthWebArgumentResolver;
 import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -56,8 +56,8 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public PowerAuthInterceptor powerAuthInterceptor() {
-        return new PowerAuthInterceptor();
+    public PowerAuthAnnotationInterceptor powerAuthInterceptor() {
+        return new PowerAuthAnnotationInterceptor();
     }
 
     /**

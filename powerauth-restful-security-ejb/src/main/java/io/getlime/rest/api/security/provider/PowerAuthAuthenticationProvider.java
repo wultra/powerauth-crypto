@@ -78,7 +78,7 @@ public class PowerAuthAuthenticationProvider extends PowerAuthAuthenticationProv
      * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
      * @param allowedSignatureTypes Allowed types of the signature.
      * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-     * @throws Exception In case authorization fails, exception is raised.
+     * @throws PowerAuthAuthenticationException In case authorization fails, exception is raised.
      */
     public PowerAuthApiAuthentication validateRequestSignature(
             String httpMethod,
@@ -86,7 +86,7 @@ public class PowerAuthAuthenticationProvider extends PowerAuthAuthenticationProv
             String requestUriIdentifier,
             String httpAuthorizationHeader,
             List<PowerAuthSignatureTypes> allowedSignatureTypes
-    ) throws Exception {
+    ) throws PowerAuthAuthenticationException {
 
         // Check for HTTP PowerAuth signature header
         if (httpAuthorizationHeader == null || httpAuthorizationHeader.equals("undefined")) {

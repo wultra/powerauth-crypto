@@ -31,15 +31,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @Component
-public class PowerAuthInterceptor extends HandlerInterceptorAdapter {
+public class PowerAuthAnnotationInterceptor extends HandlerInterceptorAdapter {
 
     private PowerAuthAuthenticationProvider authenticationProvider;
 
-    public PowerAuthInterceptor() {
+    public PowerAuthAnnotationInterceptor() {
     }
 
     @Autowired
-    public PowerAuthInterceptor(PowerAuthAuthenticationProvider authenticationProvider) {
+    public PowerAuthAnnotationInterceptor(PowerAuthAuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
     }
 
@@ -58,9 +58,7 @@ public class PowerAuthInterceptor extends HandlerInterceptorAdapter {
                     new ArrayList<>(Arrays.asList(powerAuthAnnotation.signatureType()))
             );
 
-            if (authentication == null) { // ... authentication failed
-                throw new PowerAuthAuthenticationException();
-            } else { // ... pass authentication object
+            if (authentication != null) {
                 request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, authentication);
             }
 

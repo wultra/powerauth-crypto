@@ -26,7 +26,7 @@ import java.io.IOException;
  * Request filter that intercepts the request body, forwards it to the controller 
  * as a request attribute named "X-PowerAuth-Request-Body" and resets the stream.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 @Provider

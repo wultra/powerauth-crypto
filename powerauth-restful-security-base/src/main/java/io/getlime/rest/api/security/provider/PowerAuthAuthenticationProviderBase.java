@@ -17,6 +17,7 @@ package io.getlime.rest.api.security.provider;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthenticationBase;
+import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.filter.PowerAuthRequestFilterBase;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 
@@ -41,7 +42,7 @@ public abstract class PowerAuthAuthenticationProviderBase {
      * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
      * @param allowedSignatureTypes Allowed types of the signature.
      * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-     * @throws Exception In case authorization fails, exception is raised.
+     * @throws PowerAuthAuthenticationException In case authorization fails, exception is raised.
      */
     public abstract PowerAuthApiAuthenticationBase validateRequestSignature(
             String httpMethod,
@@ -49,7 +50,7 @@ public abstract class PowerAuthAuthenticationProviderBase {
             String requestUriIdentifier,
             String httpAuthorizationHeader,
             List<PowerAuthSignatureTypes> allowedSignatureTypes
-    ) throws Exception;
+    ) throws PowerAuthAuthenticationException;
 
     /**
      * The same as {{@link #validateRequestSignature(String, byte[], String, String, List)} but uses default accepted signature type (2FA or 3FA).
@@ -58,9 +59,9 @@ public abstract class PowerAuthAuthenticationProviderBase {
      * @param requestUriIdentifier Request URI identifier.
      * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
      * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-     * @throws Exception In case authorization fails, exception is raised.
+     * @throws PowerAuthAuthenticationException In case authorization fails, exception is raised.
      */
-    public PowerAuthApiAuthenticationBase validateRequestSignature(String httpMethod, byte[] httpBody, String requestUriIdentifier, String httpAuthorizationHeader) throws Exception {
+    public PowerAuthApiAuthenticationBase validateRequestSignature(String httpMethod, byte[] httpBody, String requestUriIdentifier, String httpAuthorizationHeader) throws PowerAuthAuthenticationException {
         List<PowerAuthSignatureTypes> defaultAllowedSignatureTypes = new ArrayList<>();
         defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE);
         defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_BIOMETRY);
@@ -75,9 +76,9 @@ public abstract class PowerAuthAuthenticationProviderBase {
      * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
      * @param allowedSignatureTypes Allowed types of signatures.
      * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-     * @throws Exception In case authorization fails, exception is raised.
+     * @throws PowerAuthAuthenticationException In case authorization fails, exception is raised.
      */
-    public PowerAuthApiAuthenticationBase validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader, List<PowerAuthSignatureTypes> allowedSignatureTypes) throws Exception {
+    public PowerAuthApiAuthenticationBase validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader, List<PowerAuthSignatureTypes> allowedSignatureTypes) throws PowerAuthAuthenticationException {
         // Get HTTP method and body bytes
         String requestMethod = servletRequest.getMethod().toUpperCase();
         String requestBodyString = ((String) servletRequest.getAttribute(PowerAuthRequestFilterBase.POWERAUTH_SIGNATURE_BASE_STRING));
@@ -91,9 +92,9 @@ public abstract class PowerAuthAuthenticationProviderBase {
      * @param requestUriIdentifier Request URI identifier.
      * @param httpAuthorizationHeader PowerAuth 2.0 HTTP authorization header.
      * @return Instance of a PowerAuthApiAuthentication on successful authorization.
-     * @throws Exception In case authorization fails, exception is raised.
+     * @throws PowerAuthAuthenticationException In case authorization fails, exception is raised.
      */
-    public PowerAuthApiAuthenticationBase validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader) throws Exception {
+    public PowerAuthApiAuthenticationBase validateRequestSignature(HttpServletRequest servletRequest, String requestUriIdentifier, String httpAuthorizationHeader) throws PowerAuthAuthenticationException {
         List<PowerAuthSignatureTypes> defaultAllowedSignatureTypes = new ArrayList<>();
         defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE);
         defaultAllowedSignatureTypes.add(PowerAuthSignatureTypes.POSSESSION_BIOMETRY);
