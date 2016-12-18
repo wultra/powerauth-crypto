@@ -68,6 +68,7 @@ public class PowerAuthAnnotationFilter implements ContainerRequestFilter {
                         request.getHeader(PowerAuthHttpHeader.HEADER_NAME),
                         new ArrayList<>(Arrays.asList(powerAuthAnnotation.signatureType()))
                 );
+                // We need to use HttpServletRequest attributes, since base provider relies on it.
                 request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, authentication);
             } catch (PowerAuthAuthenticationException e) {
                 // authentication failed, but we ignore it here and simply do not inject

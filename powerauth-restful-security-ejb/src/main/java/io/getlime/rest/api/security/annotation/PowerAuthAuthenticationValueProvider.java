@@ -18,12 +18,11 @@ package io.getlime.rest.api.security.annotation;
 
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthenticationBase;
-import io.getlime.rest.api.security.authentication.PowerAuthAuthentication;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.jersey.server.internal.inject.AbstractValueFactoryProvider;
-import org.glassfish.jersey.server.internal.inject.MultivaluedParameterExtractorProvider;
+import org.glassfish.jersey.server.internal.inject.AbstractContainerRequestValueFactory;
 import org.glassfish.jersey.server.model.Parameter;
+import org.glassfish.jersey.server.spi.internal.ValueFactoryProvider;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -32,39 +31,35 @@ import javax.ws.rs.core.Context;
 /**
  * @author Petr Dvorak, petr@lime-company.eu
  */
-public class PowerAuthAuthenticationValueProvider extends AbstractValueFactoryProvider {
+public class PowerAuthAuthenticationValueProvider implements ValueFactoryProvider {
 
     @Context
     private HttpServletRequest request;
 
     @Inject
-    public PowerAuthAuthenticationValueProvider(
-            MultivaluedParameterExtractorProvider mpep,
-            ServiceLocator locator
-    ) {
-        super(mpep, locator, Parameter.Source.UNKNOWN);
+    private ServiceLocator locator;
+
+    @Override
+    public Factory<?> getValueFactory(Parameter parameter) {
+        Class<?> classType = parameter.getRawType();
+        if (classType != null && PowerAuthApiAuthenticationBase.class.isAssignableFrom(classType)) {
+            final Factory<PowerAuthApiAuthentication> factory = new AbstractContainerRequestValueFactory<PowerAuthApiAuthentication>() {
+
+                @Override
+                public PowerAuthApiAuthentication provide() {
+                    return (PowerAuthApiAuthentication) request.getAttribute(PowerAuth.AUTHENTICATION_OBJECT);
+                }
+
+            };
+            locator.inject(factory);
+            return factory;
+        }
+        return null;
     }
 
     @Override
-    protected Factory<?> createValueFactory(Parameter parameter) {
-        Class<?> classType = parameter.getRawType();
-        if (classType == null || !PowerAuthApiAuthenticationBase.class.isAssignableFrom(classType)) {
-            return null;
-        }
-
-        return new Factory<PowerAuthAuthentication>() {
-
-            @Override
-            public PowerAuthAuthentication provide() {
-                return (PowerAuthAuthentication) request.getAttribute(PowerAuth.AUTHENTICATION_OBJECT);
-            }
-
-            @Override
-            public void dispose(PowerAuthAuthentication powerAuthAuthentication) {
-
-            }
-
-        };
+    public PriorityType getPriority() {
+        return Priority.NORMAL;
     }
 
 }
