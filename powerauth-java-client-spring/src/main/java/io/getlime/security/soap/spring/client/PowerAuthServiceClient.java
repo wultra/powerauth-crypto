@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.soap.client;
+
+package io.getlime.security.soap.spring.client;
 
 import io.getlime.powerauth.soap.*;
 import io.getlime.powerauth.soap.GetActivationListForUserResponse.Activations;

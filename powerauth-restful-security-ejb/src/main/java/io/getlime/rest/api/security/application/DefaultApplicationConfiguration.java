@@ -16,7 +16,6 @@
 
 package io.getlime.rest.api.security.application;
 
-import javax.enterprise.inject.Default;
 import java.util.Map;
 
 /**
@@ -24,15 +23,18 @@ import java.util.Map;
  *
  * @author Petr Dvorak, petr@lime-company.eu
  */
-@Default
 public class DefaultApplicationConfiguration implements PowerAuthApplicationConfiguration {
 
+    public DefaultApplicationConfiguration() {
+    }
 
-    @Override public boolean isAllowedApplicationKey(String applicationKey) {
+    @Override
+    public boolean isAllowedApplicationKey(String applicationKey) {
         return true;
     }
 
-    @Override public Map<String, Object> statusServiceCustomObject() {
+    @Override
+    public Map<String, Object> statusServiceCustomObject() {
         return null;
     }
 }

@@ -19,10 +19,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>powerauth-restful-server</name>
+	<name>powerauth-restful-server-spring</name>
 	<description>PowerAuth 2.0 Standard RESTful API</description>
 	<groupId>io.getlime</groupId>
-	<artifactId>powerauth-restful-server</artifactId>
+	<artifactId>powerauth-restful-server-spring</artifactId>
 	<version>0.13.0</version>
 	<packaging>war</packaging>
 

@@ -465,8 +465,13 @@ public class ActivationServiceBehavior {
         Set<ActivationStatus> states = ImmutableSet.of(ActivationStatus.CREATED);
         ActivationRecordEntity activation = powerAuthRepository.findFirstByApplicationIdAndActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(application.getId(), activationIdShort, states, timestamp);
 
+        // Make sure to deactivate the activation if it is expired
+        deactivatePendingActivation(timestamp, activation);
+
         // if there is no such activation or application does not match the activation application, exit
-        if (activation == null || (activation.getApplication().getId() != application.getId())) {
+        if (activation == null
+                || !activation.getActivationStatus().equals(ActivationStatus.CREATED)
+                || activation.getApplication().getId() != application.getId()) {
             throw localizationProvider.buildExceptionForCode(ServiceError.ACTIVATION_EXPIRED);
         }
 

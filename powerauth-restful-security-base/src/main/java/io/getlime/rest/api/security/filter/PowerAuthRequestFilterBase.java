@@ -40,15 +40,19 @@ public class PowerAuthRequestFilterBase {
             // Parse the query parameters
             String queryString = httpRequest.getQueryString();
 
-            // Get the canonized form
-            String signatureBaseStringData = PowerAuthRequestCanonizationUtils.canonizeGetParameters(queryString);
+            if (queryString != null && queryString.length() > 0) {
 
-            // Pass the signature base string as the request attribute
-            if (signatureBaseStringData != null) {
-                resettableRequest.setAttribute(
-                        PowerAuthRequestFilterBase.POWERAUTH_SIGNATURE_BASE_STRING,
-                        BaseEncoding.base64().encode(signatureBaseStringData.getBytes("UTF-8"))
-                );
+                // Get the canonized form
+                String signatureBaseStringData = PowerAuthRequestCanonizationUtils.canonizeGetParameters(queryString);
+
+                // Pass the signature base string as the request attribute
+                if (signatureBaseStringData != null) {
+                    resettableRequest.setAttribute(
+                            PowerAuthRequestFilterBase.POWERAUTH_SIGNATURE_BASE_STRING,
+                            BaseEncoding.base64().encode(signatureBaseStringData.getBytes("UTF-8"))
+                    );
+                }
+
             }
 
         } else { // ... handle POST, PUT, DELETE, ... method

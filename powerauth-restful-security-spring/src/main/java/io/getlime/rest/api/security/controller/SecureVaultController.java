@@ -21,7 +21,7 @@ import io.getlime.rest.api.model.response.VaultUnlockResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
-import io.getlime.security.soap.client.PowerAuthServiceClient;
+import io.getlime.security.soap.spring.client.PowerAuthServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

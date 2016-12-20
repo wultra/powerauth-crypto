@@ -20,6 +20,7 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-restful-security-spring</artifactId>
+    <packaging>pom</packaging>
     <version>0.13.0</version>
     <name>powerauth-restful-security-spring</name>
 	<description>PowerAuth 2.0 RESTful API Security Additions for Spring</description>

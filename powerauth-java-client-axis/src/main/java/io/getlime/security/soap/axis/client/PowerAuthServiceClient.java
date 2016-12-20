@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.soap.client;
+
+package io.getlime.security.soap.axis.client;
 
 
 import io.getlime.powerauth.soap.*;

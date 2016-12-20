@@ -82,7 +82,8 @@
         <module>powerauth-restful-security-base</module>
 		<module>powerauth-restful-security-ejb</module>
 		<module>powerauth-restful-security-spring</module>
-		<module>powerauth-restful-server</module>
+		<module>powerauth-restful-server-javaee</module>
+		<module>powerauth-restful-server-spring</module>
     </modules>
 
 	<properties>

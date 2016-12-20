@@ -25,7 +25,7 @@ import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
-import io.getlime.security.soap.client.PowerAuthServiceClient;
+import io.getlime.security.soap.spring.client.PowerAuthServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;

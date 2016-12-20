@@ -16,9 +16,7 @@
 
 package io.getlime.rest.api.security.controller;
 
-import io.getlime.powerauth.soap.GetActivationStatusResponse;
-import io.getlime.powerauth.soap.PrepareActivationResponse;
-import io.getlime.powerauth.soap.RemoveActivationResponse;
+import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
 import io.getlime.rest.api.model.base.PowerAuthApiRequest;
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.rest.api.model.request.ActivationCreateRequest;
@@ -31,14 +29,14 @@ import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
-import io.getlime.security.soap.client.PowerAuthServiceClient;
+import io.getlime.security.soap.axis.client.PowerAuthServiceClient;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.HeaderParam;
+import javax.inject.Named;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.rmi.RemoteException;
 
 /**
  * Controller implementing activation related end-points from the PowerAuth
@@ -48,29 +46,29 @@ import javax.ws.rs.HeaderParam;
  *
  */
 @Path("pa/activation")
+@Produces(MediaType.APPLICATION_JSON)
 public class ActivationController {
 
-    private final PowerAuthServiceClient powerAuthClient;
-
-    private final PowerAuthAuthenticationProvider authenticationProvider;
-
-    private final PowerAuthApplicationConfiguration applicationConfiguration;
+    @EJB
+    private PowerAuthServiceClient powerAuthClient;
 
     @Inject
-    public ActivationController(PowerAuthServiceClient powerAuthClient, PowerAuthAuthenticationProvider authenticationProvider, PowerAuthApplicationConfiguration applicationConfiguration) {
-        this.powerAuthClient = powerAuthClient;
-        this.authenticationProvider = authenticationProvider;
-        this.applicationConfiguration = applicationConfiguration;
-    }
+    private PowerAuthAuthenticationProvider authenticationProvider;
+
+    @Inject
+    private PowerAuthApplicationConfiguration applicationConfiguration;
 
     /**
      * Create a new activation.
      * @param request PowerAuth RESTful request with {@link ActivationCreateRequest} payload.
      * @return PowerAuth RESTful response with {@link ActivationCreateResponse} payload.
+     * @throws RemoteException In case SOAP communication fails
      */
     @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("create")
-    public PowerAuthApiResponse<ActivationCreateResponse> createActivation(PowerAuthApiRequest<ActivationCreateRequest> request) {
+    public PowerAuthApiResponse<ActivationCreateResponse> createActivation(PowerAuthApiRequest<ActivationCreateRequest> request) throws RemoteException {
 
         String activationIDShort = request.getRequestObject().getActivationIdShort();
         String activationNonce = request.getRequestObject().getActivationNonce();
@@ -81,7 +79,7 @@ public class ActivationController {
         String applicationSignature = request.getRequestObject().getApplicationSignature();
         String clientEphemeralKey = request.getRequestObject().getEphemeralPublicKey();
 
-        PrepareActivationResponse soapResponse = powerAuthClient.prepareActivation(
+        PowerAuthPortServiceStub.PrepareActivationResponse soapResponse = powerAuthClient.prepareActivation(
                 activationIDShort,
                 activationName,
                 activationNonce,
@@ -107,14 +105,17 @@ public class ActivationController {
      * Get activation status.
      * @param request PowerAuth RESTful request with {@link ActivationStatusRequest} payload.
      * @return PowerAuth RESTful response with {@link ActivationStatusResponse} payload.
+     * @throws RemoteException In case SOAP communication fails
      */
-    @GET
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("status")
-    public PowerAuthApiResponse<ActivationStatusResponse> getActivationStatus(PowerAuthApiRequest<ActivationStatusRequest> request) {
+    public PowerAuthApiResponse<ActivationStatusResponse> getActivationStatus(PowerAuthApiRequest<ActivationStatusRequest> request) throws RemoteException {
 
         String activationId = request.getRequestObject().getActivationId();
 
-        GetActivationStatusResponse soapResponse = powerAuthClient.getActivationStatus(activationId);
+        PowerAuthPortServiceStub.GetActivationStatusResponse soapResponse = powerAuthClient.getActivationStatus(activationId);
 
         ActivationStatusResponse response = new ActivationStatusResponse();
         response.setActivationId(soapResponse.getActivationId());
@@ -130,19 +131,23 @@ public class ActivationController {
     /**
      * Get activation status.
      * @param signatureHeader PowerAuth signature HTTP header.
-     * @param servletRequest Associated servlet request.
      * @return PowerAuth RESTful response with {@link ActivationRemoveResponse} payload.
-     * @throws Exception In case the signature validation fails.
+     * @throws PowerAuthAuthenticationException In case the signature validation fails.
+     * @throws RemoteException In case SOAP communication fails
      */
     @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("remove")
-    public PowerAuthApiResponse<ActivationRemoveResponse> removeActivation(@HeaderParam(PowerAuthHttpHeader.HEADER_NAME) String signatureHeader, HttpServletRequest servletRequest) throws Exception {
+    public PowerAuthApiResponse<ActivationRemoveResponse> removeActivation(
+            @HeaderParam(PowerAuthHttpHeader.HEADER_NAME) String signatureHeader)
+            throws PowerAuthAuthenticationException, RemoteException {
 
         PowerAuthApiAuthentication apiAuthentication = (PowerAuthApiAuthentication) authenticationProvider.validateRequestSignature("POST", null, "/pa/activation/remove", signatureHeader);
 
         if (apiAuthentication != null && apiAuthentication.getActivationId() != null) {
 
-            RemoveActivationResponse soapResponse = powerAuthClient.removeActivation(apiAuthentication.getActivationId());
+            PowerAuthPortServiceStub.RemoveActivationResponse soapResponse = powerAuthClient.removeActivation(apiAuthentication.getActivationId());
 
             ActivationRemoveResponse response = new ActivationRemoveResponse();
             response.setActivationId(soapResponse.getActivationId());

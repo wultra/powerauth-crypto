@@ -16,18 +16,18 @@
 package io.getlime.rest.api.security.provider;
 
 import com.google.common.io.BaseEncoding;
-import io.getlime.powerauth.soap.VerifySignatureRequest;
-import io.getlime.powerauth.soap.VerifySignatureResponse;
+import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.authentication.PowerAuthAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
-import io.getlime.security.soap.client.PowerAuthServiceClient;
+import io.getlime.security.soap.axis.client.PowerAuthServiceClient;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,15 +37,18 @@ import java.util.Map;
  * @author Petr Dvorak
  *
  */
-@Stateless
+@Stateless(name = "DefaultPowerAuthAuthenticationProvider")
 public class PowerAuthAuthenticationProvider extends PowerAuthAuthenticationProviderBase {
 
-    @Inject
+    @EJB
     private PowerAuthServiceClient powerAuthClient;
 
-    public PowerAuthApiAuthentication authenticate(PowerAuthAuthentication authentication) {
+    public PowerAuthAuthenticationProvider() {
+    }
 
-        VerifySignatureRequest soapRequest = new VerifySignatureRequest();
+    public PowerAuthApiAuthentication authenticate(PowerAuthAuthentication authentication) throws RemoteException {
+
+        PowerAuthPortServiceStub.VerifySignatureRequest soapRequest = new PowerAuthPortServiceStub.VerifySignatureRequest();
         soapRequest.setActivationId(authentication.getActivationId());
         soapRequest.setApplicationKey(authentication.getApplicationKey());
         soapRequest.setSignature(authentication.getSignature());
@@ -57,9 +60,9 @@ public class PowerAuthAuthenticationProvider extends PowerAuthAuthenticationProv
                 authentication.getData()
         ));
 
-        VerifySignatureResponse soapResponse = powerAuthClient.verifySignature(soapRequest);
+        PowerAuthPortServiceStub.VerifySignatureResponse soapResponse = powerAuthClient.verifySignature(soapRequest);
 
-        if (soapResponse.isSignatureValid()) {
+        if (soapResponse.getSignatureValid()) {
             PowerAuthApiAuthentication apiAuthentication = new PowerAuthApiAuthentication();
             apiAuthentication.setActivationId(soapResponse.getActivationId());
             apiAuthentication.setUserId(soapResponse.getUserId());
@@ -141,7 +144,12 @@ public class PowerAuthAuthenticationProvider extends PowerAuthAuthenticationProv
         powerAuthAuthentication.setData(httpBody);
 
         // Call the authentication
-        PowerAuthApiAuthentication auth = this.authenticate(powerAuthAuthentication);
+        PowerAuthApiAuthentication auth = null;
+        try {
+            auth = this.authenticate(powerAuthAuthentication);
+        } catch (RemoteException e) {
+            throw new PowerAuthAuthenticationException("POWER_AUTH_SIGNATURE_SOAP_ERROR");
+        }
 
         // In case authentication is null, throw PowerAuth exception
         if (auth == null) {

@@ -16,18 +16,21 @@
 package io.getlime.rest.api.security.controller;
 
 import com.google.common.io.BaseEncoding;
+import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.rest.api.model.response.VaultUnlockResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
-import io.getlime.security.soap.client.PowerAuthServiceClient;
+import io.getlime.security.soap.axis.client.PowerAuthServiceClient;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.inject.Named;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import java.io.UnsupportedEncodingException;
+import java.rmi.RemoteException;
 import java.util.Map;
 
 /**
@@ -36,15 +39,12 @@ import java.util.Map;
  *
  * @author Petr Dvorak, petr@lime-company.eu
  */
-@Path("/pa/vault")
+@Path("pa/vault")
+@Produces(MediaType.APPLICATION_JSON)
 public class SecureVaultController {
 
-    private final PowerAuthServiceClient powerAuthClient;
-
-    @Inject
-    public SecureVaultController(PowerAuthServiceClient powerAuthClient) {
-        this.powerAuthClient = powerAuthClient;
-    }
+    @EJB
+    private PowerAuthServiceClient powerAuthClient;
 
     /**
      * Request the vault unlock key.
@@ -54,10 +54,12 @@ public class SecureVaultController {
      * @throws UnsupportedEncodingException In case UTF-8 is not supported.
      */
     @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("unlock")
     public PowerAuthApiResponse<VaultUnlockResponse> unlockVault(
             @HeaderParam(PowerAuthHttpHeader.HEADER_NAME) String signatureHeader)
-            throws PowerAuthAuthenticationException, UnsupportedEncodingException {
+            throws PowerAuthAuthenticationException, UnsupportedEncodingException, RemoteException {
 
         Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signatureHeader);
         String activationId = map.get(PowerAuthHttpHeader.ACTIVATION_ID);
@@ -68,9 +70,9 @@ public class SecureVaultController {
 
         String data = PowerAuthHttpBody.getSignatureBaseString("POST", "/pa/vault/unlock", BaseEncoding.base64().decode(nonce), null);
 
-        io.getlime.powerauth.soap.VaultUnlockResponse soapResponse = powerAuthClient.unlockVault(activationId, applicationId, data, signature, signatureType);
+        PowerAuthPortServiceStub.VaultUnlockResponse soapResponse = powerAuthClient.unlockVault(activationId, applicationId, data, signature, signatureType);
 
-        if (!soapResponse.isSignatureValid()) {
+        if (!soapResponse.getSignatureValid()) {
             throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
         }
 
