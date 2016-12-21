@@ -470,7 +470,7 @@ public class ActivationServiceBehavior {
 
         // if there is no such activation or application does not match the activation application, exit
         if (activation == null
-                || !activation.getActivationStatus().equals(ActivationStatus.CREATED)
+                || !ActivationStatus.CREATED.equals(activation.getActivationStatus())
                 || activation.getApplication().getId() != application.getId()) {
             throw localizationProvider.buildExceptionForCode(ServiceError.ACTIVATION_EXPIRED);
         }
