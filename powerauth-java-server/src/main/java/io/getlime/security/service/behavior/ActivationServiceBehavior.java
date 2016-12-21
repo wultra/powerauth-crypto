@@ -65,20 +65,32 @@ import java.util.logging.Logger;
 @Component
 public class ActivationServiceBehavior {
 
-    @Autowired
     private ActivationRepository powerAuthRepository;
 
-    @Autowired
     private MasterKeyPairRepository masterKeyPairRepository;
 
-    @Autowired
     private ApplicationVersionRepository applicationVersionRepository;
 
-    @Autowired
     private CallbackUrlBehavior callbackUrlBehavior;
 
-    @Autowired
     private LocalizationProvider localizationProvider;
+
+    @Autowired
+    public ActivationServiceBehavior(ActivationRepository powerAuthRepository, MasterKeyPairRepository masterKeyPairRepository, ApplicationVersionRepository applicationVersionRepository) {
+        this.powerAuthRepository = powerAuthRepository;
+        this.masterKeyPairRepository = masterKeyPairRepository;
+        this.applicationVersionRepository = applicationVersionRepository;
+    }
+
+    @Autowired
+    public void setCallbackUrlBehavior(CallbackUrlBehavior callbackUrlBehavior) {
+        this.callbackUrlBehavior = callbackUrlBehavior;
+    }
+
+    @Autowired
+    public void setLocalizationProvider(LocalizationProvider localizationProvider) {
+        this.localizationProvider = localizationProvider;
+    }
 
     private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
     private final PowerAuthServerActivation powerAuthServerActivation = new PowerAuthServerActivation();

@@ -50,17 +50,29 @@ import java.util.List;
 @Component
 public class SignatureServiceBehavior {
 
-    @Autowired
+    private ActivationRepository powerAuthRepository;
+
+    private ApplicationVersionRepository applicationVersionRepository;
+
     private AuditingServiceBehavior auditingServiceBehavior;
 
-    @Autowired
     private CallbackUrlBehavior callbackUrlBehavior;
 
     @Autowired
-    private ActivationRepository powerAuthRepository;
+    public SignatureServiceBehavior(ActivationRepository powerAuthRepository, ApplicationVersionRepository applicationVersionRepository) {
+        this.powerAuthRepository = powerAuthRepository;
+        this.applicationVersionRepository = applicationVersionRepository;
+    }
 
     @Autowired
-    private ApplicationVersionRepository applicationVersionRepository;
+    public void setAuditingServiceBehavior(AuditingServiceBehavior auditingServiceBehavior) {
+        this.auditingServiceBehavior = auditingServiceBehavior;
+    }
+
+    @Autowired
+    public void setCallbackUrlBehavior(CallbackUrlBehavior callbackUrlBehavior) {
+        this.callbackUrlBehavior = callbackUrlBehavior;
+    }
 
     private final PowerAuthServerSignature powerAuthServerSignature = new PowerAuthServerSignature();
     private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();

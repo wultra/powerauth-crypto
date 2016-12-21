@@ -33,8 +33,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
     private PowerAuthApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
+
+    @Autowired
+    public void setApiAuthenticationEntryPoint(PowerAuthApiAuthenticationEntryPoint apiAuthenticationEntryPoint) {
+        this.apiAuthenticationEntryPoint = apiAuthenticationEntryPoint;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

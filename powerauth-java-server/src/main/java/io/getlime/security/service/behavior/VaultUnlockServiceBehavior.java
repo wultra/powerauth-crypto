@@ -35,15 +35,19 @@ import java.security.spec.InvalidKeySpecException;
 
 /**
  * Behavior class implementing the vault unlock related processes. The class separates the
- * logics from the main service class.
+ * logic from the main service class.
  *
  * @author Petr Dvorak
  */
 @Component
 public class VaultUnlockServiceBehavior {
 
-    @Autowired
     private ActivationRepository powerAuthRepository;
+
+    @Autowired
+    public VaultUnlockServiceBehavior(ActivationRepository powerAuthRepository) {
+        this.powerAuthRepository = powerAuthRepository;
+    }
 
     private final PowerAuthServerVault powerAuthServerVault = new PowerAuthServerVault();
 

@@ -52,14 +52,26 @@ import java.util.logging.Logger;
 @Component
 public class PowerAuthServiceImpl implements PowerAuthService {
 
-    @Autowired
     private PowerAuthServiceConfiguration powerAuthServiceConfiguration;
 
-    @Autowired
     private ServiceBehaviors behavior;
 
-    @Autowired
     private LocalizationProvider localizationProvider;
+
+    @Autowired
+    public void setPowerAuthServiceConfiguration(PowerAuthServiceConfiguration powerAuthServiceConfiguration) {
+        this.powerAuthServiceConfiguration = powerAuthServiceConfiguration;
+    }
+
+    @Autowired
+    public void setBehavior(ServiceBehaviors behavior) {
+        this.behavior = behavior;
+    }
+
+    @Autowired
+    public void setLocalizationProvider(LocalizationProvider localizationProvider) {
+        this.localizationProvider = localizationProvider;
+    }
 
     private final CryptoProviderUtil keyConversionUtilities = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 

@@ -44,11 +44,19 @@ import java.util.Map;
 @Component
 public class PowerAuthAuthenticationProvider extends PowerAuthAuthenticationProviderBase implements AuthenticationProvider {
 
-    @Autowired
     private PowerAuthServiceClient powerAuthClient;
 
-    @Autowired(required = false)
     private PowerAuthApplicationConfiguration applicationConfiguration;
+
+    @Autowired
+    public void setPowerAuthClient(PowerAuthServiceClient powerAuthClient) {
+        this.powerAuthClient = powerAuthClient;
+    }
+
+    @Autowired
+    public void setApplicationConfiguration(PowerAuthApplicationConfiguration applicationConfiguration) {
+        this.applicationConfiguration = applicationConfiguration;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

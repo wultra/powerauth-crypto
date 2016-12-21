@@ -33,8 +33,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/rest")
 public class PowerAuthController {
 
-    @Autowired
     private PowerAuthService powerAuthService;
+
+    @Autowired
+    public void setPowerAuthService(PowerAuthService powerAuthService) {
+        this.powerAuthService = powerAuthService;
+    }
 
     /**
      * Call {@link PowerAuthService#getSystemStatus(GetSystemStatusRequest)} method and

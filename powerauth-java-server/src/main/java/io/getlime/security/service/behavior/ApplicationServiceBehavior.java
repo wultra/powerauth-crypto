@@ -45,14 +45,18 @@ import java.util.List;
 @Component
 public class ApplicationServiceBehavior {
 
-    @Autowired
     private ApplicationRepository applicationRepository;
 
-    @Autowired
     private ApplicationVersionRepository applicationVersionRepository;
 
-    @Autowired
     private MasterKeyPairRepository masterKeyPairRepository;
+
+    @Autowired
+    public ApplicationServiceBehavior(ApplicationRepository applicationRepository, ApplicationVersionRepository applicationVersionRepository, MasterKeyPairRepository masterKeyPairRepository) {
+        this.applicationRepository = applicationRepository;
+        this.applicationVersionRepository = applicationVersionRepository;
+        this.masterKeyPairRepository = masterKeyPairRepository;
+    }
 
     /**
      * Get application details.

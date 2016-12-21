@@ -39,10 +39,10 @@ import java.util.Map;
 @RequestMapping(value = "/pa/vault")
 public class SecureVaultController {
 
-    private final PowerAuthServiceClient powerAuthClient;
+    private PowerAuthServiceClient powerAuthClient;
 
     @Autowired
-    public SecureVaultController(PowerAuthServiceClient powerAuthClient) {
+    public void setPowerAuthClient(PowerAuthServiceClient powerAuthClient) {
         this.powerAuthClient = powerAuthClient;
     }
 

@@ -33,8 +33,12 @@ public class PowerAuthEndpoint {
 
     private static final String NAMESPACE_URI = "http://getlime.io/security/powerauth";
 
-    @Autowired
     private PowerAuthService powerAuthService;
+
+    @Autowired
+    public void setPowerAuthService(PowerAuthService powerAuthService) {
+        this.powerAuthService = powerAuthService;
+    }
 
     /**
      * Call {@link PowerAuthService#getSystemStatus(GetSystemStatusRequest)} method and

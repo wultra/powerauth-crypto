@@ -46,16 +46,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/pa/activation")
 public class ActivationController {
 
-    private final PowerAuthServiceClient powerAuthClient;
+    private PowerAuthServiceClient powerAuthClient;
 
-    private final PowerAuthAuthenticationProvider authenticationProvider;
+    private PowerAuthAuthenticationProvider authenticationProvider;
 
-    private final PowerAuthApplicationConfiguration applicationConfiguration;
+    private PowerAuthApplicationConfiguration applicationConfiguration;
 
     @Autowired
-    public ActivationController(PowerAuthServiceClient powerAuthClient, PowerAuthAuthenticationProvider authenticationProvider, PowerAuthApplicationConfiguration applicationConfiguration) {
+    public void setPowerAuthClient(PowerAuthServiceClient powerAuthClient) {
         this.powerAuthClient = powerAuthClient;
+    }
+
+    @Autowired
+    public void setAuthenticationProvider(PowerAuthAuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
+    }
+
+    @Autowired
+    public void setApplicationConfiguration(PowerAuthApplicationConfiguration applicationConfiguration) {
         this.applicationConfiguration = applicationConfiguration;
     }
 

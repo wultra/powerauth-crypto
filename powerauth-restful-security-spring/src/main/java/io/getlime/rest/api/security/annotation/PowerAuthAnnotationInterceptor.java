@@ -17,7 +17,6 @@
 package io.getlime.rest.api.security.annotation;
 
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
-import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +34,8 @@ public class PowerAuthAnnotationInterceptor extends HandlerInterceptorAdapter {
 
     private PowerAuthAuthenticationProvider authenticationProvider;
 
-    public PowerAuthAnnotationInterceptor() {
-    }
-
     @Autowired
-    public PowerAuthAnnotationInterceptor(PowerAuthAuthenticationProvider authenticationProvider) {
+    public void setAuthenticationProvider(PowerAuthAuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
     }
 
