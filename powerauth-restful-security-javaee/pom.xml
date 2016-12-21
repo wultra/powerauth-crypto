@@ -20,9 +20,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.getlime.security</groupId>
-    <artifactId>powerauth-restful-security-ejb</artifactId>
+    <artifactId>powerauth-restful-security-javaee</artifactId>
     <version>0.13.0</version>
-    <name>powerauth-restful-security-ejb</name>
+    <name>powerauth-restful-security-javaee</name>
     <description>PowerAuth 2.0 RESTful API Security Additions for EJB</description>
 
     <parent>

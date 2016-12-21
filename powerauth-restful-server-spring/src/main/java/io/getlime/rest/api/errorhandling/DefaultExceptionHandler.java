@@ -45,12 +45,10 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(value = PowerAuthAuthenticationException.class)
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-    public @ResponseBody PowerAuthApiResponse<List<ErrorModel>> handleUnauthorizedException(HttpServletRequest request, Exception exception) {
+    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleUnauthorizedException(HttpServletRequest request, Exception exception) {
         exception.printStackTrace();
-        List<ErrorModel> errorList = new ArrayList<>();
         ErrorModel error = new ErrorModel("ERR_UNAUTHENTICATED", "Authentication failed");
-        errorList.add(error);
-        return new PowerAuthApiResponse<>("ERROR", errorList);
+        return new PowerAuthApiResponse<>("ERROR", error);
     }
 
     /**
@@ -61,11 +59,10 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public @ResponseBody PowerAuthApiResponse<List<ErrorModel>> handleException(HttpServletRequest request, Exception exception) {
+    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleException(HttpServletRequest request, Exception exception) {
         exception.printStackTrace();
-        List<ErrorModel> errorList = new ArrayList<>();
-        errorList.add(new ErrorModel("ERR_GENERIC", exception.getMessage()));
-        return new PowerAuthApiResponse<>("ERROR", errorList);
+        ErrorModel error = new ErrorModel("ERR_GENERIC", exception.getMessage());
+        return new PowerAuthApiResponse<>("ERROR", error);
     }
 
 }

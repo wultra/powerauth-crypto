@@ -80,7 +80,7 @@
 		<module>powerauth-java-cmd</module>
 		<module>powerauth-restful-model</module>
         <module>powerauth-restful-security-base</module>
-		<module>powerauth-restful-security-ejb</module>
+		<module>powerauth-restful-security-javaee</module>
 		<module>powerauth-restful-security-spring</module>
 		<module>powerauth-restful-server-javaee</module>
 		<module>powerauth-restful-server-spring</module>

@@ -25,8 +25,8 @@ import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import io.getlime.security.soap.axis.client.PowerAuthServiceClient;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +37,10 @@ import java.util.Map;
  * @author Petr Dvorak
  *
  */
-@Stateless(name = "DefaultPowerAuthAuthenticationProvider")
+@Stateless
 public class PowerAuthAuthenticationProvider extends PowerAuthAuthenticationProviderBase {
 
-    @EJB
+    @Inject
     private PowerAuthServiceClient powerAuthClient;
 
     public PowerAuthAuthenticationProvider() {

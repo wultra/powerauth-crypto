@@ -20,6 +20,9 @@ import io.getlime.rest.api.configuration.DefaultJacksonJsonProvider;
 import io.getlime.rest.api.controller.AuthenticationController;
 import io.getlime.rest.api.security.controller.ActivationController;
 import io.getlime.rest.api.security.controller.SecureVaultController;
+import io.getlime.rest.api.security.exception.PowerAuthActivationExceptionResolver;
+import io.getlime.rest.api.security.exception.PowerAuthAuthenticationExceptionResolver;
+import io.getlime.rest.api.security.exception.PowerAuthSecureVaultExceptionResolver;
 import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
@@ -31,7 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by petrdvorak on 18/12/2016.
+ * @author Petr Dvorak, petr@lime-company.eu
  */
 @ApplicationPath("/")
 public class JavaEEApplication extends Application {
@@ -44,12 +47,17 @@ public class JavaEEApplication extends Application {
         resources.add(JacksonFeature.class);
         resources.add(DefaultJacksonJsonProvider.class);
 
-        // Controllers
+        // PowerAuth 2.0 Controllers
         resources.add(AuthenticationController.class);
         resources.add(ActivationController.class);
         resources.add(SecureVaultController.class);
 
-        // Filter
+        // PowerAuth 2.0 Exception Resolvers
+        resources.add(PowerAuthActivationExceptionResolver.class);
+        resources.add(PowerAuthAuthenticationExceptionResolver.class);
+        resources.add(PowerAuthSecureVaultExceptionResolver.class);
+
+        // PowerAuth 2.0 Filters
         resources.add(PowerAuthRequestFilter.class);
         return resources;
     }

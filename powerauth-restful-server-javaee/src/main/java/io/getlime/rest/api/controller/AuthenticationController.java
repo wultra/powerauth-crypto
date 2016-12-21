@@ -22,16 +22,16 @@ import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 
-import javax.ejb.EJB;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 /**
- * Created by petrdvorak on 18/12/2016.
+ * Simple demo controller class for signature validation purposes.
+ *
+ * @author Petr Dvorak, petr@lime-company.eu
  */
 @Path("pa/signature")
 @Produces(MediaType.APPLICATION_JSON)
@@ -43,17 +43,9 @@ public class AuthenticationController {
     @Inject
     private PowerAuthAuthenticationProvider authenticationProvider;
 
-    @GET
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("hello")
-    public String hello() {
-        return "Hello";
-    }
-
     @POST
     @Path("validate")
-    @Consumes(MediaType.TEXT_PLAIN)
+    @Consumes("*/*")
     @Produces(MediaType.APPLICATION_JSON)
     public PowerAuthApiResponse<String> login(
             String body,

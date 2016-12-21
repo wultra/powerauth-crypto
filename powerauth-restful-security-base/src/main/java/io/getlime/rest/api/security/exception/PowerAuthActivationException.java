@@ -16,22 +16,21 @@
 package io.getlime.rest.api.security.exception;
 
 /**
- * Exception raised in case PowerAuth authentication fails.
+ * Exception related to processes during a new activation process.
  *
  * @author Petr Dvorak, petr@lime-company.eu
- *
  */
-public class PowerAuthAuthenticationException extends Exception {
+public class PowerAuthActivationException extends Exception {
 
-    private static final long serialVersionUID = 4280095091435126237L;
+    private static final long serialVersionUID = -7975115359211508795L;
 
-    private static final String DEFAULT_CODE = "ERR_AUTHENTICATION";
-    private static final String DEFAULT_ERROR = "POWER_AUTH_SIGNATURE_INVALID";
+    private static final String DEFAULT_CODE = "ERR_ACTIVATION";
+    private static final String DEFAULT_ERROR = "POWER_AUTH_ACTIVATION_INVALID";
 
     /**
      * Default constructor
      */
-    public PowerAuthAuthenticationException() {
+    public PowerAuthActivationException() {
         super(DEFAULT_ERROR);
     }
 
@@ -39,12 +38,12 @@ public class PowerAuthAuthenticationException extends Exception {
      * Constructor with a custom error message
      * @param message Error message
      */
-    public PowerAuthAuthenticationException(String message) {
+    public PowerAuthActivationException(String message) {
         super(message);
     }
 
     /**
-     * Get the default error code, used for example in REST response.
+     * Get default error code, used for example in the REST response.
      * @return Default error code.
      */
     public String getDefaultCode() {

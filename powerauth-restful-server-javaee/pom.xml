@@ -67,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>io.getlime.security</groupId>
-            <artifactId>powerauth-restful-security-ejb</artifactId>
+            <artifactId>powerauth-restful-security-javaee</artifactId>
             <version>0.13.0</version>
         </dependency>
     </dependencies>

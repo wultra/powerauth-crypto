@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.getlime.rest.api.security.controller;
 
 import com.google.common.io.BaseEncoding;
@@ -24,9 +25,7 @@ import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import io.getlime.security.soap.axis.client.PowerAuthServiceClient;
 
-import javax.ejb.EJB;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.UnsupportedEncodingException;
@@ -43,7 +42,7 @@ import java.util.Map;
 @Produces(MediaType.APPLICATION_JSON)
 public class SecureVaultController {
 
-    @EJB
+    @Inject
     private PowerAuthServiceClient powerAuthClient;
 
     /**
