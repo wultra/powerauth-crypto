@@ -60,7 +60,8 @@ public class AuthenticationController {
         PowerAuthApiAuthenticationBase auth = authenticationProvider.validateRequestSignature(
                 request,
                 "/pa/signature/validate",
-                authHeader);
+                authHeader
+        );
 
         if (auth != null && auth.getUserId() != null) {
             return new PowerAuthApiResponse<>("OK", "Hooray! User: " + auth.getUserId());
