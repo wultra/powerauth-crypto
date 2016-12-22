@@ -21,14 +21,14 @@
 
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-restful-security-javaee</artifactId>
-    <version>0.13.0</version>
+    <version>0.13.1</version>
     <name>powerauth-restful-security-javaee</name>
     <description>PowerAuth 2.0 RESTful API Security Additions for EJB</description>
 
     <parent>
         <artifactId>powerauth-parent</artifactId>
         <groupId>io.getlime.security</groupId>
-        <version>0.13.0</version>
+        <version>0.13.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -44,12 +44,12 @@
         <dependency>
             <groupId>io.getlime.security</groupId>
             <artifactId>powerauth-restful-security-base</artifactId>
-            <version>0.13.0</version>
+            <version>0.13.1</version>
         </dependency>
         <dependency>
             <groupId>io.getlime.security</groupId>
             <artifactId>powerauth-java-client-axis</artifactId>
-            <version>0.13.0</version>
+            <version>0.13.1</version>
         </dependency>
 
     </dependencies>

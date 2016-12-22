@@ -19,14 +19,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>powerauth-java-client-axis</artifactId>
-	<version>0.13.0</version>
+	<version>0.13.1</version>
 	<name>powerauth-java-client-axis</name>
 	<description>PowerAuth 2.0 Service Client - Axis</description>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.13.0</version>
+		<version>0.13.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

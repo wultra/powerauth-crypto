@@ -20,12 +20,12 @@
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.13.0</version>
+		<version>0.13.1</version>
 	</parent>
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-prov</artifactId>
-	<version>0.13.0</version>
+	<version>0.13.1</version>
 	<name>powerauth-java-prov</name>
 	<description>Technical Maven module. Simple interface for generic crypto provider inclusion.</description>
 
