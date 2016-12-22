@@ -17,6 +17,7 @@
 package io.getlime.rest.api.security.annotation;
 
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
+import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,15 +48,19 @@ public class PowerAuthAnnotationInterceptor extends HandlerInterceptorAdapter {
 
         if (powerAuthAnnotation != null) {
 
-            PowerAuthApiAuthentication authentication = (PowerAuthApiAuthentication) this.authenticationProvider.validateRequestSignature(
-                    request,
-                    powerAuthAnnotation.resourceId(),
-                    request.getHeader(PowerAuthHttpHeader.HEADER_NAME),
-                    new ArrayList<>(Arrays.asList(powerAuthAnnotation.signatureType()))
-            );
-
-            if (authentication != null) {
-                request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, authentication);
+            try {
+                PowerAuthApiAuthentication authentication = (PowerAuthApiAuthentication) this.authenticationProvider.validateRequestSignature(
+                        request,
+                        powerAuthAnnotation.resourceId(),
+                        request.getHeader(PowerAuthHttpHeader.HEADER_NAME),
+                        new ArrayList<>(Arrays.asList(powerAuthAnnotation.signatureType()))
+                );
+                if (authentication != null) {
+                    request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, authentication);
+                }
+            } catch (PowerAuthAuthenticationException ex) {
+                // silently ignore here and make sure authentication object is null
+                request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, null);
             }
 
         }

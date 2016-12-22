@@ -19,6 +19,7 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.rest.api.model.response.VaultUnlockResponse;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
+import io.getlime.rest.api.security.exception.PowerAuthSecureVaultException;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 import io.getlime.security.soap.spring.client.PowerAuthServiceClient;
@@ -56,28 +57,36 @@ public class SecureVaultController {
     @RequestMapping(value = "unlock", method = RequestMethod.POST)
     public @ResponseBody PowerAuthApiResponse<VaultUnlockResponse> unlockVault(
             @RequestHeader(value = PowerAuthHttpHeader.HEADER_NAME, defaultValue = "unknown") String signatureHeader)
-            throws PowerAuthAuthenticationException, UnsupportedEncodingException {
+            throws PowerAuthAuthenticationException, PowerAuthSecureVaultException {
 
-        Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signatureHeader);
-        String activationId = map.get(PowerAuthHttpHeader.ACTIVATION_ID);
-        String applicationId = map.get(PowerAuthHttpHeader.APPLICATION_ID);
-        String signature = map.get(PowerAuthHttpHeader.SIGNATURE);
-        String signatureType = map.get(PowerAuthHttpHeader.SIGNATURE_TYPE);
-        String nonce = map.get(PowerAuthHttpHeader.NONCE);
+        try {
+            Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signatureHeader);
+            String activationId = map.get(PowerAuthHttpHeader.ACTIVATION_ID);
+            String applicationId = map.get(PowerAuthHttpHeader.APPLICATION_ID);
+            String signature = map.get(PowerAuthHttpHeader.SIGNATURE);
+            String signatureType = map.get(PowerAuthHttpHeader.SIGNATURE_TYPE);
+            String nonce = map.get(PowerAuthHttpHeader.NONCE);
 
-        String data = PowerAuthHttpBody.getSignatureBaseString("POST", "/pa/vault/unlock", BaseEncoding.base64().decode(nonce), null);
+            String data = PowerAuthHttpBody.getSignatureBaseString("POST", "/pa/vault/unlock", BaseEncoding.base64().decode(nonce), null);
 
-        io.getlime.powerauth.soap.VaultUnlockResponse soapResponse = powerAuthClient.unlockVault(activationId, applicationId, data, signature, signatureType);
+            io.getlime.powerauth.soap.VaultUnlockResponse soapResponse = powerAuthClient.unlockVault(activationId, applicationId, data, signature, signatureType);
 
-        if (!soapResponse.isSignatureValid()) {
-            throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
+            if (!soapResponse.isSignatureValid()) {
+                throw new PowerAuthAuthenticationException();
+            }
+
+            VaultUnlockResponse response = new VaultUnlockResponse();
+            response.setActivationId(soapResponse.getActivationId());
+            response.setEncryptedVaultEncryptionKey(soapResponse.getEncryptedVaultEncryptionKey());
+
+            return new PowerAuthApiResponse<>("OK", response);
+        } catch (Exception ex) {
+            if (PowerAuthAuthenticationException.class.equals(ex.getClass())) {
+                throw ex;
+            } else {
+                throw new PowerAuthSecureVaultException();
+            }
         }
-
-        VaultUnlockResponse response = new VaultUnlockResponse();
-        response.setActivationId(soapResponse.getActivationId());
-        response.setEncryptedVaultEncryptionKey(soapResponse.getEncryptedVaultEncryptionKey());
-
-        return new PowerAuthApiResponse<>("OK", response);
     }
 
 }

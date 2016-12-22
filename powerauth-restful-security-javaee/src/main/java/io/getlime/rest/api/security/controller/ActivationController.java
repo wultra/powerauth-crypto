@@ -165,7 +165,9 @@ public class ActivationController {
                 throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
 
             }
-        } catch (Exception e) {
+        } catch (PowerAuthAuthenticationException ex) {
+            throw ex;
+        } catch (Exception ex) {
             throw new PowerAuthActivationException();
         }
     }

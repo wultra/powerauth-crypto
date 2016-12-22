@@ -74,7 +74,7 @@ public class PowerAuthApiAuthentication extends AbstractAuthenticationToken impl
 
     @Override
     public Object getPrincipal() {
-        return this;
+        return this.activationId;
     }
 
     /**

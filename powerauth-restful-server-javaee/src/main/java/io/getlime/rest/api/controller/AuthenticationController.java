@@ -64,9 +64,9 @@ public class AuthenticationController {
         );
 
         if (auth != null && auth.getUserId() != null) {
-            return new PowerAuthApiResponse<>("OK", "Hooray! User: " + auth.getUserId());
+            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, "Hooray! User: " + auth.getUserId());
         } else {
-            return new PowerAuthApiResponse<>("ERROR", "Authentication failed.");
+            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.ERROR, "Authentication failed.");
         }
 
     }

@@ -17,7 +17,7 @@ package io.getlime.rest.api.errorhandling;
 
 import io.getlime.rest.api.model.entity.ErrorModel;
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
+import io.getlime.rest.api.security.exception.PowerAuthExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,44 +25,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implementation of a default exception handler for the demo server.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 @ControllerAdvice
 public class DefaultExceptionHandler {
 
     /**
-     * Handle PowerAuthAuthenticationException exceptions.
-     * @param request Request that was processed while the exception was raised.
-     * @param exception Exception instance.
-     * @return Error response.
-     */
-    @ExceptionHandler(value = PowerAuthAuthenticationException.class)
-    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleUnauthorizedException(HttpServletRequest request, Exception exception) {
-        exception.printStackTrace();
-        ErrorModel error = new ErrorModel("ERR_UNAUTHENTICATED", "Authentication failed");
-        return new PowerAuthApiResponse<>("ERROR", error);
-    }
-
-    /**
      * Handle Exception exceptions.
-     * @param request Request that was processed while the exception was raised.
      * @param exception Exception instance.
      * @return Error response.
      */
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleException(HttpServletRequest request, Exception exception) {
-        exception.printStackTrace();
+    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleException(Exception exception) {
+        Logger.getLogger(DefaultExceptionHandler.class.getName()).log(Level.SEVERE, exception.getMessage(), exception);
         ErrorModel error = new ErrorModel("ERR_GENERIC", exception.getMessage());
-        return new PowerAuthApiResponse<>("ERROR", error);
+        return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.ERROR, error);
     }
 
 }

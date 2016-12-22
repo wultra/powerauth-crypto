@@ -29,7 +29,7 @@ public class PowerAuthSecureVaultExceptionResolver implements ExceptionMapper<Po
     @Override
     public Response toResponse(PowerAuthSecureVaultException ex) {
         return Response
-                .status(Response.Status.BAD_GATEWAY)
+                .status(Response.Status.BAD_REQUEST)
                 .entity(new ErrorModel(ex.getDefaultCode(), ex.getMessage()))
                 .build();
     }

@@ -18,6 +18,7 @@ package io.getlime.rest.api.controller;
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.rest.api.security.annotation.PowerAuth;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
+import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,14 +41,18 @@ public class AuthenticationController {
      */
     @RequestMapping(value = "validate", method = RequestMethod.POST)
     @PowerAuth(resourceId = "/pa/signature/validate")
-    public @ResponseBody PowerAuthApiResponse<String> login(PowerAuthApiAuthentication apiAuthentication) {
+    public @ResponseBody PowerAuthApiResponse<String> login(PowerAuthApiAuthentication auth) throws PowerAuthAuthenticationException {
 
         // ##EXAMPLE: Here, we could store the authentication in the session like this:
         // ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
         // ##EXAMPLE: ... or you can grab a user ID like this and use it for querying back-end:
         // ##EXAMPLE: String userId = apiAuthentication.getUserId();
 
-        return new PowerAuthApiResponse<>("OK", "Hooray!");
+        if (auth != null && auth.getUserId() != null) {
+            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, "Hooray! User: " + auth.getUserId());
+        } else {
+            throw new PowerAuthAuthenticationException("Login failed");
+        }
 
     }
 
