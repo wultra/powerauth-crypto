@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.getlime.rest.api.security.filter;
 
+import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Bytes;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Arrays;
 
 /**
  * Resettable HTTP servlet request stream.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public class ResettableStreamHttpServletRequest extends HttpServletRequestWrapper {
@@ -53,18 +53,14 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
      * @throws IOException In case stream reqding fails.
      */
     public byte[] getRequestBody() throws IOException {
+
         if (bufferFilled) {
             return Arrays.copyOf(requestBody, requestBody.length);
         }
 
         InputStream inputStream = super.getInputStream();
 
-        byte[] buffer = new byte[102400];
-
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            requestBody = Bytes.concat(this.requestBody, Arrays.copyOfRange(buffer, 0, bytesRead));
-        }
+        requestBody = ByteStreams.toByteArray(inputStream);
 
         bufferFilled = true;
 
@@ -74,6 +70,11 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
     @Override
     public ServletInputStream getInputStream() throws IOException {
         return new CustomServletInputStream(getRequestBody());
+    }
+
+    @Override
+    public BufferedReader getReader() throws IOException {
+        return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 
     private static class CustomServletInputStream extends ServletInputStream {

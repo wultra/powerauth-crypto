@@ -16,6 +16,7 @@
 
 package io.getlime.rest.api.controller;
 
+import io.getlime.rest.api.model.base.PowerAuthApiRequest;
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthenticationBase;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
@@ -42,6 +43,14 @@ public class AuthenticationController {
 
     @Inject
     private PowerAuthAuthenticationProvider authenticationProvider;
+
+    @POST
+    @Path("hello")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PowerAuthApiResponse<String> login(PowerAuthApiRequest<String> body) {
+        return new PowerAuthApiResponse<>("OK", body.getRequestObject());
+    }
 
     @POST
     @Path("validate")

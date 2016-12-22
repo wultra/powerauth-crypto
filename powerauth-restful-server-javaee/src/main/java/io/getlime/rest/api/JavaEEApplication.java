@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * PowerAuth 2.0 Standard RESTful API application class.
+ *
  * @author Petr Dvorak, petr@lime-company.eu
  */
 @ApplicationPath("/")
@@ -44,7 +46,6 @@ public class JavaEEApplication extends Application {
         Set<Class<?>> resources = new HashSet<>();
 
         // Jackson
-        resources.add(JacksonFeature.class);
         resources.add(DefaultJacksonJsonProvider.class);
 
         // PowerAuth 2.0 Controllers
@@ -60,13 +61,6 @@ public class JavaEEApplication extends Application {
         // PowerAuth 2.0 Filters
         resources.add(PowerAuthRequestFilter.class);
         return resources;
-    }
-
-    @Override
-    public Map<String, Object> getProperties() {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("jersey.config.server.wadl.disableWadl", true);
-        return properties;
     }
 
 }

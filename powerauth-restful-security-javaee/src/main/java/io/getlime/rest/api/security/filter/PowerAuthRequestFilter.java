@@ -38,8 +38,8 @@ public class PowerAuthRequestFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        final ResettableStreamHttpServletRequest resettableStreamHttpServletRequest = PowerAuthRequestFilterBase.filterRequest(httpRequest);
-        requestContext.setEntityStream(resettableStreamHttpServletRequest.getInputStream());
+        final ResettableStreamHttpServletRequest httpServletRequest = PowerAuthRequestFilterBase.filterRequest(httpRequest);
+        requestContext.setEntityStream(httpServletRequest.getInputStream());
     }
 
 }
