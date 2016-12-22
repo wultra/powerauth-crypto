@@ -24,7 +24,6 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Request filter that intercepts the request body, forwards it to the controller 
@@ -42,7 +41,9 @@ public class PowerAuthRequestFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        final Map<String, String[]> parameterMap = httpRequest.getParameterMap();
+        // WORKAROUND: fix issues with @FormParam annotations
+        httpRequest.getParameterMap();
+
         final ResettableStreamHttpServletRequest httpServletRequest = PowerAuthRequestFilterBase.filterRequest(httpRequest);
         requestContext.setEntityStream(httpServletRequest.getInputStream());
     }
