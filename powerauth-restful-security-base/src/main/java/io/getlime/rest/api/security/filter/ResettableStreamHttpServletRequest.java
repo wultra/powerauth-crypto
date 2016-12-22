@@ -17,7 +17,6 @@
 package io.getlime.rest.api.security.filter;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.primitives.Bytes;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -86,8 +85,37 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
         }
 
         @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            return buffer.read(b, off, len);
+        }
+
+        @Override
+        public int readLine(byte[] b, int off, int len) throws IOException {
+            // Copy-paste from ServletInputStream code, just replaced 'this' with 'buffer'.
+            if(len <= 0) {
+                return 0;
+            } else {
+                int count = 0;
+                int c;
+                while((c = buffer.read()) != -1) {
+                    b[off++] = (byte)c;
+                    ++count;
+                    if(c == '\n' || count == len) {
+                        break;
+                    }
+                }
+                return count > 0?count:-1;
+            }
+        }
+
+        @Override
         public int read() throws IOException {
             return buffer.read();
+        }
+
+        @Override
+        public int read(byte[] b) throws IOException {
+            return buffer.read(b);
         }
 
         @Override

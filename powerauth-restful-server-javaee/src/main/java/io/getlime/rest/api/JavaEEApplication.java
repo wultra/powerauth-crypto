@@ -24,13 +24,10 @@ import io.getlime.rest.api.security.exception.PowerAuthActivationExceptionResolv
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationExceptionResolver;
 import io.getlime.rest.api.security.exception.PowerAuthSecureVaultExceptionResolver;
 import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
-import org.glassfish.jersey.jackson.JacksonFeature;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
