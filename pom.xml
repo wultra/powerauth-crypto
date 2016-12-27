@@ -24,7 +24,7 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-parent</artifactId>
-	<version>0.13.1</version>
+	<version>0.13.2</version>
 	<packaging>pom</packaging>
 
 	<parent>
@@ -72,7 +72,7 @@
 
 	<modules>
 		<module>powerauth-java-prov</module>
-		<module>powerauth-java</module>
+		<module>powerauth-java-crypto</module>
 		<module>powerauth-java-http</module>
 		<module>powerauth-java-server</module>
         <module>powerauth-java-client-axis</module>
