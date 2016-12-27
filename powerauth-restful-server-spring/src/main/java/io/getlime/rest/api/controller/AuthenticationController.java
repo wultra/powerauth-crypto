@@ -16,7 +16,7 @@
 package io.getlime.rest.api.controller;
 
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.rest.api.security.annotation.PowerAuth;
+import io.getlime.rest.spring.api.security.annotation.PowerAuth;
 import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
 import org.springframework.stereotype.Controller;
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *
  */
 @Controller
-@RequestMapping(value = "/pa/signature")
+@RequestMapping(value = "pa/signature")
 public class AuthenticationController {
 
     /**

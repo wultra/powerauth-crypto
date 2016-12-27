@@ -15,9 +15,9 @@
  */
 package io.getlime.rest.api.configuration;
 
-import io.getlime.rest.api.security.annotation.PowerAuthAnnotationInterceptor;
-import io.getlime.rest.api.security.annotation.PowerAuthWebArgumentResolver;
-import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
+import io.getlime.rest.spring.api.security.annotation.PowerAuthAnnotationInterceptor;
+import io.getlime.rest.spring.api.security.annotation.PowerAuthWebArgumentResolver;
+import io.getlime.rest.spring.api.security.filter.PowerAuthRequestFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,30 +38,26 @@ import java.util.List;
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(powerAuthWebArgumentResolver());
-        super.addArgumentResolvers(argumentResolvers);
-    }
-
-    @Bean
-    public PowerAuthWebArgumentResolver powerAuthWebArgumentResolver() {
-        return new PowerAuthWebArgumentResolver();
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(powerAuthInterceptor());
-        super.addInterceptors(registry);
-    }
-
+    /**
+     * Register a new @PowerAuth annotation interceptor.
+     * @return New annotation interceptor bean.
+     */
     @Bean
     public PowerAuthAnnotationInterceptor powerAuthInterceptor() {
         return new PowerAuthAnnotationInterceptor();
     }
 
     /**
-     * Register a new PowerAuthRequestFilter and map it to /pa/signature/validate end-point.
+     * Register new method argument resolvers.
+     * @return New PowerAuthWebArgumentResolver bean.
+     */
+    @Bean
+    public PowerAuthWebArgumentResolver powerAuthWebArgumentResolver() {
+        return new PowerAuthWebArgumentResolver();
+    }
+
+    /**
+     * Register a new PowerAuthRequestFilter and map it to /* end-point.
      * @return PowerAuthRequestFilter instance.
      */
     @Bean
@@ -70,6 +66,26 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
         registrationBean.setFilter(new PowerAuthRequestFilter());
         registrationBean.setMatchAfter(true);
         return registrationBean;
+    }
+
+    /**
+     * Add method argument resolver for PowerAuthApiAuthentication.
+     * @param argumentResolvers List of argument resolvers.
+     */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(powerAuthWebArgumentResolver());
+        super.addArgumentResolvers(argumentResolvers);
+    }
+
+    /**
+     * Add annotation interceptor.
+     * @param registry Registry of annotation interceptors.
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(powerAuthInterceptor());
+        super.addInterceptors(registry);
     }
 
 }

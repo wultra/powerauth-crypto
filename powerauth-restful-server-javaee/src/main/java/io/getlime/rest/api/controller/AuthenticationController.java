@@ -17,9 +17,9 @@
 package io.getlime.rest.api.controller;
 
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.rest.api.security.authentication.PowerAuthApiAuthenticationBase;
+import io.getlime.rest.api.security.authentication.PowerAuthApiAuthentication;
 import io.getlime.rest.api.security.exception.PowerAuthAuthenticationException;
-import io.getlime.rest.api.security.provider.PowerAuthAuthenticationProvider;
+import io.getlime.rest.jaxrs.api.security.provider.PowerAuthAuthenticationProvider;
 import io.getlime.security.powerauth.lib.util.http.PowerAuthHttpHeader;
 
 import javax.inject.Inject;
@@ -57,7 +57,7 @@ public class AuthenticationController {
         // ##EXAMPLE: ... or you can grab a user ID like this and use it for querying back-end:
         // ##EXAMPLE: String userId = apiAuthentication.getUserId();
 
-        PowerAuthApiAuthenticationBase auth = authenticationProvider.validateRequestSignature(
+        PowerAuthApiAuthentication auth = authenticationProvider.validateRequestSignature(
                 request,
                 "/pa/signature/validate",
                 authHeader

@@ -15,7 +15,7 @@
  */
 package io.getlime.rest.api.configuration;
 
-import io.getlime.rest.api.security.entrypoint.PowerAuthApiAuthenticationEntryPoint;
+import io.getlime.rest.spring.api.security.entrypoint.PowerAuthApiAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -42,9 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/secured/**").fullyAuthenticated();
         http.httpBasic().disable();
         http.csrf().disable();
+        http.authorizeRequests().antMatchers("/secured/**").fullyAuthenticated();
         http.exceptionHandling().authenticationEntryPoint(apiAuthenticationEntryPoint);
     }
 

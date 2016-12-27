@@ -17,14 +17,12 @@ package io.getlime.rest.api.errorhandling;
 
 import io.getlime.rest.api.model.entity.ErrorModel;
 import io.getlime.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.rest.api.security.exception.PowerAuthExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

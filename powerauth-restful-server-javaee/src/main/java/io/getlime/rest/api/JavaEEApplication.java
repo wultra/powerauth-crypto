@@ -18,12 +18,12 @@ package io.getlime.rest.api;
 
 import io.getlime.rest.api.configuration.DefaultJacksonJsonProvider;
 import io.getlime.rest.api.controller.AuthenticationController;
-import io.getlime.rest.api.security.controller.ActivationController;
-import io.getlime.rest.api.security.controller.SecureVaultController;
-import io.getlime.rest.api.security.exception.PowerAuthActivationExceptionResolver;
-import io.getlime.rest.api.security.exception.PowerAuthAuthenticationExceptionResolver;
-import io.getlime.rest.api.security.exception.PowerAuthSecureVaultExceptionResolver;
-import io.getlime.rest.api.security.filter.PowerAuthRequestFilter;
+import io.getlime.rest.jaxrs.api.security.controller.ActivationController;
+import io.getlime.rest.jaxrs.api.security.controller.SecureVaultController;
+import io.getlime.rest.jaxrs.api.security.exception.PowerAuthActivationExceptionResolver;
+import io.getlime.rest.jaxrs.api.security.exception.PowerAuthAuthenticationExceptionResolver;
+import io.getlime.rest.jaxrs.api.security.exception.PowerAuthSecureVaultExceptionResolver;
+import io.getlime.rest.jaxrs.api.security.filter.PowerAuthRequestFilter;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
