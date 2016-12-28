@@ -477,7 +477,9 @@ public class ActivationServiceBehavior {
         ActivationRecordEntity activation = powerAuthRepository.findFirstByApplicationIdAndActivationIdShortAndActivationStatusInAndTimestampActivationExpireAfter(application.getId(), activationIdShort, states, timestamp);
 
         // Make sure to deactivate the activation if it is expired
-        deactivatePendingActivation(timestamp, activation);
+        if (activation != null) {
+            deactivatePendingActivation(timestamp, activation);
+        }
 
         // if there is no such activation or application does not match the activation application, exit
         if (activation == null
