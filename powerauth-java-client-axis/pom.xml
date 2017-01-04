@@ -34,42 +34,29 @@
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2</artifactId>
-            <version>1.6.3</version>
+            <version>1.7.4</version>
+			<type>pom</type>
         </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-adb</artifactId>
-            <version>1.6.3</version>
-        </dependency>
+		<dependency>
+		    <groupId>org.apache.axis2</groupId>
+		    <artifactId>axis2-adb</artifactId>
+		    <version>1.7.4</version>
+		</dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-transport-http</artifactId>
-            <version>1.6.3</version>
+            <version>1.7.4</version>
         </dependency>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-transport-local</artifactId>
-			<version>1.6.3</version>
+			<version>1.7.4</version>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-api</artifactId>
-            <version>1.2.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-impl</artifactId>
-            <version>1.2.20</version>
-        </dependency>
 		<dependency>
             <groupId>org.apache.ws.security</groupId>
             <artifactId>wss4j</artifactId>
             <version>1.6.19</version>
         </dependency>
-		<dependency>
-			<groupId>wsdl4j</groupId>
-			<artifactId>wsdl4j</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -78,7 +65,7 @@
 			<plugin>
 				<groupId>org.apache.axis2</groupId>
 				<artifactId>axis2-wsdl2code-maven-plugin</artifactId>
-				<version>1.6.4</version>
+				<version>1.7.4</version>
 				<executions>
 					<execution>
 						<goals>
@@ -87,6 +74,7 @@
 						<configuration>
 							<packageName>io.getlime.powerauth.soap</packageName>
 							<wsdlFile>${basedir}/src/main/resources/soap/wsdl/service.wsdl</wsdlFile>
+							<databindingName>adb</databindingName>
 						</configuration>
 					</execution>
 				</executions>
