@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package io.getlime.security.powerauth.app.rest.api;
+package io.getlime.security.powerauth.app.rest.api.javaee;
 
-import io.getlime.security.powerauth.app.rest.api.configuration.DefaultJacksonJsonProvider;
-import io.getlime.security.powerauth.app.rest.api.controller.AuthenticationController;
+import io.getlime.security.powerauth.app.rest.api.javaee.controller.AuthenticationController;
+import io.getlime.security.powerauth.app.rest.api.javaee.configuration.DefaultJacksonJsonProvider;
 import io.getlime.security.powerauth.rest.api.jaxrs.controller.ActivationController;
 import io.getlime.security.powerauth.rest.api.jaxrs.controller.SecureVaultController;
 import io.getlime.security.powerauth.rest.api.jaxrs.exception.PowerAuthActivationExceptionResolver;

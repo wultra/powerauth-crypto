@@ -797,22 +797,51 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- End-to-End Encryption Support //-->
+    <!-- Non-personalized End-to-End Encryption Support //-->
 
-    <xs:element name="GetEncryptionKeyRequest">
+    <xs:element name="GetNonPersonalizedEncryptionKeyRequest">
         <xs:annotation>
-            <xs:documentation>Request for obtaining a derived end-to-end encryption key.</xs:documentation>
+            <xs:documentation>Request for obtaining a derived end-to-end encryption key for non-personalized encryption.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="sessionIndex" type="xs:string" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="GetEncryptionKeyResponse">
+    <xs:element name="GetNonPersonalizedEncryptionKeyResponse">
         <xs:annotation>
-            <xs:documentation>Response for obtaining a derived end-to-end encryption key.</xs:documentation>
+            <xs:documentation>Response for obtaining a derived end-to-end encryption key for non-personalized encryption.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="encryptionKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="encryptionKeyIndex" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- End-to-End Encryption Support //-->
+
+    <xs:element name="GetPersonalizedEncryptionKeyRequest">
+        <xs:annotation>
+            <xs:documentation>Request for obtaining a derived personalized end-to-end encryption key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="sessionIndex" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetPersonalizedEncryptionKeyResponse">
+        <xs:annotation>
+            <xs:documentation>Response for obtaining a derived personalized end-to-end encryption key.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>

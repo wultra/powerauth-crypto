@@ -15,6 +15,7 @@
  */
 package io.getlime.security.powerauth.app.server.service;
 
+import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.*;
 import io.getlime.security.powerauth.app.server.service.behavior.ServiceBehaviors;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
@@ -301,8 +302,30 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
     @Override
     @Transactional
-    public GetEncryptionKeyResponse generateE2EEncryptionKey(GetEncryptionKeyRequest request) throws Exception {
-        return behavior.getEncryptionServiceBehavior().generateEncryptionKeyForActivation(request.getActivationId(), keyConversionUtilities);
+    public GetPersonalizedEncryptionKeyResponse generateE2EPersonalizedEncryptionKey(GetPersonalizedEncryptionKeyRequest request) throws Exception {
+        byte[] sessionIndex = null;
+        if (request.getSessionIndex() != null) {
+            sessionIndex = BaseEncoding.base64().decode(request.getSessionIndex());
+        }
+        return behavior.getEncryptionServiceBehavior().generateEncryptionKeyForActivation(
+                request.getActivationId(),
+                sessionIndex,
+                keyConversionUtilities
+        );
+    }
+
+    @Override
+    @Transactional
+    public GetNonPersonalizedEncryptionKeyResponse generateE2ENonPersonalizedEncryptionKey(GetNonPersonalizedEncryptionKeyRequest request) throws Exception {
+        byte[] sessionIndex = null;
+        if (request.getSessionIndex() != null) {
+            sessionIndex = BaseEncoding.base64().decode(request.getSessionIndex());
+        }
+        return behavior.getEncryptionServiceBehavior().generateNonPersonalizedEncryptionKeyForApplication(
+                request.getApplicationKey(),
+                sessionIndex,
+                keyConversionUtilities
+        );
     }
 
     @Override

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.getlime.security.powerauth.app.rest.api.configuration;
+package io.getlime.security.powerauth.app.rest.api.javaee.configuration;
 
 import io.getlime.security.powerauth.rest.api.jaxrs.application.DefaultApplicationConfiguration;
 import io.getlime.security.powerauth.rest.api.base.application.PowerAuthApplicationConfiguration;

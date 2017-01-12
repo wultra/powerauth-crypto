@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * Class implementing the RESTful controller for PowerAuth service.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  */
 @Controller
 @RequestMapping(value = "/rest")
@@ -171,16 +171,29 @@ public class PowerAuthController {
     }
 
     /**
-     * Call {@link PowerAuthService#generateE2EEncryptionKey(GetEncryptionKeyRequest)} method and
+     * Call {@link PowerAuthService#generateE2EPersonalizedEncryptionKey(GetPersonalizedEncryptionKeyRequest)} method and
      * return the response.
      *
      * @param request E2E encryption key request.
      * @return E2E encryption key response.
      * @throws Exception In case the service throws exception.
      */
-    @RequestMapping(value = "/encryption/key/create", method = RequestMethod.POST)
-    public @ResponseBody RESTResponseWrapper<GetEncryptionKeyResponse> generateE2EEncryptionKey(@RequestBody RESTRequestWrapper<GetEncryptionKeyRequest> request) throws Exception {
-        return new RESTResponseWrapper<>("OK", powerAuthService.generateE2EEncryptionKey(request.getRequestObject()));
+    @RequestMapping(value = "/activation/encryption/key/create", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetPersonalizedEncryptionKeyResponse> generateE2EEncryptionKey(@RequestBody RESTRequestWrapper<GetPersonalizedEncryptionKeyRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.generateE2EPersonalizedEncryptionKey(request.getRequestObject()));
+    }
+
+    /**
+     * Call {@link PowerAuthService#generateE2ENonPersonalizedEncryptionKey(GetNonPersonalizedEncryptionKeyRequest)} method and
+     * return the response.
+     *
+     * @param request E2E encryption key request.
+     * @return E2E encryption key response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/application/encryption/key/create", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<GetNonPersonalizedEncryptionKeyResponse> generateE2ENonPersonalizedEncryptionKey(@RequestBody RESTRequestWrapper<GetNonPersonalizedEncryptionKeyRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.generateE2ENonPersonalizedEncryptionKey(request.getRequestObject()));
     }
 
     /**

@@ -147,12 +147,20 @@ public interface PowerAuthService {
     VaultUnlockResponse vaultUnlock(VaultUnlockRequest request) throws Exception;
 
     /**
-     * Generate an activation specific transport key with given index for the purpose of end-to-end encryption.
-     * @param request Request with an activation ID.
-     * @return Response with derived transport key and its index.
-     * @throws Exception In cese of a business logic error.
+     * Generate an activation specific transport key with given index for the purpose of personalized end-to-end encryption.
+     * @param request Request with an activation ID and optional session index.
+     * @return Response with derived transport key and its session index.
+     * @throws Exception In case of a business logic error.
      */
-    GetEncryptionKeyResponse generateE2EEncryptionKey(GetEncryptionKeyRequest request) throws Exception;
+    GetPersonalizedEncryptionKeyResponse generateE2EPersonalizedEncryptionKey(GetPersonalizedEncryptionKeyRequest request) throws Exception;
+
+    /**
+     * Generate an application specific transport key with given index for the purpose of non-personalized end-to-end encryption.
+     * @param request Request with application ID and optional session index.
+     * @return Response with derived transport key and its session index.
+     * @throws Exception In case of a business logic error.
+     */
+    GetNonPersonalizedEncryptionKeyResponse generateE2ENonPersonalizedEncryptionKey(GetNonPersonalizedEncryptionKeyRequest request) throws Exception;
 
     /**
      * Validate incoming ECDSA signature for provided data using a public device key associated with given activation.

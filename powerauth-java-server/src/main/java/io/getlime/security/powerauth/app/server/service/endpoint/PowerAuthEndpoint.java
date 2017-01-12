@@ -26,7 +26,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 /**
  * Class implementing the SOAP service end-point.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  */
 @Endpoint
 public class PowerAuthEndpoint {
@@ -181,17 +181,31 @@ public class PowerAuthEndpoint {
     }
 
     /**
-     * Call {@link PowerAuthService#generateE2EEncryptionKey(GetEncryptionKeyRequest)} method and
+     * Call {@link PowerAuthService#generateE2EPersonalizedEncryptionKey(GetPersonalizedEncryptionKeyRequest)} method and
      * return the response.
      *
      * @param request E2E encryption key request.
      * @return E2E encryption key response.
      * @throws Exception In case the service throws exception.
      */
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetEncryptionKeyRequest")
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetPersonalizedEncryptionKeyRequest")
     @ResponsePayload
-    public GetEncryptionKeyResponse generateE2EEncryptionKey(@RequestPayload GetEncryptionKeyRequest request) throws Exception {
-        return powerAuthService.generateE2EEncryptionKey(request);
+    public GetPersonalizedEncryptionKeyResponse generateE2EPersonalizedEncryptionKey(@RequestPayload GetPersonalizedEncryptionKeyRequest request) throws Exception {
+        return powerAuthService.generateE2EPersonalizedEncryptionKey(request);
+    }
+
+    /**
+     * Call {@link PowerAuthService#generateE2ENonPersonalizedEncryptionKey(GetNonPersonalizedEncryptionKeyRequest)} method and
+     * return the response.
+     *
+     * @param request E2E encryption key request.
+     * @return E2E encryption key response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetNonPersonalizedEncryptionKeyRequest")
+    @ResponsePayload
+    public GetNonPersonalizedEncryptionKeyResponse generateE2ENonPersonalizedEncryptionKey(@RequestPayload GetNonPersonalizedEncryptionKeyRequest request) throws Exception {
+        return powerAuthService.generateE2ENonPersonalizedEncryptionKey(request);
     }
 
     /**
