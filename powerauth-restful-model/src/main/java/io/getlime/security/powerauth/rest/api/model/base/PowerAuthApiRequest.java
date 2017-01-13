@@ -24,6 +24,29 @@ package io.getlime.security.powerauth.rest.api.model.base;
  */
 public class PowerAuthApiRequest<T> {
 
+    /**
+     * Request encryption type
+     */
+    public class Encryption {
+
+        /**
+         * None
+         */
+        public static final String NONE = "none";
+
+        /**
+         * Personalized
+         */
+        public static final String PERSONALIZED = "personalized";
+
+        /**
+         * Non-personalized
+         */
+        public static final String NON_PERSONALIZED = "nonpersonalized";
+
+    }
+
+    private String encryption;
     private T requestObject;
 
     /**
@@ -37,7 +60,34 @@ public class PowerAuthApiRequest<T> {
      * @param requestObject Request object
      */
     public PowerAuthApiRequest(T requestObject) {
+        this.encryption = Encryption.NONE;
         this.requestObject = requestObject;
+    }
+
+    /**
+     * Constructor with a given request object
+     * @param encryption Request encryption type, use static constant from {@link Encryption} class.
+     * @param requestObject Request object
+     */
+    public PowerAuthApiRequest(String encryption, T requestObject) {
+        this.encryption = encryption;
+        this.requestObject = requestObject;
+    }
+
+    /**
+     * Get encryption type.
+     * @return Encryption type.
+     */
+    public String getEncryption() {
+        return encryption;
+    }
+
+    /**
+     * Set encryption type.
+     * @param encryption Encryption type.
+     */
+    public void setEncryption(String encryption) {
+        this.encryption = encryption;
     }
 
     /**
