@@ -41,7 +41,30 @@ public class PowerAuthApiResponse<T> {
 
     }
 
+    /**
+     * Response encryption type
+     */
+    public class Encryption {
+
+        /**
+         * None
+         */
+        public static final String NONE = "none";
+
+        /**
+         * Personalized
+         */
+        public static final String PERSONALIZED = "personalized";
+
+        /**
+         * Non-personalized
+         */
+        public static final String NON_PERSONALIZED = "nonpersonalized";
+
+    }
+
     private String status;
+    private String encryption;
     private T responseObject;
 
     /**
@@ -57,6 +80,19 @@ public class PowerAuthApiResponse<T> {
      */
     public PowerAuthApiResponse(String status, T responseObject) {
         this.status = status;
+        this.encryption = Encryption.NONE;
+        this.responseObject = responseObject;
+    }
+
+    /**
+     * Constructor with response status, encryption type and response object
+     * @param status Response status, use static constant from {@link Status} class.
+     * @param encryption Response encryption type, use static constant from {@link Encryption} class.
+     * @param responseObject Response object.
+     */
+    public PowerAuthApiResponse(String status, String encryption, T responseObject) {
+        this.status = status;
+        this.encryption = encryption;
         this.responseObject = responseObject;
     }
 
@@ -69,19 +105,35 @@ public class PowerAuthApiResponse<T> {
     }
 
     /**
-     * Get response object
-     * @return Response object
-     */
-    public T getResponseObject() {
-        return responseObject;
-    }
-
-    /**
      * Set response status
      * @param status Response status
      */
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    /**
+     * Get encryption type.
+     * @return Encryption type.
+     */
+    public String getEncryption() {
+        return encryption;
+    }
+
+    /**
+     * Set encryption type.
+     * @param encryption Encryption type.
+     */
+    public void setEncryption(String encryption) {
+        this.encryption = encryption;
+    }
+
+    /**
+     * Get response object
+     * @return Response object
+     */
+    public T getResponseObject() {
+        return responseObject;
     }
 
     /**
