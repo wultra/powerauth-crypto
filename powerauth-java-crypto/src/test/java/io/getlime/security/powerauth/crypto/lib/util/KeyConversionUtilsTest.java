@@ -74,6 +74,8 @@ public class KeyConversionUtilsTest {
 		KeyGenerator keyGenerator = new KeyGenerator();
 		CryptoProviderUtil instance = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
+		PublicKey key = instance.convertBytesToPublicKey(BaseEncoding.base64().decode("AsUaehWpuZseHUprd9immCELf62TTtHUGlTIXyCxY7h2"));
+
 		for (int i = 0; i < 1000; i++) {
 			KeyPair kp = keyGenerator.generateKeyPair();
 
