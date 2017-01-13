@@ -52,4 +52,22 @@ public class HMACHashUtilities {
         return null;
     }
 
+    /**
+     * Compute a HMAC-SHA256 of given data with provided key bytes
+     * @param hmacKey Key for the HMAC-SHA256 algorithm
+     * @param data Data for the HMAC-SHA256 algorithm.
+     * @return HMAC-SHA256 of given data using given key.
+     */
+    public byte[] hash(SecretKey hmacKey, byte[] data) {
+        try {
+            Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            hmacSha256.init(hmacKey);
+            byte[] derivedKey = hmacSha256.doFinal(data);
+            return derivedKey;
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException ex) {
+            Logger.getLogger(HMACHashUtilities.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
 }

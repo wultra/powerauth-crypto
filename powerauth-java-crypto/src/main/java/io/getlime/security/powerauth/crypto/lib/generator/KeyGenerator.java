@@ -17,6 +17,8 @@ package io.getlime.security.powerauth.crypto.lib.generator;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
+import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
@@ -140,6 +142,15 @@ public class KeyGenerator {
             Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    public SecretKey deriveSecretKeyHmac(SecretKey secret, byte[] index) {
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
+        HMACHashUtilities hmac = new HMACHashUtilities();
+        byte[] derivedKey32 = hmac.hash(index, secretKeyBytes);
+        byte[] newKeyBytes = convert32Bto16B(derivedKey32);
+        return keyConvertor.convertBytesToSharedSecretKey(newKeyBytes);
     }
 
     /**
