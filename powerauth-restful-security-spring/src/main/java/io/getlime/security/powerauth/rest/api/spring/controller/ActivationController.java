@@ -188,7 +188,9 @@ public class ActivationController {
     }
 
     @RequestMapping(value = "direct/create", method = RequestMethod.POST)
-    public PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> createNewActivation(PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> object) throws PowerAuthAuthenticationException, PowerAuthActivationException {
+    public @ResponseBody PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> createNewActivation(
+            @RequestBody PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> object
+    ) throws PowerAuthAuthenticationException, PowerAuthActivationException {
         try {
 
             // Check if there is any user provider to be autowired
