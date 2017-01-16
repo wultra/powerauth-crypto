@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package io.getlime.security.powerauth.app.rest.api.controller;
+package io.getlime.security.powerauth.app.rest.api.javaee.controller;
 
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.jaxrs.provider.PowerAuthAuthenticationProvider;
-import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
+import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -70,4 +70,5 @@ public class AuthenticationController {
         }
 
     }
+
 }

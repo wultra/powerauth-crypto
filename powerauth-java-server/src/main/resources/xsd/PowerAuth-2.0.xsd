@@ -314,7 +314,47 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
+
+    <!-- Create new activation directly //-->
+
+    <xs:element name="CreateActivationRequest">
+        <xs:annotation>
+            <xs:documentation>Request for creating a new activation directly.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="userId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="timestampActivationExpire" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="maxFailureCount" type="xs:long" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="identity" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationOtp" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="extras" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="activationNonce" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="ephemeralPublicKey" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="encryptedDevicePublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="applicationSignature" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateActivationResponse">
+        <xs:annotation>
+            <xs:documentation>Response for creating a new activation directly.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="activationId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="activationNonce" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="ephemeralPublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="encryptedServerPublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="encryptedServerPublicKeySignature" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <!-- Commit activation //-->
     
     <xs:element name="CommitActivationRequest">
@@ -807,6 +847,7 @@
             <xs:sequence>
                 <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="sessionIndex" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="ephemeralPublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -821,6 +862,7 @@
                 <xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="encryptionKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="encryptionKeyIndex" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="ephemeralPublicKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

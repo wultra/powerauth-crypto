@@ -17,7 +17,7 @@
 package io.getlime.security.powerauth.soap.axis.client;
 
 
-import io.getlime.powerauth.soap.*;
+import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 
@@ -182,6 +182,83 @@ public class PowerAuthServiceClient {
         request.setApplicationKey(applicationKey);
         request.setApplicationSignature(applicationSignature);
         return this.prepareActivation(request);
+    }
+
+    /**
+     * Create a new activation directly, using the createActivation method of the PowerAuth 2.0 Server
+     * SOAP interface.
+     * @param request Create activation request.
+     * @return Create activation response.
+     */
+    public PowerAuthPortServiceStub.CreateActivationResponse createActivation(PowerAuthPortServiceStub.CreateActivationRequest request) throws RemoteException {
+        return clientStub.createActivation(request);
+    }
+
+    /**
+     * Call the createActivation method of the PowerAuth 2.0 Server SOAP interface.
+     * @param userId User ID.
+     * @param applicationKey Application key of a given application.
+     * @param identity Identity fingerprint used during activation.
+     * @param activationName Name of this activation.
+     * @param activationNonce Activation nonce.
+     * @param applicationSignature Signature proving a correct application is sending the data.
+     * @param cDevicePublicKey Device public key encrypted with activation OTP.
+     * @param ephemeralPublicKey Ephemeral public key used for one-time object transfer.
+     * @param extras Additional, application specific information.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CreateActivationResponse}
+     */
+    public PowerAuthPortServiceStub.CreateActivationResponse createActivation(String applicationKey, String userId, String identity, String activationName, String activationNonce, String ephemeralPublicKey, String cDevicePublicKey, String extras, String applicationSignature) throws RemoteException {
+        return this.createActivation(
+                applicationKey,
+                userId,
+                null,
+                null,
+                identity,
+                "00000-00000",
+                activationName,
+                activationNonce,
+                ephemeralPublicKey,
+                cDevicePublicKey,
+                extras,
+                applicationSignature
+        );
+    }
+
+    /**
+     * Call the createActivation method of the PowerAuth 2.0 Server SOAP interface.
+     * @param userId User ID.
+     * @param maxFailureCount Maximum failure count.
+     * @param timestampActivationExpire Timestamp this activation should expire.
+     * @param applicationKey Application key of a given application.
+     * @param identity Identity fingerprint used during activation.
+     * @param activationOtp Activation OTP.
+     * @param activationName Name of this activation.
+     * @param activationNonce Activation nonce.
+     * @param applicationSignature Signature proving a correct application is sending the data.
+     * @param cDevicePublicKey Device public key encrypted with activation OTP.
+     * @param ephemeralPublicKey Ephemeral public key used for one-time object transfer.
+     * @param extras Additional, application specific information.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.CreateActivationResponse}
+     */
+    public PowerAuthPortServiceStub.CreateActivationResponse createActivation(String applicationKey, String userId, Long maxFailureCount, Date timestampActivationExpire, String identity, String activationOtp, String activationName, String activationNonce, String ephemeralPublicKey, String cDevicePublicKey, String extras, String applicationSignature) throws RemoteException {
+        PowerAuthPortServiceStub.CreateActivationRequest request = new PowerAuthPortServiceStub.CreateActivationRequest();
+        request.setApplicationKey(applicationKey);
+        request.setUserId(userId);
+        if (maxFailureCount != null) {
+            request.setMaxFailureCount(maxFailureCount);
+        }
+        if (timestampActivationExpire != null) {
+            request.setTimestampActivationExpire(calendarWithDate(timestampActivationExpire));
+        }
+        request.setIdentity(identity);
+        request.setActivationOtp(activationOtp);
+        request.setActivationName(activationName);
+        request.setActivationNonce(activationNonce);
+        request.setEphemeralPublicKey(ephemeralPublicKey);
+        request.setEncryptedDevicePublicKey(cDevicePublicKey);
+        request.setExtras(extras);
+        request.setApplicationSignature(applicationSignature);
+        return this.createActivation(request);
     }
 
     /**
@@ -385,24 +462,50 @@ public class PowerAuthServiceClient {
     }
 
     /**
-     * Call the generateE2EEncryptionKey method of the PowerAuth 2.0 Server SOAP interface.
-     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetEncryptionKeyRequest} instance.
-     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetEncryptionKeyResponse}
+     * Call the generateE2EPersonalziedEncryptionKey method of the PowerAuth 2.0 Server SOAP interface.
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetPersonalizedEncryptionKeyRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetPersonalizedEncryptionKeyResponse}
      */
-    public PowerAuthPortServiceStub.GetEncryptionKeyResponse generateE2EEncryptionKey(PowerAuthPortServiceStub.GetEncryptionKeyRequest request) throws RemoteException {
-        return clientStub.getEncryptionKey(request);
+    public PowerAuthPortServiceStub.GetPersonalizedEncryptionKeyResponse generatePersonalizedE2EEncryptionKey(PowerAuthPortServiceStub.GetPersonalizedEncryptionKeyRequest request) throws RemoteException {
+        return clientStub.getPersonalizedEncryptionKey(request);
     }
 
     /**
-     * Call the generateE2EEncryptionKey method of the PowerAuth 2.0 Server SOAP interface and get
+     * Call the generateE2EPersonalziedEncryptionKey method of the PowerAuth 2.0 Server SOAP interface and get
      * newly generated derived encryption key.
      * @param activationId Activation ID used for the key generation.
-     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetEncryptionKeyResponse}
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetPersonalizedEncryptionKeyResponse}
      */
-    public PowerAuthPortServiceStub.GetEncryptionKeyResponse generateE2EEncryptionKey(String activationId) throws RemoteException {
-        PowerAuthPortServiceStub.GetEncryptionKeyRequest request = new PowerAuthPortServiceStub.GetEncryptionKeyRequest();
+    public PowerAuthPortServiceStub.GetPersonalizedEncryptionKeyResponse generatePersonalizedE2EEncryptionKey(String activationId, String sessionIndex) throws RemoteException {
+        PowerAuthPortServiceStub.GetPersonalizedEncryptionKeyRequest request = new PowerAuthPortServiceStub.GetPersonalizedEncryptionKeyRequest();
         request.setActivationId(activationId);
-        return this.generateE2EEncryptionKey(request);
+        request.setSessionIndex(sessionIndex);
+        return this.generatePersonalizedE2EEncryptionKey(request);
+    }
+
+    /**
+     * Call the generateE2ENonPersonalizedEncryptionKey method of the PowerAuth 2.0 Server SOAP interface.
+     * @param request {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetNonPersonalizedEncryptionKeyRequest} instance.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetNonPersonalizedEncryptionKeyResponse}
+     */
+    public PowerAuthPortServiceStub.GetNonPersonalizedEncryptionKeyResponse generateNonPersonalizedE2EEncryptionKey(PowerAuthPortServiceStub.GetNonPersonalizedEncryptionKeyRequest request) throws RemoteException {
+        return clientStub.getNonPersonalizedEncryptionKey(request);
+    }
+
+    /**
+     * Call the generateE2ENonPersonalizedEncryptionKey method of the PowerAuth 2.0 Server SOAP interface and get
+     * newly generated derived encryption key.
+     * @param applicationKey Application key related to application used for the key generation.
+     * @param ephemeralPublicKeyBase64 Ephemeral public key.
+     * @param sessionIndex Session index.
+     * @return {@link io.getlime.powerauth.soap.PowerAuthPortServiceStub.GetNonPersonalizedEncryptionKeyResponse}
+     */
+    public PowerAuthPortServiceStub.GetNonPersonalizedEncryptionKeyResponse generateNonPersonalizedE2EEncryptionKey(String applicationKey, String ephemeralPublicKeyBase64, String sessionIndex) throws RemoteException {
+        PowerAuthPortServiceStub.GetNonPersonalizedEncryptionKeyRequest request = new PowerAuthPortServiceStub.GetNonPersonalizedEncryptionKeyRequest();
+        request.setApplicationKey(applicationKey);
+        request.setEphemeralPublicKey(ephemeralPublicKeyBase64);
+        request.setSessionIndex(sessionIndex);
+        return this.generateNonPersonalizedE2EEncryptionKey(request);
     }
 
     /**

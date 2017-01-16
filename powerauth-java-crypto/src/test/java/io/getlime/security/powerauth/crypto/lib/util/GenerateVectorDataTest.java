@@ -16,31 +16,28 @@
 
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import static org.junit.Assert.*;
-
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
-import java.util.Arrays;
-
-import javax.crypto.SecretKey;
-
-import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.io.BaseEncoding;
-
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.crypto.SecretKey;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Generate test vectors

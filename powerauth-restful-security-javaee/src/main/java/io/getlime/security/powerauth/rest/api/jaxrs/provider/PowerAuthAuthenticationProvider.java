@@ -17,14 +17,14 @@ package io.getlime.security.powerauth.rest.api.jaxrs.provider;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
+import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
+import io.getlime.security.powerauth.http.PowerAuthHttpBody;
+import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.base.provider.PowerAuthAuthenticationProviderBase;
 import io.getlime.security.powerauth.rest.api.jaxrs.authentication.PowerAuthApiAuthenticationImpl;
 import io.getlime.security.powerauth.rest.api.jaxrs.authentication.PowerAuthAuthenticationImpl;
-import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
-import io.getlime.security.powerauth.http.PowerAuthHttpBody;
-import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.soap.axis.client.PowerAuthServiceClient;
 
 import javax.ejb.Stateless;

@@ -15,18 +15,17 @@
  */
 package io.getlime.security.powerauth.app.server.service;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.*;
 import io.getlime.security.powerauth.app.server.service.behavior.ServiceBehaviors;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import io.getlime.security.powerauth.app.server.service.configuration.PowerAuthServiceConfiguration;
 import io.getlime.security.powerauth.app.server.service.exceptions.GenericServiceException;
 import io.getlime.security.powerauth.app.server.service.i18n.LocalizationProvider;
 import io.getlime.security.powerauth.app.server.service.util.ModelUtil;
 import io.getlime.security.powerauth.app.server.service.util.model.ServiceError;
+import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -164,10 +163,54 @@ public class PowerAuthServiceImpl implements PowerAuthService {
             String cDevicePublicKeyBase64 = request.getEncryptedDevicePublicKey();
             String activationName = request.getActivationName();
             String ephemeralPublicKey = request.getEphemeralPublicKey();
-            String applicationId = request.getApplicationKey();
+            String applicationKey = request.getApplicationKey();
             String applicationSignature = request.getApplicationSignature();
             String extras = request.getExtras();
-            return behavior.getActivationServiceBehavior().prepareActivation(activationIdShort, activationNonceBase64, ephemeralPublicKey, cDevicePublicKeyBase64, activationName, extras, applicationId, applicationSignature, keyConversionUtilities);
+            return behavior.getActivationServiceBehavior().prepareActivation(activationIdShort, activationNonceBase64, ephemeralPublicKey, cDevicePublicKeyBase64, activationName, extras, applicationKey, applicationSignature, keyConversionUtilities);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw localizationProvider.buildExceptionForCode(ServiceError.INVALID_INPUT_FORMAT);
+        } catch (GenericServiceException ex) {
+            Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
+        } catch (Exception ex) {
+            Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new GenericServiceException(ServiceError.UNKNOWN_ERROR, ex.getMessage(), ex.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public CreateActivationResponse createActivation(CreateActivationRequest request) throws Exception {
+        try {
+            // Get request parameters
+            String applicationKey = request.getApplicationKey();
+            String userId = request.getUserId();
+            Long maxFailedCount = request.getMaxFailureCount();
+            Date activationExpireTimestamp = ModelUtil.dateWithCalendar(request.getTimestampActivationExpire());
+            String identity = request.getIdentity();
+            String activationOtp = request.getActivationOtp();
+            String activationNonceBase64 = request.getActivationNonce();
+            String cDevicePublicKeyBase64 = request.getEncryptedDevicePublicKey();
+            String activationName = request.getActivationName();
+            String ephemeralPublicKey = request.getEphemeralPublicKey();
+            String applicationSignature = request.getApplicationSignature();
+            String extras = request.getExtras();
+            return behavior.getActivationServiceBehavior().createActivation(
+                    applicationKey,
+                    userId,
+                    maxFailedCount,
+                    activationExpireTimestamp,
+                    identity,
+                    activationOtp,
+                    activationNonceBase64,
+                    ephemeralPublicKey,
+                    cDevicePublicKeyBase64,
+                    activationName,
+                    extras,
+                    applicationSignature,
+                    keyConversionUtilities
+          );
         } catch (IllegalArgumentException ex) {
             Logger.getLogger(PowerAuthServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw localizationProvider.buildExceptionForCode(ServiceError.INVALID_INPUT_FORMAT);
@@ -303,13 +346,9 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     @Override
     @Transactional
     public GetPersonalizedEncryptionKeyResponse generateE2EPersonalizedEncryptionKey(GetPersonalizedEncryptionKeyRequest request) throws Exception {
-        byte[] sessionIndex = null;
-        if (request.getSessionIndex() != null) {
-            sessionIndex = BaseEncoding.base64().decode(request.getSessionIndex());
-        }
         return behavior.getEncryptionServiceBehavior().generateEncryptionKeyForActivation(
                 request.getActivationId(),
-                sessionIndex,
+                request.getSessionIndex(),
                 keyConversionUtilities
         );
     }
@@ -317,13 +356,10 @@ public class PowerAuthServiceImpl implements PowerAuthService {
     @Override
     @Transactional
     public GetNonPersonalizedEncryptionKeyResponse generateE2ENonPersonalizedEncryptionKey(GetNonPersonalizedEncryptionKeyRequest request) throws Exception {
-        byte[] sessionIndex = null;
-        if (request.getSessionIndex() != null) {
-            sessionIndex = BaseEncoding.base64().decode(request.getSessionIndex());
-        }
         return behavior.getEncryptionServiceBehavior().generateNonPersonalizedEncryptionKeyForApplication(
                 request.getApplicationKey(),
-                sessionIndex,
+                request.getSessionIndex(),
+                request.getEphemeralPublicKey(),
                 keyConversionUtilities
         );
     }

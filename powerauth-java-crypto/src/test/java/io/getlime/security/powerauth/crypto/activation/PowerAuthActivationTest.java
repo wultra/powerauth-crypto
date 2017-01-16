@@ -19,19 +19,19 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
-import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.Before;
+import org.junit.Test;
 
+import javax.crypto.SecretKey;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 
-import javax.crypto.SecretKey;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**

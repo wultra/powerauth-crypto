@@ -16,28 +16,25 @@
 
 package io.getlime.security.powerauth.crypto.vault;
 
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.Security;
-
-import javax.crypto.SecretKey;
-
+import com.google.common.io.BaseEncoding;
+import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
+import io.getlime.security.powerauth.crypto.client.vault.PowerAuthClientVault;
+import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
+import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.server.vault.PowerAuthServerVault;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.io.BaseEncoding;
+import javax.crypto.SecretKey;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.Security;
 
-import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
-import io.getlime.security.powerauth.crypto.client.vault.PowerAuthClientVault;
-import io.getlime.security.powerauth.crypto.server.vault.PowerAuthServerVault;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
-import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test the secure vault implementation.

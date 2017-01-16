@@ -1,1472 +1,1575 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-  ~ Copyright 2016 Lime - HighTech Solutions s.r.o.
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://getlime.io/security/powerauth" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://getlime.io/security/powerauth" targetNamespace="http://getlime.io/security/powerauth">
-    <wsdl:types>
-        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://getlime.io/security/powerauth" version="1.0">
-
-            <!-- Status method //-->
-
-            <xs:element name="GetSystemStatusRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the system status information.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetSystemStatusResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the system status information.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="status" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationDisplayName" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationEnvironment" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="timestamp" type="xs:dateTime"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Server error code list -->
-
-            <xs:element name="GetErrorCodeListRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the list of all possible server error codes.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="language" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetErrorCodeListResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the list of all possible server error codes.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="errors">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="code" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="value" type="xs:string"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- List applications //-->
-
-            <xs:element name="GetApplicationListRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the application list.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetApplicationListResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the application list.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="applications">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:long"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Get application details //-->
-
-            <xs:element name="GetApplicationDetailRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the application detail, including the list of versions.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetApplicationDetailResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the application detail, including the list of versions.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="masterPublicKey" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="versions">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionName" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationSecret" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="supported" type="xs:boolean"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Create application //-->
-
-            <xs:element name="CreateApplicationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for creating a new activation.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="CreateApplicationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for creating a new activation.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Create application version //-->
-
-            <xs:element name="CreateApplicationVersionRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for creating a new activation version.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionName" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="CreateApplicationVersionResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for creating a new activation version.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionName" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationSecret" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="supported" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Unsupport application version //-->
-
-            <xs:element name="UnsupportApplicationVersionRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for marking a given application version as unsupported.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="UnsupportApplicationVersionResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for marking a given application version as unsupported.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="supported" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Support application version //-->
-
-            <xs:element name="SupportApplicationVersionRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for marking a given application version as supported.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="SupportApplicationVersionResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for marking a given application version as supported.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="supported" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Init activation //-->
-
-            <xs:element name="InitActivationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for initiating the activation process by generating the activation code.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="timestampActivationExpire" type="xs:dateTime"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="maxFailureCount" type="xs:long"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="InitActivationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for initiating the activation process.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationIdShort" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationOTP" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationSignature" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Exchange public keys //-->
-
-            <xs:element name="PrepareActivationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for client-server key exchange procedure.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationIdShort" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="ephemeralPublicKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="encryptedDevicePublicKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationSignature" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="PrepareActivationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for client-server key exchange procedure.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="ephemeralPublicKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="encryptedServerPublicKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="encryptedServerPublicKeySignature" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Commit activation //-->
-
-            <xs:element name="CommitActivationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for committing the activation with given ID.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="CommitActivationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for committing the activation with given ID.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activated" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Get Activation Status //-->
-
-            <xs:element name="GetActivationStatusRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the activation details / status information.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetActivationStatusResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the activation details / status information.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:dateTime"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="timestampLastUsed" type="xs:dateTime"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="encryptedStatusBlob" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="activationIdShort" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="activationOTP" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="activationSignature" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="devicePublicKeyFingerprint" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Remove Activation //-->
-
-            <xs:element name="RemoveActivationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for removing the activation with given ID.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="RemoveActivationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for removing the activation with given ID.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="removed" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Activations for user //-->
-
-            <xs:element name="GetActivationListForUserRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the list of activations for given user.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="applicationId" type="xs:long"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetActivationListForUserResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the list of activations for given user.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="activations">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
-                                    <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:dateTime"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="timestampLastUsed" type="xs:dateTime"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Verify signature //-->
-
-            <xs:element name="VerifySignatureRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for the signature verification process.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="data" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="VerifySignatureResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for the signature verification process.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="remainingAttempts" type="xs:integer"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Block Activation //-->
-
-            <xs:element name="BlockActivationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for blocking the activation with given ID.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="BlockActivationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for blocking the activation with given ID.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Unblock Activation //-->
-
-            <xs:element name="UnblockActivationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for unblocking the activation with given ID.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="UnblockActivationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for unblocking the activation with given ID.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Vault Unlock //-->
-
-            <xs:element name="VaultUnlockRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for the vault unlock procedure.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="data" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="VaultUnlockResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for the vault unlock procedure.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="remainingAttempts" type="xs:integer"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="encryptedVaultEncryptionKey" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Asymmetric ECDSA signature validation -->
-
-            <xs:element name="VerifyECDSASignatureRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for the asymmetric signature (ECDSA) validation procedure.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="data" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="VerifyECDSASignatureResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for the asymmetric signature (ECDSA) validation procedure.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Signature Audit Access //-->
-
-            <xs:element name="SignatureAuditRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the signature audit log.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="applicationId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="timestampFrom" type="xs:dateTime"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="timestampTo" type="xs:dateTime"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="SignatureAuditResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the signature audit log.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="items">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:long"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="activationCounter" type="xs:long"/>
-                                    <xs:element maxOccurs="1" minOccurs="0" name="activationStatus" type="tns:ActivationStatus"/>
-                                    <xs:element maxOccurs="1" minOccurs="0" name="dataBase64" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="note" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="valid" type="xs:boolean"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:dateTime"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Create a new integration //-->
-
-            <xs:element name="CreateIntegrationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for creating a new integration record.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="CreateIntegrationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for creating a new integration record.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="clientToken" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="clientSecret" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Get integration list //-->
-
-            <xs:element name="GetIntegrationListRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the list of integrations.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetIntegrationListResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the list of integrations.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="restrictedAccess" type="xs:boolean"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="items">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="clientToken" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="clientSecret" type="xs:string"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Remove integration //-->
-
-            <xs:element name="RemoveIntegrationRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for removing an integration record.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="RemoveIntegrationResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for removing an integration record.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="removed" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Create a new callback URL //-->
-
-            <xs:element name="CreateCallbackUrlRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for creating a new callback URL record associated with given application.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="name" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="callbackUrl" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="CreateCallbackUrlResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for creating a new callback URL.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="name" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="callbackUrl" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Get callback URL list //-->
-
-            <xs:element name="GetCallbackUrlListRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for getting the list of callback URLs for given application.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetCallbackUrlListResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for getting the list of callback URLs.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="callbackUrlList">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="name" type="xs:string"/>
-                                    <xs:element maxOccurs="1" minOccurs="1" name="callbackUrl" type="xs:string"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- Remove callback URL //-->
-
-            <xs:element name="RemoveCallbackUrlRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for removing a callback URL record.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="RemoveCallbackUrlResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for removing an callback URL record.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="0" name="removed" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- End-to-End Encryption Support //-->
-
-            <xs:element name="GetEncryptionKeyRequest">
-                <xs:annotation>
-                    <xs:documentation>Request for obtaining a derived end-to-end encryption key.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="GetEncryptionKeyResponse">
-                <xs:annotation>
-                    <xs:documentation>Response for obtaining a derived end-to-end encryption key.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="encryptionKey" type="xs:string"/>
-                        <xs:element maxOccurs="1" minOccurs="1" name="encryptionKeyIndex" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <!-- PowerAuth 2.0 Enumerations //-->
-
-            <xs:simpleType name="ActivationStatus">
-                <xs:annotation>
-                    <xs:documentation>Enum representing the possible activation states (CREATED, OTP_USED, ACTIVE, BLOCKED, REMOVED).</xs:documentation>
-                </xs:annotation>
-                <xs:restriction base="xs:string">
-                    <xs:enumeration value="CREATED"/>
-                    <xs:enumeration value="OTP_USED"/>
-                    <xs:enumeration value="ACTIVE"/>
-                    <xs:enumeration value="BLOCKED"/>
-                    <xs:enumeration value="REMOVED"/>
-                </xs:restriction>
-            </xs:simpleType>
-
-        </xs:schema>
-    </wsdl:types>
-    <wsdl:message name="UnsupportApplicationVersionResponse">
-        <wsdl:part element="tns:UnsupportApplicationVersionResponse" name="UnsupportApplicationVersionResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetSystemStatusResponse">
-        <wsdl:part element="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CreateCallbackUrlResponse">
-        <wsdl:part element="tns:CreateCallbackUrlResponse" name="CreateCallbackUrlResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetCallbackUrlListResponse">
-        <wsdl:part element="tns:GetCallbackUrlListResponse" name="GetCallbackUrlListResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CommitActivationRequest">
-        <wsdl:part element="tns:CommitActivationRequest" name="CommitActivationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="UnsupportApplicationVersionRequest">
-        <wsdl:part element="tns:UnsupportApplicationVersionRequest" name="UnsupportApplicationVersionRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="PrepareActivationResponse">
-        <wsdl:part element="tns:PrepareActivationResponse" name="PrepareActivationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="RemoveIntegrationResponse">
-        <wsdl:part element="tns:RemoveIntegrationResponse" name="RemoveIntegrationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetActivationStatusResponse">
-        <wsdl:part element="tns:GetActivationStatusResponse" name="GetActivationStatusResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CommitActivationResponse">
-        <wsdl:part element="tns:CommitActivationResponse" name="CommitActivationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="RemoveActivationResponse">
-        <wsdl:part element="tns:RemoveActivationResponse" name="RemoveActivationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="BlockActivationRequest">
-        <wsdl:part element="tns:BlockActivationRequest" name="BlockActivationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CreateIntegrationRequest">
-        <wsdl:part element="tns:CreateIntegrationRequest" name="CreateIntegrationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetApplicationListRequest">
-        <wsdl:part element="tns:GetApplicationListRequest" name="GetApplicationListRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CreateApplicationResponse">
-        <wsdl:part element="tns:CreateApplicationResponse" name="CreateApplicationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetActivationStatusRequest">
-        <wsdl:part element="tns:GetActivationStatusRequest" name="GetActivationStatusRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetEncryptionKeyRequest">
-        <wsdl:part element="tns:GetEncryptionKeyRequest" name="GetEncryptionKeyRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CreateApplicationVersionResponse">
-        <wsdl:part element="tns:CreateApplicationVersionResponse" name="CreateApplicationVersionResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetErrorCodeListResponse">
-        <wsdl:part element="tns:GetErrorCodeListResponse" name="GetErrorCodeListResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetApplicationListResponse">
-        <wsdl:part element="tns:GetApplicationListResponse" name="GetApplicationListResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetApplicationDetailResponse">
-        <wsdl:part element="tns:GetApplicationDetailResponse" name="GetApplicationDetailResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CreateApplicationRequest">
-        <wsdl:part element="tns:CreateApplicationRequest" name="CreateApplicationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="VaultUnlockResponse">
-        <wsdl:part element="tns:VaultUnlockResponse" name="VaultUnlockResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="UnblockActivationRequest">
-        <wsdl:part element="tns:UnblockActivationRequest" name="UnblockActivationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="VaultUnlockRequest">
-        <wsdl:part element="tns:VaultUnlockRequest" name="VaultUnlockRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="BlockActivationResponse">
-        <wsdl:part element="tns:BlockActivationResponse" name="BlockActivationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetEncryptionKeyResponse">
-        <wsdl:part element="tns:GetEncryptionKeyResponse" name="GetEncryptionKeyResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="VerifyECDSASignatureRequest">
-        <wsdl:part element="tns:VerifyECDSASignatureRequest" name="VerifyECDSASignatureRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetApplicationDetailRequest">
-        <wsdl:part element="tns:GetApplicationDetailRequest" name="GetApplicationDetailRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="SignatureAuditResponse">
-        <wsdl:part element="tns:SignatureAuditResponse" name="SignatureAuditResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="RemoveCallbackUrlRequest">
-        <wsdl:part element="tns:RemoveCallbackUrlRequest" name="RemoveCallbackUrlRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetActivationListForUserRequest">
-        <wsdl:part element="tns:GetActivationListForUserRequest" name="GetActivationListForUserRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetActivationListForUserResponse">
-        <wsdl:part element="tns:GetActivationListForUserResponse" name="GetActivationListForUserResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetIntegrationListResponse">
-        <wsdl:part element="tns:GetIntegrationListResponse" name="GetIntegrationListResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="InitActivationResponse">
-        <wsdl:part element="tns:InitActivationResponse" name="InitActivationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetErrorCodeListRequest">
-        <wsdl:part element="tns:GetErrorCodeListRequest" name="GetErrorCodeListRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="UnblockActivationResponse">
-        <wsdl:part element="tns:UnblockActivationResponse" name="UnblockActivationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="VerifyECDSASignatureResponse">
-        <wsdl:part element="tns:VerifyECDSASignatureResponse" name="VerifyECDSASignatureResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetSystemStatusRequest">
-        <wsdl:part element="tns:GetSystemStatusRequest" name="GetSystemStatusRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="SupportApplicationVersionRequest">
-        <wsdl:part element="tns:SupportApplicationVersionRequest" name="SupportApplicationVersionRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="VerifySignatureRequest">
-        <wsdl:part element="tns:VerifySignatureRequest" name="VerifySignatureRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="RemoveActivationRequest">
-        <wsdl:part element="tns:RemoveActivationRequest" name="RemoveActivationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="InitActivationRequest">
-        <wsdl:part element="tns:InitActivationRequest" name="InitActivationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="SignatureAuditRequest">
-        <wsdl:part element="tns:SignatureAuditRequest" name="SignatureAuditRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="SupportApplicationVersionResponse">
-        <wsdl:part element="tns:SupportApplicationVersionResponse" name="SupportApplicationVersionResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetCallbackUrlListRequest">
-        <wsdl:part element="tns:GetCallbackUrlListRequest" name="GetCallbackUrlListRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="VerifySignatureResponse">
-        <wsdl:part element="tns:VerifySignatureResponse" name="VerifySignatureResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CreateIntegrationResponse">
-        <wsdl:part element="tns:CreateIntegrationResponse" name="CreateIntegrationResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetIntegrationListRequest">
-        <wsdl:part element="tns:GetIntegrationListRequest" name="GetIntegrationListRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CreateApplicationVersionRequest">
-        <wsdl:part element="tns:CreateApplicationVersionRequest" name="CreateApplicationVersionRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="PrepareActivationRequest">
-        <wsdl:part element="tns:PrepareActivationRequest" name="PrepareActivationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="RemoveIntegrationRequest">
-        <wsdl:part element="tns:RemoveIntegrationRequest" name="RemoveIntegrationRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CreateCallbackUrlRequest">
-        <wsdl:part element="tns:CreateCallbackUrlRequest" name="CreateCallbackUrlRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="RemoveCallbackUrlResponse">
-        <wsdl:part element="tns:RemoveCallbackUrlResponse" name="RemoveCallbackUrlResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:portType name="PowerAuthPort">
-        <wsdl:operation name="UnsupportApplicationVersion">
-            <wsdl:input message="tns:UnsupportApplicationVersionRequest" name="UnsupportApplicationVersionRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:UnsupportApplicationVersionResponse" name="UnsupportApplicationVersionResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetSystemStatus">
-            <wsdl:input message="tns:GetSystemStatusRequest" name="GetSystemStatusRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CreateCallbackUrl">
-            <wsdl:input message="tns:CreateCallbackUrlRequest" name="CreateCallbackUrlRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:CreateCallbackUrlResponse" name="CreateCallbackUrlResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetCallbackUrlList">
-            <wsdl:input message="tns:GetCallbackUrlListRequest" name="GetCallbackUrlListRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetCallbackUrlListResponse" name="GetCallbackUrlListResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CommitActivation">
-            <wsdl:input message="tns:CommitActivationRequest" name="CommitActivationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:CommitActivationResponse" name="CommitActivationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="PrepareActivation">
-            <wsdl:input message="tns:PrepareActivationRequest" name="PrepareActivationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:PrepareActivationResponse" name="PrepareActivationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="RemoveIntegration">
-            <wsdl:input message="tns:RemoveIntegrationRequest" name="RemoveIntegrationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:RemoveIntegrationResponse" name="RemoveIntegrationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetActivationStatus">
-            <wsdl:input message="tns:GetActivationStatusRequest" name="GetActivationStatusRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetActivationStatusResponse" name="GetActivationStatusResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="RemoveActivation">
-            <wsdl:input message="tns:RemoveActivationRequest" name="RemoveActivationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:RemoveActivationResponse" name="RemoveActivationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="BlockActivation">
-            <wsdl:input message="tns:BlockActivationRequest" name="BlockActivationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:BlockActivationResponse" name="BlockActivationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CreateIntegration">
-            <wsdl:input message="tns:CreateIntegrationRequest" name="CreateIntegrationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:CreateIntegrationResponse" name="CreateIntegrationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetApplicationList">
-            <wsdl:input message="tns:GetApplicationListRequest" name="GetApplicationListRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetApplicationListResponse" name="GetApplicationListResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CreateApplication">
-            <wsdl:input message="tns:CreateApplicationRequest" name="CreateApplicationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:CreateApplicationResponse" name="CreateApplicationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetEncryptionKey">
-            <wsdl:input message="tns:GetEncryptionKeyRequest" name="GetEncryptionKeyRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetEncryptionKeyResponse" name="GetEncryptionKeyResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CreateApplicationVersion">
-            <wsdl:input message="tns:CreateApplicationVersionRequest" name="CreateApplicationVersionRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:CreateApplicationVersionResponse" name="CreateApplicationVersionResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetErrorCodeList">
-            <wsdl:input message="tns:GetErrorCodeListRequest" name="GetErrorCodeListRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetErrorCodeListResponse" name="GetErrorCodeListResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetApplicationDetail">
-            <wsdl:input message="tns:GetApplicationDetailRequest" name="GetApplicationDetailRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetApplicationDetailResponse" name="GetApplicationDetailResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="VaultUnlock">
-            <wsdl:input message="tns:VaultUnlockRequest" name="VaultUnlockRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:VaultUnlockResponse" name="VaultUnlockResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="UnblockActivation">
-            <wsdl:input message="tns:UnblockActivationRequest" name="UnblockActivationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:UnblockActivationResponse" name="UnblockActivationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="VerifyECDSASignature">
-            <wsdl:input message="tns:VerifyECDSASignatureRequest" name="VerifyECDSASignatureRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:VerifyECDSASignatureResponse" name="VerifyECDSASignatureResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="SignatureAudit">
-            <wsdl:input message="tns:SignatureAuditRequest" name="SignatureAuditRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:SignatureAuditResponse" name="SignatureAuditResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="RemoveCallbackUrl">
-            <wsdl:input message="tns:RemoveCallbackUrlRequest" name="RemoveCallbackUrlRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:RemoveCallbackUrlResponse" name="RemoveCallbackUrlResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetActivationListForUser">
-            <wsdl:input message="tns:GetActivationListForUserRequest" name="GetActivationListForUserRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetActivationListForUserResponse" name="GetActivationListForUserResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetIntegrationList">
-            <wsdl:input message="tns:GetIntegrationListRequest" name="GetIntegrationListRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:GetIntegrationListResponse" name="GetIntegrationListResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="InitActivation">
-            <wsdl:input message="tns:InitActivationRequest" name="InitActivationRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:InitActivationResponse" name="InitActivationResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="SupportApplicationVersion">
-            <wsdl:input message="tns:SupportApplicationVersionRequest" name="SupportApplicationVersionRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:SupportApplicationVersionResponse" name="SupportApplicationVersionResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="VerifySignature">
-            <wsdl:input message="tns:VerifySignatureRequest" name="VerifySignatureRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:VerifySignatureResponse" name="VerifySignatureResponse">
-            </wsdl:output>
-        </wsdl:operation>
-    </wsdl:portType>
-    <wsdl:binding name="PowerAuthPortSoap11" type="tns:PowerAuthPort">
-        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-        <wsdl:operation name="UnsupportApplicationVersion">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="UnsupportApplicationVersionRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="UnsupportApplicationVersionResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetSystemStatus">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetSystemStatusRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetSystemStatusResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CreateCallbackUrl">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="CreateCallbackUrlRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="CreateCallbackUrlResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetCallbackUrlList">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetCallbackUrlListRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetCallbackUrlListResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CommitActivation">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="CommitActivationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="CommitActivationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="PrepareActivation">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="PrepareActivationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="PrepareActivationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="RemoveIntegration">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="RemoveIntegrationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="RemoveIntegrationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetActivationStatus">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetActivationStatusRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetActivationStatusResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="RemoveActivation">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="RemoveActivationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="RemoveActivationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="BlockActivation">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="BlockActivationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="BlockActivationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CreateIntegration">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="CreateIntegrationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="CreateIntegrationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetApplicationList">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetApplicationListRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetApplicationListResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CreateApplication">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="CreateApplicationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="CreateApplicationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetEncryptionKey">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetEncryptionKeyRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetEncryptionKeyResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="CreateApplicationVersion">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="CreateApplicationVersionRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="CreateApplicationVersionResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetErrorCodeList">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetErrorCodeListRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetErrorCodeListResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetApplicationDetail">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetApplicationDetailRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetApplicationDetailResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="VaultUnlock">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="VaultUnlockRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="VaultUnlockResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="UnblockActivation">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="UnblockActivationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="UnblockActivationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="VerifyECDSASignature">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="VerifyECDSASignatureRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="VerifyECDSASignatureResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="SignatureAudit">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="SignatureAuditRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="SignatureAuditResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="RemoveCallbackUrl">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="RemoveCallbackUrlRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="RemoveCallbackUrlResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetActivationListForUser">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetActivationListForUserRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetActivationListForUserResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetIntegrationList">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="GetIntegrationListRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="GetIntegrationListResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="InitActivation">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="InitActivationRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="InitActivationResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="SupportApplicationVersion">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="SupportApplicationVersionRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="SupportApplicationVersionResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="VerifySignature">
-            <soap:operation soapAction=""/>
-            <wsdl:input name="VerifySignatureRequest">
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output name="VerifySignatureResponse">
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
-    </wsdl:binding>
-    <wsdl:service name="PowerAuthPortService">
-        <wsdl:port binding="tns:PowerAuthPortSoap11" name="PowerAuthPortSoap11">
-            <soap:address location="http://localhost:8080/powerauth-java-server/soap"/>
-        </wsdl:port>
-    </wsdl:service>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://getlime.io/security/powerauth"
+                  targetNamespace="http://getlime.io/security/powerauth">
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://getlime.io/security/powerauth" version="1.0">
+           
+   	<!-- Status method //-->
+    
+    <xs:element name="GetSystemStatusRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for getting the system status information.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+    		<xs:sequence/>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetSystemStatusResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for getting the system status information.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+        	<xs:sequence>
+            	<xs:element maxOccurs="1" minOccurs="1" name="status" type="xs:string"/>
+	            <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
+	            <xs:element maxOccurs="1" minOccurs="1" name="applicationDisplayName" type="xs:string"/>
+	            <xs:element maxOccurs="1" minOccurs="1" name="applicationEnvironment" type="xs:string"/>
+	            <xs:element maxOccurs="1" minOccurs="1" name="timestamp" type="xs:dateTime"/>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Server error code list -->
+    
+    <xs:element name="GetErrorCodeListRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for getting the list of all possible server error codes.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+    		<xs:sequence>
+    			<xs:element maxOccurs="1" minOccurs="1" name="language" type="xs:string"/>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetErrorCodeListResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for getting the list of all possible server error codes.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+        	<xs:sequence>
+            	<xs:element maxOccurs="unbounded" minOccurs="0" name="errors">
+            		<xs:complexType>
+        	        	<xs:sequence>
+    	       				<xs:element maxOccurs="1" minOccurs="1" name="code" type="xs:string"/>
+	            			<xs:element maxOccurs="1" minOccurs="1" name="value" type="xs:string"/>
+           				</xs:sequence>
+        			</xs:complexType>
+        		</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+           
+    <!-- List applications //-->
+    
+    <xs:element name="GetApplicationListRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for getting the application list.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+    		<xs:sequence/>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetApplicationListResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for getting the application list.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+        	<xs:sequence>
+            	<xs:element maxOccurs="unbounded" minOccurs="0" name="applications">
+            		<xs:complexType>
+        	        	<xs:sequence>
+    	       				<xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:long"/>
+	            			<xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
+           				</xs:sequence>
+        			</xs:complexType>
+        		</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Get application details //-->
+    
+    <xs:element name="GetApplicationDetailRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for getting the application detail, including the list of versions.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+    		<xs:sequence>
+    			<xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetApplicationDetailResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for getting the application detail, including the list of versions.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+        	<xs:sequence>
+        		<xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+        		<xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
+        		<xs:element maxOccurs="1" minOccurs="1" name="masterPublicKey" type="xs:string"/>
+        		<xs:element maxOccurs="unbounded" minOccurs="0" name="versions">
+                	<xs:complexType>
+                	    <xs:sequence>
+            	            <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
+                       		<xs:element maxOccurs="1" minOccurs="1" name="applicationVersionName" type="xs:string"/>
+    	                   	<xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+	               			<xs:element maxOccurs="1" minOccurs="1" name="applicationSecret" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="supported" type="xs:boolean"/>
+                       	</xs:sequence>
+                   	</xs:complexType>
+               	</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Create application //-->
+    
+    <xs:element name="CreateApplicationRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for creating a new activation.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="CreateApplicationResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for creating a new activation.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+            	<xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Create application version //-->
+    
+    <xs:element name="CreateApplicationVersionRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for creating a new activation version.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionName" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="CreateApplicationVersionResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for creating a new activation version.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
+            	<xs:element maxOccurs="1" minOccurs="1" name="applicationVersionName" type="xs:string"/>
+            	<xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+            	<xs:element maxOccurs="1" minOccurs="1" name="applicationSecret" type="xs:string"/>
+            	<xs:element maxOccurs="1" minOccurs="1" name="supported" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Unsupport application version //-->
+    
+    <xs:element name="UnsupportApplicationVersionRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for marking a given application version as unsupported.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="UnsupportApplicationVersionResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for marking a given application version as unsupported.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
+            	<xs:element maxOccurs="1" minOccurs="1" name="supported" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Support application version //-->
+    
+    <xs:element name="SupportApplicationVersionRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for marking a given application version as supported.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="SupportApplicationVersionResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for marking a given application version as supported.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element maxOccurs="1" minOccurs="1" name="applicationVersionId" type="xs:long"/>
+            	<xs:element maxOccurs="1" minOccurs="1" name="supported" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Init activation //-->
+    
+    <xs:element name="InitActivationRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for initiating the activation process by generating the activation code.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="timestampActivationExpire" type="xs:dateTime"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="maxFailureCount" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="InitActivationResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for initiating the activation process.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationIdShort" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationOTP" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationSignature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Exchange public keys //-->
+    
+    <xs:element name="PrepareActivationRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for client-server key exchange procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationIdShort" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="ephemeralPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedDevicePublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationSignature" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="PrepareActivationResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for client-server key exchange procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="ephemeralPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedServerPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedServerPublicKeySignature" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Create new activation directly //-->
+
+    <xs:element name="CreateActivationRequest">
+        <xs:annotation>
+            <xs:documentation>Request for creating a new activation directly.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="timestampActivationExpire" type="xs:dateTime"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="maxFailureCount" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="identity" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationOtp" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="ephemeralPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedDevicePublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationSignature" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateActivationResponse">
+        <xs:annotation>
+            <xs:documentation>Response for creating a new activation directly.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationNonce" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="ephemeralPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedServerPublicKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedServerPublicKeySignature" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Commit activation //-->
+    
+    <xs:element name="CommitActivationRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for committing the activation with given ID.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="CommitActivationResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for committing the activation with given ID.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activated" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Get Activation Status //-->
+    
+    <xs:element name="GetActivationStatusRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for getting the activation details / status information.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetActivationStatusResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for getting the activation details / status information.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:dateTime"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="timestampLastUsed" type="xs:dateTime"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedStatusBlob" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="activationIdShort" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="activationOTP" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="activationSignature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="devicePublicKeyFingerprint" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Remove Activation //-->
+    
+    <xs:element name="RemoveActivationRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for removing the activation with given ID.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="RemoveActivationResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for removing the activation with given ID.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="removed" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Activations for user //-->
+    
+    <xs:element name="GetActivationListForUserRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for getting the list of activations for given user.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="applicationId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="GetActivationListForUserResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for getting the list of activations for given user.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="activations">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+                            <xs:element maxOccurs="1" minOccurs="0" name="activationName" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="0" name="extras" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:dateTime"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="timestampLastUsed" type="xs:dateTime"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="applicationName" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Verify signature //-->
+    
+    <xs:element name="VerifySignatureRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for the signature verification process.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="data" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="VerifySignatureResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for the signature verification process.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="remainingAttempts" type="xs:integer"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Block Activation //-->
+    
+    <xs:element name="BlockActivationRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for blocking the activation with given ID.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="BlockActivationResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for blocking the activation with given ID.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Unblock Activation //-->
+    
+    <xs:element name="UnblockActivationRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for unblocking the activation with given ID.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="UnblockActivationResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for unblocking the activation with given ID.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Vault Unlock //-->
+    
+    <xs:element name="VaultUnlockRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for the vault unlock procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="data" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="VaultUnlockResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for the vault unlock procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationStatus" type="tns:ActivationStatus"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="remainingAttempts" type="xs:integer"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptedVaultEncryptionKey" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Asymmetric ECDSA signature validation -->
+
+    <xs:element name="VerifyECDSASignatureRequest">
+        <xs:annotation>
+            <xs:documentation>Request for the asymmetric signature (ECDSA) validation procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="data" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="VerifyECDSASignatureResponse">
+        <xs:annotation>
+            <xs:documentation>Response for the asymmetric signature (ECDSA) validation procedure.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="signatureValid" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!-- Signature Audit Access //-->
+    
+    <xs:element name="SignatureAuditRequest">
+        <xs:annotation>
+        	<xs:documentation>Request for getting the signature audit log.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="applicationId" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="timestampFrom" type="xs:dateTime"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="timestampTo" type="xs:dateTime"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="SignatureAuditResponse">
+        <xs:annotation>
+        	<xs:documentation>Response for getting the signature audit log.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="items">
+        			<xs:complexType>
+            			<xs:sequence>
+            				<xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:long"/>
+            				<xs:element maxOccurs="1" minOccurs="1" name="userId" type="xs:string"/>
+            				<xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="activationCounter" type="xs:long"/>
+                			<xs:element maxOccurs="1" minOccurs="0" name="activationStatus" type="tns:ActivationStatus"/>
+                			<xs:element maxOccurs="1" minOccurs="0" name="dataBase64" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="signatureType" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="signature" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="note" type="xs:string"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="valid" type="xs:boolean"/>
+                			<xs:element maxOccurs="1" minOccurs="1" name="timestampCreated" type="xs:dateTime"/>
+            			</xs:sequence>
+        			</xs:complexType>
+        		</xs:element>
+        	</xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Create a new integration //-->
+
+    <xs:element name="CreateIntegrationRequest">
+        <xs:annotation>
+            <xs:documentation>Request for creating a new integration record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateIntegrationResponse">
+        <xs:annotation>
+            <xs:documentation>Response for creating a new integration record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="clientToken" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="clientSecret" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Get integration list //-->
+
+    <xs:element name="GetIntegrationListRequest">
+        <xs:annotation>
+            <xs:documentation>Request for getting the list of integrations.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetIntegrationListResponse">
+        <xs:annotation>
+            <xs:documentation>Response for getting the list of integrations.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="restrictedAccess" type="xs:boolean"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="items">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="1" name="clientToken" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="1" name="clientSecret" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Remove integration //-->
+
+    <xs:element name="RemoveIntegrationRequest">
+        <xs:annotation>
+            <xs:documentation>Request for removing an integration record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="RemoveIntegrationResponse">
+        <xs:annotation>
+            <xs:documentation>Response for removing an integration record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="removed" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Create a new callback URL //-->
+
+    <xs:element name="CreateCallbackUrlRequest">
+        <xs:annotation>
+            <xs:documentation>Request for creating a new callback URL record associated with given application.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="name" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="callbackUrl" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateCallbackUrlResponse">
+        <xs:annotation>
+            <xs:documentation>Response for creating a new callback URL.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="name" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="callbackUrl" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Get callback URL list //-->
+
+    <xs:element name="GetCallbackUrlListRequest">
+        <xs:annotation>
+            <xs:documentation>Request for getting the list of callback URLs for given application.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetCallbackUrlListResponse">
+        <xs:annotation>
+            <xs:documentation>Response for getting the list of callback URLs.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="callbackUrlList">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                            <xs:element maxOccurs="1" minOccurs="1" name="name" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="1" name="callbackUrl" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Remove callback URL //-->
+
+    <xs:element name="RemoveCallbackUrlRequest">
+        <xs:annotation>
+            <xs:documentation>Request for removing a callback URL record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="RemoveCallbackUrlResponse">
+        <xs:annotation>
+            <xs:documentation>Response for removing an callback URL record.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="id" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="removed" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Non-personalized End-to-End Encryption Support //-->
+
+    <xs:element name="GetNonPersonalizedEncryptionKeyRequest">
+        <xs:annotation>
+            <xs:documentation>Request for obtaining a derived end-to-end encryption key for non-personalized encryption.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="sessionIndex" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="ephemeralPublicKey" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetNonPersonalizedEncryptionKeyResponse">
+        <xs:annotation>
+            <xs:documentation>Response for obtaining a derived end-to-end encryption key for non-personalized encryption.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptionKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptionKeyIndex" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="ephemeralPublicKey" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- End-to-End Encryption Support //-->
+
+    <xs:element name="GetPersonalizedEncryptionKeyRequest">
+        <xs:annotation>
+            <xs:documentation>Request for obtaining a derived personalized end-to-end encryption key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="sessionIndex" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetPersonalizedEncryptionKeyResponse">
+        <xs:annotation>
+            <xs:documentation>Response for obtaining a derived personalized end-to-end encryption key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="activationId" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptionKey" type="xs:string"/>
+                <xs:element maxOccurs="1" minOccurs="1" name="encryptionKeyIndex" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- PowerAuth 2.0 Enumerations //-->
+    
+    <xs:simpleType name="ActivationStatus">
+        <xs:annotation>
+        	<xs:documentation>Enum representing the possible activation states (CREATED, OTP_USED, ACTIVE, BLOCKED, REMOVED).</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CREATED"/>
+            <xs:enumeration value="OTP_USED"/>
+            <xs:enumeration value="ACTIVE"/>
+            <xs:enumeration value="BLOCKED"/>
+            <xs:enumeration value="REMOVED"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="UnsupportApplicationVersionResponse">
+    <wsdl:part element="tns:UnsupportApplicationVersionResponse" name="UnsupportApplicationVersionResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetSystemStatusResponse">
+    <wsdl:part element="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateCallbackUrlResponse">
+    <wsdl:part element="tns:CreateCallbackUrlResponse" name="CreateCallbackUrlResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetCallbackUrlListResponse">
+    <wsdl:part element="tns:GetCallbackUrlListResponse" name="GetCallbackUrlListResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CommitActivationRequest">
+    <wsdl:part element="tns:CommitActivationRequest" name="CommitActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UnsupportApplicationVersionRequest">
+    <wsdl:part element="tns:UnsupportApplicationVersionRequest" name="UnsupportApplicationVersionRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PrepareActivationResponse">
+    <wsdl:part element="tns:PrepareActivationResponse" name="PrepareActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RemoveIntegrationResponse">
+    <wsdl:part element="tns:RemoveIntegrationResponse" name="RemoveIntegrationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActivationStatusResponse">
+    <wsdl:part element="tns:GetActivationStatusResponse" name="GetActivationStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CommitActivationResponse">
+    <wsdl:part element="tns:CommitActivationResponse" name="CommitActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RemoveActivationResponse">
+    <wsdl:part element="tns:RemoveActivationResponse" name="RemoveActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BlockActivationRequest">
+    <wsdl:part element="tns:BlockActivationRequest" name="BlockActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateIntegrationRequest">
+    <wsdl:part element="tns:CreateIntegrationRequest" name="CreateIntegrationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetPersonalizedEncryptionKeyResponse">
+    <wsdl:part element="tns:GetPersonalizedEncryptionKeyResponse" name="GetPersonalizedEncryptionKeyResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetApplicationListRequest">
+    <wsdl:part element="tns:GetApplicationListRequest" name="GetApplicationListRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateApplicationResponse">
+    <wsdl:part element="tns:CreateApplicationResponse" name="CreateApplicationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActivationStatusRequest">
+    <wsdl:part element="tns:GetActivationStatusRequest" name="GetActivationStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateApplicationVersionResponse">
+    <wsdl:part element="tns:CreateApplicationVersionResponse" name="CreateApplicationVersionResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetErrorCodeListResponse">
+    <wsdl:part element="tns:GetErrorCodeListResponse" name="GetErrorCodeListResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetApplicationListResponse">
+    <wsdl:part element="tns:GetApplicationListResponse" name="GetApplicationListResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetApplicationDetailResponse">
+    <wsdl:part element="tns:GetApplicationDetailResponse" name="GetApplicationDetailResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateApplicationRequest">
+    <wsdl:part element="tns:CreateApplicationRequest" name="CreateApplicationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VaultUnlockResponse">
+    <wsdl:part element="tns:VaultUnlockResponse" name="VaultUnlockResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UnblockActivationRequest">
+    <wsdl:part element="tns:UnblockActivationRequest" name="UnblockActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VaultUnlockRequest">
+    <wsdl:part element="tns:VaultUnlockRequest" name="VaultUnlockRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BlockActivationResponse">
+    <wsdl:part element="tns:BlockActivationResponse" name="BlockActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VerifyECDSASignatureRequest">
+    <wsdl:part element="tns:VerifyECDSASignatureRequest" name="VerifyECDSASignatureRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateActivationRequest">
+    <wsdl:part element="tns:CreateActivationRequest" name="CreateActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetNonPersonalizedEncryptionKeyRequest">
+    <wsdl:part element="tns:GetNonPersonalizedEncryptionKeyRequest" name="GetNonPersonalizedEncryptionKeyRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetApplicationDetailRequest">
+    <wsdl:part element="tns:GetApplicationDetailRequest" name="GetApplicationDetailRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SignatureAuditResponse">
+    <wsdl:part element="tns:SignatureAuditResponse" name="SignatureAuditResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RemoveCallbackUrlRequest">
+    <wsdl:part element="tns:RemoveCallbackUrlRequest" name="RemoveCallbackUrlRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActivationListForUserRequest">
+    <wsdl:part element="tns:GetActivationListForUserRequest" name="GetActivationListForUserRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetNonPersonalizedEncryptionKeyResponse">
+    <wsdl:part element="tns:GetNonPersonalizedEncryptionKeyResponse" name="GetNonPersonalizedEncryptionKeyResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActivationListForUserResponse">
+    <wsdl:part element="tns:GetActivationListForUserResponse" name="GetActivationListForUserResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetIntegrationListResponse">
+    <wsdl:part element="tns:GetIntegrationListResponse" name="GetIntegrationListResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="InitActivationResponse">
+    <wsdl:part element="tns:InitActivationResponse" name="InitActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetErrorCodeListRequest">
+    <wsdl:part element="tns:GetErrorCodeListRequest" name="GetErrorCodeListRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UnblockActivationResponse">
+    <wsdl:part element="tns:UnblockActivationResponse" name="UnblockActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VerifyECDSASignatureResponse">
+    <wsdl:part element="tns:VerifyECDSASignatureResponse" name="VerifyECDSASignatureResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetSystemStatusRequest">
+    <wsdl:part element="tns:GetSystemStatusRequest" name="GetSystemStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SupportApplicationVersionRequest">
+    <wsdl:part element="tns:SupportApplicationVersionRequest" name="SupportApplicationVersionRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VerifySignatureRequest">
+    <wsdl:part element="tns:VerifySignatureRequest" name="VerifySignatureRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RemoveActivationRequest">
+    <wsdl:part element="tns:RemoveActivationRequest" name="RemoveActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="InitActivationRequest">
+    <wsdl:part element="tns:InitActivationRequest" name="InitActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SignatureAuditRequest">
+    <wsdl:part element="tns:SignatureAuditRequest" name="SignatureAuditRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SupportApplicationVersionResponse">
+    <wsdl:part element="tns:SupportApplicationVersionResponse" name="SupportApplicationVersionResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetCallbackUrlListRequest">
+    <wsdl:part element="tns:GetCallbackUrlListRequest" name="GetCallbackUrlListRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetPersonalizedEncryptionKeyRequest">
+    <wsdl:part element="tns:GetPersonalizedEncryptionKeyRequest" name="GetPersonalizedEncryptionKeyRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="VerifySignatureResponse">
+    <wsdl:part element="tns:VerifySignatureResponse" name="VerifySignatureResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateIntegrationResponse">
+    <wsdl:part element="tns:CreateIntegrationResponse" name="CreateIntegrationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetIntegrationListRequest">
+    <wsdl:part element="tns:GetIntegrationListRequest" name="GetIntegrationListRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateApplicationVersionRequest">
+    <wsdl:part element="tns:CreateApplicationVersionRequest" name="CreateApplicationVersionRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PrepareActivationRequest">
+    <wsdl:part element="tns:PrepareActivationRequest" name="PrepareActivationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateActivationResponse">
+    <wsdl:part element="tns:CreateActivationResponse" name="CreateActivationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RemoveIntegrationRequest">
+    <wsdl:part element="tns:RemoveIntegrationRequest" name="RemoveIntegrationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CreateCallbackUrlRequest">
+    <wsdl:part element="tns:CreateCallbackUrlRequest" name="CreateCallbackUrlRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RemoveCallbackUrlResponse">
+    <wsdl:part element="tns:RemoveCallbackUrlResponse" name="RemoveCallbackUrlResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="PowerAuthPort">
+    <wsdl:operation name="UnsupportApplicationVersion">
+      <wsdl:input message="tns:UnsupportApplicationVersionRequest" name="UnsupportApplicationVersionRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:UnsupportApplicationVersionResponse" name="UnsupportApplicationVersionResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSystemStatus">
+      <wsdl:input message="tns:GetSystemStatusRequest" name="GetSystemStatusRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetSystemStatusResponse" name="GetSystemStatusResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCallbackUrl">
+      <wsdl:input message="tns:CreateCallbackUrlRequest" name="CreateCallbackUrlRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:CreateCallbackUrlResponse" name="CreateCallbackUrlResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCallbackUrlList">
+      <wsdl:input message="tns:GetCallbackUrlListRequest" name="GetCallbackUrlListRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetCallbackUrlListResponse" name="GetCallbackUrlListResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitActivation">
+      <wsdl:input message="tns:CommitActivationRequest" name="CommitActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:CommitActivationResponse" name="CommitActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PrepareActivation">
+      <wsdl:input message="tns:PrepareActivationRequest" name="PrepareActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:PrepareActivationResponse" name="PrepareActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveIntegration">
+      <wsdl:input message="tns:RemoveIntegrationRequest" name="RemoveIntegrationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:RemoveIntegrationResponse" name="RemoveIntegrationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActivationStatus">
+      <wsdl:input message="tns:GetActivationStatusRequest" name="GetActivationStatusRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetActivationStatusResponse" name="GetActivationStatusResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveActivation">
+      <wsdl:input message="tns:RemoveActivationRequest" name="RemoveActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:RemoveActivationResponse" name="RemoveActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BlockActivation">
+      <wsdl:input message="tns:BlockActivationRequest" name="BlockActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:BlockActivationResponse" name="BlockActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateIntegration">
+      <wsdl:input message="tns:CreateIntegrationRequest" name="CreateIntegrationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:CreateIntegrationResponse" name="CreateIntegrationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonalizedEncryptionKey">
+      <wsdl:input message="tns:GetPersonalizedEncryptionKeyRequest" name="GetPersonalizedEncryptionKeyRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetPersonalizedEncryptionKeyResponse" name="GetPersonalizedEncryptionKeyResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetApplicationList">
+      <wsdl:input message="tns:GetApplicationListRequest" name="GetApplicationListRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetApplicationListResponse" name="GetApplicationListResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateApplication">
+      <wsdl:input message="tns:CreateApplicationRequest" name="CreateApplicationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:CreateApplicationResponse" name="CreateApplicationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateApplicationVersion">
+      <wsdl:input message="tns:CreateApplicationVersionRequest" name="CreateApplicationVersionRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:CreateApplicationVersionResponse" name="CreateApplicationVersionResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetErrorCodeList">
+      <wsdl:input message="tns:GetErrorCodeListRequest" name="GetErrorCodeListRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetErrorCodeListResponse" name="GetErrorCodeListResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetApplicationDetail">
+      <wsdl:input message="tns:GetApplicationDetailRequest" name="GetApplicationDetailRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetApplicationDetailResponse" name="GetApplicationDetailResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VaultUnlock">
+      <wsdl:input message="tns:VaultUnlockRequest" name="VaultUnlockRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:VaultUnlockResponse" name="VaultUnlockResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UnblockActivation">
+      <wsdl:input message="tns:UnblockActivationRequest" name="UnblockActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:UnblockActivationResponse" name="UnblockActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerifyECDSASignature">
+      <wsdl:input message="tns:VerifyECDSASignatureRequest" name="VerifyECDSASignatureRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:VerifyECDSASignatureResponse" name="VerifyECDSASignatureResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateActivation">
+      <wsdl:input message="tns:CreateActivationRequest" name="CreateActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:CreateActivationResponse" name="CreateActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetNonPersonalizedEncryptionKey">
+      <wsdl:input message="tns:GetNonPersonalizedEncryptionKeyRequest" name="GetNonPersonalizedEncryptionKeyRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetNonPersonalizedEncryptionKeyResponse" name="GetNonPersonalizedEncryptionKeyResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SignatureAudit">
+      <wsdl:input message="tns:SignatureAuditRequest" name="SignatureAuditRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:SignatureAuditResponse" name="SignatureAuditResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveCallbackUrl">
+      <wsdl:input message="tns:RemoveCallbackUrlRequest" name="RemoveCallbackUrlRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:RemoveCallbackUrlResponse" name="RemoveCallbackUrlResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActivationListForUser">
+      <wsdl:input message="tns:GetActivationListForUserRequest" name="GetActivationListForUserRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetActivationListForUserResponse" name="GetActivationListForUserResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetIntegrationList">
+      <wsdl:input message="tns:GetIntegrationListRequest" name="GetIntegrationListRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:GetIntegrationListResponse" name="GetIntegrationListResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InitActivation">
+      <wsdl:input message="tns:InitActivationRequest" name="InitActivationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:InitActivationResponse" name="InitActivationResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SupportApplicationVersion">
+      <wsdl:input message="tns:SupportApplicationVersionRequest" name="SupportApplicationVersionRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:SupportApplicationVersionResponse" name="SupportApplicationVersionResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerifySignature">
+      <wsdl:input message="tns:VerifySignatureRequest" name="VerifySignatureRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:VerifySignatureResponse" name="VerifySignatureResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PowerAuthPortSoap11" type="tns:PowerAuthPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="UnsupportApplicationVersion">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="UnsupportApplicationVersionRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="UnsupportApplicationVersionResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSystemStatus">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetSystemStatusRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetSystemStatusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCallbackUrl">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CreateCallbackUrlRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CreateCallbackUrlResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCallbackUrlList">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetCallbackUrlListRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetCallbackUrlListResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CommitActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CommitActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PrepareActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="PrepareActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PrepareActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveIntegration">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="RemoveIntegrationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="RemoveIntegrationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActivationStatus">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetActivationStatusRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetActivationStatusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="RemoveActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="RemoveActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="BlockActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="BlockActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="BlockActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateIntegration">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CreateIntegrationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CreateIntegrationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPersonalizedEncryptionKey">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetPersonalizedEncryptionKeyRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetPersonalizedEncryptionKeyResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetApplicationList">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetApplicationListRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetApplicationListResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateApplication">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CreateApplicationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CreateApplicationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateApplicationVersion">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CreateApplicationVersionRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CreateApplicationVersionResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetErrorCodeList">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetErrorCodeListRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetErrorCodeListResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetApplicationDetail">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetApplicationDetailRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetApplicationDetailResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VaultUnlock">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="VaultUnlockRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="VaultUnlockResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UnblockActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="UnblockActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="UnblockActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerifyECDSASignature">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="VerifyECDSASignatureRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="VerifyECDSASignatureResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CreateActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CreateActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetNonPersonalizedEncryptionKey">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetNonPersonalizedEncryptionKeyRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetNonPersonalizedEncryptionKeyResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SignatureAudit">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SignatureAuditRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SignatureAuditResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveCallbackUrl">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="RemoveCallbackUrlRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="RemoveCallbackUrlResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActivationListForUser">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetActivationListForUserRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetActivationListForUserResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetIntegrationList">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetIntegrationListRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetIntegrationListResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InitActivation">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="InitActivationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="InitActivationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SupportApplicationVersion">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SupportApplicationVersionRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SupportApplicationVersionResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerifySignature">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="VerifySignatureRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="VerifySignatureResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PowerAuthPortService">
+    <wsdl:port binding="tns:PowerAuthPortSoap11" name="PowerAuthPortSoap11">
+      <soap:address location="http://localhost:8080/powerauth-java-server/soap"/>
+    </wsdl:port>
+  </wsdl:service>
 </wsdl:definitions>

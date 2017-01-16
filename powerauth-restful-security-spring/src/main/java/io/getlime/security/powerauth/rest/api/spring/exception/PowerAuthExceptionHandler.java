@@ -15,11 +15,11 @@
  */
 package io.getlime.security.powerauth.rest.api.spring.exception;
 
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthSecureVaultException;
+import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;

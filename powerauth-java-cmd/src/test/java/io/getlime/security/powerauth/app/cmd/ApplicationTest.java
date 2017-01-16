@@ -16,22 +16,20 @@
 
 package io.getlime.security.powerauth.app.cmd;
 
-import static org.junit.Assert.*;
-
-import java.security.KeyPair;
-import java.security.Security;
-
-import javax.crypto.SecretKey;
-
 import io.getlime.security.powerauth.app.cmd.util.EncryptedStorageUtil;
+import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
+import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.KeyPair;
+import java.security.Security;
+
+import static org.junit.Assert.*;
 
 /**
  * Test command-line client implementation.

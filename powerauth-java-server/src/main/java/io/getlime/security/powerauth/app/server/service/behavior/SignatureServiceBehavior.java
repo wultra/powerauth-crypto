@@ -18,16 +18,16 @@ package io.getlime.security.powerauth.app.server.service.behavior;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.VerifySignatureResponse;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
-import io.getlime.security.powerauth.crypto.server.signature.PowerAuthServerSignature;
 import io.getlime.security.powerauth.app.server.repository.ActivationRepository;
 import io.getlime.security.powerauth.app.server.repository.ApplicationVersionRepository;
 import io.getlime.security.powerauth.app.server.repository.model.ActivationStatus;
 import io.getlime.security.powerauth.app.server.repository.model.entity.ActivationRecordEntity;
 import io.getlime.security.powerauth.app.server.repository.model.entity.ApplicationVersionEntity;
 import io.getlime.security.powerauth.app.server.service.util.ModelUtil;
+import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
+import io.getlime.security.powerauth.crypto.server.signature.PowerAuthServerSignature;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

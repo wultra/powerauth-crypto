@@ -15,8 +15,8 @@
  */
 package io.getlime.security.powerauth.app.rest.api.spring.errorhandling;
 
-import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
 import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

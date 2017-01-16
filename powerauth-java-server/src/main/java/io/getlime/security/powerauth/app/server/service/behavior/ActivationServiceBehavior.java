@@ -34,9 +34,9 @@ import io.getlime.security.powerauth.app.server.service.util.ModelUtil;
 import io.getlime.security.powerauth.app.server.service.util.model.ServiceError;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -560,6 +560,142 @@ public class ActivationServiceBehavior {
 
         // Compute the response
         PrepareActivationResponse response = new PrepareActivationResponse();
+        response.setActivationId(activation.getActivationId());
+        response.setActivationNonce(BaseEncoding.base64().encode(activationNonceServer));
+        response.setEncryptedServerPublicKey(BaseEncoding.base64().encode(C_serverPublicKey));
+        response.setEncryptedServerPublicKeySignature(BaseEncoding.base64().encode(C_serverPubKeySignature));
+        response.setEphemeralPublicKey(BaseEncoding.base64().encode(ephemeralPublicKeyBytes));
+
+        return response;
+    }
+
+    /**
+     * Prepare activation with given parameters
+     *
+     * @param userId                         User ID
+     * @param maxFailedCount                 Maximum failed attempt count (5)
+     * @param activationExpireTimestamp      Timestamp after which activation can no longer be completed
+     * @param identity                       A string representing the provided identity
+     * @param activationOtp                  Activation OTP parameter
+     * @param activationNonceBase64          Activation nonce encoded as Base64
+     * @param clientEphemeralPublicKeyBase64 Client ephemeral public key encoded as Base64
+     * @param cDevicePublicKeyBase64         Encrypted device public key encoded as Base64
+     * @param activationName                 Activation name
+     * @param extras                         Extra parameter
+     * @param applicationKey                 Application key
+     * @param applicationSignature           Application signature
+     * @param keyConversionUtilities         Utility class for key conversion
+     * @return Prepared activation information
+     * @throws GenericServiceException      In case invalid data is provided
+     * @throws InvalidKeySpecException      If invalid key was provided
+     * @throws InvalidKeyException          If invalid key was provided
+     * @throws UnsupportedEncodingException If UTF-8 is not supported on the system
+     */
+    public CreateActivationResponse createActivation(
+            String applicationKey,
+            String userId,
+            Long maxFailedCount,
+            Date activationExpireTimestamp,
+            String identity,
+            String activationOtp,
+            String activationNonceBase64,
+            String clientEphemeralPublicKeyBase64,
+            String cDevicePublicKeyBase64,
+            String activationName,
+            String extras,
+            String applicationSignature,
+            CryptoProviderUtil keyConversionUtilities) throws GenericServiceException, InvalidKeySpecException, InvalidKeyException, UnsupportedEncodingException {
+
+        // Get current timestamp
+        Date timestamp = new Date();
+
+        ApplicationVersionEntity applicationVersion = applicationVersionRepository.findByApplicationKey(applicationKey);
+        // if there is no such application, exit
+        if (applicationVersion == null || applicationVersion.getSupported() == false) {
+            throw localizationProvider.buildExceptionForCode(ServiceError.ACTIVATION_EXPIRED);
+        }
+
+        ApplicationEntity application = applicationVersion.getApplication();
+        // if there is no such application, exit
+        if (application == null) {
+            throw localizationProvider.buildExceptionForCode(ServiceError.ACTIVATION_EXPIRED);
+        }
+
+        // Create an activation record and obtain the activation database record
+        InitActivationResponse initActivationResponse = this.initActivation(application.getId(), userId, maxFailedCount, activationExpireTimestamp, keyConversionUtilities);
+        ActivationRecordEntity activation = powerAuthRepository.findFirstByActivationId(initActivationResponse.getActivationId());
+
+        // Get master private key
+        String masterPrivateKeyBase64 = activation.getMasterKeyPair().getMasterKeyPrivateBase64();
+        byte[] masterPrivateKeyBytes = BaseEncoding.base64().decode(masterPrivateKeyBase64);
+        PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(masterPrivateKeyBytes);
+
+        // Get client ephemeral public key
+        PublicKey clientEphemeralPublicKey = null;
+        if (clientEphemeralPublicKeyBase64 != null) { // additional encryption is used
+            byte[] clientEphemeralPublicKeyBytes = BaseEncoding.base64().decode(clientEphemeralPublicKeyBase64);
+            clientEphemeralPublicKey = keyConversionUtilities.convertBytesToPublicKey(clientEphemeralPublicKeyBytes);
+        }
+
+        // Decrypt the device public key
+        byte[] C_devicePublicKey = BaseEncoding.base64().decode(cDevicePublicKeyBase64);
+        byte[] activationNonce = BaseEncoding.base64().decode(activationNonceBase64);
+        PublicKey devicePublicKey = powerAuthServerActivation.decryptDevicePublicKey(
+                C_devicePublicKey,
+                identity,
+                masterPrivateKey,
+                clientEphemeralPublicKey,
+                activationOtp,
+                activationNonce
+        );
+
+        if (devicePublicKey == null) { // invalid key was sent, return error
+            activation.setActivationStatus(io.getlime.security.powerauth.app.server.repository.model.ActivationStatus.REMOVED);
+            powerAuthRepository.save(activation);
+            callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
+            throw localizationProvider.buildExceptionForCode(ServiceError.ACTIVATION_NOT_FOUND);
+        }
+
+        byte[] applicationSignatureBytes = BaseEncoding.base64().decode(applicationSignature);
+
+        if (!powerAuthServerActivation.validateApplicationSignature(
+                identity,
+                activationNonce,
+                C_devicePublicKey,
+                BaseEncoding.base64().decode(applicationKey),
+                BaseEncoding.base64().decode(applicationVersion.getApplicationSecret()),
+                applicationSignatureBytes)) {
+            throw localizationProvider.buildExceptionForCode(ServiceError.ACTIVATION_EXPIRED);
+        }
+
+        // Update and persist the activation record
+        activation.setActivationStatus(io.getlime.security.powerauth.app.server.repository.model.ActivationStatus.OTP_USED);
+        activation.setDevicePublicKeyBase64(BaseEncoding.base64().encode(keyConversionUtilities.convertPublicKeyToBytes(devicePublicKey)));
+        activation.setActivationName(activationName);
+        activation.setExtras(extras);
+        powerAuthRepository.save(activation);
+        callbackUrlBehavior.notifyCallbackListeners(activation.getApplication().getId(), activation.getActivationId());
+
+        // Generate response data
+        byte[] activationNonceServer = powerAuthServerActivation.generateActivationNonce();
+        String serverPublicKeyBase64 = activation.getServerPublicKeyBase64();
+        PublicKey serverPublicKey = keyConversionUtilities.convertBytesToPublicKey(BaseEncoding.base64().decode(serverPublicKeyBase64));
+        KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
+        PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
+        PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
+        byte[] ephemeralPublicKeyBytes = keyConversionUtilities.convertPublicKeyToBytes(ephemeralPublicKey);
+
+        // Encrypt the public key
+        byte[] C_serverPublicKey = powerAuthServerActivation.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOtp, identity, activationNonceServer);
+
+        // Get encrypted public key signature
+        byte[] C_serverPubKeySignature = powerAuthServerActivation.computeServerDataSignature(activation.getActivationId(), C_serverPublicKey, masterPrivateKey);
+        if (C_serverPubKeySignature == null) { // in case there is a technical error with signing and null is returned, return random bytes
+            C_serverPubKeySignature = new KeyGenerator().generateRandomBytes(71);
+        }
+
+        // Compute the response
+        CreateActivationResponse response = new CreateActivationResponse();
         response.setActivationId(activation.getActivationId());
         response.setActivationNonce(BaseEncoding.base64().encode(activationNonceServer));
         response.setEncryptedServerPublicKey(BaseEncoding.base64().encode(C_serverPublicKey));

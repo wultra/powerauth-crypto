@@ -18,12 +18,12 @@ package io.getlime.security.powerauth.rest.api.jaxrs.controller;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.security.powerauth.rest.api.model.response.VaultUnlockResponse;
-import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
-import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthSecureVaultException;
 import io.getlime.security.powerauth.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
+import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
+import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthSecureVaultException;
+import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.security.powerauth.rest.api.model.response.VaultUnlockResponse;
 import io.getlime.security.powerauth.soap.axis.client.PowerAuthServiceClient;
 
 import javax.inject.Inject;
@@ -79,7 +79,7 @@ public class SecureVaultController {
             response.setActivationId(soapResponse.getActivationId());
             response.setEncryptedVaultEncryptionKey(soapResponse.getEncryptedVaultEncryptionKey());
 
-            return new PowerAuthApiResponse<>("OK", response);
+            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
         } catch (PowerAuthAuthenticationException ex) {
             throw ex;
         } catch (Exception ex) {

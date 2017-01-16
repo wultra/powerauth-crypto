@@ -17,25 +17,33 @@
 package io.getlime.security.powerauth.rest.api.jaxrs.controller;
 
 import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
+import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
+import io.getlime.security.powerauth.rest.api.base.application.PowerAuthApplicationConfiguration;
+import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
+import io.getlime.security.powerauth.rest.api.base.encryption.PowerAuthNonPersonalizedEncryptor;
+import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
+import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
+import io.getlime.security.powerauth.rest.api.base.provider.PowerAuthUserProvider;
+import io.getlime.security.powerauth.rest.api.jaxrs.encryption.EncryptorFactory;
+import io.getlime.security.powerauth.rest.api.jaxrs.provider.PowerAuthAuthenticationProvider;
 import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
 import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.security.powerauth.rest.api.model.entity.NonPersonalizedEncryptedPayloadModel;
+import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateCustomRequest;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationStatusRequest;
+import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateCustomResponse;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateResponse;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationRemoveResponse;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationStatusResponse;
-import io.getlime.security.powerauth.rest.api.base.application.PowerAuthApplicationConfiguration;
-import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
-import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
-import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
-import io.getlime.security.powerauth.rest.api.jaxrs.provider.PowerAuthAuthenticationProvider;
-import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.soap.axis.client.PowerAuthServiceClient;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 /**
  * Controller implementing activation related end-points from the PowerAuth
@@ -56,6 +64,12 @@ public class ActivationController {
 
     @Inject
     private PowerAuthApplicationConfiguration applicationConfiguration;
+
+    @Inject
+    private EncryptorFactory encryptorFactory;
+
+    @Inject
+    private PowerAuthUserProvider userProvider;
 
     /**
      * Create a new activation.
@@ -97,7 +111,7 @@ public class ActivationController {
             response.setEncryptedServerPublicKeySignature(soapResponse.getEncryptedServerPublicKeySignature());
             response.setEphemeralPublicKey(soapResponse.getEphemeralPublicKey());
 
-            return new PowerAuthApiResponse<>("OK", response);
+            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
 
         } catch (Exception e) {
             throw new PowerAuthActivationException();
@@ -128,7 +142,7 @@ public class ActivationController {
                 response.setCustomObject(applicationConfiguration.statusServiceCustomObject());
             }
 
-            return new PowerAuthApiResponse<>("OK", response);
+            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
 
         } catch (Exception e) {
             throw new PowerAuthActivationException();
@@ -159,7 +173,7 @@ public class ActivationController {
                 ActivationRemoveResponse response = new ActivationRemoveResponse();
                 response.setActivationId(soapResponse.getActivationId());
 
-                return new PowerAuthApiResponse<>("OK", response);
+                return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
 
             } else {
                 throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
@@ -170,6 +184,65 @@ public class ActivationController {
         } catch (Exception ex) {
             throw new PowerAuthActivationException();
         }
+    }
+
+    @POST
+    @Path("direct/create")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> createNewActivation(PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> object) throws PowerAuthAuthenticationException, RemoteException, PowerAuthActivationException {
+        try {
+
+            final PowerAuthNonPersonalizedEncryptor encryptor = encryptorFactory.buildNonPersonalizedEncryptor(object);
+
+            if (encryptor == null) {
+                throw new PowerAuthActivationException();
+            }
+
+            ActivationCreateCustomRequest request = encryptor.decrypt(object, ActivationCreateCustomRequest.class);
+
+            final Map<String, String> identity = request.getIdentity();
+            String userId = userProvider.lookupUserIdForAttributes(identity);
+
+            if (userId == null) {
+                throw new PowerAuthActivationException();
+            }
+
+            ActivationCreateRequest acr = request.getPowerauth();
+            PowerAuthPortServiceStub.CreateActivationResponse response = powerAuthClient.createActivation(
+                    acr.getApplicationKey(),
+                    userId,
+                    acr.getActivationIdShort(),
+                    acr.getActivationName(),
+                    acr.getActivationNonce(),
+                    acr.getEphemeralPublicKey(),
+                    acr.getEncryptedDevicePublicKey(),
+                    acr.getExtras(),
+                    acr.getApplicationSignature()
+            );
+
+            final Map<String, Object> customAttributes = request.getCustomAttributes();
+            userProvider.processCustomActivationAttributes(customAttributes);
+
+            ActivationCreateCustomResponse createResponse = new ActivationCreateCustomResponse();
+            createResponse.setActivationId(response.getActivationId());
+            createResponse.setEphemeralPublicKey(response.getEphemeralPublicKey());
+            createResponse.setActivationNonce(response.getActivationNonce());
+            createResponse.setEncryptedServerPublicKey(response.getEncryptedServerPublicKey());
+            createResponse.setEncryptedServerPublicKeySignature(response.getEncryptedServerPublicKeySignature());
+
+            final PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> powerAuthApiResponse = encryptor.encrypt(createResponse);
+
+            if (userProvider.shouldAutoCommitActivation(identity, customAttributes)) {
+                powerAuthClient.commitActivation(response.getActivationId());
+            }
+
+            return powerAuthApiResponse;
+
+        } catch (IOException e) {
+            throw new PowerAuthActivationException();
+        }
+
     }
 
 }

@@ -22,8 +22,8 @@ import io.getlime.security.powerauth.app.server.repository.ActivationRepository;
 import io.getlime.security.powerauth.app.server.repository.model.ActivationStatus;
 import io.getlime.security.powerauth.app.server.repository.model.entity.ActivationRecordEntity;
 import io.getlime.security.powerauth.app.server.service.util.ModelUtil;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.crypto.server.vault.PowerAuthServerVault;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

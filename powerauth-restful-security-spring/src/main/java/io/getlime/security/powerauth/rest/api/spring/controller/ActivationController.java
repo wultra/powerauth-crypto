@@ -18,6 +18,11 @@ package io.getlime.security.powerauth.rest.api.spring.controller;
 import io.getlime.powerauth.soap.GetActivationStatusResponse;
 import io.getlime.powerauth.soap.PrepareActivationResponse;
 import io.getlime.powerauth.soap.RemoveActivationResponse;
+import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
+import io.getlime.security.powerauth.rest.api.base.application.PowerAuthApplicationConfiguration;
+import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
+import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
+import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
 import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
@@ -25,12 +30,7 @@ import io.getlime.security.powerauth.rest.api.model.request.ActivationStatusRequ
 import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateResponse;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationRemoveResponse;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationStatusResponse;
-import io.getlime.security.powerauth.rest.api.base.application.PowerAuthApplicationConfiguration;
-import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
-import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
-import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.spring.provider.PowerAuthAuthenticationProvider;
-import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.soap.spring.client.PowerAuthServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -105,7 +105,7 @@ public class ActivationController {
             response.setEncryptedServerPublicKeySignature(soapResponse.getEncryptedServerPublicKeySignature());
             response.setEphemeralPublicKey(soapResponse.getEphemeralPublicKey());
 
-            return new PowerAuthApiResponse<>("OK", response);
+            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
         } catch (Exception ex) {
             throw new PowerAuthActivationException();
         }
@@ -129,7 +129,7 @@ public class ActivationController {
             if (applicationConfiguration != null) {
                 response.setCustomObject(applicationConfiguration.statusServiceCustomObject());
             }
-            return new PowerAuthApiResponse<>("OK", response);
+            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
         } catch (Exception ex) {
             throw new PowerAuthActivationException();
         }
@@ -152,7 +152,7 @@ public class ActivationController {
                 RemoveActivationResponse soapResponse = powerAuthClient.removeActivation(apiAuthentication.getActivationId());
                 ActivationRemoveResponse response = new ActivationRemoveResponse();
                 response.setActivationId(soapResponse.getActivationId());
-                return new PowerAuthApiResponse<>("OK", response);
+                return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
             } else {
                 throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
             }

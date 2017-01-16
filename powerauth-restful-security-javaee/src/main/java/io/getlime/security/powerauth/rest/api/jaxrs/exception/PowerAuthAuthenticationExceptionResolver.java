@@ -16,8 +16,8 @@
 
 package io.getlime.security.powerauth.rest.api.jaxrs.exception;
 
-import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
+import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

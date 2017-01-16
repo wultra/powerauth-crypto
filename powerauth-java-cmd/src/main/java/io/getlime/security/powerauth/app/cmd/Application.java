@@ -15,8 +15,8 @@
  */
 package io.getlime.security.powerauth.app.cmd;
 
-import io.getlime.security.powerauth.app.cmd.util.ConfigurationUtils;
 import io.getlime.security.powerauth.app.cmd.steps.*;
+import io.getlime.security.powerauth.app.cmd.util.ConfigurationUtils;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.apache.commons.cli.*;

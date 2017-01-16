@@ -19,19 +19,19 @@ package io.getlime.security.powerauth.app.server.service.behavior;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.GetNonPersonalizedEncryptionKeyResponse;
 import io.getlime.security.powerauth.GetPersonalizedEncryptionKeyResponse;
+import io.getlime.security.powerauth.app.server.repository.ActivationRepository;
 import io.getlime.security.powerauth.app.server.repository.ApplicationVersionRepository;
 import io.getlime.security.powerauth.app.server.repository.MasterKeyPairRepository;
 import io.getlime.security.powerauth.app.server.repository.model.ActivationStatus;
+import io.getlime.security.powerauth.app.server.repository.model.entity.ActivationRecordEntity;
 import io.getlime.security.powerauth.app.server.repository.model.entity.ApplicationVersionEntity;
 import io.getlime.security.powerauth.app.server.repository.model.entity.MasterKeyPairEntity;
-import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
-import io.getlime.security.powerauth.app.server.repository.ActivationRepository;
-import io.getlime.security.powerauth.app.server.repository.model.entity.ActivationRecordEntity;
 import io.getlime.security.powerauth.app.server.service.i18n.LocalizationProvider;
 import io.getlime.security.powerauth.app.server.service.util.model.ServiceError;
+import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
+import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -76,7 +76,7 @@ public class EncryptionServiceBehavior {
      * @return Response with a generated encryption key details.
      * @throws Exception In activation with given ID was not found or other business logic error.
      */
-    public GetPersonalizedEncryptionKeyResponse generateEncryptionKeyForActivation(String activationId, byte[] sessionIndex, CryptoProviderUtil keyConversionUtilities) throws Exception {
+    public GetPersonalizedEncryptionKeyResponse generateEncryptionKeyForActivation(String activationId, String sessionIndex, CryptoProviderUtil keyConversionUtilities) throws Exception {
         final ActivationRecordEntity activation = activationRepository.findFirstByActivationId(activationId);
 
         // If there is no such activation or activation is not active, return error
@@ -96,11 +96,15 @@ public class EncryptionServiceBehavior {
         KeyGenerator keyGenerator = new KeyGenerator();
 
         // Use provided index or generate own, if not provided.
+        byte[] sessionIndexBytes = null;
+        if (sessionIndex != null) {
+            sessionIndexBytes = BaseEncoding.base64().decode(sessionIndex);
+        }
         byte[] index;
-        if (sessionIndex == null || sessionIndex.length != 16) {
+        if (sessionIndexBytes == null || sessionIndexBytes.length != 16) {
             index = keyGenerator.generateRandomBytes(16);
         } else {
-            index = sessionIndex;
+            index = sessionIndexBytes;
         }
 
         byte[] tmpBytes = new HMACHashUtilities().hash(index, masterTransportKeyData);
@@ -124,11 +128,11 @@ public class EncryptionServiceBehavior {
      * @return Response with a generated encryption key details.
      * @throws Exception In activation with given ID was not found or other business logic error.
      */
-    public GetNonPersonalizedEncryptionKeyResponse generateNonPersonalizedEncryptionKeyForApplication(String applicationKey, byte[] sessionIndex, CryptoProviderUtil keyConversionUtilities) throws Exception {
+    public GetNonPersonalizedEncryptionKeyResponse generateNonPersonalizedEncryptionKeyForApplication(String applicationKey, String sessionIndexBase64, String ephemeralPublicKeyBase64, CryptoProviderUtil keyConversionUtilities) throws Exception {
 
         ApplicationVersionEntity applicationVersion = applicationVersionRepository.findByApplicationKey(applicationKey);
 
-        if (applicationVersion == null) {
+        if (applicationVersion == null || !applicationVersion.getSupported()) {
             throw localizationProvider.buildExceptionForCode(ServiceError.NO_APPLICATION_ID);
         }
 
@@ -137,23 +141,30 @@ public class EncryptionServiceBehavior {
             throw localizationProvider.buildExceptionForCode(ServiceError.NO_MASTER_SERVER_KEYPAIR);
         }
 
-        String masterPublicKeyBase64 = keypair.getMasterKeyPublicBase64();
-        String masterPrivateKeyBase64 = keypair.getMasterKeyPrivateBase64();
-        PublicKey devicePublicKey = keyConversionUtilities.convertBytesToPublicKey(BaseEncoding.base64().decode(masterPublicKeyBase64));
-        PrivateKey serverPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(BaseEncoding.base64().decode(masterPrivateKeyBase64));
+        byte[] ephemeralKeyBytes = BaseEncoding.base64().decode(ephemeralPublicKeyBase64);
+        PublicKey ephemeralPublicKey = keyConversionUtilities.convertBytesToPublicKey(ephemeralKeyBytes);
+        if (ephemeralPublicKey == null) {
+            throw localizationProvider.buildExceptionForCode(ServiceError.INVALID_KEY_FORMAT);
+        }
 
-        SecretKey masterKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
-        SecretKey masterTransportKey = powerAuthServerKeyFactory.generateServerTransportKey(masterKey);
-        byte[] masterTransportKeyData = keyConversionUtilities.convertSharedSecretKeyToBytes(masterTransportKey);
+        String masterPrivateKeyBase64 = keypair.getMasterKeyPrivateBase64();
+        PrivateKey masterPrivateKey = keyConversionUtilities.convertBytesToPrivateKey(BaseEncoding.base64().decode(masterPrivateKeyBase64));
+
+        SecretKey masterKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(masterPrivateKey, ephemeralPublicKey);
+        byte[] masterTransportKeyData = keyConversionUtilities.convertSharedSecretKeyToBytes(masterKey);
 
         KeyGenerator keyGenerator = new KeyGenerator();
 
         // Use provided index or generate own, if not provided.
+        byte[] sessionIndexBytes = null;
+        if (sessionIndexBase64 != null) {
+            sessionIndexBytes = BaseEncoding.base64().decode(sessionIndexBase64);
+        }
         byte[] index;
-        if (sessionIndex == null || sessionIndex.length != 16) {
+        if (sessionIndexBytes == null || sessionIndexBytes.length != 16) {
             index = keyGenerator.generateRandomBytes(16);
         } else {
-            index = sessionIndex;
+            index = sessionIndexBytes;
         }
 
         byte[] tmpBytes = new HMACHashUtilities().hash(index, masterTransportKeyData);
@@ -167,6 +178,7 @@ public class EncryptionServiceBehavior {
         response.setApplicationId(applicationVersion.getId());
         response.setEncryptionKey(derivedTransportKeyBase64);
         response.setEncryptionKeyIndex(indexBase64);
+        response.setEphemeralPublicKey(ephemeralPublicKeyBase64);
         return response;
     }
 

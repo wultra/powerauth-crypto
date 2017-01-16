@@ -18,8 +18,8 @@ package io.getlime.security.powerauth.crypto.server.vault;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;

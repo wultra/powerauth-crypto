@@ -23,10 +23,10 @@ import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSign
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.http.PowerAuthRequestCanonizationUtils;
+import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import org.json.simple.JSONObject;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;

@@ -16,10 +16,10 @@
 
 package io.getlime.security.powerauth.rest.api.spring.annotation;
 
+import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.spring.provider.PowerAuthAuthenticationProvider;
-import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;

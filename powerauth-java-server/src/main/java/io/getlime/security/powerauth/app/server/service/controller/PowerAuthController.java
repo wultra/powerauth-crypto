@@ -93,6 +93,19 @@ public class PowerAuthController {
     }
 
     /**
+     * Call {@link PowerAuthService#createActivation(CreateActivationRequest)}  method and
+     * return the response.
+     *
+     * @param request Create activation request.
+     * @return Create activation response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/activation/create", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<CreateActivationResponse> createActivation(@RequestBody RESTRequestWrapper<CreateActivationRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.createActivation(request.getRequestObject()));
+    }
+
+    /**
      * Call {@link PowerAuthService#commitActivation(CommitActivationRequest)} method and
      * return the response.
      *

@@ -16,17 +16,21 @@
 
 package io.getlime.security.powerauth.app.rest.api.javaee;
 
-import io.getlime.security.powerauth.app.rest.api.javaee.controller.AuthenticationController;
 import io.getlime.security.powerauth.app.rest.api.javaee.configuration.DefaultJacksonJsonProvider;
+import io.getlime.security.powerauth.app.rest.api.javaee.controller.AuthenticationController;
+import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import io.getlime.security.powerauth.rest.api.jaxrs.controller.ActivationController;
 import io.getlime.security.powerauth.rest.api.jaxrs.controller.SecureVaultController;
 import io.getlime.security.powerauth.rest.api.jaxrs.exception.PowerAuthActivationExceptionResolver;
 import io.getlime.security.powerauth.rest.api.jaxrs.exception.PowerAuthAuthenticationExceptionResolver;
 import io.getlime.security.powerauth.rest.api.jaxrs.exception.PowerAuthSecureVaultExceptionResolver;
 import io.getlime.security.powerauth.rest.api.jaxrs.filter.PowerAuthRequestFilter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
+import java.security.Security;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +41,12 @@ import java.util.Set;
  */
 @ApplicationPath("/")
 public class JavaEEApplication extends Application {
+
+    public JavaEEApplication() {
+        super();
+        Security.addProvider(new BouncyCastleProvider());
+        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
+    }
 
     @Override
     public Set<Class<?>> getClasses() {

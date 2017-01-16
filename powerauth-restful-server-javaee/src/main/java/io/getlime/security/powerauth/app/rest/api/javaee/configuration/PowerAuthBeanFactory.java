@@ -16,8 +16,8 @@
 
 package io.getlime.security.powerauth.app.rest.api.javaee.configuration;
 
-import io.getlime.security.powerauth.rest.api.jaxrs.application.DefaultApplicationConfiguration;
 import io.getlime.security.powerauth.rest.api.base.application.PowerAuthApplicationConfiguration;
+import io.getlime.security.powerauth.rest.api.jaxrs.application.DefaultApplicationConfiguration;
 import io.getlime.security.powerauth.soap.axis.client.PowerAuthServiceClient;
 import org.apache.axis2.AxisFault;
 

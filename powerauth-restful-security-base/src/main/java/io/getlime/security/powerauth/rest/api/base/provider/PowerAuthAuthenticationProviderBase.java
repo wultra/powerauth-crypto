@@ -16,10 +16,10 @@
 package io.getlime.security.powerauth.rest.api.base.provider;
 
 import com.google.common.io.BaseEncoding;
+import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.base.filter.PowerAuthRequestFilterBase;
-import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

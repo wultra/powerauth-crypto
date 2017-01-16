@@ -16,19 +16,9 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.io.BaseEncoding;
-
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-
-import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
-import java.security.interfaces.ECPrivateKey;
-
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -36,7 +26,12 @@ import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.math.BigInteger;
+import java.security.*;
+import java.security.interfaces.ECPrivateKey;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test for key conversion utilities

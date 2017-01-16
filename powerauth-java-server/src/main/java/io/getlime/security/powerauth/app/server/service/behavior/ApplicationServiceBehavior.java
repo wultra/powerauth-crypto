@@ -23,9 +23,9 @@ import io.getlime.security.powerauth.app.server.repository.ApplicationVersionRep
 import io.getlime.security.powerauth.app.server.repository.MasterKeyPairRepository;
 import io.getlime.security.powerauth.app.server.repository.model.entity.ApplicationEntity;
 import io.getlime.security.powerauth.app.server.repository.model.entity.ApplicationVersionEntity;
+import io.getlime.security.powerauth.app.server.repository.model.entity.MasterKeyPairEntity;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.app.server.repository.model.entity.MasterKeyPairEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

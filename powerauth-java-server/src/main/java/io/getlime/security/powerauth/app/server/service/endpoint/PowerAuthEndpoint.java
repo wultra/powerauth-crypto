@@ -97,6 +97,20 @@ public class PowerAuthEndpoint {
     }
 
     /**
+     * Call {@link PowerAuthService#createActivation(CreateActivationRequest)} method and
+     * return the response.
+     *
+     * @param request Create activation request.
+     * @return Create activation response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "CreateActivationRequest")
+    @ResponsePayload
+    public CreateActivationResponse createActivation(@RequestPayload CreateActivationRequest request) throws Exception {
+        return powerAuthService.createActivation(request);
+    }
+
+    /**
      * Call {@link PowerAuthService#commitActivation(CommitActivationRequest)} method and
      * return the response.
      *

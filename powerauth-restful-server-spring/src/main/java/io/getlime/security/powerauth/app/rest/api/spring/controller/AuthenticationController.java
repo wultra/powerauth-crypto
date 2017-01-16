@@ -15,10 +15,10 @@
  */
 package io.getlime.security.powerauth.app.rest.api.spring.controller;
 
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.security.powerauth.rest.api.spring.annotation.PowerAuth;
 import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
+import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.security.powerauth.rest.api.spring.annotation.PowerAuth;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
