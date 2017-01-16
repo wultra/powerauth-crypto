@@ -29,12 +29,24 @@ public class PowerAuthNonPersonalizedEncryptor {
     }
 
     public PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> encrypt(Object object) throws JsonProcessingException {
+        if (object == null) {
+            return null;
+        }
         byte[] originalData = mapper.writeValueAsBytes(object);
         return this.encrypt(originalData);
     }
 
     public PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> encrypt(byte[] originalData) {
+
+        if (originalData == null) {
+            return null;
+        }
+
         NonPersonalizedEncryptedMessage message = encryptor.encrypt(originalData);
+
+        if (message == null) { // this will happen only in case of an unlikely randomness error, or if keys are corrupted
+            return null;
+        }
 
         NonPersonalizedEncryptedPayloadModel responseObject = new NonPersonalizedEncryptedPayloadModel();
         responseObject.setApplicationKey(BaseEncoding.base64().encode(message.getApplicationKey()));
@@ -55,7 +67,15 @@ public class PowerAuthNonPersonalizedEncryptor {
 
     public byte[] decrypt(PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> request) {
 
+        if (request == null) {
+            return null;
+        }
+
         NonPersonalizedEncryptedPayloadModel requestObject = request.getRequestObject();
+
+        if (requestObject == null) {
+            return null;
+        }
 
         NonPersonalizedEncryptedMessage message = new NonPersonalizedEncryptedMessage();
         message.setApplicationKey(BaseEncoding.base64().decode(requestObject.getApplicationKey()));
@@ -72,6 +92,9 @@ public class PowerAuthNonPersonalizedEncryptor {
 
     public <T> T decrypt(PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> request, Class<T> resultClass) throws IOException {
         byte[] result = this.decrypt(request);
+        if (result == null) {
+            return null;
+        }
         return mapper.readValue(result, resultClass);
     }
 
