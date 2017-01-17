@@ -77,7 +77,6 @@
 		<module>powerauth-java-server</module>
         <module>powerauth-java-client-axis</module>
         <module>powerauth-java-client-spring</module>
-		<module>powerauth-java-cmd</module>
 		<module>powerauth-restful-model</module>
         <module>powerauth-restful-security-base</module>
 		<module>powerauth-restful-security-javaee</module>
