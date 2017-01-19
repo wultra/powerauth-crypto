@@ -17,7 +17,7 @@
 package io.getlime.security.powerauth.app.rest.api.javaee.controller;
 
 import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
-import io.getlime.security.powerauth.app.rest.api.javaee.controller.model.ActivationCreateCustomRequest;
+import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateCustomRequest;
 import io.getlime.security.powerauth.rest.api.base.encryption.PowerAuthNonPersonalizedEncryptor;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;

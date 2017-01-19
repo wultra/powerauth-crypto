@@ -1,4 +1,4 @@
-package io.getlime.security.powerauth.app.rest.api.javaee.controller.model;
+package io.getlime.security.powerauth.rest.api.model.request;
 
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
 
