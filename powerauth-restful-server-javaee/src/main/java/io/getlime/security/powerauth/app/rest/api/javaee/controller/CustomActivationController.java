@@ -71,6 +71,10 @@ public class CustomActivationController {
 
             ActivationCreateCustomRequest request = encryptor.decrypt(object, ActivationCreateCustomRequest.class);
 
+            if (request == null) {
+                throw new PowerAuthActivationException();
+            }
+
             final Map<String, String> identity = request.getIdentity();
             String userId = userProvider.lookupUserIdForAttributes(identity);
 
