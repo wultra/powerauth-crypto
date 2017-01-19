@@ -75,6 +75,14 @@ public class PowerAuthServiceClient {
     }
 
     /**
+     * Get the Axis2 client stub.
+     * @return Client stub.
+     */
+    public PowerAuthPortServiceStub getClientStub() {
+        return clientStub;
+    }
+
+    /**
      * Set the SOAP service endpoint URI.
      * @param uri SOAP service URI.
      */
