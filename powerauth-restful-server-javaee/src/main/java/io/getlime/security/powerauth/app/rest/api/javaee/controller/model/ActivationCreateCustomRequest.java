@@ -1,4 +1,6 @@
-package io.getlime.security.powerauth.rest.api.model.request;
+package io.getlime.security.powerauth.app.rest.api.javaee.controller.model;
+
+import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
 
 import java.util.Map;
 
