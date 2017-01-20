@@ -136,7 +136,7 @@ public class EncryptionServiceBehavior {
             throw localizationProvider.buildExceptionForCode(ServiceError.NO_APPLICATION_ID);
         }
 
-        MasterKeyPairEntity keypair = masterKeyPairRepository.findFirstByApplicationIdOrderByTimestampCreatedDesc(applicationVersion.getId());
+        MasterKeyPairEntity keypair = masterKeyPairRepository.findFirstByApplicationIdOrderByTimestampCreatedDesc(applicationVersion.getApplication().getId());
         if (keypair == null) {
             throw localizationProvider.buildExceptionForCode(ServiceError.NO_MASTER_SERVER_KEYPAIR);
         }
@@ -175,7 +175,7 @@ public class EncryptionServiceBehavior {
 
         GetNonPersonalizedEncryptionKeyResponse response = new GetNonPersonalizedEncryptionKeyResponse();
         response.setApplicationKey(applicationKey);
-        response.setApplicationId(applicationVersion.getId());
+        response.setApplicationId(applicationVersion.getApplication().getId());
         response.setEncryptionKey(derivedTransportKeyBase64);
         response.setEncryptionKeyIndex(indexBase64);
         response.setEphemeralPublicKey(ephemeralPublicKeyBase64);
