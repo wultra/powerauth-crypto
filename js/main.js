@@ -323,10 +323,10 @@
                     setTimeout(function () {
                         $('.animate-features-2').addClass('animated fadeIn');
                     }, 200);
-                    setTimeout(featuresAnimate, 500);
+                    setTimeout(featuresAnimate, 200);
                     setTimeout(function () {
                         $('.animate-features-3').addClass('animated fadeInUp');
-                    }, 1400);
+                    }, 200);
 
 
                     $(this.element).addClass('animated');
@@ -398,7 +398,7 @@
                 setTimeout(function () {
                     $('.animate-pricing-2').addClass('animated fadeIn');
                 }, 300);
-                setTimeout(pricingAnimate, 700);
+                setTimeout(pricingAnimate, 200);
 
 
                 $(this.element).addClass('animated');
@@ -436,7 +436,7 @@
                 setTimeout(function () {
                     $('.animate-press-2').addClass('animated fadeIn');
                 }, 300);
-                setTimeout(pressAnimate, 700);
+                setTimeout(pressAnimate, 200);
 
 
                 $(this.element).addClass('animated');
