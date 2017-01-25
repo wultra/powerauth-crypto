@@ -8,7 +8,7 @@ import io.getlime.security.powerauth.rest.api.base.provider.PowerAuthUserProvide
 import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
 import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.entity.NonPersonalizedEncryptedPayloadModel;
-import io.getlime.security.powerauth.app.rest.api.spring.controller.model.ActivationCreateCustomRequest;
+import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateCustomRequest;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateCustomResponse;
 import io.getlime.security.powerauth.rest.api.spring.encryption.EncryptorFactory;

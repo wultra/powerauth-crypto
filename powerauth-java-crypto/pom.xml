@@ -21,13 +21,13 @@
 	
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-crypto</artifactId>
-	<version>0.13.2</version>
+	<version>0.13.3</version>
 	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.13.2</version>
+		<version>0.13.3</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java-prov</artifactId>
-			<version>0.13.2</version>
+			<version>0.13.3</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
