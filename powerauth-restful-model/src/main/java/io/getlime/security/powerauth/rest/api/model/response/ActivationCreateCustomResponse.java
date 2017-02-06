@@ -15,6 +15,8 @@
  */
 package io.getlime.security.powerauth.rest.api.model.response;
 
+import java.util.Map;
+
 /**
  * Response object for /pa/activation/direct/create end-point.
  *
@@ -28,6 +30,7 @@ public class ActivationCreateCustomResponse {
     private String ephemeralPublicKey;
     private String encryptedServerPublicKey;
     private String encryptedServerPublicKeySignature;
+    private Map<String, Object> customAttributes;
 
     /**
      * Get activation ID
@@ -109,4 +112,19 @@ public class ActivationCreateCustomResponse {
         this.encryptedServerPublicKeySignature = encryptedServerPublicKeySignature;
     }
 
+    /**
+     * Custom attributes for the response.
+     * @return Custom response attributes.
+     */
+    public Map<String, Object> getCustomAttributes() {
+        return customAttributes;
+    }
+
+    /**
+     * Custom attributes for the response.
+     * @param customAttributes Custom response attributes.
+     */
+    public void setCustomAttributes(Map<String, Object> customAttributes) {
+        this.customAttributes = customAttributes;
+    }
 }
