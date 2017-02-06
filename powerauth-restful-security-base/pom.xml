@@ -22,12 +22,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-restful-security-base</artifactId>
-    <version>0.13.3</version>
+    <version>0.14.0</version>
 
     <parent>
         <artifactId>powerauth-parent</artifactId>
         <groupId>io.getlime.security</groupId>
-        <version>0.13.3</version>
+        <version>0.14.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -47,17 +47,17 @@
         <dependency>
             <groupId>io.getlime.security</groupId>
             <artifactId>powerauth-java-crypto</artifactId>
-            <version>0.13.3</version>
+            <version>0.14.0</version>
         </dependency>
         <dependency>
             <groupId>io.getlime.security</groupId>
             <artifactId>powerauth-java-http</artifactId>
-            <version>0.13.3</version>
+            <version>0.14.0</version>
         </dependency>
         <dependency>
             <groupId>io.getlime.security</groupId>
             <artifactId>powerauth-restful-model</artifactId>
-            <version>0.13.3</version>
+            <version>0.14.0</version>
         </dependency>
 
     </dependencies>

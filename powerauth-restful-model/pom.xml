@@ -20,14 +20,14 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-restful-model</artifactId>
-	<version>0.13.3</version>
+	<version>0.14.0</version>
 	<name>powerauth-restful-model</name>
 	<description>PowerAuth 2.0 RESTful API model classes</description>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.13.3</version>
+		<version>0.14.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
