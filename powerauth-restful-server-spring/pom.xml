@@ -21,7 +21,7 @@
 
 	<name>powerauth-restful-server-spring</name>
 	<description>PowerAuth 2.0 Standard RESTful API</description>
-	<groupId>io.getlime</groupId>
+	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-restful-server-spring</artifactId>
 	<version>0.14.0</version>
 	<packaging>war</packaging>
