@@ -1,3 +1,5 @@
+CREATE DATABASE `powerauth`;
+
 CREATE SCHEMA `powerauth` DEFAULT CHARACTER SET utf8 ;
 
 CREATE USER 'powerauth'@'localhost';
