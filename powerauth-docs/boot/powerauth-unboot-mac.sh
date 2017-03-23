@@ -8,7 +8,10 @@ brew services stop mysql;
 sleep 2;
 
 # Remove Homebrew Dependencies
-brew remove --force --ignore-dependencies $(brew list);
+brew remove --force mysql;
+brew remove --force tomcat;
+brew remove --force wget;
+brew remove --force curl;
 
 # Uninstall Homebrew
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)";

@@ -121,8 +121,11 @@ while true; do
     read -p "Do you wish to deploy PowerAuth Server and PowerAuth Admin? [y/n] " yn
     case $yn in
         [Yy]* )
-            wget https://github.com/lime-company/lime-security-powerauth/releases/download/0.14.0/powerauth-java-server.war -O "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/webapps/powerauth-java-server.war";
-            wget https://github.com/lime-company/lime-security-powerauth-admin/releases/download/0.14.0/powerauth-admin.war -O "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/webapps/powerauth-admin.war";
+            wget https://github.com/lime-company/lime-security-powerauth/releases/download/0.14.0/powerauth-java-server.war -O "/tmp/powerauth-java-server.war";
+            wget https://github.com/lime-company/lime-security-powerauth-admin/releases/download/0.14.0/powerauth-admin.war -O "/tmp/powerauth-admin.war";
+
+            cp "/tmp/powerauth-java-server.war" "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/webapps/powerauth-java-server.war";
+            cp "/tmp/powerauth-admin.war" "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/webapps/powerauth-admin.war";
             until [ "`curl --silent --connect-timeout 1 http://localhost:8080/powerauth-admin/application/list | grep 'PowerAuth'`" != "" ];
             do
               sleep 10
