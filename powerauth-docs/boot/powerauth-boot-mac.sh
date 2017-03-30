@@ -97,7 +97,7 @@ while true; do
             TOMCAT_VERSION=`ls /usr/local/Cellar/tomcat/`;
 
             # Prepare Tomcat Libraries
-            wget http://central.maven.org/maven2/mysql/mysql-connector-java/6.0.6/mysql-connector-java-6.0.6.jar -O "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/lib/mysql-connector-java.jar";
+            wget http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.41/mysql-connector-java-5.1.41.jar -O "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/lib/mysql-connector-java.jar";
 
             # Start Tomcat Server
             sh "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/bin/catalina" start;
