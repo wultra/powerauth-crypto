@@ -23,13 +23,13 @@
     <description>PowerAuth 2.0 Server</description>
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-java-server</artifactId>
-    <version>0.14.0</version>
+    <version>0.15.0</version>
     <packaging>war</packaging>
 
     <parent>
         <groupId>io.getlime.security</groupId>
         <artifactId>powerauth-parent</artifactId>
-        <version>0.14.0</version>
+        <version>0.15.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>io.getlime.security</groupId>
             <artifactId>powerauth-java-crypto</artifactId>
-            <version>0.14.0</version>
+            <version>0.15.0</version>
         </dependency>
 
         <dependency>
