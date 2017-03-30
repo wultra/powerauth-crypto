@@ -21,6 +21,7 @@ import io.getlime.security.powerauth.http.PowerAuthRequestCanonizationUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 /**
  * Class representing for holding any static constants available to request filters.
@@ -41,6 +42,9 @@ public class PowerAuthRequestFilterBase {
             String queryString = httpRequest.getQueryString();
 
             if (queryString != null && queryString.length() > 0) {
+
+                // Decode the query string
+                queryString = URLDecoder.decode(queryString, "UTF-8");
 
                 // Get the canonized form
                 String signatureBaseStringData = PowerAuthRequestCanonizationUtils.canonizeGetParameters(queryString);

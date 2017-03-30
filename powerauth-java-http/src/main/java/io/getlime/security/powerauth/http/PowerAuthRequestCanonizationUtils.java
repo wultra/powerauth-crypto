@@ -42,55 +42,63 @@ public class PowerAuthRequestCanonizationUtils {
      * @return Canonized query string.
      * @throws UnsupportedEncodingException In case UTF-8 is not supported.
      */
-    public static String canonizeGetParameters(String queryString) throws UnsupportedEncodingException {
-        List<Map<String, String>> items = new ArrayList<>();
-        String[] keyValuePairs = queryString.split("&"); // ... get the key value pairs
-        for (String keyValue : keyValuePairs) {
-            String[] tmp = keyValue.split("=", 1);
-            if (tmp.length != 2) { // ... skip invalid values (this will likely fail signature verification)
-                continue;
+    public static String canonizeGetParameters(String queryString) {
+        try {
+            if (queryString == null) {
+                return "";
             }
-            String key = URLDecoder.decode(tmp[0], "UTF-8"); // decoded GET query attribute key
-            String val = URLDecoder.decode(tmp[1], "UTF-8"); // decoded GET query attribute value
-            Map<String, String> pair = new HashMap<>();
-            pair.put(KEY, key);
-            pair.put(VAL, val);
-            items.add(pair);
-        }
-
-        // Sort the query key pair collection
-        Collections.sort(items, new Comparator<Map<String, String>>() {
-            @Override
-            public int compare(Map<String, String> left, Map<String, String> right) {
-                String leftKey = left.get(KEY);
-                String leftVal = left.get(VAL);
-                String rightKey = right.get(KEY);
-                String rightVal = right.get(VAL);
-                if (leftKey != null && leftKey.equals(rightKey)) {
-                    return leftVal != null ? leftVal.compareTo(rightVal) : -1;
-                } else {
-                    return leftKey != null ? leftKey.compareTo(rightKey) : -1;
+            List<Map<String, String>> items = new ArrayList<>();
+            String[] keyValuePairs = queryString.split("&"); // ... get the key value pairs
+            for (String keyValue : keyValuePairs) {
+                String[] tmp = keyValue.split("=", 2);
+                if (tmp.length != 2) { // ... skip invalid values (this will likely fail signature verification)
+                    continue;
                 }
+                String key = URLDecoder.decode(tmp[0], "UTF-8"); // decoded GET query attribute key
+                String val = URLDecoder.decode(tmp[1], "UTF-8"); // decoded GET query attribute value
+                Map<String, String> pair = new HashMap<>();
+                pair.put(KEY, key);
+                pair.put(VAL, val);
+                items.add(pair);
             }
-        });
 
-        // Serialize the sorted items back to the signature base string
-        String signatureBaseString = "";
-        boolean firstSkipped = false;
-        for (Map<String, String> pair : items) {
-            String key = pair.get(KEY);
-            String val = pair.get(VAL);
-            if (firstSkipped) { // ... for all items except for the first one, prepend "&"
-                signatureBaseString += "&";
-            } else {
-                firstSkipped = true;
+            // Sort the query key pair collection
+            Collections.sort(items, new Comparator<Map<String, String>>() {
+                @Override
+                public int compare(Map<String, String> left, Map<String, String> right) {
+                    String leftKey = left.get(KEY);
+                    String leftVal = left.get(VAL);
+                    String rightKey = right.get(KEY);
+                    String rightVal = right.get(VAL);
+                    if (leftKey != null && leftKey.equals(rightKey)) {
+                        return leftVal != null ? leftVal.compareTo(rightVal) : -1;
+                    } else {
+                        return leftKey != null ? leftKey.compareTo(rightKey) : -1;
+                    }
+                }
+            });
+
+            // Serialize the sorted items back to the signature base string
+            String signatureBaseString = "";
+            boolean firstSkipped = false;
+            for (Map<String, String> pair : items) {
+                String key = pair.get(KEY);
+                String val = pair.get(VAL);
+                if (firstSkipped) { // ... for all items except for the first one, prepend "&"
+                    signatureBaseString += "&";
+                } else {
+                    firstSkipped = true;
+                }
+                signatureBaseString += URLEncoder.encode(key, "UTF-8");
+                signatureBaseString += "=";
+                signatureBaseString += URLEncoder.encode(val, "UTF-8");
             }
-            signatureBaseString += URLEncoder.encode(key, "UTF-8");
-            signatureBaseString += "=";
-            signatureBaseString += URLEncoder.encode(val, "UTF-8");
+
+            return signatureBaseString.length() > 0 ? signatureBaseString : null;
+        } catch (UnsupportedEncodingException e) {
+            // Ignore, UTF-8 can be assumed to exist
         }
-
-        return signatureBaseString.length() > 0 ? signatureBaseString : null;
+        return null;
     }
 
 }
