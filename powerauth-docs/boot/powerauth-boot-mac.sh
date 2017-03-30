@@ -97,7 +97,7 @@ while true; do
             TOMCAT_VERSION=`ls /usr/local/Cellar/tomcat/`;
 
             # Prepare Tomcat Libraries
-            wget http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.41/mysql-connector-java-5.1.41.jar -O "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/lib/mysql-connector-java.jar";
+            wget http://central.maven.org/maven2/mysql/mysql-connector-java/6.0.6/mysql-connector-java-6.0.6.jar -O "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/lib/mysql-connector-java.jar";
 
             # Start Tomcat Server
             sh "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/bin/catalina" start;
@@ -122,13 +122,17 @@ while true; do
     case $yn in
         [Yy]* )
             wget https://github.com/lime-company/lime-security-powerauth/releases/download/0.14.0/powerauth-java-server.war -O "/tmp/powerauth-java-server.war";
-            wget https://github.com/lime-company/lime-security-powerauth-admin/releases/download/0.14.0/powerauth-admin.war -O "/tmp/powerauth-admin.war";
-
             cp "/tmp/powerauth-java-server.war" "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/webapps/powerauth-java-server.war";
+            until [ "`curl --silent --connect-timeout 1 http://localhost:8080/powerauth-java-server/soap/service.wsdl | grep 'powerauth'`" != "" ];
+            do
+              sleep 5
+            done
+
+            wget https://github.com/lime-company/lime-security-powerauth-admin/releases/download/0.14.0/powerauth-admin.war -O "/tmp/powerauth-admin.war";
             cp "/tmp/powerauth-admin.war" "/usr/local/Cellar/tomcat/$TOMCAT_VERSION/libexec/webapps/powerauth-admin.war";
             until [ "`curl --silent --connect-timeout 1 http://localhost:8080/powerauth-admin/application/list | grep 'PowerAuth'`" != "" ];
             do
-              sleep 10
+              sleep 5
             done
 
             # Open PowerAuth 2.0 Software
