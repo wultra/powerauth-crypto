@@ -34,7 +34,7 @@ public interface ApplicationVersionRepository extends CrudRepository<Application
      * @param applicationId Application ID
      * @return List of versions
      */
-    public List<ApplicationVersionEntity> findByApplicationId(Long applicationId);
+    List<ApplicationVersionEntity> findByApplicationId(Long applicationId);
 
     /**
      * Find version by application key.
@@ -42,6 +42,6 @@ public interface ApplicationVersionRepository extends CrudRepository<Application
      * @param applicationKey Application key.
      * @return Version with given application key.
      */
-    public ApplicationVersionEntity findByApplicationKey(String applicationKey);
+    ApplicationVersionEntity findByApplicationKey(String applicationKey);
 
 }
