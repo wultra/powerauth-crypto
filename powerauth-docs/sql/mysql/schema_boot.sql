@@ -1,7 +1,9 @@
 CREATE DATABASE `powerauth`;
 
-CREATE USER 'powerauth'@'localhost';
+CREATE USER 'powerauth'@'%';
 
-GRANT ALL PRIVILEGES ON powerauth.* TO 'powerauth'@'localhost';
+GRANT ALL PRIVILEGES ON powerauth.* TO 'powerauth'@'%';
 
 FLUSH PRIVILEGES;
+
+USE powerauth;
