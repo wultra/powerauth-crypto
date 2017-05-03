@@ -20,7 +20,7 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-http</artifactId>
-	<version>0.15.0</version>
+	<version>0.16.0</version>
 	<name>powerauth-java-http</name>
 	<description>PowerAuth 2.0 utility module for HTTP support</description>
 	<packaging>jar</packaging>
@@ -28,7 +28,7 @@
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.15.0</version>
+		<version>0.16.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>19.0</version>
+			<version>21.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
