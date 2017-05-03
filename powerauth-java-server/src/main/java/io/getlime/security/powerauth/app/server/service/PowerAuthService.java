@@ -212,6 +212,15 @@ public interface PowerAuthService {
     GetApplicationDetailResponse getApplicationDetail(GetApplicationDetailRequest request) throws Exception;
 
     /**
+     * Get application detail, including application version list, based on the version app key.
+     *
+     * @param request Request object with version app key.
+     * @return Application detail response.
+     * @throws Exception In case of a business logic error.
+     */
+    LookupApplicationByAppKeyResponse lookupApplicationByAppKey(LookupApplicationByAppKeyRequest request) throws Exception;
+
+    /**
      * Create a new application with given name. Master key pair and default application version is automatically
      * generated when calling this method.
      *

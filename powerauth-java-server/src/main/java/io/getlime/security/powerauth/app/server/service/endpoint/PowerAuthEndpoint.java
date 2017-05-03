@@ -307,6 +307,20 @@ public class PowerAuthEndpoint {
     }
 
     /**
+     * Call {@link PowerAuthService#lookupApplicationByAppKey(LookupApplicationByAppKeyRequest)} method and
+     * return the response.
+     *
+     * @param request Application lookup request.
+     * @return Application lookup response.
+     * @throws Exception In case the service throws exception.
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "LookupApplicationByAppKeyRequest")
+    @ResponsePayload
+    public LookupApplicationByAppKeyResponse lookupApplicationByAppKey(@RequestPayload LookupApplicationByAppKeyRequest request) throws Exception {
+        return powerAuthService.lookupApplicationByAppKey(request);
+    }
+
+    /**
      * Call {@link PowerAuthService#createApplication(CreateApplicationRequest)} method and
      * return the response.
      *

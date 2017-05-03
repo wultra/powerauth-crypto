@@ -288,6 +288,19 @@ public class PowerAuthController {
     }
 
     /**
+     * Call {@link PowerAuthService#lookupApplicationByAppKey(LookupApplicationByAppKeyRequest)} method and
+     * return the response.
+     *
+     * @param request Application detail request.
+     * @return Application detail response.
+     * @throws Exception In case the service throws exception.
+     */
+    @RequestMapping(value = "/application/detail/version", method = RequestMethod.POST)
+    public @ResponseBody RESTResponseWrapper<LookupApplicationByAppKeyResponse> lookupApplicationByAppKey(@RequestBody RESTRequestWrapper<LookupApplicationByAppKeyRequest> request) throws Exception {
+        return new RESTResponseWrapper<>("OK", powerAuthService.lookupApplicationByAppKey(request.getRequestObject()));
+    }
+
+    /**
      * Call {@link PowerAuthService#createApplication(CreateApplicationRequest)} method and
      * return the response.
      *

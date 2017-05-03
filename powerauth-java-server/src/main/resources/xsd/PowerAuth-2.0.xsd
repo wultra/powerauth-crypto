@@ -143,6 +143,30 @@
         	</xs:sequence>
         </xs:complexType>
     </xs:element>
+
+    <!-- Get application details by application key //-->
+
+    <xs:element name="LookupApplicationByAppKeyRequest">
+        <xs:annotation>
+            <xs:documentation>Request for getting the application detail based on the application version key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="applicationKey" type="xs:string" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LookupApplicationByAppKeyResponse">
+        <xs:annotation>
+            <xs:documentation>Response for getting the application detail based on the application version key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="applicationId" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
     
     <!-- Create application //-->
     

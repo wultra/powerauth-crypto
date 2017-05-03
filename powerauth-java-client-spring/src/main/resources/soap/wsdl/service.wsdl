@@ -124,6 +124,30 @@
         	</xs:sequence>
         </xs:complexType>
     </xs:element>
+
+    <!-- Get application details by application key //-->
+
+    <xs:element name="LookupApplicationByAppKeyRequest">
+        <xs:annotation>
+            <xs:documentation>Request for getting the application detail based on the application version key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationKey" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LookupApplicationByAppKeyResponse">
+        <xs:annotation>
+            <xs:documentation>Response for getting the application detail based on the application version key.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="1" name="applicationId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
     
     <!-- Create application //-->
     
@@ -984,6 +1008,10 @@
     <wsdl:part element="tns:VaultUnlockResponse" name="VaultUnlockResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="LookupApplicationByAppKeyRequest">
+    <wsdl:part element="tns:LookupApplicationByAppKeyRequest" name="LookupApplicationByAppKeyRequest">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="UnblockActivationRequest">
     <wsdl:part element="tns:UnblockActivationRequest" name="UnblockActivationRequest">
     </wsdl:part>
@@ -1026,6 +1054,10 @@
   </wsdl:message>
   <wsdl:message name="GetNonPersonalizedEncryptionKeyResponse">
     <wsdl:part element="tns:GetNonPersonalizedEncryptionKeyResponse" name="GetNonPersonalizedEncryptionKeyResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="LookupApplicationByAppKeyResponse">
+    <wsdl:part element="tns:LookupApplicationByAppKeyResponse" name="LookupApplicationByAppKeyResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="GetActivationListForUserResponse">
@@ -1231,6 +1263,12 @@
       <wsdl:input message="tns:VaultUnlockRequest" name="VaultUnlockRequest">
     </wsdl:input>
       <wsdl:output message="tns:VaultUnlockResponse" name="VaultUnlockResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LookupApplicationByAppKey">
+      <wsdl:input message="tns:LookupApplicationByAppKeyRequest" name="LookupApplicationByAppKeyRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:LookupApplicationByAppKeyResponse" name="LookupApplicationByAppKeyResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="UnblockActivation">
@@ -1461,6 +1499,15 @@
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="VaultUnlockResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LookupApplicationByAppKey">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="LookupApplicationByAppKeyRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="LookupApplicationByAppKeyResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

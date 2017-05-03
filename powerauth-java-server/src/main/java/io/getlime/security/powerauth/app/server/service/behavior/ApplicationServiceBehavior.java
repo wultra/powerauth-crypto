@@ -90,6 +90,20 @@ public class ApplicationServiceBehavior {
     }
 
     /**
+     * Lookup application based on version app key.
+     *
+     * @param appKey Application version key (APP_KEY).
+     * @return Response with application details
+     */
+    public LookupApplicationByAppKeyResponse lookupApplicationByAppKey(String appKey) {
+        ApplicationVersionEntity applicationVersion = applicationVersionRepository.findByApplicationKey(appKey);
+        ApplicationEntity application = applicationRepository.findOne(applicationVersion.getApplication().getId());
+        LookupApplicationByAppKeyResponse response = new LookupApplicationByAppKeyResponse();
+        response.setApplicationId(application.getId());
+        return response;
+    }
+
+    /**
      * Get application list in the PowerAuth Server instance.
      *
      * @return List of applications.

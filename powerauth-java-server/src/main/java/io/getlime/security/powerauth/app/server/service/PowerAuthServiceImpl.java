@@ -414,6 +414,16 @@ public class PowerAuthServiceImpl implements PowerAuthService {
 
     @Override
     @Transactional
+    public LookupApplicationByAppKeyResponse lookupApplicationByAppKey(LookupApplicationByAppKeyRequest request) throws Exception {
+        try {
+            return behavior.getApplicationServiceBehavior().lookupApplicationByAppKey(request.getApplicationKey());
+        } catch (Throwable t) {
+            throw localizationProvider.buildExceptionForCode(ServiceError.NO_APPLICATION_ID);
+        }
+    }
+
+    @Override
+    @Transactional
     public CreateApplicationResponse createApplication(CreateApplicationRequest request) throws Exception {
         return behavior.getApplicationServiceBehavior().createApplication(request.getApplicationName(), keyConversionUtilities);
     }
