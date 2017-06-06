@@ -55,7 +55,7 @@ public class PowerAuthAuthenticationProvider extends PowerAuthAuthenticationProv
         this.powerAuthClient = powerAuthClient;
     }
 
-    @Autowired
+    @Autowired(required=false)
     public void setApplicationConfiguration(PowerAuthApplicationConfiguration applicationConfiguration) {
         this.applicationConfiguration = applicationConfiguration;
     }
