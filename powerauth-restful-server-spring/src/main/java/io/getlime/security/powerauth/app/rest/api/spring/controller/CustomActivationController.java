@@ -10,7 +10,7 @@ import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.entity.NonPersonalizedEncryptedPayloadModel;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateCustomRequest;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
-import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateCustomResponse;
+import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateResponse;
 import io.getlime.security.powerauth.rest.api.spring.encryption.EncryptorFactory;
 import io.getlime.security.powerauth.soap.spring.client.PowerAuthServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +103,7 @@ public class CustomActivationController {
             userProvider.processCustomActivationAttributes(customAttributes);
 
             // Prepare the created activation response data
-            ActivationCreateCustomResponse createResponse = new ActivationCreateCustomResponse();
+            ActivationCreateResponse createResponse = new ActivationCreateResponse();
             createResponse.setActivationId(response.getActivationId());
             createResponse.setEphemeralPublicKey(response.getEphemeralPublicKey());
             createResponse.setActivationNonce(response.getActivationNonce());

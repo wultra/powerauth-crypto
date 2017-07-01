@@ -27,7 +27,7 @@ import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
 import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.entity.NonPersonalizedEncryptedPayloadModel;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
-import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateCustomResponse;
+import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateResponse;
 import io.getlime.security.powerauth.soap.axis.client.PowerAuthServiceClient;
 
 import javax.inject.Inject;
@@ -98,7 +98,7 @@ public class CustomActivationController {
             final Map<String, Object> customAttributes = request.getCustomAttributes();
             userProvider.processCustomActivationAttributes(customAttributes);
 
-            ActivationCreateCustomResponse createResponse = new ActivationCreateCustomResponse();
+            ActivationCreateResponse createResponse = new ActivationCreateResponse();
             createResponse.setActivationId(response.getActivationId());
             createResponse.setEphemeralPublicKey(response.getEphemeralPublicKey());
             createResponse.setActivationNonce(response.getActivationNonce());
