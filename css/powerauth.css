@@ -102,14 +102,20 @@
 .pricing-page h1 {
     font-size: 32pt;
     font-weight: bold;
-    color: #333;
+    color: #7fc000;
     margin-bottom: 40px;
     margin-top: 0;
 }
 
-.pricing-page h2 {
+.pricing-page h3 {
     margin-top: 0;
-    margin-bottom: 40px;
+    margin-bottom: 0;
+    font-size: 12pt;
+    color: #333;
+}
+
+.pricing-page a {
+    color: #7fc000;
 }
 
 .btn-mobile-full {
