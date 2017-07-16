@@ -43,24 +43,32 @@ public class PowerAuthAnnotationInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        PowerAuth powerAuthAnnotation = handlerMethod.getMethodAnnotation(PowerAuth.class);
+        // Check if the provided handler is related to handler method.
+        // This is to avoid issues with possible CORS requests )in case of
+        // incorrect filter mapping) where there are special "pre-flight"
+        // requests before the actual requests.
+        if (handler instanceof HandlerMethod) {
 
-        if (powerAuthAnnotation != null) {
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            PowerAuth powerAuthAnnotation = handlerMethod.getMethodAnnotation(PowerAuth.class);
 
-            try {
-                PowerAuthApiAuthentication authentication = this.authenticationProvider.validateRequestSignature(
-                        request,
-                        powerAuthAnnotation.resourceId(),
-                        request.getHeader(PowerAuthHttpHeader.HEADER_NAME),
-                        new ArrayList<>(Arrays.asList(powerAuthAnnotation.signatureType()))
-                );
-                if (authentication != null) {
-                    request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, authentication);
+            if (powerAuthAnnotation != null) {
+
+                try {
+                    PowerAuthApiAuthentication authentication = this.authenticationProvider.validateRequestSignature(
+                            request,
+                            powerAuthAnnotation.resourceId(),
+                            request.getHeader(PowerAuthHttpHeader.HEADER_NAME),
+                            new ArrayList<>(Arrays.asList(powerAuthAnnotation.signatureType()))
+                    );
+                    if (authentication != null) {
+                        request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, authentication);
+                    }
+                } catch (PowerAuthAuthenticationException ex) {
+                    // silently ignore here and make sure authentication object is null
+                    request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, null);
                 }
-            } catch (PowerAuthAuthenticationException ex) {
-                // silently ignore here and make sure authentication object is null
-                request.setAttribute(PowerAuth.AUTHENTICATION_OBJECT, null);
+
             }
 
         }
