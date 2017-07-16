@@ -34,23 +34,23 @@
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2</artifactId>
-            <version>1.7.4</version>
+            <version>1.7.5</version>
 			<type>pom</type>
         </dependency>
 		<dependency>
 		    <groupId>org.apache.axis2</groupId>
 		    <artifactId>axis2-adb</artifactId>
-		    <version>1.7.4</version>
+		    <version>1.7.5</version>
 		</dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-transport-http</artifactId>
-            <version>1.7.4</version>
+            <version>1.7.5</version>
         </dependency>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-transport-local</artifactId>
-			<version>1.7.4</version>
+			<version>1.7.5</version>
 		</dependency>
 		<dependency>
             <groupId>org.apache.ws.security</groupId>
@@ -65,7 +65,7 @@
 			<plugin>
 				<groupId>org.apache.axis2</groupId>
 				<artifactId>axis2-wsdl2code-maven-plugin</artifactId>
-				<version>1.7.4</version>
+				<version>1.7.5</version>
 				<executions>
 					<execution>
 						<goals>
