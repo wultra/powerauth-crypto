@@ -15,9 +15,10 @@
  */
 package io.getlime.security.powerauth.app.rest.api.spring.controller;
 
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.spring.annotation.PowerAuth;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +43,7 @@ public class AuthenticationController {
      */
     @RequestMapping(value = "validate", method = RequestMethod.POST)
     @PowerAuth(resourceId = "/pa/signature/validate")
-    public @ResponseBody PowerAuthApiResponse<String> login(PowerAuthApiAuthentication auth) throws PowerAuthAuthenticationException {
+    public @ResponseBody ObjectResponse<String> login(PowerAuthApiAuthentication auth) throws PowerAuthAuthenticationException {
 
         // ##EXAMPLE: Here, we could store the authentication in the session like this:
         // ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
@@ -50,7 +51,7 @@ public class AuthenticationController {
         // ##EXAMPLE: String userId = apiAuthentication.getUserId();
 
         if (auth != null && auth.getUserId() != null) {
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, "Hooray! User: " + auth.getUserId());
+            return new ObjectResponse<>("Hooray! User: " + auth.getUserId());
         } else {
             throw new PowerAuthAuthenticationException("Login failed");
         }
@@ -65,7 +66,7 @@ public class AuthenticationController {
      */
     @RequestMapping(value = "validate", method = RequestMethod.GET)
     @PowerAuth(resourceId = "/pa/signature/validate")
-    public @ResponseBody PowerAuthApiResponse<String> getLogin(PowerAuthApiAuthentication auth) throws PowerAuthAuthenticationException {
+    public @ResponseBody ObjectResponse<String> getLogin(PowerAuthApiAuthentication auth) throws PowerAuthAuthenticationException {
 
         // ##EXAMPLE: Here, we could store the authentication in the session like this:
         // ##EXAMPLE: SecurityContextHolder.getContext().setAuthentication(apiAuthentication);
@@ -73,7 +74,7 @@ public class AuthenticationController {
         // ##EXAMPLE: String userId = apiAuthentication.getUserId();
 
         if (auth != null && auth.getUserId() != null) {
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, "Hooray! User: " + auth.getUserId());
+            return new ObjectResponse<>("Hooray! User: " + auth.getUserId());
         } else {
             throw new PowerAuthAuthenticationException("Login failed");
         }

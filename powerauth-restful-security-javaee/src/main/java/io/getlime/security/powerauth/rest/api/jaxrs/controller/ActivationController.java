@@ -16,6 +16,9 @@
 
 package io.getlime.security.powerauth.rest.api.jaxrs.controller;
 
+import io.getlime.core.rest.model.base.request.ObjectRequest;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
 import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.rest.api.base.application.PowerAuthApplicationConfiguration;
@@ -23,8 +26,6 @@ import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAu
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.jaxrs.provider.PowerAuthAuthenticationProvider;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationStatusRequest;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateResponse;
@@ -67,7 +68,12 @@ public class ActivationController {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Path("create")
-    public PowerAuthApiResponse<ActivationCreateResponse> createActivation(PowerAuthApiRequest<ActivationCreateRequest> request) throws RemoteException, PowerAuthActivationException {
+    public ObjectResponse<ActivationCreateResponse> createActivation(ObjectRequest<ActivationCreateRequest> request) throws RemoteException, PowerAuthActivationException {
+
+        if (request.getRequestObject() == null) {
+            throw new PowerAuthActivationException();
+        }
+
         try {
 
             String activationIDShort = request.getRequestObject().getActivationIdShort();
@@ -97,7 +103,7 @@ public class ActivationController {
             response.setEncryptedServerPublicKeySignature(soapResponse.getEncryptedServerPublicKeySignature());
             response.setEphemeralPublicKey(soapResponse.getEphemeralPublicKey());
 
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
+            return new ObjectResponse<>(response);
 
         } catch (Exception e) {
             throw new PowerAuthActivationException();
@@ -114,22 +120,22 @@ public class ActivationController {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Path("status")
-    public PowerAuthApiResponse<ActivationStatusResponse> getActivationStatus(PowerAuthApiRequest<ActivationStatusRequest> request) throws RemoteException, PowerAuthActivationException {
+    public ObjectResponse<ActivationStatusResponse> getActivationStatus(ObjectRequest<ActivationStatusRequest> request) throws RemoteException, PowerAuthActivationException {
+
+        if (request.getRequestObject() == null) {
+            throw new PowerAuthActivationException();
+        }
+
         try {
-
             String activationId = request.getRequestObject().getActivationId();
-
             PowerAuthPortServiceStub.GetActivationStatusResponse soapResponse = powerAuthClient.getActivationStatus(activationId);
-
             ActivationStatusResponse response = new ActivationStatusResponse();
             response.setActivationId(soapResponse.getActivationId());
             response.setEncryptedStatusBlob(soapResponse.getEncryptedStatusBlob());
             if (applicationConfiguration != null) {
                 response.setCustomObject(applicationConfiguration.statusServiceCustomObject());
             }
-
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
-
+            return new ObjectResponse<>(response);
         } catch (Exception e) {
             throw new PowerAuthActivationException();
         }
@@ -146,24 +152,16 @@ public class ActivationController {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Path("remove")
-    public PowerAuthApiResponse<ActivationRemoveResponse> removeActivation(
-            @HeaderParam(PowerAuthHttpHeader.HEADER_NAME) String signatureHeader)
-            throws PowerAuthAuthenticationException, PowerAuthActivationException {
+    public ObjectResponse<ActivationRemoveResponse> removeActivation(@HeaderParam(PowerAuthHttpHeader.HEADER_NAME) String signatureHeader) throws PowerAuthAuthenticationException, PowerAuthActivationException {
         try {
             PowerAuthApiAuthentication apiAuthentication = authenticationProvider.validateRequestSignature("POST", null, "/pa/activation/remove", signatureHeader);
-
             if (apiAuthentication != null && apiAuthentication.getActivationId() != null) {
-
                 PowerAuthPortServiceStub.RemoveActivationResponse soapResponse = powerAuthClient.removeActivation(apiAuthentication.getActivationId());
-
                 ActivationRemoveResponse response = new ActivationRemoveResponse();
                 response.setActivationId(soapResponse.getActivationId());
-
-                return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
-
+                return new ObjectResponse<>(response);
             } else {
                 throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
-
             }
         } catch (PowerAuthAuthenticationException ex) {
             throw ex;

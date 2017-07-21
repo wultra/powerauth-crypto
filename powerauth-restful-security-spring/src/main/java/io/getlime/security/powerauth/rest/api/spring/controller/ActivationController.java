@@ -15,6 +15,9 @@
  */
 package io.getlime.security.powerauth.rest.api.spring.controller;
 
+import io.getlime.core.rest.model.base.request.ObjectRequest;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import io.getlime.powerauth.soap.GetActivationStatusResponse;
 import io.getlime.powerauth.soap.PrepareActivationResponse;
 import io.getlime.powerauth.soap.RemoveActivationResponse;
@@ -23,8 +26,6 @@ import io.getlime.security.powerauth.rest.api.base.application.PowerAuthApplicat
 import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationStatusRequest;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateResponse;
@@ -74,8 +75,8 @@ public class ActivationController {
      * @return PowerAuth RESTful response with {@link ActivationCreateResponse} payload.
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public @ResponseBody PowerAuthApiResponse<ActivationCreateResponse> createActivation(
-            @RequestBody PowerAuthApiRequest<ActivationCreateRequest> request
+    public @ResponseBody ObjectResponse<ActivationCreateResponse> createActivation(
+            @RequestBody ObjectRequest<ActivationCreateRequest> request
     ) throws PowerAuthActivationException {
         try {
             String activationIDShort = request.getRequestObject().getActivationIdShort();
@@ -105,7 +106,7 @@ public class ActivationController {
             response.setEncryptedServerPublicKeySignature(soapResponse.getEncryptedServerPublicKeySignature());
             response.setEphemeralPublicKey(soapResponse.getEphemeralPublicKey());
 
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
+            return new ObjectResponse<>(response);
         } catch (Exception ex) {
             throw new PowerAuthActivationException();
         }
@@ -117,8 +118,8 @@ public class ActivationController {
      * @return PowerAuth RESTful response with {@link ActivationStatusResponse} payload.
      */
     @RequestMapping(value = "status", method = RequestMethod.POST)
-    public @ResponseBody PowerAuthApiResponse<ActivationStatusResponse> getActivationStatus(
-            @RequestBody PowerAuthApiRequest<ActivationStatusRequest> request
+    public @ResponseBody ObjectResponse<ActivationStatusResponse> getActivationStatus(
+            @RequestBody ObjectRequest<ActivationStatusRequest> request
     ) throws PowerAuthActivationException {
         try {
             String activationId = request.getRequestObject().getActivationId();
@@ -129,7 +130,7 @@ public class ActivationController {
             if (applicationConfiguration != null) {
                 response.setCustomObject(applicationConfiguration.statusServiceCustomObject());
             }
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
+            return new ObjectResponse<>(response);
         } catch (Exception ex) {
             throw new PowerAuthActivationException();
         }
@@ -143,7 +144,7 @@ public class ActivationController {
      * @throws PowerAuthAuthenticationException In case the signature validation fails.
      */
     @RequestMapping(value = "remove", method = RequestMethod.POST)
-    public @ResponseBody PowerAuthApiResponse<ActivationRemoveResponse> removeActivation(
+    public @ResponseBody ObjectResponse<ActivationRemoveResponse> removeActivation(
             @RequestHeader(value = PowerAuthHttpHeader.HEADER_NAME) String signatureHeader
     ) throws PowerAuthActivationException, PowerAuthAuthenticationException {
         try {
@@ -152,7 +153,7 @@ public class ActivationController {
                 RemoveActivationResponse soapResponse = powerAuthClient.removeActivation(apiAuthentication.getActivationId());
                 ActivationRemoveResponse response = new ActivationRemoveResponse();
                 response.setActivationId(soapResponse.getActivationId());
-                return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
+                return new ObjectResponse<>(response);
             } else {
                 throw new PowerAuthAuthenticationException("USER_NOT_AUTHENTICATED");
             }

@@ -16,7 +16,8 @@
 package io.getlime.security.powerauth.rest.api.spring.entrypoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
+import io.getlime.core.rest.model.base.entity.Error;
+import io.getlime.core.rest.model.base.response.ErrorResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class PowerAuthApiAuthenticationEntryPoint implements AuthenticationEntry
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        PowerAuthApiResponse<String> errorResponse = new PowerAuthApiResponse<>("ERROR", "Authentication failed");
+        ErrorResponse errorResponse = new ErrorResponse(new Error(Error.Code.ERROR_GENERIC, "POWER_AUTH_SIGNATURE_INVALID"));
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

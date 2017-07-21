@@ -1,12 +1,12 @@
 package io.getlime.security.powerauth.app.rest.api.spring.controller;
 
+import io.getlime.core.rest.model.base.request.ObjectRequest;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
 import io.getlime.powerauth.soap.CreateActivationResponse;
 import io.getlime.security.powerauth.rest.api.base.encryption.PowerAuthNonPersonalizedEncryptor;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.base.provider.PowerAuthUserProvider;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.entity.NonPersonalizedEncryptedPayloadModel;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateCustomRequest;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
@@ -52,8 +52,8 @@ public class CustomActivationController {
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
-    public @ResponseBody PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> createNewActivation(
-            @RequestBody PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> object
+    public @ResponseBody ObjectResponse<NonPersonalizedEncryptedPayloadModel> createNewActivation(
+            @RequestBody ObjectRequest<NonPersonalizedEncryptedPayloadModel> object
     ) throws PowerAuthAuthenticationException, PowerAuthActivationException {
         try {
 
@@ -111,7 +111,7 @@ public class CustomActivationController {
             createResponse.setEncryptedServerPublicKeySignature(response.getEncryptedServerPublicKeySignature());
 
             // Encrypt response object
-            final PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> powerAuthApiResponse = encryptor.encrypt(createResponse);
+            final ObjectResponse<NonPersonalizedEncryptedPayloadModel> powerAuthApiResponse = encryptor.encrypt(createResponse);
 
             // Check if activation should be committed instantly and if yes, perform commit
             if (userProvider.shouldAutoCommitActivation(identity, customAttributes)) {

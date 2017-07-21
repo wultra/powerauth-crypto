@@ -15,11 +15,13 @@
  */
 package io.getlime.security.powerauth.rest.api.spring.exception;
 
+import io.getlime.core.rest.model.base.entity.Error;
+import io.getlime.core.rest.model.base.response.ErrorResponse;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthSecureVaultException;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -49,11 +51,11 @@ public class PowerAuthExceptionHandler {
      */
     @ExceptionHandler(value = PowerAuthAuthenticationException.class)
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleUnauthorizedException(Exception ex) {
+    public @ResponseBody ErrorResponse handleUnauthorizedException(Exception ex) {
         PowerAuthAuthenticationException paex = (PowerAuthAuthenticationException)ex;
         Logger.getLogger(PowerAuthExceptionHandler.class.getName()).log(Level.SEVERE, paex.getMessage(), paex);
-        ErrorModel error = new ErrorModel(paex.getDefaultCode(), paex.getMessage());
-        return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.ERROR, error);
+        Error error = new Error(paex.getDefaultCode(), paex.getMessage());
+        return new ErrorResponse(error);
     }
 
     /**
@@ -63,11 +65,11 @@ public class PowerAuthExceptionHandler {
      */
     @ExceptionHandler(value = PowerAuthActivationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleActivationException(Exception ex) {
+    public @ResponseBody ErrorResponse handleActivationException(Exception ex) {
         PowerAuthActivationException paex = (PowerAuthActivationException)ex;
         Logger.getLogger(PowerAuthExceptionHandler.class.getName()).log(Level.SEVERE, paex.getMessage(), paex);
-        ErrorModel error = new ErrorModel(paex.getDefaultCode(), paex.getMessage());
-        return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.ERROR, error);
+        Error error = new Error(paex.getDefaultCode(), paex.getMessage());
+        return new ErrorResponse(error);
     }
 
     /**
@@ -77,11 +79,11 @@ public class PowerAuthExceptionHandler {
      */
     @ExceptionHandler(value = PowerAuthSecureVaultException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleSecureVaultException(Exception ex) {
+    public @ResponseBody ErrorResponse handleSecureVaultException(Exception ex) {
         PowerAuthSecureVaultException paex = (PowerAuthSecureVaultException)ex;
         Logger.getLogger(PowerAuthExceptionHandler.class.getName()).log(Level.SEVERE, paex.getMessage(), paex);
-        ErrorModel error = new ErrorModel(paex.getDefaultCode(), paex.getMessage());
-        return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.ERROR, error);
+        Error error = new Error(paex.getDefaultCode(), paex.getMessage());
+        return new ErrorResponse(error);
     }
 
 }

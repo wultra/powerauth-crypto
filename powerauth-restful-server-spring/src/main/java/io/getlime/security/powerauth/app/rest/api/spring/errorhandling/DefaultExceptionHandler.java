@@ -15,8 +15,10 @@
  */
 package io.getlime.security.powerauth.app.rest.api.spring.errorhandling;
 
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
-import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
+import io.getlime.core.rest.model.base.entity.Error;
+import io.getlime.core.rest.model.base.response.ErrorResponse;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,10 +44,10 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public @ResponseBody PowerAuthApiResponse<ErrorModel> handleException(Exception exception) {
+    public @ResponseBody ErrorResponse handleException(Exception exception) {
         Logger.getLogger(DefaultExceptionHandler.class.getName()).log(Level.SEVERE, exception.getMessage(), exception);
-        ErrorModel error = new ErrorModel("ERR_GENERIC", exception.getMessage());
-        return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.ERROR, error);
+        Error error = new Error("ERR_GENERIC", exception.getMessage());
+        return new ErrorResponse(error);
     }
 
 }

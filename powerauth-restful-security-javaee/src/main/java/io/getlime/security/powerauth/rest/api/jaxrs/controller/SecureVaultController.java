@@ -17,12 +17,13 @@
 package io.getlime.security.powerauth.rest.api.jaxrs.controller;
 
 import com.google.common.io.BaseEncoding;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
 import io.getlime.security.powerauth.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthSecureVaultException;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.response.VaultUnlockResponse;
 import io.getlime.security.powerauth.soap.axis.client.PowerAuthServiceClient;
 
@@ -56,9 +57,7 @@ public class SecureVaultController {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     @Path("unlock")
-    public PowerAuthApiResponse<VaultUnlockResponse> unlockVault(
-            @HeaderParam(PowerAuthHttpHeader.HEADER_NAME) String signatureHeader)
-            throws PowerAuthAuthenticationException, PowerAuthSecureVaultException {
+    public ObjectResponse<VaultUnlockResponse> unlockVault(@HeaderParam(PowerAuthHttpHeader.HEADER_NAME) String signatureHeader) throws PowerAuthAuthenticationException, PowerAuthSecureVaultException {
         try {
             Map<String, String> map = PowerAuthHttpHeader.parsePowerAuthSignatureHTTPHeader(signatureHeader);
             String activationId = map.get(PowerAuthHttpHeader.ACTIVATION_ID);
@@ -79,7 +78,7 @@ public class SecureVaultController {
             response.setActivationId(soapResponse.getActivationId());
             response.setEncryptedVaultEncryptionKey(soapResponse.getEncryptedVaultEncryptionKey());
 
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
+            return new ObjectResponse<>(response);
         } catch (PowerAuthAuthenticationException ex) {
             throw ex;
         } catch (Exception ex) {

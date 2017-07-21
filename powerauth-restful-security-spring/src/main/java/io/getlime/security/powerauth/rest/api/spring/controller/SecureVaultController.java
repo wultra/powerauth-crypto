@@ -16,11 +16,12 @@
 package io.getlime.security.powerauth.rest.api.spring.controller;
 
 import com.google.common.io.BaseEncoding;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import io.getlime.security.powerauth.http.PowerAuthHttpBody;
 import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthSecureVaultException;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.response.VaultUnlockResponse;
 import io.getlime.security.powerauth.soap.spring.client.PowerAuthServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class SecureVaultController {
      * @throws PowerAuthAuthenticationException In case authentication fails.
      */
     @RequestMapping(value = "unlock", method = RequestMethod.POST)
-    public @ResponseBody PowerAuthApiResponse<VaultUnlockResponse> unlockVault(
+    public @ResponseBody ObjectResponse<VaultUnlockResponse> unlockVault(
             @RequestHeader(value = PowerAuthHttpHeader.HEADER_NAME, defaultValue = "unknown") String signatureHeader)
             throws PowerAuthAuthenticationException, PowerAuthSecureVaultException {
 
@@ -80,7 +81,7 @@ public class SecureVaultController {
             response.setActivationId(soapResponse.getActivationId());
             response.setEncryptedVaultEncryptionKey(soapResponse.getEncryptedVaultEncryptionKey());
 
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, response);
+            return new ObjectResponse<>(response);
         } catch (Exception ex) {
             if (PowerAuthAuthenticationException.class.equals(ex.getClass())) {
                 throw ex;

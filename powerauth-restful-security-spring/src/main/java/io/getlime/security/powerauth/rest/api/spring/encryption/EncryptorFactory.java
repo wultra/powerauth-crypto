@@ -1,8 +1,8 @@
 package io.getlime.security.powerauth.rest.api.spring.encryption;
 
+import io.getlime.core.rest.model.base.request.ObjectRequest;
 import io.getlime.powerauth.soap.GetNonPersonalizedEncryptionKeyResponse;
 import io.getlime.security.powerauth.rest.api.base.encryption.PowerAuthNonPersonalizedEncryptor;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
 import io.getlime.security.powerauth.rest.api.model.entity.NonPersonalizedEncryptedPayloadModel;
 import io.getlime.security.powerauth.soap.spring.client.PowerAuthServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class EncryptorFactory {
      * @param object Request object to be used to initialize a new encryptor.
      * @return New instance of a non-personalized encryptor.
      */
-    public PowerAuthNonPersonalizedEncryptor buildNonPersonalizedEncryptor(PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> object) {
+    public PowerAuthNonPersonalizedEncryptor buildNonPersonalizedEncryptor(ObjectRequest<NonPersonalizedEncryptedPayloadModel> object) {
         return this.buildNonPersonalizedEncryptor(
                 object.getRequestObject().getApplicationKey(),
                 object.getRequestObject().getSessionIndex(),

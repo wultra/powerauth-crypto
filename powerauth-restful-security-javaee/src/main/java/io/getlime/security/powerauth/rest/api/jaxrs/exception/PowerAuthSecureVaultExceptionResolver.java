@@ -16,8 +16,8 @@
 
 package io.getlime.security.powerauth.rest.api.jaxrs.exception;
 
+import io.getlime.core.rest.model.base.entity.Error;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthSecureVaultException;
-import io.getlime.security.powerauth.rest.api.model.entity.ErrorModel;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -31,7 +31,7 @@ public class PowerAuthSecureVaultExceptionResolver implements ExceptionMapper<Po
     public Response toResponse(PowerAuthSecureVaultException ex) {
         return Response
                 .status(Response.Status.BAD_REQUEST)
-                .entity(new ErrorModel(ex.getDefaultCode(), ex.getMessage()))
+                .entity(new Error(ex.getDefaultCode(), ex.getMessage()))
                 .build();
     }
 

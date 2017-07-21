@@ -31,4 +31,12 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
+	<dependencies>
+		<dependency>
+			<groupId>io.getlime.core</groupId>
+			<artifactId>rest-model-base</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+	</dependencies>
+
 </project>

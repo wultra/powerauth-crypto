@@ -16,6 +16,8 @@
 
 package io.getlime.security.powerauth.app.rest.api.javaee.controller;
 
+import io.getlime.core.rest.model.base.request.ObjectRequest;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
 import io.getlime.powerauth.soap.PowerAuthPortServiceStub;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateCustomRequest;
 import io.getlime.security.powerauth.rest.api.base.encryption.PowerAuthNonPersonalizedEncryptor;
@@ -23,8 +25,6 @@ import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthActivation
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.base.provider.PowerAuthUserProvider;
 import io.getlime.security.powerauth.rest.api.jaxrs.encryption.EncryptorFactory;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.entity.NonPersonalizedEncryptedPayloadModel;
 import io.getlime.security.powerauth.rest.api.model.request.ActivationCreateRequest;
 import io.getlime.security.powerauth.rest.api.model.response.ActivationCreateResponse;
@@ -60,7 +60,7 @@ public class CustomActivationController {
     @Path("create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> createNewActivation(PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> object) throws PowerAuthAuthenticationException, RemoteException, PowerAuthActivationException {
+    public ObjectResponse<NonPersonalizedEncryptedPayloadModel> createNewActivation(ObjectRequest<NonPersonalizedEncryptedPayloadModel> object) throws PowerAuthAuthenticationException, RemoteException, PowerAuthActivationException {
         try {
 
             final PowerAuthNonPersonalizedEncryptor encryptor = encryptorFactory.buildNonPersonalizedEncryptor(object);
@@ -105,7 +105,7 @@ public class CustomActivationController {
             createResponse.setEncryptedServerPublicKey(response.getEncryptedServerPublicKey());
             createResponse.setEncryptedServerPublicKeySignature(response.getEncryptedServerPublicKeySignature());
 
-            final PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> powerAuthApiResponse = encryptor.encrypt(createResponse);
+            final ObjectResponse<NonPersonalizedEncryptedPayloadModel> powerAuthApiResponse = encryptor.encrypt(createResponse);
 
             if (userProvider.shouldAutoCommitActivation(identity, customAttributes)) {
                 powerAuthClient.commitActivation(response.getActivationId());

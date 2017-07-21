@@ -19,10 +19,11 @@ package io.getlime.security.powerauth.rest.api.base.encryption;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.BaseEncoding;
+import io.getlime.core.rest.model.base.request.ObjectRequest;
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import io.getlime.security.powerauth.crypto.lib.encryptor.NonPersonalizedEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.NonPersonalizedEncryptedMessage;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiRequest;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 import io.getlime.security.powerauth.rest.api.model.entity.NonPersonalizedEncryptedPayloadModel;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class PowerAuthNonPersonalizedEncryptor {
         this.encryptor = new NonPersonalizedEncryptor(applicationKey, sessionKeyBytes, sessionIndex, ephemeralKeyBytes);
     }
 
-    public PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> encrypt(Object object) throws JsonProcessingException {
+    public ObjectResponse<NonPersonalizedEncryptedPayloadModel> encrypt(Object object) throws JsonProcessingException {
         if (object == null) {
             return null;
         }
@@ -52,7 +53,7 @@ public class PowerAuthNonPersonalizedEncryptor {
         return this.encrypt(originalData);
     }
 
-    public PowerAuthApiResponse<NonPersonalizedEncryptedPayloadModel> encrypt(byte[] originalData) {
+    public ObjectResponse<NonPersonalizedEncryptedPayloadModel> encrypt(byte[] originalData) {
 
         if (originalData == null) {
             return null;
@@ -74,14 +75,10 @@ public class PowerAuthNonPersonalizedEncryptor {
         responseObject.setMac(BaseEncoding.base64().encode(message.getMac()));
         responseObject.setEncryptedData(BaseEncoding.base64().encode(message.getEncryptedData()));
 
-        return new PowerAuthApiResponse<>(
-                PowerAuthApiResponse.Status.OK,
-                PowerAuthApiResponse.Encryption.NON_PERSONALIZED,
-                responseObject
-        );
+        return new ObjectResponse<>(responseObject);
     }
 
-    public byte[] decrypt(PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> request) {
+    public byte[] decrypt(ObjectRequest<NonPersonalizedEncryptedPayloadModel> request) {
 
         if (request == null) {
             return null;
@@ -106,7 +103,7 @@ public class PowerAuthNonPersonalizedEncryptor {
         return encryptor.decrypt(message);
     }
 
-    public <T> T decrypt(PowerAuthApiRequest<NonPersonalizedEncryptedPayloadModel> request, Class<T> resultClass) throws IOException {
+    public <T> T decrypt(ObjectRequest<NonPersonalizedEncryptedPayloadModel> request, Class<T> resultClass) throws IOException {
         byte[] result = this.decrypt(request);
         if (result == null) {
             return null;

@@ -16,11 +16,12 @@
 
 package io.getlime.security.powerauth.app.rest.api.javaee.controller;
 
+import io.getlime.core.rest.model.base.response.ObjectResponse;
+import io.getlime.core.rest.model.base.response.Response;
 import io.getlime.security.powerauth.http.PowerAuthHttpHeader;
 import io.getlime.security.powerauth.rest.api.base.authentication.PowerAuthApiAuthentication;
 import io.getlime.security.powerauth.rest.api.base.exception.PowerAuthAuthenticationException;
 import io.getlime.security.powerauth.rest.api.jaxrs.provider.PowerAuthAuthenticationProvider;
-import io.getlime.security.powerauth.rest.api.model.base.PowerAuthApiResponse;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -47,9 +48,7 @@ public class AuthenticationController {
     @Path("validate")
     @Consumes("*/*")
     @Produces(MediaType.APPLICATION_JSON)
-    public PowerAuthApiResponse<String> login(
-            String body,
-            @HeaderParam(value = PowerAuthHttpHeader.HEADER_NAME) String authHeader
+    public ObjectResponse<String> login(String body, @HeaderParam(value = PowerAuthHttpHeader.HEADER_NAME) String authHeader
     ) throws PowerAuthAuthenticationException {
 
         // ##EXAMPLE: Here, we could store the authentication in the session like this:
@@ -64,9 +63,9 @@ public class AuthenticationController {
         );
 
         if (auth != null && auth.getUserId() != null) {
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.OK, "Hooray! User: " + auth.getUserId());
+            return new ObjectResponse<>("Hooray! User: " + auth.getUserId());
         } else {
-            return new PowerAuthApiResponse<>(PowerAuthApiResponse.Status.ERROR, "Authentication failed.");
+            throw new PowerAuthAuthenticationException("Authentication failed.");
         }
 
     }
