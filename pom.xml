@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<name>powerauth-parent</name>
-	<description>PowerAuth 2.0</description>
+	<description>PowerAuth 2.0 Cryptography</description>
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-parent</artifactId>
@@ -74,14 +74,6 @@
 		<module>powerauth-java-prov</module>
 		<module>powerauth-java-crypto</module>
 		<module>powerauth-java-http</module>
-        <module>powerauth-java-client-axis</module>
-        <module>powerauth-java-client-spring</module>
-		<module>powerauth-restful-model</module>
-        <module>powerauth-restful-security-base</module>
-		<module>powerauth-restful-security-javaee</module>
-		<module>powerauth-restful-security-spring</module>
-		<module>powerauth-restful-server-javaee</module>
-		<module>powerauth-restful-server-spring</module>
     </modules>
 
 	<properties>
