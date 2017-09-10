@@ -44,40 +44,40 @@ public class PowerAuthServerKeyFactory {
      * @return List with keys constructed from master secret that are needed to get
      * requested signature type.
      */
-    public List<SecretKey> keysForSignatureType(String signatureType, SecretKey masterSecretKey) {
+    public List<SecretKey> keysForSignatureType(PowerAuthSignatureTypes signatureType, SecretKey masterSecretKey) {
 
         List<SecretKey> signatureKeys = new ArrayList<>();
 
-        if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION.toString())) {
+        if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION)) {
 
             SecretKey signatureKey = generateServerSignaturePossessionKey(masterSecretKey);
             signatureKeys.add(signatureKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.KNOWLEDGE.toString())) {
+        } else if (signatureType.equals(PowerAuthSignatureTypes.KNOWLEDGE)) {
 
             SecretKey signatureKey = generateServerSignatureKnowledgeKey(masterSecretKey);
             signatureKeys.add(signatureKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.BIOMETRY.toString())) {
+        } else if (signatureType.equals(PowerAuthSignatureTypes.BIOMETRY)) {
 
             SecretKey signatureKey = generateServerSignatureBiometryKey(masterSecretKey);
             signatureKeys.add(signatureKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE.toString())) {
+        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE)) {
 
             SecretKey signatureKey = generateServerSignaturePossessionKey(masterSecretKey);
             signatureKeys.add(signatureKey);
             signatureKey = generateServerSignatureKnowledgeKey(masterSecretKey);
             signatureKeys.add(signatureKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_BIOMETRY.toString())) {
+        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_BIOMETRY)) {
 
             SecretKey signatureKey = generateServerSignaturePossessionKey(masterSecretKey);
             signatureKeys.add(signatureKey);
             signatureKey = generateServerSignatureBiometryKey(masterSecretKey);
             signatureKeys.add(signatureKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY.toString())) {
+        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY)) {
 
             SecretKey signatureKey = generateServerSignaturePossessionKey(masterSecretKey);
             signatureKeys.add(signatureKey);
@@ -100,7 +100,7 @@ public class PowerAuthServerKeyFactory {
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_ENCRYPTED_VAULT.
      */
-    public SecretKey generateServerEndryptedVaultKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerEncryptedVaultKey(SecretKey masterSecretKey) {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
                 PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex()
