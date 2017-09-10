@@ -66,7 +66,7 @@ public enum PowerAuthSignatureTypes {
         }
     }
 
-    private PowerAuthSignatureTypes(final String value) {
+    PowerAuthSignatureTypes(final String value) {
         this.value = value;
     }
 
@@ -90,12 +90,12 @@ public enum PowerAuthSignatureTypes {
      * @return True in case of enum value is equal to provided name.
      */
     public boolean equalsName(String otherName) {
-        return (otherName == null) ? false : value.equals(otherName);
+        return (otherName == null) ? false : value.equalsIgnoreCase(otherName);
     }
 
     @Override
     public String toString() {
-        return this.value;
+        return this.value.toLowerCase();
     }
 
 }
