@@ -20,12 +20,12 @@
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.16.0</version>
+		<version>0.16.1</version>
 	</parent>
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-prov</artifactId>
-	<version>0.16.0</version>
+	<version>0.16.1</version>
 	<name>powerauth-java-prov</name>
 	<description>Technical Maven module. Simple interface for generic crypto provider inclusion.</description>
 
@@ -37,14 +37,14 @@
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.57</version>
+			<version>1.58</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.madgag.spongycastle</groupId>
 			<artifactId>prov</artifactId>
-			<version>1.56.0.0</version>
+			<version>1.58.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 

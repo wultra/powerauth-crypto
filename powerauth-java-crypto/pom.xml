@@ -21,13 +21,13 @@
 	
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-crypto</artifactId>
-	<version>0.16.0</version>
+	<version>0.16.1</version>
 	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-parent</artifactId>
-		<version>0.16.0</version>
+		<version>0.16.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -35,12 +35,12 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>22.0</version>
+			<version>23.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java-prov</artifactId>
-			<version>0.16.0</version>
+			<version>0.16.1</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.57</version>
+			<version>1.58</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
