@@ -29,34 +29,71 @@ import java.util.regex.Pattern;
 public class PowerAuthHttpHeader {
 
     /**
-     * Key representing the "pa_activation_id" in the PowerAuth authorization header.
+     * Class with keys used in the underlying map.
      */
-    public static final String ACTIVATION_ID = "pa_activation_id";
+    public class Key {
+
+        /**
+         * Key representing the "pa_activation_id" in the PowerAuth authorization header.
+         */
+        private static final String ACTIVATION_ID = "pa_activation_id";
+
+        /**
+         * Key representing the "pa_application_key" in the PowerAuth authorization header.
+         */
+        private static final String APPLICATION_ID = "pa_application_key";
+
+        /**
+         * Key representing the "pa_signature" in the PowerAuth authorization header.
+         */
+        private static final String SIGNATURE = "pa_signature";
+
+        /**
+         * Key representing the "pa_signature_type" in the PowerAuth authorization header.
+         */
+        private static final String SIGNATURE_TYPE = "pa_signature_type";
+
+        /**
+         * Key representing the "pa_nonce" in the PowerAuth authorization header.
+         */
+        private static final String NONCE = "pa_nonce";
+
+        /**
+         * Key representing the "pa_version" in the PowerAuth authorization header.
+         */
+        private static final String VERSION = "pa_version";
+
+    }
 
     /**
-     * Key representing the "pa_application_key" in the PowerAuth authorization header.
+     * Field representing activation ID value.
      */
-    public static final String APPLICATION_ID = "pa_application_key";
+    private String activationId;
 
     /**
-     * Key representing the "pa_signature" in the PowerAuth authorization header.
+     * Field representing application version related key.
      */
-    public static final String SIGNATURE = "pa_signature";
+    private String applicationKey;
 
     /**
-     * Key representing the "pa_signature_type" in the PowerAuth authorization header.
+     * Field representing signature value.
      */
-    public static final String SIGNATURE_TYPE = "pa_signature_type";
+    private String signature;
 
     /**
-     * Key representing the "pa_nonce" in the PowerAuth authorization header.
+     * Key representing signature type.
      */
-    public static final String NONCE = "pa_nonce";
+    private String signatureType;
 
     /**
-     * Key representing the "pa_version" in the PowerAuth authorization header.
+     * Field representing nonce value.
      */
-    public static final String VERSION = "pa_version";
+    private String nonce;
+
+    /**
+     * Field representing protocol version.
+     */
+    private String version;
 
     /**
      * Name of the PowerAuth authorization header, "X-PowerAuth-Authorization".
@@ -91,6 +128,18 @@ public class PowerAuthHttpHeader {
         return result;
     }
 
+    public static PowerAuthHttpHeader fromValue(String headerValue) {
+        Map<String, String> map = parsePowerAuthSignatureHTTPHeader(headerValue);
+        PowerAuthHttpHeader header  = new PowerAuthHttpHeader();
+        header.activationId         = map.get(Key.ACTIVATION_ID);
+        header.applicationKey       = map.get(Key.APPLICATION_ID);
+        header.nonce                = map.get(Key.NONCE);
+        header.signatureType        = map.get(Key.SIGNATURE_TYPE);
+        header.signature            = map.get(Key.SIGNATURE);
+        header.version              = map.get(Key.VERSION);
+        return header;
+    }
+
     private static String headerField(String key, String value) {
         return key + "=\"" + value + "\"";
     }
@@ -107,13 +156,38 @@ public class PowerAuthHttpHeader {
      */
     public static String getPowerAuthSignatureHTTPHeader(String activationId, String applicationId, String nonce, String signatureType, String signature, String version) {
         String result = POWERAUTH_PREFIX
-                + headerField(ACTIVATION_ID, activationId) + ", "
-                + headerField(APPLICATION_ID, applicationId) + ", "
-                + headerField(NONCE, nonce) + ", "
-                + headerField(SIGNATURE_TYPE, signatureType) + ", "
-                + headerField(SIGNATURE, signature) + ", "
-                + headerField(VERSION, version);
+                + headerField(Key.ACTIVATION_ID, activationId) + ", "
+                + headerField(Key.APPLICATION_ID, applicationId) + ", "
+                + headerField(Key.NONCE, nonce) + ", "
+                + headerField(Key.SIGNATURE_TYPE, signatureType) + ", "
+                + headerField(Key.SIGNATURE, signature) + ", "
+                + headerField(Key.VERSION, version);
         return result;
     }
 
+    // Field getters
+
+    public String getActivationId() {
+        return activationId;
+    }
+
+    public String getApplicationKey() {
+        return applicationKey;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public String getSignatureType() {
+        return signatureType;
+    }
+
+    public String getNonce() {
+        return nonce;
+    }
+
+    public String getVersion() {
+        return version;
+    }
 }

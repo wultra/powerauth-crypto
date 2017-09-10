@@ -40,7 +40,6 @@ public class PowerAuthRequestCanonizationUtils {
      *
      * @param queryString The original get query string, obtained for example by 'request.getQueryString();'.
      * @return Canonized query string.
-     * @throws UnsupportedEncodingException In case UTF-8 is not supported.
      */
     public static String canonizeGetParameters(String queryString) {
         try {
