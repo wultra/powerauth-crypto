@@ -90,7 +90,7 @@ public enum PowerAuthSignatureTypes {
      * @return True in case of enum value is equal to provided name.
      */
     public boolean equalsName(String otherName) {
-        return (otherName == null) ? false : value.equalsIgnoreCase(otherName);
+        return otherName != null && value.equalsIgnoreCase(otherName);
     }
 
     @Override
