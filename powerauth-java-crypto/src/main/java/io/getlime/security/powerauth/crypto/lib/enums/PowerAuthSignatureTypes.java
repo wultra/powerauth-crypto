@@ -62,7 +62,7 @@ public enum PowerAuthSignatureTypes {
 
     static {
         for (PowerAuthSignatureTypes type : PowerAuthSignatureTypes.values()) {
-            map.put(type.value, type);
+            map.put(type.value.toLowerCase(), type);
         }
     }
 
@@ -76,7 +76,7 @@ public enum PowerAuthSignatureTypes {
      * @return Enum value.
      */
     public static PowerAuthSignatureTypes getEnumFromString(String value) {
-        PowerAuthSignatureTypes type = map.get(value);
+        PowerAuthSignatureTypes type = map.get(value.toLowerCase());
         if (type == null) { // try to guess the most usual suspect...
             return PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE;
         } else {
