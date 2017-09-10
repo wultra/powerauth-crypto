@@ -128,6 +128,11 @@ public class PowerAuthHttpHeader {
         return result;
     }
 
+    /**
+     * Create PowerAuth authorization HTTP header model object from provided string.
+     * @param headerValue HTTP header with PowerAuth authorization.
+     * @return PowerAuth authorization HTTP header.
+     */
     public static PowerAuthHttpHeader fromValue(String headerValue) {
         Map<String, String> map = parsePowerAuthSignatureHTTPHeader(headerValue);
         PowerAuthHttpHeader header  = new PowerAuthHttpHeader();
@@ -140,6 +145,12 @@ public class PowerAuthHttpHeader {
         return header;
     }
 
+    /**
+     * Helper method to build key-value pair.
+     * @param key Key.
+     * @param value Value.
+     * @return Key-value pair, constructed as: {key}="{value}".
+     */
     private static String headerField(String key, String value) {
         return key + "=\"" + value + "\"";
     }
