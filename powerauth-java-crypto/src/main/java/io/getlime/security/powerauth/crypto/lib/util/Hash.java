@@ -77,7 +77,7 @@ public class Hash {
      * @throws UnsupportedEncodingException In case invalid charset is provided.
      */
     public static byte[] sha1(String string, String charset) throws UnsupportedEncodingException {
-        byte[] originalBytes = string.getBytes(charset);;
+        byte[] originalBytes = string.getBytes(charset);
         return sha1(originalBytes);
     }
 
@@ -115,7 +115,7 @@ public class Hash {
      * @throws UnsupportedEncodingException In case invalid charset is provided.
      */
     public static byte[] sha256(String string, String charset) throws UnsupportedEncodingException {
-        byte[] originalBytes = string.getBytes(charset);;
+        byte[] originalBytes = string.getBytes(charset);
         return sha1(originalBytes);
     }
 
