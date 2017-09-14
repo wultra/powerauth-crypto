@@ -24,7 +24,6 @@ import java.security.NoSuchAlgorithmException;
  *
  * Supported methods:
  *
- * - SHA1
  * - SHA256
  *
  * @author Petr Dvorak, petr@lime-company.eu
@@ -41,44 +40,6 @@ public class Hash {
     private static byte[] hash(byte[] originalBytes, String algorithm) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance(algorithm);
         return md.digest(originalBytes);
-    }
-
-    /**
-     * Compute SHA1 hash of provided bytes.
-     * @param originalBytes Original bytes.
-     * @return SHA1 hash of provided original bytes.
-     */
-    public static byte[] sha1(byte[] originalBytes) {
-        try {
-            return hash(originalBytes, "SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Compute SHA1 hash of provided string, that was transferred to data using UTF-8 charset.
-     * @param string String to be hashed.
-     * @return SHA1 hash of provided string.
-     */
-    public static byte[] sha1(String string) {
-        try {
-            return sha1(string, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Compute SHA1 hash of provided string, that was transferred to data using provided charset.
-     * @param string Original string to be hashed.
-     * @param charset Charset to be used to convert string to bytes.
-     * @return SHA1 hash of provided string.
-     * @throws UnsupportedEncodingException In case invalid charset is provided.
-     */
-    public static byte[] sha1(String string, String charset) throws UnsupportedEncodingException {
-        byte[] originalBytes = string.getBytes(charset);
-        return sha1(originalBytes);
     }
 
     /**
@@ -116,7 +77,7 @@ public class Hash {
      */
     public static byte[] sha256(String string, String charset) throws UnsupportedEncodingException {
         byte[] originalBytes = string.getBytes(charset);
-        return sha1(originalBytes);
+        return sha256(originalBytes);
     }
 
 }
