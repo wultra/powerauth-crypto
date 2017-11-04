@@ -21,6 +21,7 @@ import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
+import io.getlime.security.powerauth.crypto.lib.util.ECPublicKeyFingerprint;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
 
@@ -30,6 +31,7 @@ import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.*;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -307,21 +309,13 @@ public class PowerAuthServerActivation {
      * @param devicePublicKey Public key for computing fingerprint.
      * @return Fingerprint of the public key.
      */
-    public int computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) {
+    public String computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) {
         try {
-            byte[] devicePublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(devicePublicKey);
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(devicePublicKeyBytes);
-            if (hash.length < 4) { // assert
-                throw new IndexOutOfBoundsException();
-            }
-            int index = hash.length - 4;
-            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
-            return number;
+            return ECPublicKeyFingerprint.compute(((ECPublicKey)devicePublicKey));
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return 0;
+        return null;
     }
 
 }
