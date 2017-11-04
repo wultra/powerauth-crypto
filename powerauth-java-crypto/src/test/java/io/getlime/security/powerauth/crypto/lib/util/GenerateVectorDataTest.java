@@ -510,7 +510,7 @@ public class GenerateVectorDataTest {
 
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
-        int max = 500;
+        int max = 100;
         for (int i = 0; i < max; i++) {
             KeyPair kp = activationServer.generateServerKeyPair();
             ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
@@ -520,6 +520,9 @@ public class GenerateVectorDataTest {
             // Replicate the key normalization for the testing purposes.
             final BigInteger x = publicKey.getW().getAffineX();
             byte[] devicePublicKeyBytes = x.toByteArray();
+            if (devicePublicKeyBytes[0] == 0x00) {
+                devicePublicKeyBytes = Arrays.copyOfRange(devicePublicKeyBytes, 1, 33);
+            }
 
             System.out.println("    {");
             System.out.println("        \"input\": {");
