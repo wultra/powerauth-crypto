@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
+import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
@@ -509,15 +510,16 @@ public class GenerateVectorDataTest {
 
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
-        int max = 20;
+        int max = 500;
         for (int i = 0; i < max; i++) {
             KeyPair kp = activationServer.generateServerKeyPair();
             ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
 
-            final int fingerprint = ECPublicKeyFingerprint.compute(publicKey);
+            final String fingerprint = ECPublicKeyFingerprint.compute(publicKey);
 
             // Replicate the key normalization for the testing purposes.
-            byte[] devicePublicKeyBytes = publicKey.getW().getAffineX().toByteArray();
+            final BigInteger x = publicKey.getW().getAffineX();
+            byte[] devicePublicKeyBytes = x.toByteArray();
 
             System.out.println("    {");
             System.out.println("        \"input\": {");

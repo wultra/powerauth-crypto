@@ -309,13 +309,13 @@ public class PowerAuthServerActivation {
      * @param devicePublicKey Public key for computing fingerprint.
      * @return Fingerprint of the public key.
      */
-    public int computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) {
+    public String computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) {
         try {
             return ECPublicKeyFingerprint.compute(((ECPublicKey)devicePublicKey));
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return 0;
+        return null;
     }
 
 }

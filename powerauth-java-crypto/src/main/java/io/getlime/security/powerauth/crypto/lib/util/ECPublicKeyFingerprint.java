@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPublicKey;
+import java.util.Arrays;
 
 /**
  * Class that is used for computing EC public key fingerprint. Goal of the public key fingerprint is to
@@ -30,8 +31,11 @@ import java.security.interfaces.ECPublicKey;
  */
 public class ECPublicKeyFingerprint {
 
-    public static int compute(ECPublicKey publicKey) throws NoSuchAlgorithmException {
+    public static String compute(ECPublicKey publicKey) throws NoSuchAlgorithmException {
         byte[] devicePublicKeyBytes = publicKey.getW().getAffineX().toByteArray();
+        if (devicePublicKeyBytes[0] == 0x00) {
+            devicePublicKeyBytes = Arrays.copyOfRange(devicePublicKeyBytes, 1, 33);
+        }
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hash = digest.digest(devicePublicKeyBytes);
         if (hash.length < 4) { // assert
@@ -39,6 +43,7 @@ public class ECPublicKeyFingerprint {
         }
         int index = hash.length - 4;
         int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
-        return number;
+        String fingerprint = String.format("%0" + PowerAuthConfiguration.SIGNATURE_LENGTH + "d", number);
+        return fingerprint;
     }
 }
