@@ -178,4 +178,37 @@ public class PowerAuthActivationTest {
 		
 	}
 
+	/**
+	 * Test that public key fingerprints are correctly computed.
+	 *
+	 * @throws Exception When test fails.
+	 */
+	@Test
+	public void testPublicKeyFingerprint() throws Exception {
+
+		String[] publicKeysBase64 = {
+		        "BAexwbvhKTitnjoMrFbRv/MVjucUaJKEJvKgmQw8qXOAPU0LIAaxFkS81sLNQLgKnh5FXsxd5Cw88Hy0mRX1dSQ=",
+                "BO8V6n5Acnplm63GJ5957K4pmT0mLMY5EEVPOGLCOlEzcUJvgtE/tv2isdmg3Gh1qJqz3YuowTMy+uzNuGcIl9Y=",
+                "BHbzRCXKfIPHnyhN4trLhUmMnIQxeqH5JqReGiqibshVjnzjAFkj9446SsBRI/dqRLaaKJEj62SjyI43cUqD/NE="
+		};
+		int[] publicKeyFingerprint = {
+		        61297821,
+                11085313,
+                80428725
+		};
+
+        PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
+        PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
+
+        for (int i = 0; i < publicKeyFingerprint.length; i++) {
+            byte[] publicKeyBytes = BaseEncoding.base64().decode(publicKeysBase64[i]);
+            PublicKey publicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(publicKeyBytes);
+            final int fingerprintClient = clientActivation.computeDevicePublicKeyFingerprint(publicKey);
+            final int fingerprintServer = serverActivation.computeDevicePublicKeyFingerprint(publicKey);
+            assertEquals(publicKeyFingerprint[i], fingerprintClient);
+            assertEquals(publicKeyFingerprint[i], fingerprintServer);
+        }
+
+	}
+
 }

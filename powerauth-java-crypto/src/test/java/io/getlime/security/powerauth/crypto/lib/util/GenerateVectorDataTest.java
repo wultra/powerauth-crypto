@@ -35,7 +35,9 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
@@ -251,17 +253,17 @@ public class GenerateVectorDataTest {
 	 */
 	@Test
 	public void testActivationAccept() throws Exception {
-		String activationOTP = null;
-		String activationIdShort = null;
-		byte[] activationNonce = null;
-		PublicKey serverPublicKey = null;
-		byte[] cServerPublicKey = null;
+		String activationOTP;
+		String activationIdShort;
+		byte[] activationNonce;
+		PublicKey serverPublicKey;
+		byte[] cServerPublicKey;
 
-		PublicKey devicePublicKey = null;
-		PrivateKey devicePrivateKey = null;
+		PublicKey devicePublicKey;
+		PrivateKey devicePrivateKey;
 
-		PublicKey ephemeralPublicKey = null;
-		PrivateKey ephemeralPrivateKey = null;
+		PublicKey ephemeralPublicKey;
+		PrivateKey ephemeralPrivateKey;
 
 		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
@@ -322,14 +324,14 @@ public class GenerateVectorDataTest {
 	 */
 	@Test
 	public void testVerifyServerPublicKeySignature() throws Exception {
-		String activationId = null;
-		String activationOTP = null;
-		String activationIdShort = null;
-		byte[] activationNonce = null;
-		PublicKey serverPublicKey = null;
-		byte[] cServerPublicKey = null;
-		PublicKey devicePublicKey = null;
-		PrivateKey ephemeralPrivateKey = null;
+		String activationId;
+		String activationOTP;
+		String activationIdShort;
+		byte[] activationNonce;
+		PublicKey serverPublicKey;
+		byte[] cServerPublicKey;
+		PublicKey devicePublicKey;
+		PrivateKey ephemeralPrivateKey;
 
 		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
@@ -426,7 +428,7 @@ public class GenerateVectorDataTest {
 					// generate random data
 					byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
-					String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey), ctr);
+					String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctr);
 					String signatureType = "possession";
 
 					System.out.println("    {");
@@ -499,5 +501,38 @@ public class GenerateVectorDataTest {
 		}
 		System.out.println("]");
 	}
+
+    @Test
+    public void testPublicKeyFingerprint() throws Exception {
+
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+
+        System.out.println("## Public Key Fingerprint");
+        System.out.println("[");
+
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        int max = 20;
+        for (int i = 0; i < max; i++) {
+            KeyPair kp = activationServer.generateServerKeyPair();
+            PublicKey publicKey = kp.getPublic();
+            final int fingerprint = ECPublicKeyFingerprint.compute((ECPublicKey) publicKey);
+
+            System.out.println("    {");
+            System.out.println("        \"input\": {");
+            System.out.println("            \"publicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)) + "\"");
+            System.out.println("        },");
+            System.out.println("        \"output\": {");
+            System.out.println("            \"fingerprint\": \"" + fingerprint + "\"");
+            System.out.println("        }");
+            if (i == max - 1) {
+                System.out.println("    }");
+            } else {
+                System.out.println("    },");
+            }
+        }
+
+        System.out.println("]");
+    }
 
 }
