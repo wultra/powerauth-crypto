@@ -3,162 +3,182 @@
     "data": [
         {
             "input": {
-                "publicKey": "BAexwbvhKTitnjoMrFbRv/MVjucUaJKEJvKgmQw8qXOAPU0LIAaxFkS81sLNQLgKnh5FXsxd5Cw88Hy0mRX1dSQ="
+                "publicKey": "BLTbC2/bJnUJqMTcxuby3kIX0f9M0MZjw405vbGBiz/JvLVXPZsy1P2dF0Aw2MGYzrohYbqwPU+DNH5iOHJsFMA="
             },
             "output": {
-                "fingerprint": "61297821"
+                "publicKeyCoordX": "ALTbC2/bJnUJqMTcxuby3kIX0f9M0MZjw405vbGBiz/J",
+                "fingerprint": "41541279"
             }
         },
         {
             "input": {
-                "publicKey": "BO8V6n5Acnplm63GJ5957K4pmT0mLMY5EEVPOGLCOlEzcUJvgtE/tv2isdmg3Gh1qJqz3YuowTMy+uzNuGcIl9Y="
+                "publicKey": "BJbIw3jBvQmKnaMdUOV+GO1o7uhVWdK1LHnA0UM6aisInFo14Gb6QDAvV2baNXNKx1GBoeKpktzdO86bDkaZ/Hk="
             },
             "output": {
-                "fingerprint": "11085313"
+                "publicKeyCoordX": "AJbIw3jBvQmKnaMdUOV+GO1o7uhVWdK1LHnA0UM6aisI",
+                "fingerprint": "11550089"
             }
         },
         {
             "input": {
-                "publicKey": "BHbzRCXKfIPHnyhN4trLhUmMnIQxeqH5JqReGiqibshVjnzjAFkj9446SsBRI/dqRLaaKJEj62SjyI43cUqD/NE="
+                "publicKey": "BKa4sCYBa0PDrjCfcwbTedrX28unJRRKmjNMONUlvsVpQFy8wkIwJE3ead30sCODyJz5Z0/AOboXexbeeLHr2M4="
             },
             "output": {
-                "fingerprint": "80428725"
+                "publicKeyCoordX": "AKa4sCYBa0PDrjCfcwbTedrX28unJRRKmjNMONUlvsVp",
+                "fingerprint": "53050495"
             }
         },
         {
             "input": {
-                "publicKey": "BFb9KfNOSK21LZHACafTF7vMrzU4DmqP5iYKWFLKZ0VuT7v0maZWrj/uRX6L32zMGXDC6Q5F+45GJVzp0lvuYcE="
+                "publicKey": "BMaG6jyB1ONZd1o+tuWpAzuFIDiVkHKb1GnwMNVP8VZEmma082Zl+nKpjObzawLZCTd8voATsMw/WbUKJMAdqtI="
             },
             "output": {
-                "fingerprint": "91464435"
+                "publicKeyCoordX": "AMaG6jyB1ONZd1o+tuWpAzuFIDiVkHKb1GnwMNVP8VZE",
+                "fingerprint": "48884716"
             }
         },
         {
             "input": {
-                "publicKey": "BFNKm6bNbRv7p9IaYwj29/vSG58tkmE1C25LULbx/4iL4vkYvKeCgAcvGqqN6fLGByJ7YvZHtCgDORpEreYl8NA="
+                "publicKey": "BPzNamKxP/uX1sbCM4WBa5oqMQUtynJmlPEFYHGNPDwGFhtbCYmAG8qgIIIEQCxHFtDgBGLTynyyMTDmCOejQZ4="
             },
             "output": {
-                "fingerprint": "40123060"
+                "publicKeyCoordX": "APzNamKxP/uX1sbCM4WBa5oqMQUtynJmlPEFYHGNPDwG",
+                "fingerprint": "60870837"
             }
         },
         {
             "input": {
-                "publicKey": "BBBrDnP0CwdpH1XKahlfQR5dOAxpCpG2npTnC6dxTKyCHYNxap2sq9aBBhXF6hIWznnT/YHL+PZjBcGvEgyLp+8="
+                "publicKey": "BPKLDskrJZdFiBD8m/IkNzV2qsR1eTAnMEUpLyqiANU7Rgmnr1mKnSzPU4lHvm059DA7N6f7+tml0GclGoVETHU="
             },
             "output": {
-                "fingerprint": "81248836"
+                "publicKeyCoordX": "APKLDskrJZdFiBD8m/IkNzV2qsR1eTAnMEUpLyqiANU7",
+                "fingerprint": "98257522"
             }
         },
         {
             "input": {
-                "publicKey": "BP8Nta64Re2vvxN0g2dhQAoc3C7sKgNcFbvs7nWQCKPWkSrDvGQdq63kTNCZ5hSo9r33fAr0cBXK/ZB10+53dCg="
+                "publicKey": "BNDp7W5Xm59seRgE4hKEoggnNpPEa43cqEDs3Gw5JiUpoTHEdXqcN2eJUl/+tdvjqgD6VA4ZLWfFx8an9O3XvU0="
             },
             "output": {
-                "fingerprint": "3719646"
+                "publicKeyCoordX": "ANDp7W5Xm59seRgE4hKEoggnNpPEa43cqEDs3Gw5JiUp",
+                "fingerprint": "59027007"
             }
         },
         {
             "input": {
-                "publicKey": "BI4Fxaml8SYRgoIM79bTsEWxakN1La0AnB6LE5wWoyfcWOXEC4KehiPy1Y3paDHPgpPkx8EeZXvZ7QyEEq5JlVk="
+                "publicKey": "BHpGKewREgx90L7ZK+NwRLjbxZzTxBjAeAyUd54zZrnSGLwdAcOFxeglrjGrB8NYm5v78aUtrX+mdA8yxibPX7k="
             },
             "output": {
-                "fingerprint": "76555301"
+                "publicKeyCoordX": "ekYp7BESDH3Qvtkr43BEuNvFnNPEGMB4DJR3njNmudI=",
+                "fingerprint": "29160702"
             }
         },
         {
             "input": {
-                "publicKey": "BJQ+gM3v3a2UHjYioFXaIBgm7NfzisM/wsNT00C3yP0dw/iJZKHxXq18nnpWcyzqkt4p47vBFO+E17j079tMleo="
+                "publicKey": "BOaDfLEhNzC0EnhXV3c8kJaM7CiUqDNL4ALAzJPvRa1/2Mx1RAM1U/DnglEaT9P+f6IXAjdo54b6269MiDQ59Mk="
             },
             "output": {
-                "fingerprint": "47262074"
+                "publicKeyCoordX": "AOaDfLEhNzC0EnhXV3c8kJaM7CiUqDNL4ALAzJPvRa1/",
+                "fingerprint": "15039742"
             }
         },
         {
             "input": {
-                "publicKey": "BJa/ebqfpwltddJJo4I6uBpEbgf1R6lLXXRkD3F37jkXPm+bfW5NUPnCstXeCE7XB22YQoICsmnrTAy0LG0Qtg4="
+                "publicKey": "BAbouegcYmR0WqE+FQ8blM86ixjzBhdpQ6+Xm3kCQTbkugaQ27IgQORYuKveH3g5UEkp2MrsnFXf7ppcwflrUlo="
             },
             "output": {
-                "fingerprint": "62818100"
+                "publicKeyCoordX": "Bui56BxiZHRaoT4VDxuUzzqLGPMGF2lDr5ebeQJBNuQ=",
+                "fingerprint": "51295774"
             }
         },
         {
             "input": {
-                "publicKey": "BDBTcSqwaR9vTrzgHBkuJa2N1Le+qOw+DMMO1Ln0WQzHi3G6Y3MxkMZctoxkDSj3hpO5Ma7Wi+rF46p2CUrxOlo="
+                "publicKey": "BNoAQqbSU7yU0rK2W2oufW+LrMd7tRyIaCx4GzXbYL8FVHSEFr1Vd0xV+eP5iiXqY/gIXZXk94HLvRRCzDiDMEA="
             },
             "output": {
-                "fingerprint": "33950506"
+                "publicKeyCoordX": "ANoAQqbSU7yU0rK2W2oufW+LrMd7tRyIaCx4GzXbYL8F",
+                "fingerprint": "16357893"
             }
         },
         {
             "input": {
-                "publicKey": "BPK96cFBozgqakju4/tgWHY/9s1gAjZ+OWDckm5NSE0SD13vAILRrsucMD1nv7MZB8IcWDj5V30mZ2D5LwVUNC4="
+                "publicKey": "BHmutOrSVpkRfRdTcjEdkTeGxiEPkJo0t7ipG22otO8vIcpjCnloZohO8/tQyVlQ9BHJ7cadIQytzV7c6JXZLcA="
             },
             "output": {
-                "fingerprint": "41028667"
+                "publicKeyCoordX": "ea606tJWmRF9F1NyMR2RN4bGIQ+QmjS3uKkbbai07y8=",
+                "fingerprint": "41879974"
             }
         },
         {
             "input": {
-                "publicKey": "BMbkbvshaOHtoN/EMIsIEHbGjfLUXGRNzChmWYnyVSpeRAiSPu9okmEtdc1emKruWjVOAEiwYDEVCGmVkt/fEyI="
+                "publicKey": "BB/GQepm61MNjw3+c+ZBbMxiFs9gE5j/L9CWbwrv0azgP/JCo5MImKLlLcfWAaPEZQI++MYO2QRxIU4d+3nRHVE="
             },
             "output": {
-                "fingerprint": "33505692"
+                "publicKeyCoordX": "H8ZB6mbrUw2PDf5z5kFszGIWz2ATmP8v0JZvCu/RrOA=",
+                "fingerprint": "12141990"
             }
         },
         {
             "input": {
-                "publicKey": "BNWle4Uk3Zd0xRdQlhbcAZa9rxbs7W0QwRQJWocv+ORe4v2+3x4xkH/X/ZYtZnUxzW4ezYiWpeJhSeAwqQN9qGY="
+                "publicKey": "BOmX69PJZmVtc2uWIv1Pl1t+8wG1evn7eaUr2QohQvZm6lFsxl8sELY9cQ7N1OyPv4xUGbA0E4DvVHQMt80Up1c="
             },
             "output": {
-                "fingerprint": "57106295"
+                "publicKeyCoordX": "AOmX69PJZmVtc2uWIv1Pl1t+8wG1evn7eaUr2QohQvZm",
+                "fingerprint": "1236856"
             }
         },
         {
             "input": {
-                "publicKey": "BKcVSuV3PGfgeTGciEiG7UhlJl4dZvb9ihcjCf99GDtjt3gn5jfNoE4SQXTTAi5HGtEI5c5KWPDqyGa5FdAcLPA="
+                "publicKey": "BNXUww6vfJNZpA9onlvFiNrd2GlvibzRs45DTPr/jmNVT5IPzmI36rW0elwRCiH39y5b6AIWYxapTczXTWXmeOA="
             },
             "output": {
-                "fingerprint": "40310110"
+                "publicKeyCoordX": "ANXUww6vfJNZpA9onlvFiNrd2GlvibzRs45DTPr/jmNV",
+                "fingerprint": "63160718"
             }
         },
         {
             "input": {
-                "publicKey": "BH5sFI5+aWt3UusEx4riNCG1oB9+42Zs3qcFxNVvPCujvkluzYXiqcB27EdqxQCou4wWmH+C8dkwRNT8I6Pd46Q="
+                "publicKey": "BNqemXgxha0w7IfZr8r5hNsorLg3Rb6tpr6sUs8xMI22EhILl3U/xndooH5TccJyi2zBPvVLVIh4m/Tva8WyLUQ="
             },
             "output": {
-                "fingerprint": "33200581"
+                "publicKeyCoordX": "ANqemXgxha0w7IfZr8r5hNsorLg3Rb6tpr6sUs8xMI22",
+                "fingerprint": "90622782"
             }
         },
         {
             "input": {
-                "publicKey": "BOsClCGsuJl4RUtMoYlbZ1pUrPiGx1h92BOiziwC0QJIqv2qlDpS+ZP2EQLXTRrwejrcOMjixGD2crc9RcaaM/o="
+                "publicKey": "BC0SkkhARECSfgnuOGR7axnnLX2PC2OZp1x0IkK266s0rUsgyQbT05qi68hI7cyAzIuRWc392C5hBp+J64XGpCY="
             },
             "output": {
-                "fingerprint": "13156480"
+                "publicKeyCoordX": "LRKSSEBEQJJ+Ce44ZHtrGectfY8LY5mnXHQiQrbrqzQ=",
+                "fingerprint": "23771882"
             }
         },
         {
             "input": {
-                "publicKey": "BMkT/xOx7Y5IJ8IxiZdM2X0a4ONsvdGbcz+cLyUoD/7s3wLwsSdi1gOZPBSJKHX0QWtQ2PHndSlzK6Q7ZwQgObU="
+                "publicKey": "BGENF28fBAel2PPKgd8W8NvEqIled8a1YT+o2JGlyvfkAcyeOnmJnMYyIMPD+RDxTYeeVtmKvMx+5DIpvKdnQMw="
             },
             "output": {
-                "fingerprint": "37243562"
+                "publicKeyCoordX": "YQ0Xbx8EB6XY88qB3xbw28SoiV53xrVhP6jYkaXK9+Q=",
+                "fingerprint": "89643648"
             }
         },
         {
             "input": {
-                "publicKey": "BL9X61fcfScYCRtkybBfHKGsC5Wp1+gCZ8LHZo2TKKeLtN9v5QDWsHqjk+XG0RcEl/t/8MdSIOECu1Uim/iX1gg="
+                "publicKey": "BDZi9kspfvM93OvmwRsIre/WqDjE0pYQlN6RuhwuSJo1WdHWQt6LRP6ovxRg5Au3MR/lKqlPGmjTi/+vmMIXZIM="
             },
             "output": {
-                "fingerprint": "34895638"
+                "publicKeyCoordX": "NmL2Syl+8z3c6+bBGwit79aoOMTSlhCU3pG6HC5ImjU=",
+                "fingerprint": "88736634"
             }
         },
         {
             "input": {
-                "publicKey": "BEnZbm5FoGP2aGIM5dNZeH69Ll2Hb+wyIjP8MH0LjScJjGyMvm2ZoxB2ctHJcy4ekIg4OzdylrceRfHvRvw+m0s="
+                "publicKey": "BJTHCL7ZbQN0Qi7tXXzlXDP4djPbp1qGt8wg6cNzKIFshNErCJHKe42rMPvsxs/ADM93sZ0QugJatrYj92J0OLo="
             },
             "output": {
-                "fingerprint": "43023625"
+                "publicKeyCoordX": "AJTHCL7ZbQN0Qi7tXXzlXDP4djPbp1qGt8wg6cNzKIFs",
+                "fingerprint": "70600744"
             }
         }
     ]

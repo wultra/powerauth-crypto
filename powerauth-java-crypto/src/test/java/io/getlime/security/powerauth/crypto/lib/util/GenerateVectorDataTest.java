@@ -31,10 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
+import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 import java.util.Collections;
@@ -515,14 +512,19 @@ public class GenerateVectorDataTest {
         int max = 20;
         for (int i = 0; i < max; i++) {
             KeyPair kp = activationServer.generateServerKeyPair();
-            PublicKey publicKey = kp.getPublic();
-            final int fingerprint = ECPublicKeyFingerprint.compute((ECPublicKey) publicKey);
+            ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
+
+            final int fingerprint = ECPublicKeyFingerprint.compute(publicKey);
+
+            // Replicate the key normalization for the testing purposes.
+            byte[] devicePublicKeyBytes = publicKey.getW().getAffineX().toByteArray();
 
             System.out.println("    {");
             System.out.println("        \"input\": {");
             System.out.println("            \"publicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)) + "\"");
             System.out.println("        },");
             System.out.println("        \"output\": {");
+            System.out.println("            \"publicKeyCoordX\": \"" + BaseEncoding.base64().encode(devicePublicKeyBytes) + "\",");
             System.out.println("            \"fingerprint\": \"" + fingerprint + "\"");
             System.out.println("        }");
             if (i == max - 1) {
