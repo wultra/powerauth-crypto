@@ -79,8 +79,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
             ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
 
-            ECPublicKey publicKey = (ECPublicKey) kf.generatePublic(pubSpec);
-            return publicKey;
+            return kf.generatePublic(pubSpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
@@ -94,8 +93,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @return A byte array containing the representation of the EC private key.
      */
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
-        byte[] pkBytes = ((ECPrivateKey) privateKey).getD().toByteArray();
-        return pkBytes;
+        return ((ECPrivateKey) privateKey).getD().toByteArray();
     }
 
     /**
@@ -114,8 +112,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
             ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);
 
-            ECPrivateKey privateKey = (ECPrivateKey) kf.generatePrivate(pubSpec);
-            return privateKey;
+            return kf.generatePrivate(pubSpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }

@@ -53,8 +53,7 @@ public class KeyGenerator {
             // we assume BouncyCastle provider
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
-            KeyPair kp = kpg.generateKeyPair();
-            return kp;
+            return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
@@ -66,21 +65,43 @@ public class KeyGenerator {
      *
      * @param privateKey A private key.
      * @param publicKey A public key.
+     * @param keep32b Flag that indicates if the key should be kept 32 byte long (in case value is true), or shortened
+     *                to 16 byte key using byte-by-byte xor operation.
      * @return A new instance of the pre-shared key.
      * @throws InvalidKeyException One of the provided keys are not valid keys.
      */
-    public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
+    public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey, boolean keep32b) throws InvalidKeyException {
         try {
             KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             keyAgreement.init(privateKey);
             keyAgreement.doPhase(publicKey, true);
             final byte[] sharedSecret = keyAgreement.generateSecret();
-            final byte[] resultSecret = this.convert32Bto16B(sharedSecret);
+            final byte[] resultSecret;
+            if (keep32b) {
+                resultSecret = sharedSecret;
+            } else {
+                resultSecret = this.convert32Bto16B(sharedSecret);
+            }
             return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(resultSecret);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    /**
+     * Computes a pre-shared key for given private key and public key (ECDH). This method calls
+     * {@link KeyGenerator#computeSharedKey(PrivateKey, PublicKey, boolean)} with the 'keep32b' parameter set to false.
+     * As a result, the key that is returned by this function has only 16B. The key is obtained using byte-by-byte xor
+     * operation on the original 32B key (0th byte with 15th, 1st byte with 16th, etc.)
+     *
+     * @param privateKey A private key.
+     * @param publicKey A public key.
+     * @return A new instance of the pre-shared key.
+     * @throws InvalidKeyException One of the provided keys are not valid keys.
+     */
+    public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
+        return computeSharedKey(privateKey, publicKey, false);
     }
 
     /**
@@ -166,8 +187,7 @@ public class KeyGenerator {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PowerAuthConfiguration.PBKDF_ITERATIONS, 128);
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
-            SecretKey encryptionKey = new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");
-            return encryptionKey;
+            return new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
             Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
         }

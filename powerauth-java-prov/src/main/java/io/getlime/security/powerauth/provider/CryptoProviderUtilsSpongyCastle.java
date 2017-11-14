@@ -15,6 +15,10 @@
  */
 package io.getlime.security.powerauth.provider;
 
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
+import org.bouncycastle.crypto.agreement.kdf.DHKDFParameters;
+import org.bouncycastle.crypto.agreement.kdf.ECDHKEKGenerator;
+import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.spongycastle.jce.ECNamedCurveTable;
 import org.spongycastle.jce.interfaces.ECPrivateKey;
 import org.spongycastle.jce.interfaces.ECPublicKey;
@@ -81,8 +85,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
             ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
             ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
 
-            ECPublicKey publicKey = (ECPublicKey) kf.generatePublic(pubSpec);
-            return publicKey;
+            return kf.generatePublic(pubSpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
@@ -97,8 +100,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
      */
     @Override
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
-        byte[] pkBytes = ((ECPrivateKey) privateKey).getD().toByteArray();
-        return pkBytes;
+        return ((ECPrivateKey) privateKey).getD().toByteArray();
     }
 
     /**
@@ -117,9 +119,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
             BigInteger keyInteger = new BigInteger(keyBytes);
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
             ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);
-
-            ECPrivateKey privateKey = (ECPrivateKey) kf.generatePrivate(pubSpec);
-            return privateKey;
+            return kf.generatePrivate(pubSpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
