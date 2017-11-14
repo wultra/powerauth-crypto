@@ -44,8 +44,7 @@ public class HMACHashUtilities {
             Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA256");
             hmacSha256.init(hmacKey);
-            byte[] derivedKey = hmacSha256.doFinal(data);
-            return derivedKey;
+            return hmacSha256.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException ex) {
             Logger.getLogger(HMACHashUtilities.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -62,8 +61,7 @@ public class HMACHashUtilities {
         try {
             Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             hmacSha256.init(hmacKey);
-            byte[] derivedKey = hmacSha256.doFinal(data);
-            return derivedKey;
+            return hmacSha256.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException ex) {
             Logger.getLogger(HMACHashUtilities.class.getName()).log(Level.SEVERE, null, ex);
         }
