@@ -98,20 +98,20 @@ public class BasicEciesDecryptor {
 
             // Derive secret key
             final SecretKey secretKey = keyGenerator.computeSharedKey(privateKey, ephemeralPublicKey, true);
-            byte[] ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(secretKey), info, 32);
+            final byte[] ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(secretKey), info, 32);
 
             // Validate data MAC value
-            byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
-            byte[] macData = (sharedInfo2 == null ? payload.getEncryptedData() : Bytes.concat(payload.getEncryptedData(), sharedInfo2));
+            final byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
+            final byte[] macData = (sharedInfo2 == null ? payload.getEncryptedData() : Bytes.concat(payload.getEncryptedData(), sharedInfo2));
             final byte[] mac = hmac.hash(macKeyBytes, macData);
             if (!Arrays.equals(mac, payload.getMac())) {
                 throw new EciesException("Invalid MAC");
             }
 
             // Decrypt the data
-            byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
+            final byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
             final SecretKey encKey = keyConverter.convertBytesToSharedSecretKey(encKeyBytes);
-            byte[] iv = new byte[16];
+            final byte[] iv = new byte[16];
 
             // Invalidate this decryptor for decryption.
             canDecryptData = false;
@@ -139,17 +139,17 @@ public class BasicEciesDecryptor {
 
             // Derive secret key
             final SecretKey secretKey = keyGenerator.computeSharedKey(privateKey, ephemeralPublicKey, true);
-            byte[] ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(secretKey), info, 32);
+            final byte[] ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(secretKey), info, 32);
 
             // Encrypt the data
-            byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
+            final byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
             final SecretKey encKey = keyConverter.convertBytesToSharedSecretKey(encKeyBytes);
-            byte[] iv = new byte[16];
+            final byte[] iv = new byte[16];
             final byte[] body = aes.encrypt(data, iv, encKey);
 
             // Compute MAC of the data
-            byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
-            byte[] macData = (sharedInfo2 == null ? body : Bytes.concat(body, sharedInfo2));
+            final byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
+            final byte[] macData = (sharedInfo2 == null ? body : Bytes.concat(body, sharedInfo2));
             final byte[] mac = hmac.hash(macKeyBytes, macData);
 
             // invalidate this decryptor

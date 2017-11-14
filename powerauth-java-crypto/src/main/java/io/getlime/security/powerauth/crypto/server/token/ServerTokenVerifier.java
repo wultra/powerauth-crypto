@@ -27,6 +27,15 @@ public class ServerTokenVerifier {
     private TokenUtils tokenUtils = new TokenUtils();
 
     /**
+     * Helper method to convert provided timestamp into 8 bytes, for the purpose of token timestamping.
+     * @param timestamp Timestamp to be converted.
+     * @return Provided timestamp in milliseconds converted as bytes.
+     */
+    public byte[] convertTokenTimestamp(long timestamp) {
+        return tokenUtils.convertTokenTimestamp(timestamp);
+    }
+
+    /**
      * Validate provided token digest for given input data and provided token secret.
      * @param nonce Token nonce, 16 random bytes.
      * @param timestamp Token timestamp, Unix timestamp format encoded as 8 bytes.
