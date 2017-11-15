@@ -98,6 +98,24 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
     public static final String HEADER_NAME = "X-PowerAuth-Authorization";
 
     /**
+     * Constructor with all required parameters.
+     * @param activationId Activation ID.
+     * @param applicationKey Application key.
+     * @param signature PowerAuth signature value.
+     * @param signatureType PowerAuth signature type.
+     * @param nonce Nonce.
+     * @param version Version.
+     */
+    public PowerAuthSignatureHttpHeader(String activationId, String applicationKey, String signature, String signatureType, String nonce, String version) {
+        this.activationId = activationId;
+        this.applicationKey = applicationKey;
+        this.signature = signature;
+        this.signatureType = signatureType;
+        this.nonce = nonce;
+        this.version = version;
+    }
+
+    /**
      * Create PowerAuth authorization HTTP header model object from provided string.
      * @param headerValue HTTP header with PowerAuth authorization.
      * @return PowerAuth authorization HTTP header.

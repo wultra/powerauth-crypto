@@ -58,15 +58,50 @@ public class PowerAuthTokenHttpHeader extends PowerAuthHttpHeader {
     }
 
     /**
+     * Token ID used for token lookup.
+     */
+    private String tokenId;
+
+    /**
+     * Token digest representing the computed credentials.
+     */
+    private String tokenDigest;
+
+    /**
+     * Random nonce.
+     */
+    private String nonce;
+
+    /**
+     * Timestamp when the token was generated.
+     */
+    private String timestamp;
+
+    /**
+     * Token version.
+     */
+    private String version;
+
+    /**
      * Name of the PowerAuth token header, "X-PowerAuth-Token".
      */
     public static final String HEADER_NAME = "X-PowerAuth-Token";
 
-    private String tokenId;
-    private String tokenDigest;
-    private String nonce;
-    private String timestamp;
-    private String version;
+    /**
+     * Constructor with all required class attributes.
+     * @param tokenId Token ID.
+     * @param tokenDigest Token digest.
+     * @param nonce Nonce.
+     * @param timestamp Timestamp.
+     * @param version Version.
+     */
+    public PowerAuthTokenHttpHeader(String tokenId, String tokenDigest, String nonce, String timestamp, String version) {
+        this.tokenId = tokenId;
+        this.tokenDigest = tokenDigest;
+        this.nonce = nonce;
+        this.timestamp = timestamp;
+        this.version = version;
+    }
 
     /**
      * Create PowerAuth token HTTP header model object from provided string.
