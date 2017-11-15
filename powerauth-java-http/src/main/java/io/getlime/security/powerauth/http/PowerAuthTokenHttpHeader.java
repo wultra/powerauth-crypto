@@ -88,6 +88,12 @@ public class PowerAuthTokenHttpHeader extends PowerAuthHttpHeader {
     public static final String HEADER_NAME = "X-PowerAuth-Token";
 
     /**
+     * Default constructor.
+     */
+    public PowerAuthTokenHttpHeader() {
+    }
+
+    /**
      * Constructor with all required class attributes.
      * @param tokenId Token ID.
      * @param tokenDigest Token digest.

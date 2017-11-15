@@ -98,6 +98,12 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
     public static final String HEADER_NAME = "X-PowerAuth-Authorization";
 
     /**
+     * Default constructor.
+     */
+    public PowerAuthSignatureHttpHeader() {
+    }
+
+    /**
      * Constructor with all required parameters.
      * @param activationId Activation ID.
      * @param applicationKey Application key.
