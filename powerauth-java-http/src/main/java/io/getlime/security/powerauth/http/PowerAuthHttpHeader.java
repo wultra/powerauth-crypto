@@ -21,106 +21,33 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Helper class simplifying working with PowerAuth HTTP Authorization header "X-PowerAuth-Authorization".
+ * Base class for processing any PowerAuth related HTTP headers.
  *
- * @author Petr Dvorak
- *
+ * @author Petr Dvorak, petr@lime-company.eu
  */
-public class PowerAuthHttpHeader {
+public abstract class PowerAuthHttpHeader {
 
-    /**
-     * Class with keys used in the underlying map.
-     */
-    public class Key {
-
-        /**
-         * Key representing the "pa_activation_id" in the PowerAuth authorization header.
-         */
-        private static final String ACTIVATION_ID = "pa_activation_id";
-
-        /**
-         * Key representing the "pa_application_key" in the PowerAuth authorization header.
-         */
-        private static final String APPLICATION_ID = "pa_application_key";
-
-        /**
-         * Key representing the "pa_signature" in the PowerAuth authorization header.
-         */
-        private static final String SIGNATURE = "pa_signature";
-
-        /**
-         * Key representing the "pa_signature_type" in the PowerAuth authorization header.
-         */
-        private static final String SIGNATURE_TYPE = "pa_signature_type";
-
-        /**
-         * Key representing the "pa_nonce" in the PowerAuth authorization header.
-         */
-        private static final String NONCE = "pa_nonce";
-
-        /**
-         * Key representing the "pa_version" in the PowerAuth authorization header.
-         */
-        private static final String VERSION = "pa_version";
-
-    }
-
-    /**
-     * Field representing activation ID value.
-     */
-    private String activationId;
-
-    /**
-     * Field representing application version related key.
-     */
-    private String applicationKey;
-
-    /**
-     * Field representing signature value.
-     */
-    private String signature;
-
-    /**
-     * Key representing signature type.
-     */
-    private String signatureType;
-
-    /**
-     * Field representing nonce value.
-     */
-    private String nonce;
-
-    /**
-     * Field representing protocol version.
-     */
-    private String version;
-
-    /**
-     * Name of the PowerAuth authorization header, "X-PowerAuth-Authorization".
-     */
-    public static final String HEADER_NAME = "X-PowerAuth-Authorization";
-
-    private static final String POWERAUTH_PREFIX = "PowerAuth ";
+    protected static final String POWERAUTH_PREFIX = "PowerAuth ";
 
     /**
      * Parse the PowerAuth authorization header and return map with values.
-     * @param xPowerAuthSignatureHeader HTTP header with PowerAuth authorization.
+     * @param header HTTP header with PowerAuth authorization.
      * @return Map with parsed header values.
      */
-    public static Map<String, String> parsePowerAuthSignatureHTTPHeader(String xPowerAuthSignatureHeader) {
-        if (xPowerAuthSignatureHeader == null) {
+    protected Map<String, String> parseHttpHeader(String header) {
+        if (header == null) {
             return new HashMap<>(); // invalid map with empty values works better than null here
         }
-        xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.trim();
-        if (!xPowerAuthSignatureHeader.startsWith(POWERAUTH_PREFIX)) {
+        header = header.trim();
+        if (!header.startsWith(POWERAUTH_PREFIX)) {
             return new HashMap<>(); // invalid map with empty values works better than null here
         }
-        xPowerAuthSignatureHeader = xPowerAuthSignatureHeader.substring(POWERAUTH_PREFIX.length()).trim();
+        header = header.substring(POWERAUTH_PREFIX.length()).trim();
 
         // Parse the key / value pairs
         Map<String, String> result = new HashMap<>();
         Pattern p = Pattern.compile("(\\w+)=\"*((?<=\")[^\"]+(?=\")|([^\\s]+)),*\"*");
-        Matcher m = p.matcher(xPowerAuthSignatureHeader);
+        Matcher m = p.matcher(header);
         while (m.find()) {
             result.put(m.group(1), m.group(2));
         }
@@ -129,76 +56,29 @@ public class PowerAuthHttpHeader {
     }
 
     /**
-     * Create PowerAuth authorization HTTP header model object from provided string.
-     * @param headerValue HTTP header with PowerAuth authorization.
-     * @return PowerAuth authorization HTTP header.
-     */
-    public static PowerAuthHttpHeader fromValue(String headerValue) {
-        Map<String, String> map = parsePowerAuthSignatureHTTPHeader(headerValue);
-        PowerAuthHttpHeader header  = new PowerAuthHttpHeader();
-        header.activationId         = map.get(Key.ACTIVATION_ID);
-        header.applicationKey       = map.get(Key.APPLICATION_ID);
-        header.nonce                = map.get(Key.NONCE);
-        header.signatureType        = map.get(Key.SIGNATURE_TYPE);
-        header.signature            = map.get(Key.SIGNATURE);
-        header.version              = map.get(Key.VERSION);
-        return header;
-    }
-
-    /**
      * Helper method to build key-value pair.
      * @param key Key.
      * @param value Value.
      * @return Key-value pair, constructed as: {key}="{value}".
      */
-    private static String headerField(String key, String value) {
+    protected String headerField(String key, String value) {
         return key + "=\"" + value + "\"";
     }
 
+    // Abstract methods to be overridden by subclass headers
+
     /**
-     * Generate a valid PowerAuth Authorization header based on provided parameters.
-     * @param activationId An ID of an activation.
-     * @param applicationId An ID of an application.
-     * @param nonce Random nonce.
-     * @param signatureType Signature type.
-     * @param signature Signature.
-     * @param version PowerAuth protocol version.
-     * @return Value to be used in <code>X-PowerAuth-Authorization</code> HTTP header.
+     * Return the instance of the current header type based on provided String value.
+     *
+     * @param headerValue Value of the HTTP header.
+     * @return Instance of the header representation.
      */
-    public static String getPowerAuthSignatureHTTPHeader(String activationId, String applicationId, String nonce, String signatureType, String signature, String version) {
-        String result = POWERAUTH_PREFIX
-                + headerField(Key.ACTIVATION_ID, activationId) + ", "
-                + headerField(Key.APPLICATION_ID, applicationId) + ", "
-                + headerField(Key.NONCE, nonce) + ", "
-                + headerField(Key.SIGNATURE_TYPE, signatureType) + ", "
-                + headerField(Key.SIGNATURE, signature) + ", "
-                + headerField(Key.VERSION, version);
-        return result;
-    }
+    public abstract PowerAuthHttpHeader fromValue(String headerValue);
 
-    // Field getters
+    /**
+     * Return a string with the HTTP header value.
+     * @return HTTP header value.
+     */
+    public abstract String buildHttpHeader();
 
-    public String getActivationId() {
-        return activationId;
-    }
-
-    public String getApplicationKey() {
-        return applicationKey;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public String getSignatureType() {
-        return signatureType;
-    }
-
-    public String getNonce() {
-        return nonce;
-    }
-
-    public String getVersion() {
-        return version;
-    }
 }

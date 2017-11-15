@@ -1,0 +1,118 @@
+/*
+ * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.getlime.security.powerauth.http;
+
+import java.util.Map;
+
+/**
+ * Class representing the PowerAuth HTTP Token header "X-PowerAuth-Token".
+ *
+ * @author Petr Dvorak, petr@lime-company.eu
+ *
+ */
+public class PowerAuthTokenHttpHeader extends PowerAuthHttpHeader {
+
+    /**
+     * Class with keys used in the underlying map.
+     */
+    public class Key {
+
+        /**
+         * Key representing the "token_id" in the PowerAuth token header.
+         */
+        private static final String TOKEN_ID = "token_id";
+
+        /**
+         * Key representing the "token_digest" in the PowerAuth token header.
+         */
+        private static final String TOKEN_DIGEST = "token_digest";
+
+        /**
+         * Key representing the "token_nonce" in the PowerAuth token header.
+         */
+        private static final String NONCE = "nonce";
+
+        /**
+         * Key representing the "timestamp" in the PowerAuth token header.
+         */
+        private static final String TIMESTAMP = "timestamp";
+
+        /**
+         * Key representing the "version" in the PowerAuth token header.
+         */
+        private static final String VERSION = "version";
+
+    }
+
+    /**
+     * Name of the PowerAuth token header, "X-PowerAuth-Token".
+     */
+    public static final String HEADER_NAME = "X-PowerAuth-Token";
+
+    private String tokenId;
+    private String tokenDigest;
+    private String nonce;
+    private String timestamp;
+    private String version;
+
+    /**
+     * Create PowerAuth token HTTP header model object from provided string.
+     * @param headerValue HTTP header with PowerAuth token.
+     * @return PowerAuth token HTTP header.
+     */
+    @Override
+    public PowerAuthTokenHttpHeader fromValue(String headerValue) {
+        Map<String, String> map = parseHttpHeader(headerValue);
+        this.tokenId          = map.get(Key.TOKEN_ID);
+        this.tokenDigest      = map.get(Key.TOKEN_DIGEST);
+        this.nonce            = map.get(Key.NONCE);
+        this.timestamp        = map.get(Key.TIMESTAMP);
+        this.version          = map.get(Key.VERSION);
+        return this;
+    }
+
+    @Override
+    public String buildHttpHeader() {
+        return POWERAUTH_PREFIX
+                + headerField(Key.TOKEN_ID, this.tokenId) + ", "
+                + headerField(Key.TOKEN_DIGEST, this.tokenDigest) + ", "
+                + headerField(Key.NONCE, this.nonce) + ", "
+                + headerField(Key.TIMESTAMP, this.timestamp) + ", "
+                + headerField(Key.VERSION, this.version);
+    }
+
+    // Field getters
+
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public String getTokenDigest() {
+        return tokenDigest;
+    }
+
+    public String getNonce() {
+        return nonce;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+}
