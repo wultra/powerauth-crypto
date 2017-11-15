@@ -51,6 +51,7 @@ public class BasicEciesEncryptor {
 
     // Working data storage
     private PublicKey publicKey;
+    private KeyPair ephemeralKeyPair;
     private byte[] ephemeralDerivedSecretKey;
     private byte[] sharedInfo2;
 
@@ -76,6 +77,15 @@ public class BasicEciesEncryptor {
         this.sharedInfo2 = sharedInfo2;
         this.canEncryptData = true;
         this.canDecryptData = false;
+        this.ephemeralKeyPair = keyGenerator.generateKeyPair();
+    }
+
+    /**
+     * Obtain the encryptor ephemeral public key.
+     * @return Ephemeral public key.
+     */
+    public PublicKey getEphemeralPublicKey() {
+        return this.ephemeralKeyPair.getPublic();
     }
 
     /**
@@ -93,7 +103,6 @@ public class BasicEciesEncryptor {
 
             // Generate ephemeral keypair and derive
             // ephemeral encryption key
-            final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
             if (ephemeralKeyPair == null) {
                 throw new EciesException("Unable to generate an ephemeral key pair");
             }
@@ -101,7 +110,7 @@ public class BasicEciesEncryptor {
             final PrivateKey ephemeralKeyPrivate = ephemeralKeyPair.getPrivate();
 
             // Store the data inside th instance
-            final PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
+            final PublicKey ephemeralPublicKey = getEphemeralPublicKey();
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, publicKey, true);
             ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(ephemeralSecretKey), info, 32);
 
