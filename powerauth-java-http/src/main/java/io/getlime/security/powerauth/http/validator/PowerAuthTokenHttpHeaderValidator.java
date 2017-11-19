@@ -32,14 +32,14 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check token ID
-        String activationId = header.getTokenId();
-        if (activationId == null) {
+        String tokenId = header.getTokenId();
+        if (tokenId == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_ID_EMPTY");
         }
 
         // Check token digest
-        String signatureType = header.getTokenDigest();
-        if (signatureType == null) {
+        String tokenDigest = header.getTokenDigest();
+        if (tokenDigest == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_DIGEST_EMPTY");
         }
 
@@ -51,8 +51,8 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check timestamp
-        String signature = header.getTimestamp();
-        if (signature == null) {
+        String timestamp = header.getTimestamp();
+        if (timestamp == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_TIMESTAMP_EMPTY");
         }
 
