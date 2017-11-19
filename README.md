@@ -4,7 +4,7 @@
 [![Coverity Scan Build Status](https://img.shields.io/coverity/scan/8967.svg)](https://scan.coverity.com/projects/lime-company-lime-security-powerauth)
 [![Build Status](https://travis-ci.org/lime-company/powerauth-crypto.svg?branch=master)](https://travis-ci.org/lime-company/lime-security-powerauth)
 [![GitHub issues](https://img.shields.io/github/issues/lime-company/powerauth-crypto.svg?maxAge=2592000)](https://github.com/lime-company/lime-security-powerauth/issues)
-[![Maven Central](https://img.shields.io/maven-central/v/io.getlime.security/powerauth-crypto.svg?maxAge=2592000)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.getlime.security%22)
+[![Maven Central](https://img.shields.io/maven-central/v/io.getlime.security/powerauth-java-crypto.svg?maxAge=2592000)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.getlime.security%22)
 [![Twitter](https://img.shields.io/badge/twitter-@lime_company-blue.svg?style=flat)](http://twitter.com/lime_company)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/lime-company/lime-security-powerauth/blob/master/LICENSE.txt)
 
