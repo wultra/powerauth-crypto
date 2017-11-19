@@ -34,6 +34,7 @@ public class TokenUtils {
 
     /**
      * Generate random token ID. Use UUID format.
+     *
      * @return Random token ID.
      */
     public String generateTokenId() {
@@ -42,6 +43,7 @@ public class TokenUtils {
 
     /**
      * Generate random token secret, 16 random bytes.
+     *
      * @return Random token secret.
      */
     public byte[] generateTokenSecret() {
@@ -50,6 +52,7 @@ public class TokenUtils {
 
     /**
      * Generate random token nonce, 16 random bytes.
+     *
      * @return Random token nonce.
      */
     public byte[] generateTokenNonce() {
@@ -57,7 +60,14 @@ public class TokenUtils {
     }
 
     /**
-     * Helper method to get current timestamp for the purpose of token timestamping, encoded as 8 bytes.
+     * Helper method to get current timestamp for the purpose of token timestamping, encoded as bytes from the
+     * String representation of timestamp.<br>
+     * <br>
+     * The timestamp conversion works like this: Long timestamp is converted to String and then, bytes of the
+     * String are extracted usign the UTF-8 encoding.<br>
+     * <br>
+     * Code: <code>String.valueOf(System.currentTimeMillis()).getBytes("UTF-8");</code>
+     *
      * @return Current timestamp in milliseconds.
      */
     public byte[] generateTokenTimestamp() {
@@ -70,7 +80,9 @@ public class TokenUtils {
     }
 
     /**
-     * Helper method to convert provided timestamp into 8 bytes, for the purpose of token timestamping.
+     * Helper method to convert provided timestamp into bytes (using the string representation of the timestamp),
+     * for the purpose of token timestamping.
+     *
      * @param timestamp Timestamp to be converted.
      * @return Provided timestamp in milliseconds converted as bytes.
      */
@@ -86,7 +98,7 @@ public class TokenUtils {
     /**
      * Compute the digest of provided token information using given token secret.
      * @param nonce Token nonce, 16 random bytes.
-     * @param timestamp Token timestamp, Unix timestamp format encoded as 8 bytes.
+     * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (string representation).
      * @param tokenSecret Token secret, 16 random bytes.
      * @return Token digest computed using provided data bytes with given token secret.
      */
@@ -104,7 +116,7 @@ public class TokenUtils {
     /**
      * Validate provided token digest for given input data and provided token secret.
      * @param nonce Token nonce, 16 random bytes.
-     * @param timestamp Token timestamp, Unix timestamp format encoded as 8 bytes.
+     * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (string representation).
      * @param tokenSecret Token secret, 16 random bytes.
      * @param tokenDigest Token digest, 32 bytes to be validated.
      * @return Token digest computed using provided data bytes with given token secret.
