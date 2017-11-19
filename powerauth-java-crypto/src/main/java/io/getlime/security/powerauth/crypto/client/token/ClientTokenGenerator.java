@@ -29,6 +29,7 @@ public class ClientTokenGenerator {
 
     /**
      * Generate random token nonce, 16 random bytes.
+     *
      * @return Random token nonce.
      */
     public byte[] generateTokenNonce() {
@@ -36,7 +37,9 @@ public class ClientTokenGenerator {
     }
 
     /**
-     * Helper method to get current timestamp for the purpose of token timestamping, encoded as 8 bytes.
+     * Helper method to get current timestamp for the purpose of token timestamping, encoded as bytes (from string
+     * representation).
+     *
      * @return Current timestamp in milliseconds.
      */
     public byte[] generateTokenTimestamp() {
@@ -47,7 +50,7 @@ public class ClientTokenGenerator {
      * Compute the digest of provided token information using given token secret.
      *
      * @param nonce Token nonce, 16 random bytes.
-     * @param timestamp Token timestamp, Unix timestamp format encoded as 8 bytes.
+     * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (from string representation).
      * @param tokenSecret Token secret, 16 random bytes.
      * @return Token digest computed using provided data bytes with given token secret.
      */
