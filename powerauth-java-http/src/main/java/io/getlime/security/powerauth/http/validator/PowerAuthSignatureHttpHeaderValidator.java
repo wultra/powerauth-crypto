@@ -37,10 +37,20 @@ public class PowerAuthSignatureHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ACTIVATION_ID_EMPTY");
         }
 
+        // Check if activation ID is valid UUIDv4
+        if (!ValueTypeValidator.isValidUuid(activationId)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ACTIVATION_ID_INVALID");
+        }
+
         // Check nonce
         String nonce = header.getNonce();
         if (nonce == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_NONCE_EMPTY");
+        }
+
+        // Check if nonce has correct format
+        if (!ValueTypeValidator.isValidBase64OfLength(nonce, 16)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_NONCE_INVALID");
         }
 
         // Check signature type
@@ -49,16 +59,31 @@ public class PowerAuthSignatureHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_TYPE_EMPTY");
         }
 
+        // Check if signature type has correct format
+        if (!ValueTypeValidator.isValidSignatureType(signatureType)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_TYPE_INVALID");
+        }
+
         // Check signature
         String signature = header.getSignature();
         if (signature == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_EMPTY");
         }
 
+        // Check if signature has correct format
+        if (!ValueTypeValidator.isValidSignatureValue(signature)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_INVALID");
+        }
+
         // Check application key.
         String applicationKey = header.getApplicationKey();
         if (applicationKey == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_APPLICATION_EMPTY");
+        }
+
+        // Check if application key has correct format
+        if (!ValueTypeValidator.isValidBase64OfLength(applicationKey, 16)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_APPLICATION_INVALID");
         }
 
     }

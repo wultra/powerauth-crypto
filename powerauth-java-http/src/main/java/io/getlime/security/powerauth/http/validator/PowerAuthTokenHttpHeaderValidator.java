@@ -37,12 +37,21 @@ public class PowerAuthTokenHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_ID_EMPTY");
         }
 
+        // Check if token ID has correct UUID format
+        if (!ValueTypeValidator.isValidUuid(tokenId)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_ID_INVALID");
+        }
+
         // Check token digest
         String tokenDigest = header.getTokenDigest();
         if (tokenDigest == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_DIGEST_EMPTY");
         }
 
+        // Check if token digest has correct format
+        if (!ValueTypeValidator.isValidBase64OfLength(tokenDigest, 32)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_DIGEST_INVALID");
+        }
 
         // Check nonce
         String nonce = header.getNonce();
@@ -50,10 +59,20 @@ public class PowerAuthTokenHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_NONCE_EMPTY");
         }
 
+        // Check if nonce has correct format
+        if (!ValueTypeValidator.isValidBase64OfLength(nonce, 16)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_NONCE_INVALID");
+        }
+
         // Check timestamp
         String timestamp = header.getTimestamp();
         if (timestamp == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_TIMESTAMP_EMPTY");
+        }
+
+        // Check if timestamp has correct format
+        if (!ValueTypeValidator.isValidBase64OfLengthRange(timestamp, 9, 15)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_TIMESTAMP_INVALID");
         }
 
     }
