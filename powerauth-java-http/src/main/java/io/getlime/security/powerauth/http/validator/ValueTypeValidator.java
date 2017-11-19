@@ -49,7 +49,7 @@ public class ValueTypeValidator {
      */
     public static boolean isValidBase64OfLength(String base64candidate, int expectedLength) {
         final BaseEncoding base64 = BaseEncoding.base64();
-        if (base64.canDecode(base64candidate)) {
+        if (base64candidate != null && base64.canDecode(base64candidate)) {
             byte[] bytes = base64.decode(base64candidate);
             return bytes.length == expectedLength;
         } else {
@@ -68,7 +68,7 @@ public class ValueTypeValidator {
      */
     public static boolean isValidBase64OfLengthRange(String base64candidate, int from, int to) {
         final BaseEncoding base64 = BaseEncoding.base64();
-        if (base64.canDecode(base64candidate)) {
+        if (base64candidate != null && base64.canDecode(base64candidate)) {
             byte[] bytes = base64.decode(base64candidate);
             return bytes.length >= from && bytes.length <= to;
         } else {
@@ -96,7 +96,22 @@ public class ValueTypeValidator {
      * @return True if signature candidate has correct format, false otherwise.
      */
     public static boolean isValidSignatureValue(String signature) {
-        return signature.matches(signatureRegex);
+        return signature != null && signature.matches(signatureRegex);
+    }
+
+    /**
+     * Check if the string is a decimal string of provided length range.
+     * @param decimalString Decimal string candidate.
+     * @param from Minimal length.
+     * @param to Maximal length.
+     * @return True if provided string is decimal and has expected length range.
+     */
+    public static boolean isDecimalString(String decimalString, int from, int to) {
+        if (decimalString != null && decimalString.matches("^[0-9]*$")) {
+            return decimalString.length() >= from && decimalString.length() <= to;
+        } else {
+            return false;
+        }
     }
 
 }

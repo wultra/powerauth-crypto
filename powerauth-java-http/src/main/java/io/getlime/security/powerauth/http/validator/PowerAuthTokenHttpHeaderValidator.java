@@ -71,7 +71,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check if timestamp has correct format
-        if (!ValueTypeValidator.isValidBase64OfLengthRange(timestamp, 9, 15)) {
+        if (!ValueTypeValidator.isDecimalString(timestamp, 9, 15)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_TIMESTAMP_INVALID");
         }
 
