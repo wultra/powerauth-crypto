@@ -13,17 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.powerauth.http.validator;
+package io.getlime.security.powerauth.crypto.server.token;
+
+import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
 
 /**
- * Exception thrown in case that provided PowerAuth-related HTTP header is invalid.
+ * Server side class used for generating new tokens.
  *
  * @author Petr Dvorak, petr@lime-company.eu
  */
-public class InvalidPowerAuthHttpHeaderException extends Exception {
+public class ServerTokenGenerator {
 
-    public InvalidPowerAuthHttpHeaderException(String message) {
-        super(message);
+    private TokenUtils tokenUtils = new TokenUtils();
+
+    /**
+     * Generate random token ID. Use UUID format.
+     * @return Random token ID.
+     */
+    public String generateTokenId() {
+        return tokenUtils.generateTokenId();
+    }
+
+    /**
+     * Generate random token secret, 16 random bytes.
+     * @return Random token secret.
+     */
+    public byte[] generateTokenSecret() {
+        return tokenUtils.generateTokenSecret();
     }
 
 }

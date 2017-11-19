@@ -51,6 +51,7 @@ public class BasicEciesEncryptor {
 
     // Working data storage
     private PublicKey publicKey;
+    private KeyPair ephemeralKeyPair;
     private byte[] ephemeralDerivedSecretKey;
     private byte[] sharedInfo2;
 
@@ -76,6 +77,15 @@ public class BasicEciesEncryptor {
         this.sharedInfo2 = sharedInfo2;
         this.canEncryptData = true;
         this.canDecryptData = false;
+        this.ephemeralKeyPair = keyGenerator.generateKeyPair();
+    }
+
+    /**
+     * Obtain the encryptor ephemeral public key.
+     * @return Ephemeral public key.
+     */
+    public PublicKey getEphemeralPublicKey() {
+        return this.ephemeralKeyPair.getPublic();
     }
 
     /**
@@ -93,24 +103,27 @@ public class BasicEciesEncryptor {
 
             // Generate ephemeral keypair and derive
             // ephemeral encryption key
-            final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
+            if (ephemeralKeyPair == null) {
+                throw new EciesException("Unable to generate an ephemeral key pair");
+            }
+
             final PrivateKey ephemeralKeyPrivate = ephemeralKeyPair.getPrivate();
 
             // Store the data inside th instance
-            PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
-            SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, publicKey, true);
+            final PublicKey ephemeralPublicKey = getEphemeralPublicKey();
+            final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, publicKey, true);
             ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(ephemeralSecretKey), info, 32);
 
 
             // Encrypt the data
-            byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
+            final byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
             final SecretKey encKey = keyConverter.convertBytesToSharedSecretKey(encKeyBytes);
-            byte[] iv = new byte[16];
+            final byte[] iv = new byte[16];
             final byte[] body = aes.encrypt(data, iv, encKey);
 
             // Compute MAC of the data
-            byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
-            byte[] macData = (sharedInfo2 == null ? body : Bytes.concat(body, sharedInfo2));
+            final byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
+            final byte[] macData = (sharedInfo2 == null ? body : Bytes.concat(body, sharedInfo2));
             final byte[] mac = hmac.hash(macKeyBytes, macData);
 
             // Invalidate the encryptor instance
@@ -138,17 +151,17 @@ public class BasicEciesEncryptor {
             }
 
             // Validate data MAC value
-            byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
-            byte[] macData = (sharedInfo2 == null ? payload.getEncryptedData() : Bytes.concat(payload.getEncryptedData(), sharedInfo2));
+            final byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
+            final byte[] macData = (sharedInfo2 == null ? payload.getEncryptedData() : Bytes.concat(payload.getEncryptedData(), sharedInfo2));
             final byte[] mac = hmac.hash(macKeyBytes, macData);
             if (!Arrays.equals(mac, payload.getMac())) {
                 throw new EciesException("Invalid MAC");
             }
 
             // Decrypt the data
-            byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
+            final byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
             final SecretKey encKey = keyConverter.convertBytesToSharedSecretKey(encKeyBytes);
-            byte[] iv = new byte[16];
+            final byte[] iv = new byte[16];
 
             // Invalidate the encryptor
             canDecryptData = false;
