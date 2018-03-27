@@ -42,7 +42,7 @@ public final class CryptoProviderUtilFactory {
             } else if (hasSC) {
                 utils = new CryptoProviderUtilsSpongyCastle();
             } else {
-                throw new IllegalStateException("Neither spongycastne, nor bouncycastle is installed!");
+                throw new IllegalStateException("Neither spongycastle, nor bouncycastle is installed!");
             }
         }
         return utils;
