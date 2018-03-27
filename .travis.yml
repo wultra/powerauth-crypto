@@ -13,4 +13,4 @@ addons:
     notification_email: petr@lime-company.eu
     build_command_prepend: mvn clean
     build_command: mvn -DskipTests=true compile
-    branch_pattern: develop
+    branch_pattern: master
