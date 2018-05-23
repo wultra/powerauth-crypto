@@ -34,7 +34,7 @@ public class PowerAuthRequestCanonizationUtils {
     private static final String VAL = "val";
 
     /**
-     * Take the GET request query string (for example, "param1=key1&param2=key2") and convert it to the
+     * Take the GET request query string (for example, "param1=key1&amp;param2=key2") and convert it to the
      * canonized form by sorting the key value pairs primarily by keys and by values in case the keys are
      * equal.
      *
