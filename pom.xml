@@ -23,7 +23,7 @@
 	<description>PowerAuth 2.0 Cryptography</description>
 
 	<groupId>io.getlime.security</groupId>
-	<artifactId>powerauth-parent</artifactId>
+	<artifactId>powerauth-crypto-parent</artifactId>
 	<version>0.18.0</version>
 	<packaging>pom</packaging>
 
@@ -80,6 +80,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
 	</properties>
 
 	<build>
@@ -99,7 +102,13 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
 				<configuration>
 					<failOnError>false</failOnError>
 				</configuration>
@@ -115,7 +124,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.2</version>
+				<version>${maven-deploy-plugin.version}</version>
 			</plugin>
 		</plugins>
 	</build>
