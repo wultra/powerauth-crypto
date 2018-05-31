@@ -178,13 +178,26 @@ public class KeyGenerator {
      * Derive a long AES suitable key from a password and salt. Uses PBKDF with
      * 10 000 iterations.
      *
-     * @param password A password used for key derivation
-     * @param salt A salt used for key derivation
+     * @param password A password used for key derivation.
+     * @param salt A salt used for key derivation.
      * @return A new secret key derived from the password.
      */
     public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt) {
+        return deriveSecretKeyFromPassword(password, salt, PowerAuthConfiguration.PBKDF_ITERATIONS);
+    }
+
+    /**
+     * Derive a long AES suitable key from a password and salt. Uses PBKDF with specified
+     * number of iterations.
+     *
+     * @param password A password used for key derivation.
+     * @param salt A salt used for key derivation.
+     * @param iterations Number of iterations used in PBKDF.
+     * @return A new secret key derived from the password.
+     */
+    public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt, int iterations) {
         try {
-            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PowerAuthConfiguration.PBKDF_ITERATIONS, 128);
+            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, 128);
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
             return new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");
