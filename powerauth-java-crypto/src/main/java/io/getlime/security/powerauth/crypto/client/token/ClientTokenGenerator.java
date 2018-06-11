@@ -25,7 +25,7 @@ import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
  */
 public class ClientTokenGenerator {
 
-    private TokenUtils tokenUtils = new TokenUtils();
+    private final TokenUtils tokenUtils = new TokenUtils();
 
     /**
      * Generate random token nonce, 16 random bytes.

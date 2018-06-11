@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * Enum with signature type values.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public enum PowerAuthSignatureTypes {
@@ -58,7 +58,7 @@ public enum PowerAuthSignatureTypes {
 
     private String value;
 
-    private static Map<String, PowerAuthSignatureTypes> map = new HashMap<>();
+    private final static Map<String, PowerAuthSignatureTypes> map = new HashMap<>();
 
     static {
         for (PowerAuthSignatureTypes type : PowerAuthSignatureTypes.values()) {
@@ -90,7 +90,7 @@ public enum PowerAuthSignatureTypes {
      * @return True in case of enum value is equal to provided name.
      */
     public boolean equalsName(String otherName) {
-        return otherName != null && value.equalsIgnoreCase(otherName);
+        return value.equalsIgnoreCase(otherName);
     }
 
     @Override

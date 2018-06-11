@@ -112,8 +112,7 @@ public class PowerAuthServerActivation {
                                               PrivateKey masterPrivateKey) throws InvalidKeyException {
         try {
             byte[] bytes = (activationIdShort + "-" + activationOTP).getBytes("UTF-8");
-            byte[] signature = signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
-            return signature;
+            return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
         } catch (UnsupportedEncodingException | SignatureException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -182,16 +181,14 @@ public class PowerAuthServerActivation {
                 AESEncryptionUtils aes = new AESEncryptionUtils();
                 byte[] decryptedTMP = aes.decrypt(C_devicePublicKey, activationNonce, ephemeralSymmetricKey);
                 byte[] decryptedPublicKeyBytes = aes.decrypt(decryptedTMP, activationNonce, otpBasedSymmetricKey);
-                PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
-                return devicePublicKey;
+                return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
 
             } else { // extra encryption is not present, only OTP based key is used
 
                 // Decrypt device public key
                 AESEncryptionUtils aes = new AESEncryptionUtils();
                 byte[] decryptedPublicKeyBytes = aes.decrypt(C_devicePublicKey, activationNonce, otpBasedSymmetricKey);
-                PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
-                return devicePublicKey;
+                return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
 
             }
 
@@ -235,8 +232,7 @@ public class PowerAuthServerActivation {
             // Encrypt the data
             AESEncryptionUtils aes = new AESEncryptionUtils();
             byte[] encryptedTMP = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
-            byte[] encryptServerPublicKey = aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
-            return encryptServerPublicKey;
+            return aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
 
         } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
@@ -268,8 +264,7 @@ public class PowerAuthServerActivation {
                     .put(padding)           // 17 bytes
                     .array();
             AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] C_statusBlob = aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
-            return C_statusBlob;
+            return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         } catch (IllegalBlockSizeException | BadPaddingException ex) {
             // Cryptography should be set correctly at this point
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
