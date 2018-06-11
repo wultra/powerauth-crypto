@@ -15,7 +15,6 @@
  */
 package io.getlime.security.powerauth.crypto.server.util;
 
-import com.google.common.collect.Lists;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 
@@ -34,8 +33,9 @@ public class DataDigest {
      * Data digest result.
      */
     public class Result {
-        private String digest;
-        private byte[] salt;
+
+        private final String digest;
+        private final byte[] salt;
 
         Result(String digest, byte[] salt) {
             this.digest = digest;
@@ -54,7 +54,7 @@ public class DataDigest {
 
     private static final int AUTHORIZATION_CODE_LENGTH = 8;
 
-    private HMACHashUtilities hmac = new HMACHashUtilities();
+    private final HMACHashUtilities hmac = new HMACHashUtilities();
 
     /**
      * Data digest of the list with string elements. Data is first normalized (items concatenated

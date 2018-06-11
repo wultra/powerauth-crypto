@@ -46,10 +46,10 @@ public class NonPersonalizedEncryptor {
     private byte[] ephemeralPublicKey;
 
     // Create new working objects
-    private AESEncryptionUtils aes = new AESEncryptionUtils();
-    private KeyGenerator generator = new KeyGenerator();
-    private HMACHashUtilities hmac = new HMACHashUtilities();
-    private CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+    private final AESEncryptionUtils aes = new AESEncryptionUtils();
+    private final KeyGenerator generator = new KeyGenerator();
+    private final HMACHashUtilities hmac = new HMACHashUtilities();
+    private final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
     /**
      * Create a new encryptor using provided applicationKey, application master server public key and session index.

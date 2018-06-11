@@ -31,14 +31,13 @@ import java.security.NoSuchAlgorithmException;
 public class Hash {
 
     /**
-     * Compute hash digest for given data using provided algorithm.
+     * Compute hash digest for given data using SHA-256.
      * @param originalBytes Original bytes to be hashed.
-     * @param algorithm Algorithm to be used to compute hash.
      * @return Hashed bytes.
      * @throws NoSuchAlgorithmException In case a provided algorithm does not exist.
      */
-    private static byte[] hash(byte[] originalBytes, String algorithm) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance(algorithm);
+    private static byte[] hash(byte[] originalBytes) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
         return md.digest(originalBytes);
     }
 
@@ -49,7 +48,7 @@ public class Hash {
      */
     public static byte[] sha256(byte[] originalBytes) {
         try {
-            return hash(originalBytes, "SHA-256");
+            return hash(originalBytes);
         } catch (NoSuchAlgorithmException e) {
             return null;
         }

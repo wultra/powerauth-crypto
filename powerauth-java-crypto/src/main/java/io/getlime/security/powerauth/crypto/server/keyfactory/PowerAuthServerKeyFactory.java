@@ -30,12 +30,12 @@ import java.util.List;
 /**
  * Key factory used on server side to generate PowerAuth related keys.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public class PowerAuthServerKeyFactory {
 
-    private KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Generate a list with signature keys for given signature type and master secret
