@@ -49,7 +49,7 @@ public enum PowerAuthConfiguration {
      */
     public CryptoProviderUtil getKeyConvertor() {
         if (keyConvertor == null) {
-            throw new NullPointerException("Convertor mustn't be null! Set convertor by calling PowerAuthConfiguration.INSTANCE.setConvertor().");
+            throw new NullPointerException("Convertor mustn't be null! Set convertor by calling PowerAuthConfiguration.INSTANCE.setKeyConvertor().");
         }
         return keyConvertor;
     }
