@@ -51,7 +51,7 @@ import static org.junit.Assert.*;
  */
 public class BasicEciesEncryptorTest {
 
-    private KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
     private CryptoProviderUtil keyConversion;
 
     /**
@@ -156,7 +156,7 @@ public class BasicEciesEncryptorTest {
             byte[] originalBytesRequest;
             try {
                 decryptor.decrypt(broken, null);
-                assertTrue("Invalid MAC was provided in request and should have been rejected", false);
+                fail("Invalid MAC was provided in request and should have been rejected");
             } catch (EciesException e) {
                 // OK
                 System.out.println("!!! Invalid MAC correctly detected in request");
@@ -186,7 +186,7 @@ public class BasicEciesEncryptorTest {
 
             try {
                 encryptor.decrypt(brokenResponse);
-                assertTrue("Invalid MAC was provided in response and should have been rejected", false);
+                fail("Invalid MAC was provided in response and should have been rejected");
             } catch (EciesException e) {
                 // OK
                 System.out.println("!!! Invalid MAC correctly detected in response");
@@ -202,10 +202,9 @@ public class BasicEciesEncryptorTest {
 
     /**
      * Test KDF implementation (X9.63 with SHA 256).
-     * @throws Exception In case test fails
      */
     @Test
-    public void testKdf() throws Exception {
+    public void testKdf() {
 
         for (int i = 0 ; i < 100 ; i++) {
             final SecretKey secretKey = keyGenerator.generateRandomSecretKey();
@@ -231,23 +230,20 @@ public class BasicEciesEncryptorTest {
         // [key data length = 128]
         // TV1:
         byte[] secretBytes = Hex.decode("96c05619d56c328ab95fe84b18264b08725b85e33fd34f08");
-        byte[] info = null;
         byte[] keyData = Hex.decode("443024c3dae66b95e6f5670601558f71");
-        byte[] kdfRef  = KdfX9_63.derive(secretBytes, info, 16);
+        byte[] kdfRef  = KdfX9_63.derive(secretBytes, null, 16);
         assertArrayEquals(keyData, kdfRef);
 
         // TV2:
         secretBytes = Hex.decode("de4ec3f6b2e9b7b5b6160acd5363c1b1f250e17ee731dbd6");
-        info = null;
         keyData = Hex.decode("c8df626d5caaabf8a1b2a3f9061d2420");
-        kdfRef  = KdfX9_63.derive(secretBytes, info, 16);
+        kdfRef  = KdfX9_63.derive(secretBytes, null, 16);
         assertArrayEquals(keyData, kdfRef);
 
         // TV3:
         secretBytes = Hex.decode("d38bdbe5c4fc164cdd967f63c04fe07b60cde881c246438c");
-        info = null;
         keyData = Hex.decode("5e674db971bac20a80bad0d4514dc484");
-        kdfRef  = KdfX9_63.derive(secretBytes, info, 16);
+        kdfRef  = KdfX9_63.derive(secretBytes, null, 16);
         assertArrayEquals(keyData, kdfRef);
 
 
@@ -257,7 +253,7 @@ public class BasicEciesEncryptorTest {
         // [key data length = 1024]
         // TV1
         secretBytes = Hex.decode("22518b10e70f2a3f243810ae3254139efbee04aa57c7af7d");
-        info = Hex.decode("75eef81aa3041e33b80971203d2c0c52");
+        byte[] info = Hex.decode("75eef81aa3041e33b80971203d2c0c52");
         keyData = Hex.decode("c498af77161cc59f2962b9a713e2b215152d139766ce34a776df11866a69bf2e52a13d9c7c6fc878c50c5ea0bc7b00e0da2447cfd874f6cf92f30d0097111485500c90c3af8b487872d04685d14c8d1dc8d7fa08beb0ce0ababc11f0bd496269142d43525a78e5bc79a17f59676a5706dc54d54d4d1f0bd7e386128ec26afc21");
         kdfRef  = KdfX9_63.derive(secretBytes, info, 128);
         assertArrayEquals(keyData, kdfRef);

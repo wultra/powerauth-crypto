@@ -22,9 +22,9 @@ import java.security.PublicKey;
  */
 public class EciesPayload {
 
-    private PublicKey ephemeralPublicKey;
-    private byte[] mac;
-    private byte[] encryptedData;
+    private final PublicKey ephemeralPublicKey;
+    private final byte[] mac;
+    private final byte[] encryptedData;
 
     public EciesPayload(PublicKey ephemeralPublicKey, byte[] mac, byte[] encryptedData) {
         this.ephemeralPublicKey = ephemeralPublicKey;

@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * Enum with a derived key identifier and indexes.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public enum PowerAuthDerivedKey {
@@ -53,7 +53,7 @@ public enum PowerAuthDerivedKey {
 
     private long index;
 
-    private static Map<Long, PowerAuthDerivedKey> map = new HashMap<>();
+    private final static Map<Long, PowerAuthDerivedKey> map = new HashMap<>();
 
     static {
         for (PowerAuthDerivedKey derivedKey : PowerAuthDerivedKey.values()) {
@@ -61,7 +61,7 @@ public enum PowerAuthDerivedKey {
         }
     }
 
-    private PowerAuthDerivedKey(final long index) {
+    PowerAuthDerivedKey(final long index) {
         this.index = index;
     }
 

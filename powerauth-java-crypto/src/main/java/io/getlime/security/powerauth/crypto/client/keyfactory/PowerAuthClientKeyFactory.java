@@ -29,12 +29,12 @@ import java.util.List;
 /**
  * Class implementing client side key factory for keys related to PowerAuth processes.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr@lime-company.eu
  *
  */
 public class PowerAuthClientKeyFactory {
 
-    private KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Return a correct list of keys for given signature type.

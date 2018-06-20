@@ -62,38 +62,35 @@ public class PowerAuthRequestCanonizationUtils {
             }
 
             // Sort the query key pair collection
-            Collections.sort(items, new Comparator<Map<String, String>>() {
-                @Override
-                public int compare(Map<String, String> left, Map<String, String> right) {
-                    String leftKey = left.get(KEY);
-                    String leftVal = left.get(VAL);
-                    String rightKey = right.get(KEY);
-                    String rightVal = right.get(VAL);
-                    if (leftKey != null && leftKey.equals(rightKey)) {
-                        return leftVal != null ? leftVal.compareTo(rightVal) : -1;
-                    } else {
-                        return leftKey != null ? leftKey.compareTo(rightKey) : -1;
-                    }
+            items.sort((left, right) -> {
+                String leftKey = left.get(KEY);
+                String leftVal = left.get(VAL);
+                String rightKey = right.get(KEY);
+                String rightVal = right.get(VAL);
+                if (leftKey != null && leftKey.equals(rightKey)) {
+                    return leftVal != null ? leftVal.compareTo(rightVal) : -1;
+                } else {
+                    return leftKey != null ? leftKey.compareTo(rightKey) : -1;
                 }
             });
 
             // Serialize the sorted items back to the signature base string
-            String signatureBaseString = "";
+            StringBuilder signatureBaseString = new StringBuilder();
             boolean firstSkipped = false;
             for (Map<String, String> pair : items) {
                 String key = pair.get(KEY);
                 String val = pair.get(VAL);
                 if (firstSkipped) { // ... for all items except for the first one, prepend "&"
-                    signatureBaseString += "&";
+                    signatureBaseString.append("&");
                 } else {
                     firstSkipped = true;
                 }
-                signatureBaseString += URLEncoder.encode(key, "UTF-8");
-                signatureBaseString += "=";
-                signatureBaseString += URLEncoder.encode(val, "UTF-8");
+                signatureBaseString.append(URLEncoder.encode(key, "UTF-8"));
+                signatureBaseString.append("=");
+                signatureBaseString.append(URLEncoder.encode(val, "UTF-8"));
             }
 
-            return signatureBaseString.length() > 0 ? signatureBaseString : null;
+            return signatureBaseString.length() > 0 ? signatureBaseString.toString() : null;
         } catch (UnsupportedEncodingException e) {
             // Ignore, UTF-8 can be assumed to exist
         }

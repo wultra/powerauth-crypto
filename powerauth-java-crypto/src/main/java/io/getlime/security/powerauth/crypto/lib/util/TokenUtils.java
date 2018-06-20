@@ -29,8 +29,8 @@ import java.util.UUID;
  */
 public class TokenUtils {
 
-    private KeyGenerator keyGenerator = new KeyGenerator();
-    private HMACHashUtilities hmac = new HMACHashUtilities();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final HMACHashUtilities hmac = new HMACHashUtilities();
 
     /**
      * Generate random token ID. Use UUID format.

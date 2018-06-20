@@ -43,14 +43,14 @@ import java.util.Arrays;
 public class BasicEciesDecryptor {
 
     // Underlying implementation classes
-    private AESEncryptionUtils aes = new AESEncryptionUtils();
-    private HMACHashUtilities hmac = new HMACHashUtilities();
-    private KeyGenerator keyGenerator = new KeyGenerator();
-    private CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+    private final AESEncryptionUtils aes = new AESEncryptionUtils();
+    private final HMACHashUtilities hmac = new HMACHashUtilities();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
     // Encryptor working data storage
-    private PrivateKey privateKey;
-    private byte[] sharedInfo2;
+    private final PrivateKey privateKey;
+    private final byte[] sharedInfo2;
     private PublicKey ephemeralPublicKey;
 
     // Life-cycle management variables

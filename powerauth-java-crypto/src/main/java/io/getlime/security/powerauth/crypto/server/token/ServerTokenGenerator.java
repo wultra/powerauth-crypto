@@ -24,7 +24,7 @@ import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
  */
 public class ServerTokenGenerator {
 
-    private TokenUtils tokenUtils = new TokenUtils();
+    private final TokenUtils tokenUtils = new TokenUtils();
 
     /**
      * Generate random token ID. Use UUID format.

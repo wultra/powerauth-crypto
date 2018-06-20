@@ -18,7 +18,6 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-java-http</artifactId>
 	<version>0.19.0</version>
 	<name>powerauth-java-http</name>
@@ -36,7 +35,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>24.1.1-jre</version>
+			<version>25.1-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

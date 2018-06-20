@@ -52,10 +52,9 @@ public class PowerAuthActivationTest {
 
 	/**
 	 * Test that the keys are correctly generated.
-	 * @throws Exception When test fails.
 	 */
 	@Test
-	public void testGenerateKeys() throws Exception {
+	public void testGenerateKeys() {
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 		KeyGenerator keyGenerator = new KeyGenerator();
 		KeyPair kp = keyGenerator.generateKeyPair();

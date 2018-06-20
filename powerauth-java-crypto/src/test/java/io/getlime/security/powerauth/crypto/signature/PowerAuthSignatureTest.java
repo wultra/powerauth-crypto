@@ -34,6 +34,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -112,7 +113,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
                 System.out.println("### Client Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKey)));
 
-                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKey), ctr);
+                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctr);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -127,7 +128,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKey)));
                 assertEquals(signatureClientKey, signatureServerKey);
 
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKey), ctr);
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctr);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
