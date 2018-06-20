@@ -24,7 +24,7 @@ import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
  */
 public class ServerTokenVerifier {
 
-    private TokenUtils tokenUtils = new TokenUtils();
+    private final TokenUtils tokenUtils = new TokenUtils();
 
     /**
      * Helper method to convert provided timestamp into bytes (from string representation), for the

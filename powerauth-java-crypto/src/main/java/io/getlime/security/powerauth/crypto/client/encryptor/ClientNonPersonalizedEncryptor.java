@@ -19,8 +19,6 @@ import java.security.PublicKey;
 public class ClientNonPersonalizedEncryptor {
 
     private NonPersonalizedEncryptor encryptor;
-    private KeyGenerator generator = new KeyGenerator();
-    private CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
     /**
      * Create a new client side non-personalized encryptor using provided app key (for reference in encrypted object)
@@ -32,6 +30,7 @@ public class ClientNonPersonalizedEncryptor {
      */
     public ClientNonPersonalizedEncryptor(byte[] appKey, PublicKey masterPublicKey) throws InvalidKeyException {
 
+        final KeyGenerator generator = new KeyGenerator();
         byte[] sessionIndex = generator.generateRandomBytes(16);
         KeyPair ephemeralKeyPair = generator.generateKeyPair();
         if (ephemeralKeyPair == null) {
@@ -40,6 +39,7 @@ public class ClientNonPersonalizedEncryptor {
         final SecretKey ephemeralSecretKey = generator.computeSharedKey(ephemeralKeyPair.getPrivate(), masterPublicKey);
         final SecretKey sessionRelatedSecretKey = generator.deriveSecretKeyHmac(ephemeralSecretKey, sessionIndex);
 
+        final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         final byte[] sessionRelatedSecretKeyBytes = keyConversion.convertSharedSecretKeyToBytes(sessionRelatedSecretKey);
         final byte[] ephemeralPublicKeyBytes = keyConversion.convertPublicKeyToBytes(ephemeralKeyPair.getPublic());
 

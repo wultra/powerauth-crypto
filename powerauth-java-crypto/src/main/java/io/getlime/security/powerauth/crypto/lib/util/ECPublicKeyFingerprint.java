@@ -43,7 +43,6 @@ public class ECPublicKeyFingerprint {
         }
         int index = hash.length - 4;
         int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
-        String fingerprint = String.format("%0" + PowerAuthConfiguration.SIGNATURE_LENGTH + "d", number);
-        return fingerprint;
+        return String.format("%0" + PowerAuthConfiguration.SIGNATURE_LENGTH + "d", number);
     }
 }

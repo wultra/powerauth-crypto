@@ -18,7 +18,6 @@ package io.getlime.security.powerauth.crypto.client.signature;
 import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
 
 import javax.crypto.SecretKey;
-import java.security.InvalidKeyException;
 import java.util.List;
 
 /**
@@ -42,12 +41,8 @@ public class PowerAuthClientSignature {
      * @param signatureKeys A signature keys.
      * @param ctr Counter / index of the derived key KEY_DERIVED.
      * @return PowerAuth 2.0 signature for given data.
-     * @throws InvalidKeyException In case signature key is invalid.
      */
-    public String signatureForData(
-            byte[] data,
-            List<SecretKey> signatureKeys,
-            long ctr) throws InvalidKeyException {
+    public String signatureForData(byte[] data, List<SecretKey> signatureKeys, long ctr) {
         return signatureUtils.computePowerAuthSignature(data, signatureKeys, ctr);
     }
 

@@ -131,9 +131,8 @@ public class SignatureUtils {
      * @param signatureKeys Keys for signature validation.
      * @param counter Counter.
      * @return Return "true" if signature matches, "false" otherwise.
-     * @throws InvalidKeyException In case invalid key is provided.
      */
-    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, long counter) throws InvalidKeyException {
+    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, long counter) {
         return signature.equals(computePowerAuthSignature(data, signatureKeys, counter));
     }
 

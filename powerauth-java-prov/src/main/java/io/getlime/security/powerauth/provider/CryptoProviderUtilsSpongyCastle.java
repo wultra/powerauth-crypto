@@ -15,10 +15,6 @@
  */
 package io.getlime.security.powerauth.provider;
 
-import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
-import org.bouncycastle.crypto.agreement.kdf.DHKDFParameters;
-import org.bouncycastle.crypto.agreement.kdf.ECDHKEKGenerator;
-import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.spongycastle.jce.ECNamedCurveTable;
 import org.spongycastle.jce.interfaces.ECPrivateKey;
 import org.spongycastle.jce.interfaces.ECPublicKey;

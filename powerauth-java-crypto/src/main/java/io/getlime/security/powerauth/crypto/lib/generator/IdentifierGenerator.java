@@ -28,6 +28,14 @@ import java.util.UUID;
  */
 public class IdentifierGenerator {
 
+    /**
+     * Default length of Activation ID Short and Activation OTP.
+     */
+    private static final int BASE32_KEY_LENGTH = 5;
+
+    /**
+     * Secure random to be used for random ID and OTP generator.
+     */
     private final SecureRandom secureRandom = new SecureRandom();
 
     /**
@@ -47,9 +55,7 @@ public class IdentifierGenerator {
      * @return A new short activation ID.
      */
     public String generateActivationIdShort() {
-        return generateBase32Token(5, secureRandom)
-                + "-"
-                + generateBase32Token(5, secureRandom);
+        return generateBase32Token(secureRandom) + "-" + generateBase32Token(secureRandom);
     }
 
     /**
@@ -60,24 +66,21 @@ public class IdentifierGenerator {
      * @return A new activation OTP.
      */
     public String generateActivationOTP() {
-        return generateBase32Token(5, secureRandom)
-                + "-"
-                + generateBase32Token(5, secureRandom);
+        return generateBase32Token(secureRandom) + "-" + generateBase32Token(secureRandom);
     }
 
     /**
-     * Generate a new string with characters from Base32 encoding, with given
-     * length. Because the routines calling this method may call it more than
+     * Generate a new string of a default length (5) with characters from Base32 encoding.
+     * Because the routines calling this method may call it more than
      * once, an instance of SecureRandom is passed as one of the parameters.
      *
-     * @param length Length of the resulting random string.
      * @param random An instance of SecureRandom.
      * @return New string with Base32 characters of a given length.
      */
-    private String generateBase32Token(int length, SecureRandom random) {
-        byte[] randomBytes = new byte[length];
+    private String generateBase32Token(SecureRandom random) {
+        byte[] randomBytes = new byte[BASE32_KEY_LENGTH];
         random.nextBytes(randomBytes);
-        return BaseEncoding.base32().omitPadding().encode(randomBytes).substring(0, length);
+        return BaseEncoding.base32().omitPadding().encode(randomBytes).substring(0, BASE32_KEY_LENGTH);
     }
 
 }

@@ -34,7 +34,6 @@ public class PowerAuthHttpBody {
      * @param nonce Random 16B nonce value.
      * @param data Request data.
      * @return PowerAuth signature base string.
-     * @throws UnsupportedEncodingException In case UTF-8 is not supported on the system.
      */
     public static String getSignatureBaseString(String httpMethod, String requestUri, byte[] nonce, byte[] data) {
 
@@ -47,7 +46,7 @@ public class PowerAuthHttpBody {
                 // System must support UTF-8
                 return null;
             }
-            requestUriHash = new String(BaseEncoding.base64().encode(bytes));
+            requestUriHash = BaseEncoding.base64().encode(bytes);
         }
 
         String dataBase64 = "";
