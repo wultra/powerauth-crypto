@@ -24,7 +24,7 @@
 
 	<groupId>io.getlime.security</groupId>
 	<artifactId>powerauth-crypto-parent</artifactId>
-	<version>0.19.0</version>
+	<version>0.21.0</version>
 	<packaging>pom</packaging>
 
 	<inceptionYear>2016</inceptionYear>
