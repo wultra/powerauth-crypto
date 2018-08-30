@@ -3,14 +3,17 @@ jdk:
   - oraclejdk8
 env:
   global:
-  - secure: "tcly8qzj6RNacbP/7V3LHrXHSHVQLhNYR7a1Kdp+vrB/5wL518xeKz7zaiFag5Q/VN1pS6wVFsxQhoLMaOP+Oz5/ATeFvVZ1ldw2mbmdHC9S1BTkvNe+4lNA6Ri9noB5Ijg3jANbmgBXSlvvg/K7W5Y0SwnM06tqvI9BbmPwzHGhlPW9k/bepDbBoybGYQoSe1NIe1DOm8vxpMk0CTslR0o/+MMbJK7Wq8H7MI71eVh+2/h9R53qLnxlfMWQPwscqAq7A10zm6rcgfu7qYwdcDbagSbRxREq/hKGIK29+NB8VOlv9DxEAz83+iluKufuKXSjhZ8j24mS5/W4UrW/16iIlJOPLphUrK/nkkcbDxbPH+GMbYnNbKoq9LZrpBmdP4T7IBnvMAi+eJQI4Pr+Po4N4bDj4Z53jm19AVG9ICVwqhfYv7TN6eauMNxfPsINsiMUBunII6iF8bnfWwZ8KgWcKe5Og3tdRWXMpJnBPgKB1dlsYN22fF1gQajucI+Uuzhxbz7wdYbVe13OuQjZKj7lnRvwq8CAn4ek7LUCs2bCpTfjKh9sUvgZN5eegzbpKfr8xEeGlqFGbkKmvFO3XkH3UkyOXCa4MUH3okGP08/0JVRnnUSjHgAa4RKWIzMQSNpGpI2zEblTjl6XCfYhSU+9IuShWYR5CpQRtYq3cEs="
+  - secure: "ksk58FgFdLZG/MrpKRGOkAYlpkX30RzIZi58Oari7uW/sBx2rfZ9QqXCE0RZYOQT/cEWb1cKjpVu8FoG2SQvLNYG4/NkEXdfMknbv6prGZGDD//XJZWnM9W0tiFHaUMpdqNaoQbmEU6VGyIWEuPReRB3XVIdY0n6gBRWEjRaCr8xbfvxhR3PGLmGkXYkpf0eJjkEiRViouTN4vDADM9Bp3O1PKDtfRvbzQ5vP41joOpdeCUKukscezLi0qiWlZlWrnbhRQd91NHXoDZz1FgzFFjPqwQe7YXD6hDc65FfAQvUSmBT2L96n9fcnqyMLqy3VTBxddaDGJAMsJXAA8g7VGk9K+GkKNfeLHb/W87LuzVZI0p0QQVjClAMbKh+Und1L41zcdP6y96mp3IV6aSS2g/vvDLzIG7ZZpRYx3s51AKDjPzrsd2mKShjPOJoZppGShmA56faToL3COnpK6tyEAv+QkS7m+3yEEcDkmOYjxk+JZOsUsDiY2uG/fBsnndXJTNDAMr8jemr1mYfov1+AuIKXgWgZ+oYhzEDrGOTYN4wLWPivGOQr84UbxRHLKufvCSLJY9qtyif9F4dz8mkBPYg3NzdpOIaO3fMc1ZmciishmvptF4nywYV9kFeuUR17VrXRZLHheq5mRxDlUKK7M7OWZ6CmiwLvdkLVPBB5Go="
+
+before_install:
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 
 addons:
   coverity_scan:
     project:
-      name: lime-company/lime-security-powerauth
+      name: wultra/powerauth-crypto
       description: Build submitted via Travis CI
-    notification_email: petr@lime-company.eu
+    notification_email: petr@wultra.com
     build_command_prepend: mvn clean
     build_command: mvn -DskipTests=true compile
     branch_pattern: master
