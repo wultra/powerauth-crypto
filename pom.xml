@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2016 Lime - HighTech Solutions s.r.o.
+  ~ Copyright 2016 Wultra s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@
 	<url>http://powerauth.com/</url>
 
 	<organization>
-		<name>Lime - HighTech Solutions Inc.</name>
-		<url>http://getlime.io/</url>
+		<name>Wultra s.r.o.</name>
+		<url>https://wultra.com/</url>
 	</organization>
 
 	<licenses>
@@ -45,7 +45,7 @@
 	<developers>
 		<developer>
 			<name>Petr Dvorak</name>
-			<email>petr@lime-company.eu</email>
+			<email>petr@wultra.com</email>
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -53,14 +53,14 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/lime-company/powerauth-crypto.git</connection>
-		<developerConnection>scm:git:https://github.com/lime-company/powerauth-crypto.git</developerConnection>
-		<url>https://github.com/lime-company/powerauth-crypto</url>
+		<connection>scm:git:https://github.com/wultra/powerauth-crypto.git</connection>
+		<developerConnection>scm:git:https://github.com/wultra/powerauth-crypto.git</developerConnection>
+		<url>https://github.com/wultra/powerauth-crypto</url>
 	</scm>
 
 	<issueManagement>
 		<system>Github</system>
-		<url>https://github.com/lime-company/powerauth-crypto/issues</url>
+		<url>https://github.com/wultra/powerauth-crypto/issues</url>
 	</issueManagement>
 
 	<modules>
