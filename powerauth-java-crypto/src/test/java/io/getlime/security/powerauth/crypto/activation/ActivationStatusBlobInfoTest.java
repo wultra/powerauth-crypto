@@ -73,7 +73,7 @@ public class ActivationStatusBlobInfoTest {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] zeroIv = new byte[16];
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
-        // Status blob bytes 0 ... 15 are deterministic, verify them
+        // Status blob bytes 0 ... 14 are deterministic, verify them
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE, buffer.getInt(0));
         assertEquals((byte) 3, buffer.get(4));
