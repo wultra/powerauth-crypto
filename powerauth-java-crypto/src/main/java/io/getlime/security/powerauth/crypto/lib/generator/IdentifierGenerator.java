@@ -21,7 +21,7 @@ import java.security.SecureRandom;
 import java.util.UUID;
 
 /**
- * Generator of identifiers used in Poweruth protocol.
+ * Generator of identifiers used in PowerAuth protocol.
  *
  * @author Petr Dvorak
  *
