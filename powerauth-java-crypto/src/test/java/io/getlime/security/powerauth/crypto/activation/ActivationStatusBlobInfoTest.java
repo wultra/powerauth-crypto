@@ -36,6 +36,7 @@ import java.security.KeyPair;
 import java.security.Security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test activation status blob.
@@ -93,5 +94,6 @@ public class ActivationStatusBlobInfoTest {
         assertEquals(3, statusBlobDecoded.getUpgradeVersion());
         assertEquals(1, statusBlobDecoded.getFailedAttempts());
         assertEquals(5, statusBlobDecoded.getMaxFailedAttempts());
+        assertTrue(statusBlobDecoded.isValid());
     }
 }
