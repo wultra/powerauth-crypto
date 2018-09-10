@@ -63,7 +63,7 @@ public class ActivationStatusBlobInfoTest {
         final KeyGenerator keyGenerator = new KeyGenerator();
         final KeyPair keyPairDevice = keyGenerator.generateKeyPair();
         final KeyPair keyPairServer = keyGenerator.generateKeyPair();
-        // Compute share master secret key
+        // Compute shared master secret key
         final SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(keyPairServer.getPrivate(), keyPairDevice.getPublic());
         // Derive transport key
         final SecretKey transportKey = powerAuthServerKeyFactory.generateServerTransportKey(masterSecretKey);
