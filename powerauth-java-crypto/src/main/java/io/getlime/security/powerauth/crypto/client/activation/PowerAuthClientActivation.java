@@ -227,7 +227,8 @@ public class PowerAuthClientActivation {
                 // return mock status in case byte array has weird length
                 ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
                 statusInfo.setActivationStatus((byte) 5);
-                statusInfo.setCounter(0L);
+                statusInfo.setCurrentVersion((byte) 3);
+                statusInfo.setUpgradeVersion((byte) 3);
                 statusInfo.setFailedAttempts((byte) 0);
                 statusInfo.setMaxFailedAttempts((byte) 5);
                 statusInfo.setValid(false);
@@ -245,13 +246,16 @@ public class PowerAuthClientActivation {
 
             // check if the prefix is OK
             int prefix = buffer.getInt(0);
-            statusInfo.setValid(prefix == 0xDEC0DED1);
+            statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE);
 
             // fetch the activation status byte
             statusInfo.setActivationStatus(buffer.get(4));
 
-            // fetch the counter info
-            statusInfo.setCounter(buffer.getLong(5));
+            // fetch the current version status byte
+            statusInfo.setCurrentVersion(buffer.get(5));
+
+            // fetch the upgrade version status byte
+            statusInfo.setUpgradeVersion(buffer.get(6));
 
             // fetch the failed attempt count
             statusInfo.setFailedAttempts(buffer.get(13));
