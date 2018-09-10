@@ -24,9 +24,12 @@ package io.getlime.security.powerauth.crypto.lib.model;
  */
 public class ActivationStatusBlobInfo {
 
+    public static final int ACTIVATION_STATUS_MAGIC_VALUE = 0xDEC0DED1;
+
     private boolean valid;
     private byte activationStatus;
-    private long counter;
+    private byte currentVersion;
+    private byte upgradeVersion;
     private byte failedAttempts;
     private byte maxFailedAttempts;
 
@@ -64,19 +67,35 @@ public class ActivationStatusBlobInfo {
     }
 
     /**
-     * Get activation counter value.
-     * @return Activation counter value.
+     * Get current crypto protocol version.
+     * @return Current crypto protocol version.
      */
-    public long getCounter() {
-        return counter;
+    public byte getCurrentVersion() {
+        return currentVersion;
     }
 
     /**
-     * Set activation counter value.
-     * @param counter Åctivation counter value.
+     * Set current crypto protocol version.
+     * @param currentVersion Current crypto protocol version.
      */
-    public void setCounter(long counter) {
-        this.counter = counter;
+    public void setCurrentVersion(byte currentVersion) {
+        this.currentVersion = currentVersion;
+    }
+
+    /**
+     * Get crypto version for possible migration.
+     * @return Crypto version for possible migration.
+     */
+    public byte getUpgradeVersion() {
+        return upgradeVersion;
+    }
+
+    /**
+     * Set crypto version for possible migration.
+     * @param upgradeVersion Crypto version for possible migration.
+     */
+    public void setUpgradeVersion(byte upgradeVersion) {
+        this.upgradeVersion = upgradeVersion;
     }
 
     /**
