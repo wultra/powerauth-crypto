@@ -19,7 +19,6 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.util.CRC16;
 
 import java.nio.ByteBuffer;
-import java.security.SecureRandom;
 import java.util.UUID;
 
 /**
@@ -45,10 +44,7 @@ public class IdentifierGenerator {
      */
     private static final int ACTIVATION_CODE_RANDOM_BYTES_LENGTH = 10;
 
-    /**
-     * Secure random to be used for random ID and OTP generator.
-     */
-    private final SecureRandom secureRandom = new SecureRandom();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Generate a new random activation ID - a UUID level 4 instance.
@@ -67,7 +63,7 @@ public class IdentifierGenerator {
      * @return A new short activation ID.
      */
     public String generateActivationIdShort() {
-        return generateBase32Token(secureRandom) + "-" + generateBase32Token(secureRandom);
+        return generateBase32Token() + "-" + generateBase32Token();
     }
 
     /**
@@ -78,20 +74,16 @@ public class IdentifierGenerator {
      * @return A new activation OTP.
      */
     public String generateActivationOTP() {
-        return generateBase32Token(secureRandom) + "-" + generateBase32Token(secureRandom);
+        return generateBase32Token() + "-" + generateBase32Token();
     }
 
     /**
      * Generate a new string of a default length (5) with characters from Base32 encoding.
-     * Because the routines calling this method may call it more than
-     * once, an instance of SecureRandom is passed as one of the parameters.
      *
-     * @param random An instance of SecureRandom.
      * @return New string with Base32 characters of a given length.
      */
-    private String generateBase32Token(SecureRandom random) {
-        byte[] randomBytes = new byte[BASE32_KEY_LENGTH];
-        random.nextBytes(randomBytes);
+    private String generateBase32Token() {
+        byte[] randomBytes = keyGenerator.generateRandomBytes(BASE32_KEY_LENGTH);
         return BaseEncoding.base32().omitPadding().encode(randomBytes).substring(0, BASE32_KEY_LENGTH);
     }
 
@@ -108,8 +100,7 @@ public class IdentifierGenerator {
         ByteBuffer byteBuffer = ByteBuffer.allocate(ACTIVATION_CODE_BYTES_LENGTH);
 
         // Generate 10 random bytes.
-        byte[] randomBytes = new byte[ACTIVATION_CODE_RANDOM_BYTES_LENGTH];
-        secureRandom.nextBytes(randomBytes);
+        byte[] randomBytes = keyGenerator.generateRandomBytes(ACTIVATION_CODE_RANDOM_BYTES_LENGTH);
         byteBuffer.put(randomBytes);
 
         // Calculate CRC-16 from that 10 bytes.
