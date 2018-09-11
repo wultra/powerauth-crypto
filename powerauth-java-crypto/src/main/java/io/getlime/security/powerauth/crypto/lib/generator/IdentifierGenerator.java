@@ -16,7 +16,9 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import com.google.common.io.BaseEncoding;
+import io.getlime.security.powerauth.crypto.lib.util.CRC16;
 
+import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.UUID;
 
@@ -32,6 +34,16 @@ public class IdentifierGenerator {
      * Default length of Activation ID Short and Activation OTP.
      */
     private static final int BASE32_KEY_LENGTH = 5;
+
+    /**
+     * Default length of Activation Code before conversion to Base32.
+     */
+    private static final int ACTIVATION_CODE_BYTES_LENGTH = 12;
+
+    /**
+     * Default length of random bytes used for Activation Code.
+     */
+    private static final int ACTIVATION_CODE_RANDOM_BYTES_LENGTH = 10;
 
     /**
      * Secure random to be used for random ID and OTP generator.
@@ -83,4 +95,44 @@ public class IdentifierGenerator {
         return BaseEncoding.base32().omitPadding().encode(randomBytes).substring(0, BASE32_KEY_LENGTH);
     }
 
+    /**
+     * Crypto 3.0 activation code construction:
+     * - Generate 10 random bytes.
+     * - Calculate CRC-16 from that 10 bytes.
+     * - Append CRC-16 in big endian order at the end of random bytes
+     * - Generate Base32 representation from that 12 bytes, without padding characters.
+     * - Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.
+     * @return Generated activation code.
+     */
+    public String generateActivationCode() {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(ACTIVATION_CODE_BYTES_LENGTH);
+
+        // Generate 10 random bytes.
+        byte[] randomBytes = new byte[ACTIVATION_CODE_RANDOM_BYTES_LENGTH];
+        secureRandom.nextBytes(randomBytes);
+        byteBuffer.put(randomBytes);
+
+        // Calculate CRC-16 from that 10 bytes.
+        CRC16 crc16 = new CRC16();
+        byte[] crc16Value = crc16.compute(randomBytes);
+
+        // Append CRC-16 in big endian order at the end of random bytes
+        byteBuffer.put(crc16Value);
+
+        // Generate Base32 representation from that 12 bytes, without padding characters.
+        String base32Value = BaseEncoding.base32().omitPadding().encode(byteBuffer.array());
+
+        // Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.
+        StringBuilder activationCodeBuilder = new StringBuilder(23);
+        for (int i = 0; i < 4; i++) {
+            String group = base32Value.substring(i * 5, i * 5 + 5);
+            activationCodeBuilder.append(group);
+            if (i < 3) {
+                activationCodeBuilder.append("-");
+            }
+        }
+
+        // Return generated activation code.
+        return activationCodeBuilder.toString();
+    }
 }
