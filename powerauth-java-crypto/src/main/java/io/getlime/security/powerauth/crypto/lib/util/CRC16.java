@@ -15,14 +15,33 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import java.nio.ByteBuffer;
+import java.util.zip.Checksum;
 
-public class CRC16 {
+/**
+ * Class which computes CRC-16 of input data providing standard {@link java.util.zip.Checksum} interface.
+ *
+ * The algorithm uses irreducible polynomial 1 + x^2 + x^15 + x^16.
+ *
+ * @author Roman Strobl, roman.strobl@wultra.com
+ */
+public class CRC16 implements Checksum {
+
+    /**
+     * Initial CRC value.
+     */
+    private int crc = 0x0000;
+
+    /**
+     * Default constructor.
+     */
+    public CRC16() {
+    }
 
     /**
      * CRC lookup table.
+     *
      */
-    private static final int[] table = {
+    private static final int[] TABLE = {
             0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
             0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
             0xCC01, 0x0CC0, 0x0D80, 0xCD41, 0x0F00, 0xCFC1, 0xCE81, 0x0E40,
@@ -58,22 +77,43 @@ public class CRC16 {
     };
 
     /**
-     * Calculates CRC16 for given input using a lookup table.
+     * Update the CRC-16 checksum with the specified byte (the low
+     * eight bits of the argument b).
      *
-     * The algorithm uses irreducible polynomial 1 + x^2 + x^15 + x^16.
-     *
-     * @param input Input byte array.
-     * @return CRC16 two-byte array in big endian order.
+     * @param b The byte to update the checksum with.
      */
-    public byte[] compute(byte[] input) {
-        int crc = 0x0000;
-        for (byte b : input) {
-            crc = (crc >>> 8) ^ table[(crc ^ b) & 0xff];
-        }
-
-        ByteBuffer b = ByteBuffer.allocate(2);
-        b.putShort((short)crc);
-        return b.array();
+    @Override
+    public void update(int b) {
+        crc = (crc >> 8) ^ TABLE[((crc) ^ (b & 0xff)) & 0xff];
     }
 
+    /**
+     * Update the CRC-16 checksum with specified array of bytes.
+     * @param bytes The byte array to update the checksum with.
+     * @param offset The start offset of the data.
+     * @param length The number of bytes to use for the update.
+     */
+    @Override
+    public void update(byte[] bytes, int offset, int length) {
+        for (int i = offset; i < offset + length; i++) {
+            update((int) bytes[i]);
+        }
+    }
+
+    /**
+     * Return the current CRC-16 value.
+     * @return Current CRC-16 value.
+     */
+    @Override
+    public long getValue() {
+        return crc;
+    }
+
+    /**
+     * Reset CRC-16 to initial value.
+     */
+    @Override
+    public void reset() {
+        crc = 0x0000;
+    }
 }
