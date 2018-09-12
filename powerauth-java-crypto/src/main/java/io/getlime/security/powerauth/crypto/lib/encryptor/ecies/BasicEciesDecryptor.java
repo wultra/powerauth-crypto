@@ -83,11 +83,11 @@ public class BasicEciesDecryptor {
      * Decrypt provided encrypted payload.
      *
      * @param payload Payload to be decrypted.
-     * @param info Additional information that enters the KDF function.
+     * @param sharedInfo1 Additional information that enters the KDF function.
      * @return Decrypted bytes.
      * @throws EciesException In case decryption fails due to invalid life-cycle phase, invalid key or invalid MAC value.
      */
-    public byte[] decrypt(EciesPayload payload, byte[] info) throws EciesException {
+    public byte[] decrypt(EciesPayload payload, byte[] sharedInfo1) throws EciesException {
         try {
             if (!canDecryptData) {
                 throw new EciesException("This decryptor instance was already used");
@@ -98,7 +98,7 @@ public class BasicEciesDecryptor {
 
             // Derive secret key
             final SecretKey secretKey = keyGenerator.computeSharedKey(privateKey, ephemeralPublicKey, true);
-            final byte[] ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(secretKey), info, 32);
+            final byte[] ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(secretKey), sharedInfo1, 32);
 
             // Validate data MAC value
             final byte[] macKeyBytes = Arrays.copyOfRange(ephemeralDerivedSecretKey, 16, 32);
@@ -127,11 +127,11 @@ public class BasicEciesDecryptor {
      * Encrypt data using the same base key that was used for previous decryption. Useful when handling the
      * "request/response" cycle of the app.
      * @param data Data to be encrypted.
-     * @param info Additional information that enters the KDF function.
+     * @param sharedInfo1 Additional information that enters the KDF function.
      * @return Encrypted data.
      * @throws EciesException In case data could not be encrypted due to invalid key or invalid lifecycle phase.
      */
-    public EciesPayload encrypt(byte[] data, byte[] info) throws EciesException {
+    public EciesPayload encrypt(byte[] data, byte[] sharedInfo1) throws EciesException {
         try {
             if (!canEncryptData) {
                 throw new EciesException("This decryptor instance was already used");
@@ -139,7 +139,7 @@ public class BasicEciesDecryptor {
 
             // Derive secret key
             final SecretKey secretKey = keyGenerator.computeSharedKey(privateKey, ephemeralPublicKey, true);
-            final byte[] ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(secretKey), info, 32);
+            final byte[] ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(secretKey), sharedInfo1, 32);
 
             // Encrypt the data
             final byte[] encKeyBytes = Arrays.copyOf(ephemeralDerivedSecretKey, 16);
@@ -169,15 +169,15 @@ public class BasicEciesDecryptor {
      *
      * @param data Data to be encrypted.
      * @param ephemeralPublicKey Ephemeral public key used for encryption.
-     * @param info Additional information that enters the KDF function.
+     * @param sharedInfo1 Additional information that enters the KDF function.
      * @return Encrypted data.
      * @throws EciesException In case data could not be encrypted due to invalid key or invalid lifecycle phase.
      */
-    public EciesPayload encrypt(byte[] data, ECPublicKey ephemeralPublicKey, byte[] info) throws EciesException {
+    public EciesPayload encrypt(byte[] data, ECPublicKey ephemeralPublicKey, byte[] sharedInfo1) throws EciesException {
         this.ephemeralPublicKey = ephemeralPublicKey;
         this.canDecryptData = false;
         this.canEncryptData = true;
-        return encrypt(data, info);
+        return encrypt(data, sharedInfo1);
     }
 
 }
