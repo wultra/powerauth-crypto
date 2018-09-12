@@ -132,7 +132,6 @@ public class GenerateVectorDataTest {
 			PublicKey masterPublicKey = kp.getPublic();
 
 			byte[] activationSignature = activationServer.generateActivationSignature(activationCode, masterPrivateKey);
-			long checksum = identifierGenerator.computeChecksum(activationCode);
 
 			System.out.println("    {");
 			System.out.println("        \"input\": {");
@@ -141,7 +140,6 @@ public class GenerateVectorDataTest {
 			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
-			System.out.println("            \"checksum\": \"" + checksum + "\"");
 			System.out.println("            \"activationSignature\": \"" + BaseEncoding.base64().encode(activationSignature) + "\"");
 			System.out.println("        }");
 			if (i == max - 1) {
