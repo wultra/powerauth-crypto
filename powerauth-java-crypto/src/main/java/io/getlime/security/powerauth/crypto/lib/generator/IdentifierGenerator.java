@@ -129,20 +129,15 @@ public class IdentifierGenerator {
      * @return Whether activation code is correct.
      */
     public boolean validateActivationCode(String activationCode) {
-        // Verify activation code using regular expression
-        if (!activationCode.matches("[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}")) {
+        // Validate activation code format
+        if (!validateActivationCodeFormat(activationCode)) {
             return false;
         }
 
         // Decode the Base32 value
         byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
 
-        // Verify byte array length
-        if (activationCodeBytes.length != 12) {
-            return false;
-        }
-
-        // Split activation code bytes and CRC
+        // Split activation code bytes and CRC-16 checksum
         ByteBuffer byteBuffer = ByteBuffer.wrap(activationCodeBytes);
         byte[] activationCodeValue = new byte[10];
         byte[] crc16Bytes = new byte[2];
@@ -150,14 +145,60 @@ public class IdentifierGenerator {
         byteBuffer.get(crc16Bytes, 0, 2);
 
         // Expand actual CRC-16 value by 6 bytes to easily obtain long value
-        long crc16Actual = convertCRC16BytesToLong(crc16Bytes);
+        long actualChecksum = convertCRC16BytesToLong(crc16Bytes);
 
-        // Calculate CRC-16 for comparison
-        CRC16 crc16Expected = new CRC16();
-        crc16Expected.update(activationCodeValue, 0, 10);
+        // Compute expected checksum
+        long expectedChecksum = computeCRC16Checksum(activationCodeValue);
 
-        // Compare CRC-16 values
-        return crc16Expected.getValue() == crc16Actual;
+        // Compare checksum values
+        return expectedChecksum == actualChecksum;
+    }
+
+    /**
+     * Extract CRC-16 value from activation codes.
+     *
+     * @param activationCode Activation code.
+     * @return Extracted CRC-16 checksum.
+     */
+    public long computeChecksum(String activationCode) {
+        if (!validateActivationCode(activationCode)) {
+            throw new IllegalArgumentException("Invalid activation code: "+activationCode);
+        }
+        // Decode the Base32 value
+        byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
+        // Extract raw activation code value
+        ByteBuffer byteBuffer = ByteBuffer.wrap(activationCodeBytes, 0, 10);
+        byte[] activationCodeRaw = new byte[10];
+        byteBuffer.get(activationCodeRaw, 0, 10);
+        return computeCRC16Checksum(activationCodeRaw);
+    }
+
+    /**
+     * Compute CRC-16 checksum for given input.
+     * @param input Input data in bytes.
+     * @return CRC-16 checksum.
+     */
+    private long computeCRC16Checksum(byte[] input) {
+        CRC16 crc16 = new CRC16();
+        crc16.update(input, 0, input.length);
+        return crc16.getValue();
+    }
+
+    /**
+     * Validate activation code format.
+     * @param activationCode Activation code.
+     * @return Whether activation code format is valid.
+     */
+    private boolean validateActivationCodeFormat(String activationCode) {
+        // Verify activation code using regular expression
+        if (!activationCode.matches("[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}")) {
+            return false;
+        }
+        // Decode the Base32 value
+        byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
+
+        // Verify byte array length
+        return activationCodeBytes.length == 12;
     }
 
     /**

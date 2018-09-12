@@ -86,6 +86,15 @@ public class PowerAuthServerActivation {
     }
 
     /**
+     * Generate a pseudo-unique activation code. The format of activation code is "ABCDE-FGHIJ-KLMNO-PQRST".
+     *
+     * @return A new activation code.
+     */
+    public String generateActivationCode() {
+        return identifierGenerator.generateActivationCode();
+    }
+
+    /**
      * Generate a server related activation key pair.
      *
      * @return A new server key pair.
@@ -113,6 +122,27 @@ public class PowerAuthServerActivation {
                                               PrivateKey masterPrivateKey) throws InvalidKeyException {
         try {
             byte[] bytes = (activationIdShort + "-" + activationOTP).getBytes("UTF-8");
+            return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
+        } catch (UnsupportedEncodingException | SignatureException ex) {
+            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * Generate signature for the activation code.
+     *
+     * Signature is then computed using the master private key.
+     *
+     * @param activationCode Short activation ID.
+     * @param masterPrivateKey Master Private Key.
+     * @return Signature of activation data using Master Private Key.
+     * @throws InvalidKeyException In case Master Private Key is invalid.
+     */
+    public byte[] generateActivationSignature(String activationCode,
+                                              PrivateKey masterPrivateKey) throws InvalidKeyException {
+        try {
+            byte[] bytes = activationCode.getBytes("UTF-8");
             return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
         } catch (UnsupportedEncodingException | SignatureException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);

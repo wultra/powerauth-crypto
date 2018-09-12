@@ -71,6 +71,25 @@ public class PowerAuthClientActivation {
     }
 
     /**
+     * Verify the signature of activation code using Master Public Key.
+     *
+     * @param activationCode Activation code.
+     * @param signature Activation data signature.
+     * @param masterPublicKey Master Public Key.
+     * @return Returns "true" if the signature matches activation data, "false" otherwise.
+     * @throws InvalidKeyException If provided master public key is invalid.
+     */
+    public boolean verifyActivationCodeSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException {
+        try {
+            byte[] bytes = activationCode.getBytes("UTF-8");
+            return signatureUtils.validateECDSASignature(bytes, signature, masterPublicKey);
+        } catch (SignatureException | UnsupportedEncodingException ex) {
+            Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
      * Generate a device related activation key pair.
      *
      * @return A new device key pair.

@@ -32,7 +32,10 @@ import org.junit.Test;
 
 import javax.crypto.SecretKey;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,13 +65,13 @@ public class GenerateVectorDataTest {
 	 * @throws Exception In case any unknown error occurs.
 	 */
 	@Test
-	public void testVerifyActivationData() throws Exception {
+	public void testVerifyActivationDataV2() throws Exception {
 		String activationOTP;
 		String activationIdShort;
 
 		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 
-		System.out.println("## Verify Activation Data Signature");
+		System.out.println("## Verify Activation Data Signature (V2)");
 		System.out.println("[");
 
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
@@ -92,6 +95,53 @@ public class GenerateVectorDataTest {
 			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)) + "\"");
 			System.out.println("        },");
 			System.out.println("        \"output\": {");
+			System.out.println("            \"activationSignature\": \"" + BaseEncoding.base64().encode(activationSignature) + "\"");
+			System.out.println("        }");
+			if (i == max - 1) {
+				System.out.println("    }");
+			} else {
+				System.out.println("    },");
+			}
+		}
+
+		System.out.println("]");
+	}
+
+	/**
+	 * Generate test data for activation data signature.
+	 * @throws Exception In case any unknown error occurs.
+	 */
+	@Test
+	public void testVerifyActivationDataV3() throws Exception {
+		String activationCode;
+
+		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+
+		System.out.println("## Verify Activation Data Signature (V3)");
+		System.out.println("[");
+
+		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+		IdentifierGenerator identifierGenerator = new IdentifierGenerator();
+
+		int max = 20;
+		for (int i = 0; i < max; i++) {
+			activationCode = identifierGenerator.generateActivationCode();
+
+			KeyPair kp = activationServer.generateServerKeyPair();
+			PrivateKey masterPrivateKey = kp.getPrivate();
+			PublicKey masterPublicKey = kp.getPublic();
+
+			byte[] activationSignature = activationServer.generateActivationSignature(activationCode, masterPrivateKey);
+			long checksum = identifierGenerator.computeChecksum(activationCode);
+
+			System.out.println("    {");
+			System.out.println("        \"input\": {");
+			System.out.println("            \"activationCode\": \"" + activationCode + "\",");
+			System.out.println("            \"masterPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
+			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)) + "\"");
+			System.out.println("        },");
+			System.out.println("        \"output\": {");
+			System.out.println("            \"checksum\": \"" + checksum + "\"");
 			System.out.println("            \"activationSignature\": \"" + BaseEncoding.base64().encode(activationSignature) + "\"");
 			System.out.println("        }");
 			if (i == max - 1) {
