@@ -142,7 +142,7 @@ public class IdentifierGenerator {
         byteBuffer.get(activationCodeValue, 0, 10);
         byteBuffer.get(crc16Bytes, 0, 2);
 
-        // Expand actual CRC-16 value by 6 bytes to easily obtain long value
+        // Convert actual CRC-16 to long
         long actualChecksum = convertCRC16BytesToLong(crc16Bytes);
 
         // Compute expected checksum
