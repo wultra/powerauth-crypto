@@ -149,12 +149,15 @@ public class SignatureUtils {
      *
      * PowerAuth protocol version: 2.0
      *
+     * @deprecated Use {@link #validatePowerAuthSignature(byte[], String, List, byte[])}.
+     *
      * @param data Data that were signed.
      * @param signature Data signature.
      * @param signatureKeys Keys for signature validation.
      * @param counter Counter.
      * @return Return "true" if signature matches, "false" otherwise.
      */
+    @Deprecated
     public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, long counter) {
         return signature.equals(computePowerAuthSignature(data, signatureKeys, counter));
     }
