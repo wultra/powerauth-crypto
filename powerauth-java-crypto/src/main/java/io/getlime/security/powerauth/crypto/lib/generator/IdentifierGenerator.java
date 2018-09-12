@@ -111,9 +111,7 @@ public class IdentifierGenerator {
         byteBuffer.put(randomBytes);
 
         // Calculate CRC-16 from that 10 bytes.
-        CRC16 crc16 = new CRC16();
-        crc16.update(randomBytes, 0, randomBytes.length);
-        long crc = crc16.getValue();
+        long crc = computeCRC16Checksum(randomBytes);
 
         // Append CRC-16 (2 bytes) in big endian order at the end of random bytes.
         byteBuffer.put((byte) ((crc & 0x0000ff00) >>> 8));
