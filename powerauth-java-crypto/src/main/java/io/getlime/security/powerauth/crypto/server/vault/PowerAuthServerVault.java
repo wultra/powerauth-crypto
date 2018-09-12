@@ -31,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Class implementing server-side logics for PowerAuth vault encryption.
+ * Class implementing server-side logic for PowerAuth vault encryption.
  *
  * @author Petr Dvorak
  *
@@ -41,9 +41,12 @@ public class PowerAuthServerVault {
     /**
      * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using
      * a correct KEY_ENCRYPTION_VAULT_TRANSPORT.
+     *
+     * PowerAuth protocol version: 2.0
+     *
      * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE
      * @param devicePublicKey Device public key KEY_DEVICE_PUBLIC
-     * @param ctr Counter CTR
+     * @param ctr Numeric counter.
      * @return Encrypted vault encryption key.
      * @throws InvalidKeyException In case a provided key is incorrect.
      */
@@ -60,6 +63,34 @@ public class PowerAuthServerVault {
             byte[] iv = new byte[16];
             AESEncryptionUtils aes = new AESEncryptionUtils();
             return aes.encrypt(keyVaultEncryptionBytes, iv, keyVaultEncryptionTransport);
+        } catch (IllegalBlockSizeException | BadPaddingException ex) {
+            Logger.getLogger(PowerAuthServerVault.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using KEY_TRANSPORT.
+     *
+     * PowerAuth protocol version: 3.0
+     *
+     * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE
+     * @param devicePublicKey Device public key KEY_DEVICE_PUBLIC
+     * @return Encrypted vault encryption key.
+     * @throws InvalidKeyException In case a provided key is incorrect.
+     */
+    public byte[] encryptVaultEncryptionKey(PrivateKey serverPrivateKey, PublicKey devicePublicKey) throws InvalidKeyException {
+        try {
+            KeyGenerator keyGenerator = new KeyGenerator();
+            SecretKey keyMasterSecret = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
+            SecretKey keyMasterTransport = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.TRANSPORT.getIndex());
+            SecretKey keyVaultEncryption = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
+
+            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+            byte[] keyVaultEncryptionBytes = keyConvertor.convertSharedSecretKeyToBytes(keyVaultEncryption);
+            byte[] iv = new byte[16];
+            AESEncryptionUtils aes = new AESEncryptionUtils();
+            return aes.encrypt(keyVaultEncryptionBytes, iv, keyMasterTransport);
         } catch (IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(PowerAuthServerVault.class.getName()).log(Level.SEVERE, null, ex);
         }

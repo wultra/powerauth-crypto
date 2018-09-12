@@ -242,7 +242,7 @@ public class PowerAuthServerActivation {
     }
 
     /**
-     * Returns an encrypted status blob as described in PowerAuth 2.0 Specification.
+     * Returns an encrypted status blob as described in PowerAuth Specification.
      * @param statusByte Byte determining the status of the activation.
      * @param currentVersionByte Current crypto protocol version.
      * @param upgradeVersionByte Crypto version for possible migration.

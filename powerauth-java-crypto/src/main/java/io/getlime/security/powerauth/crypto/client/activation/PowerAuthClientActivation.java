@@ -213,7 +213,7 @@ public class PowerAuthClientActivation {
     }
 
     /**
-     * Returns an activation status from the encrypted activation blob as described in PowerAuth 2.0 Specification.
+     * Returns an activation status from the encrypted activation blob as described in PowerAuth Specification.
      *
      * @param cStatusBlob Encrypted activation status blob
      * @param transportKey A key used to protect the transport.
