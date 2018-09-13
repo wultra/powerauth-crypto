@@ -16,7 +16,6 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import com.google.common.io.BaseEncoding;
-import com.google.common.primitives.Longs;
 import io.getlime.security.powerauth.crypto.lib.util.CRC16;
 
 import java.nio.ByteBuffer;
@@ -63,8 +62,11 @@ public class IdentifierGenerator {
      * "ABCDE-FGHIJ" - two components, each of them 5 random characters from
      * Base32 encoding, separated by "-" character.
      *
+     * Use {@link #generateActivationCode()}.
+     *
      * @return A new short activation ID.
      */
+    @Deprecated
     public String generateActivationIdShort() {
         return generateBase32Token() + "-" + generateBase32Token();
     }
@@ -74,8 +76,11 @@ public class IdentifierGenerator {
      * "ABCDE-FGHIJ" - two components, each of them 5 random characters from
      * Base32 encoding, separated by "-" character.
      *
+     * Use {@link #generateActivationCode()}.
+     *
      * @return A new activation OTP.
      */
+    @Deprecated
     public String generateActivationOTP() {
         return generateBase32Token() + "-" + generateBase32Token();
     }
@@ -111,11 +116,12 @@ public class IdentifierGenerator {
         byteBuffer.put(randomBytes);
 
         // Calculate CRC-16 from that 10 bytes.
-        long crc = computeCRC16Checksum(randomBytes);
+        CRC16 crc16 = new CRC16();
+        crc16.update(randomBytes, 0, 10);
+        long crc = crc16.getValue();
 
         // Append CRC-16 (2 bytes) in big endian order at the end of random bytes.
-        byteBuffer.put((byte) ((crc & 0x0000ff00) >>> 8));
-        byteBuffer.put((byte) ((crc & 0x000000ff)));
+        byteBuffer.putShort((short)crc);
 
         // Encode activation code.
         return encodeActivationCode(byteBuffer.array());
@@ -127,76 +133,29 @@ public class IdentifierGenerator {
      * @return Whether activation code is correct.
      */
     public boolean validateActivationCode(String activationCode) {
-        // Validate activation code format
-        if (!validateActivationCodeFormat(activationCode)) {
-            return false;
-        }
-
-        // Decode the Base32 value
-        byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
-
-        // Split activation code bytes and CRC-16 checksum
-        ByteBuffer byteBuffer = ByteBuffer.wrap(activationCodeBytes);
-        byte[] activationCodeValue = new byte[10];
-        byte[] crc16Bytes = new byte[2];
-        byteBuffer.get(activationCodeValue, 0, 10);
-        byteBuffer.get(crc16Bytes, 0, 2);
-
-        // Convert actual CRC-16 to long
-        long actualChecksum = convertCRC16BytesToLong(crc16Bytes);
-
-        // Compute expected checksum
-        long expectedChecksum = computeCRC16Checksum(activationCodeValue);
-
-        // Compare checksum values
-        return expectedChecksum == actualChecksum;
-    }
-
-    /**
-     * Extract CRC-16 value from activation codes.
-     *
-     * @param activationCode Activation code.
-     * @return Extracted CRC-16 checksum.
-     */
-    public long computeChecksum(String activationCode) {
-        if (!validateActivationCode(activationCode)) {
-            throw new IllegalArgumentException("Invalid activation code: "+activationCode);
-        }
-        // Decode the Base32 value
-        byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
-        // Extract raw activation code value
-        ByteBuffer byteBuffer = ByteBuffer.wrap(activationCodeBytes, 0, 10);
-        byte[] activationCodeRaw = new byte[10];
-        byteBuffer.get(activationCodeRaw, 0, 10);
-        return computeCRC16Checksum(activationCodeRaw);
-    }
-
-    /**
-     * Compute CRC-16 checksum for given input.
-     * @param input Input data in bytes.
-     * @return CRC-16 checksum.
-     */
-    private long computeCRC16Checksum(byte[] input) {
-        CRC16 crc16 = new CRC16();
-        crc16.update(input, 0, input.length);
-        return crc16.getValue();
-    }
-
-    /**
-     * Validate activation code format.
-     * @param activationCode Activation code.
-     * @return Whether activation code format is valid.
-     */
-    private boolean validateActivationCodeFormat(String activationCode) {
         // Verify activation code using regular expression
         if (!activationCode.matches("[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}")) {
             return false;
         }
+
         // Decode the Base32 value
         byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
 
         // Verify byte array length
-        return activationCodeBytes.length == 12;
+        if (activationCodeBytes.length != 12) {
+            return false;
+        }
+
+        // Compute checksum from first 10 bytes
+        CRC16 crc16 = new CRC16();
+        crc16.update(activationCodeBytes, 0, 10);
+        long actualChecksum = crc16.getValue();
+
+        // Convert the two CRC-16 bytes to long, see Longs.fromByteArray()
+        long expectedChecksum = ((long)activationCodeBytes[10] & 255L) << 8 | (long)activationCodeBytes[11] & 255L;
+
+        // Compare checksum values
+        return expectedChecksum == actualChecksum;
     }
 
     /**
@@ -218,17 +177,4 @@ public class IdentifierGenerator {
                 + base32Encoded.substring(15, 20);
     }
 
-    /**
-     * Convert two bytes from CRC-16 code to long.
-     * @param crc16Bytes CRC-16 bytes.
-     * @return The long value.
-     */
-    private long convertCRC16BytesToLong(byte[] crc16Bytes) {
-        // Expand actual CRC-16 value by 6 bytes to easily obtain long value
-        ByteBuffer crc16ActualBuffer = ByteBuffer.allocate(Long.BYTES);
-        byte[] zeroBytes = new byte[Long.BYTES - 2];
-        crc16ActualBuffer.put(zeroBytes);
-        crc16ActualBuffer.put(crc16Bytes);
-        return Longs.fromByteArray(crc16ActualBuffer.array());
-    }
 }

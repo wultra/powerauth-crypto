@@ -68,8 +68,11 @@ public class PowerAuthServerActivation {
      * identifier is unique among all activation records in CREATED or OTP_USED
      * states, so that there are no collisions in activations.
      *
+     * Use {@link #generateActivationCode()}.
+     *
      * @return A new short activation ID.
      */
+    @Deprecated
     public String generateActivationIdShort() {
         return identifierGenerator.generateActivationIdShort();
     }
@@ -79,8 +82,11 @@ public class PowerAuthServerActivation {
      * string with 5+5 random Base32 characters (separated with the "-"
      * character).
      *
+     * Use {@link #generateActivationCode()}.
+     *
      * @return A new activation OTP.
      */
+    @Deprecated
     public String generateActivationOTP() {
         return identifierGenerator.generateActivationOTP();
     }
