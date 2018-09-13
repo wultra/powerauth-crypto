@@ -59,7 +59,11 @@ public class PowerAuthClientActivation {
      * @param masterPublicKey Master Public Key.
      * @return Returns "true" if the signature matches activation data, "false" otherwise.
      * @throws InvalidKeyException If provided master public key is invalid.
+     *
+     * @deprecated Use {@link #verifyActivationCodeSignature(String, byte[], PublicKey)}.
+     *
      */
+    @Deprecated
     public boolean verifyActivationDataSignature(String activationIdShort, String activationOTP, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException {
         try {
             byte[] bytes = (activationIdShort + "-" + activationOTP).getBytes("UTF-8");
@@ -117,6 +121,7 @@ public class PowerAuthClientActivation {
      * @param applicationSecret Application secret.
      * @return Signature bytes.
      */
+    @Deprecated
     public byte[] computeApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret) {
         try {
             String signatureBaseString = activationIdShort + "&"
@@ -132,6 +137,8 @@ public class PowerAuthClientActivation {
 
     /**
      * Encrypt a device public key using the activation OTP.
+     *
+     * PowerAuth protocol version: 2.0
      *
      * @param devicePublicKey Device public key to be encrypted.
      * @param clientEphemeralPrivateKey Ephemeral private key.
@@ -186,6 +193,8 @@ public class PowerAuthClientActivation {
     /**
      * Decrypt server public key using activation OTP and device private key. As a technical component for public key encryption, an ephemeral public key is
      * used (in order to deduce ephemeral symmetric key using ECDH).
+     *
+     * PowerAuth protocol version: 2.0
      *
      * @param C_serverPublicKey Encrypted server public key.
      * @param devicePrivateKey Device private key.
