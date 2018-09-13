@@ -89,13 +89,13 @@ public class BasicEciesEncryptor {
     }
 
     /**
-     * Encrypt data using ECIES with instance public key and additional info for KDF function.
+     * Encrypt data using ECIES with instance public key and additional sharedInfo1 parameter for KDF function.
      * @param data Data to be encrypted.
-     * @param info Additional info for KDF.
+     * @param sharedInfo1 Parameter sharedInfo1 for KDF.
      * @return Encrypted data.
      * @throws EciesException In case data encryption fails due to invalid key.
      */
-    public EciesPayload encrypt(byte[] data, byte[] info) throws EciesException {
+    public EciesPayload encrypt(byte[] data, byte[] sharedInfo1) throws EciesException {
         try {
             if (!canEncryptData) {
                 throw new EciesException("This encryptor instance was already used");
@@ -112,7 +112,7 @@ public class BasicEciesEncryptor {
             // Store the data inside th instance
             final PublicKey ephemeralPublicKey = getEphemeralPublicKey();
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, publicKey, true);
-            ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(ephemeralSecretKey), info, 32);
+            ephemeralDerivedSecretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(ephemeralSecretKey), sharedInfo1, 32);
 
 
             // Encrypt the data
