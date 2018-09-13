@@ -68,8 +68,11 @@ public class PowerAuthServerActivation {
      * identifier is unique among all activation records in CREATED or OTP_USED
      * states, so that there are no collisions in activations.
      *
+     * Use {@link #generateActivationCode()}.
+     *
      * @return A new short activation ID.
      */
+    @Deprecated
     public String generateActivationIdShort() {
         return identifierGenerator.generateActivationIdShort();
     }
@@ -79,10 +82,22 @@ public class PowerAuthServerActivation {
      * string with 5+5 random Base32 characters (separated with the "-"
      * character).
      *
+     * Use {@link #generateActivationCode()}.
+     *
      * @return A new activation OTP.
      */
+    @Deprecated
     public String generateActivationOTP() {
         return identifierGenerator.generateActivationOTP();
+    }
+
+    /**
+     * Generate a pseudo-unique activation code. The format of activation code is "ABCDE-FGHIJ-KLMNO-PQRST".
+     *
+     * @return A new activation code.
+     */
+    public String generateActivationCode() {
+        return identifierGenerator.generateActivationCode();
     }
 
     /**
@@ -108,11 +123,36 @@ public class PowerAuthServerActivation {
      * @param masterPrivateKey Master Private Key.
      * @return Signature of activation data using Master Private Key.
      * @throws InvalidKeyException In case Master Private Key is invalid.
+     *
+     * Use {@link #generateActivationSignature(String, PrivateKey)}.
+     *
      */
+    @Deprecated
     public byte[] generateActivationSignature(String activationIdShort, String activationOTP,
                                               PrivateKey masterPrivateKey) throws InvalidKeyException {
         try {
             byte[] bytes = (activationIdShort + "-" + activationOTP).getBytes("UTF-8");
+            return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
+        } catch (UnsupportedEncodingException | SignatureException ex) {
+            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * Generate signature for the activation code.
+     *
+     * Signature is then computed using the master private key.
+     *
+     * @param activationCode Short activation ID.
+     * @param masterPrivateKey Master Private Key.
+     * @return Signature of activation data using Master Private Key.
+     * @throws InvalidKeyException In case Master Private Key is invalid.
+     */
+    public byte[] generateActivationSignature(String activationCode,
+                                              PrivateKey masterPrivateKey) throws InvalidKeyException {
+        try {
+            byte[] bytes = activationCode.getBytes("UTF-8");
             return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
         } catch (UnsupportedEncodingException | SignatureException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
@@ -139,7 +179,9 @@ public class PowerAuthServerActivation {
      * @param applicationSecret Application secret.
      * @param signature Signature to be checked against.
      * @return True if the signature is correct, false otherwise.
+     *
      */
+    @Deprecated
     public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) {
         try {
             String signatureBaseString = activationIdShort + "&"
@@ -156,6 +198,8 @@ public class PowerAuthServerActivation {
 
     /**
      * Decrypt the device public key using activation OTP.
+     *
+     * PowerAuth protocol version: 2.0
      *
      * @param C_devicePublicKey Encrypted device public key.
      * @param activationIdShort Short activation ID.
@@ -203,6 +247,8 @@ public class PowerAuthServerActivation {
      * Encrypt the server public key using activation OTP and device public key.
      * As a technical component for public key encryption, an ephemeral private
      * key is used (in order to deduce ephemeral symmetric key using ECDH).
+     *
+     * PowerAuth protocol version: 2.0
      *
      * @param serverPublicKey Server public key to be encrypted.
      * @param devicePublicKey Device public key used for encryption.

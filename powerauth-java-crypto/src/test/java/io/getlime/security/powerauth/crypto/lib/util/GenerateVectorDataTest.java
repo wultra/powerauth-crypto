@@ -16,6 +16,8 @@
 
 package io.getlime.security.powerauth.crypto.lib.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
@@ -23,490 +25,483 @@ import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSign
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.util.model.TestSet;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Generate test vectors
  *
  * @author Petr Dvorak, petr@wultra.com
- *
  */
 public class GenerateVectorDataTest {
 
-	/**
-	 * Register crypto providers
-	 */
-	@Before
-	public void setUp() {
-		// Add Bouncy Castle Security Provider
-		Security.addProvider(new BouncyCastleProvider());
-		PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
-	}
-
-	/**
-	 * Generate test data for activation data signature.
-	 * @throws Exception In case any unknown error occurs.
-	 */
-	@Test
-	public void testVerifyActivationData() throws Exception {
-		String activationOTP;
-		String activationIdShort;
-
-		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-
-		System.out.println("## Verify Activation Data Signature");
-		System.out.println("[");
-
-		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
-		int max = 20;
-		for (int i = 0; i < max; i++) {
-			activationOTP = new IdentifierGenerator().generateActivationIdShort();
-			activationIdShort = new IdentifierGenerator().generateActivationOTP();
-
-			KeyPair kp = activationServer.generateServerKeyPair();
-			PrivateKey masterPrivateKey = kp.getPrivate();
-			PublicKey masterPublicKey = kp.getPublic();
-
-			byte[] activationSignature = activationServer.generateActivationSignature(activationIdShort, activationOTP, masterPrivateKey);
-
-			System.out.println("    {");
-			System.out.println("        \"input\": {");
-			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
-			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
-			System.out.println("            \"masterPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
-			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)) + "\"");
-			System.out.println("        },");
-			System.out.println("        \"output\": {");
-			System.out.println("            \"activationSignature\": \"" + BaseEncoding.base64().encode(activationSignature) + "\"");
-			System.out.println("        }");
-			if (i == max - 1) {
-				System.out.println("    }");
-			} else {
-				System.out.println("    },");
-			}
-		}
-
-		System.out.println("]");
-	}
-
-	/**
-	 * Generate test data for public key encryption.
-	 * @throws Exception In case any unknown error occurs.
-	 */
-	@Test
-	public void testEncryptDevicePublicKey() throws Exception {
-		PowerAuthClientActivation activation = new PowerAuthClientActivation();
-
-		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
-		System.out.println("## Encrypt Device Public Key");
-		System.out.println("[");
-
-		KeyPair masterKeyPair = new KeyGenerator().generateKeyPair();
-
-		int max = 20;
-		for (int i = 0; i < max; i++) {
-			String activationOTP = new IdentifierGenerator().generateActivationIdShort();
-			String activationIdShort = new IdentifierGenerator().generateActivationOTP();
-			byte[] activationNonce = activation.generateActivationNonce();
-			PublicKey publicKey = new KeyGenerator().generateKeyPair().getPublic();
-			byte[] applicationKey = new KeyGenerator().generateRandomBytes(16);
-			byte[] applicationSecret = new KeyGenerator().generateRandomBytes(16);
-
-			KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
-
-			byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, ephemeralKeyPair.getPrivate(), masterKeyPair.getPublic(), activationOTP, activationIdShort, activationNonce);
-			byte[] applicationSignature = activation.computeApplicationSignature(activationIdShort, activationNonce, cDevicePublicKey, applicationKey, applicationSecret);
-
-			System.out.println("    {");
-			System.out.println("        \"input\": {");
-			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
-			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
-			System.out.println("            \"activationNonce\": \"" + BaseEncoding.base64().encode(activationNonce) + "\",");
-			System.out.println("            \"masterPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterKeyPair.getPublic())) + "\",");
-			System.out.println("            \"ephemeralPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(ephemeralKeyPair.getPrivate())) + "\",");
-			System.out.println("            \"applicationKey\": \"" + BaseEncoding.base64().encode(applicationKey) + "\",");
-			System.out.println("            \"applicationSecret\": \"" + BaseEncoding.base64().encode(applicationSecret) + "\",");
-			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)) + "\"");
-			System.out.println("        },");
-			System.out.println("        \"output\": {");
-			System.out.println("            \"cDevicePublicKey\": \"" + BaseEncoding.base64().encode(cDevicePublicKey) + "\",");
-			System.out.println("            \"applicationSignature\": \"" + BaseEncoding.base64().encode(applicationSignature) + "\"");
-			System.out.println("        }");
-			if (i == max - 1) {
-				System.out.println("    }");
-			} else {
-				System.out.println("    },");
-			}
-		}
-
-		System.out.println("]");
-	}
-
-	/**
-	 * Generate test data for master key derivation.
-	 * @throws Exception In case any unknown error occurs.
-	 */
-	@Test
-	public void testMasterKeyDerivation() throws Exception {
-
-		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
-		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-
-		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
-		System.out.println("## Deduce Master Secret Key");
-		System.out.println("[");
-
-		int max = 20;
-		for (int i = 0; i < max; i++) {
-			KeyPair deviceKeyPair = activationClient.generateDeviceKeyPair();
-			KeyPair serverKeyPair = activationServer.generateServerKeyPair();
-			SecretKey masterSecretKey = new KeyGenerator().computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
-
-			System.out.println("    {");
-			System.out.println("        \"input\": {");
-			System.out.println("            \"devicePrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())) + "\",");
-			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(deviceKeyPair.getPublic())) + "\",");
-			System.out.println("            \"serverPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(serverKeyPair.getPrivate())) + "\",");
-			System.out.println("            \"serverPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverKeyPair.getPublic())) + "\"");
-			System.out.println("        },");
-			System.out.println("        \"output\": {");
-			System.out.println("            \"masterSecretKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)) + "\"");
-			System.out.println("        }");
-			if (i == max - 1) {
-				System.out.println("    }");
-			} else {
-				System.out.println("    },");
-			}
-		}
-
-		System.out.println("]");
-
-	}
-
-	/**
-	 * Generate test data for key derivation.
-	 * @throws Exception In case any unknown error occurs.
-	 */
-	@Test
-	public void testDerivedKeyDerivation() throws Exception {
-
-		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
-		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-
-		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
-		System.out.println("## Derive Keys From Master Secret");
-		System.out.println("[");
-
-		int max = 20;
-
-		for (int i = 0; i < max; i++) {
-			KeyPair deviceKeyPair = activationClient.generateDeviceKeyPair();
-			KeyPair serverKeyPair = activationServer.generateServerKeyPair();
-			SecretKey masterSecretKey = new KeyGenerator().computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
-
-			PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
-
-			System.out.println("    {");
-			System.out.println("        \"input\": {");
-			System.out.println("            \"masterSecretKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)) + "\"");
-			System.out.println("        },");
-			System.out.println("        \"output\": {");
-			System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignaturePossessionKey(masterSecretKey))) + "\",");
-			System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey))) + "\",");
-			System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureBiometryKey(masterSecretKey))) + "\",");
-			System.out.println("            \"transportKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))) + "\",");
-			System.out.println("            \"vaultEncryptionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))) + "\"");
-			System.out.println("        }");
-			if (i == max - 1) {
-				System.out.println("    }");
-			} else {
-				System.out.println("    },");
-			}
-		}
-
-		System.out.println("]");
-	}
-
-	/**
-	 * Generate test data for decrypting server public key.
-	 * @throws Exception In case any unknown error occurs.
-	 */
-	@Test
-	public void testActivationAccept() throws Exception {
-		String activationOTP;
-		String activationIdShort;
-		byte[] activationNonce;
-		PublicKey serverPublicKey;
-		byte[] cServerPublicKey;
-
-		PublicKey devicePublicKey;
-		PrivateKey devicePrivateKey;
-
-		PublicKey ephemeralPublicKey;
-		PrivateKey ephemeralPrivateKey;
-
-		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
-
-		System.out.println("### Decrypt Server Public Key");
-		System.out.println("[");
-
-		int max = 20;
-		for (int i = 0; i < max; i++) {
-
-			activationIdShort = new IdentifierGenerator().generateActivationIdShort();
-			activationOTP = new IdentifierGenerator().generateActivationOTP();
-			activationNonce = activationServer.generateActivationNonce();
-
-			KeyPair kp = activationClient.generateDeviceKeyPair();
-			devicePrivateKey = kp.getPrivate();
-			devicePublicKey = kp.getPublic();
-
-			kp = activationServer.generateServerKeyPair();
-			serverPublicKey = kp.getPublic();
-
-			kp = activationServer.generateServerKeyPair();
-			ephemeralPrivateKey = kp.getPrivate();
-			ephemeralPublicKey = kp.getPublic();
-
-			cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
-			CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
-			System.out.println("    {");
-			System.out.println("        \"input\": {");
-			System.out.println("            \"activationIdShort\": \"" + activationIdShort + "\",");
-			System.out.println("            \"activationOtp\": \"" + activationOTP + "\",");
-			System.out.println("            \"activationNonce\": \"" + BaseEncoding.base64().encode(activationNonce) + "\",");
-			System.out.println("            \"devicePrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(devicePrivateKey)) + "\",");
-			System.out.println("            \"devicePublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)) + "\",");
-			System.out.println("            \"encryptedServerPublicKey\": \"" + BaseEncoding.base64().encode(cServerPublicKey) + "\",");
-			System.out.println("            \"ephemeralPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(ephemeralPublicKey)) + "\"");
-			System.out.println("        },");
-			System.out.println("        \"output\": {");
-			System.out.println("            \"serverPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverPublicKey)) + "\"");
-			System.out.println("        }");
-			if (i == max - 1) {
-				System.out.println("    }");
-			} else {
-				System.out.println("    },");
-			}
-
-			PublicKey serverPublicDecrypted = activationClient.decryptServerPublicKey(cServerPublicKey, devicePrivateKey, ephemeralPublicKey, activationOTP, activationIdShort, activationNonce);
-			assertEquals(serverPublicKey, serverPublicDecrypted);
-		}
-
-		System.out.println("]");
-	}
-
-	/**
-	 * Generate test data for verifying server response data.
-	 * @throws Exception In case any unknown error occurs.
-	 */
-	@Test
-	public void testVerifyServerPublicKeySignature() throws Exception {
-		String activationId;
-		String activationOTP;
-		String activationIdShort;
-		byte[] activationNonce;
-		PublicKey serverPublicKey;
-		byte[] cServerPublicKey;
-		PublicKey devicePublicKey;
-		PrivateKey ephemeralPrivateKey;
-
-		PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-		PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
-
-		System.out.println("### Verify Encrypted Server Public Key Signature");
-		System.out.println("[");
-
-		int max = 20;
-		for (int i = 0; i < max; i++) {
-
-			activationId = new IdentifierGenerator().generateActivationId();
-			activationIdShort = new IdentifierGenerator().generateActivationIdShort();
-			activationOTP = new IdentifierGenerator().generateActivationOTP();
-			activationNonce = activationServer.generateActivationNonce();
-
-			KeyPair kp = activationClient.generateDeviceKeyPair();
-			devicePublicKey = kp.getPublic();
-
-			kp = activationServer.generateServerKeyPair();
-			serverPublicKey = kp.getPublic();
-
-			kp = activationServer.generateServerKeyPair();
-			ephemeralPrivateKey = kp.getPrivate();
-
-			kp = activationServer.generateServerKeyPair();
-			PrivateKey masterPrivateKey = kp.getPrivate();
-			PublicKey masterPublicKey = kp.getPublic();
-
-			cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
-			byte[] cServerPublicKeySignature = activationServer.computeServerDataSignature(activationId, cServerPublicKey, masterPrivateKey);
-
-			CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
-			System.out.println("    {");
-			System.out.println("        \"input\": {");
-			System.out.println("            \"activationId\": \"" + activationId + "\",");
-			System.out.println("            \"encryptedServerPublicKey\": \"" + BaseEncoding.base64().encode(cServerPublicKey) + "\",");
-			System.out.println("            \"masterServerPrivateKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)) + "\",");
-			System.out.println("            \"masterServerPublicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)) + "\"");
-			System.out.println("        },");
-			System.out.println("        \"output\": {");
-			System.out.println("            \"encryptedServerPublicKeySignature\": \"" + BaseEncoding.base64().encode(cServerPublicKeySignature) + "\"");
-			System.out.println("        }");
-			if (i == max - 1) {
-				System.out.println("    }");
-			} else {
-				System.out.println("    },");
-			}
-
-		}
-
-		System.out.println("]");
-	}
-
-	/**
-	 * Generate test data for signature validation
-	 * @throws Exception In case any unknown error occurs.
-	 */
-	@Test
-	public void testSignatureValidation() throws Exception {
-
-		System.out.println("### Signature Validation");
-		System.out.println("[");
-
-		int max = 5;
-		int key_max = 2;
-		int ctr_max = 10;
-		int data_max = 256;
-		for (int j = 0; j < max; j++) {
-
-			// Prepare data
-			KeyGenerator keyGenerator = new KeyGenerator();
-			CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
-			KeyPair serverKeyPair = keyGenerator.generateKeyPair();
-			PublicKey serverPublicKey = serverKeyPair.getPublic();
-
-			KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
-			PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
-
-			PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
-			PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
-
-			for (int i = 0; i < key_max; i++) {
-
-				// compute data signature
-				SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
-				SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
-				SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
-				SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
-
-				for (int ctr = 0; ctr < ctr_max; ctr++) {
-
-					// generate random data
-					byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
-
-					String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctr);
-					String signatureType = "possession";
-
-					System.out.println("    {");
-					System.out.println("        \"input\": {");
-					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
-					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
-					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
-					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
-					System.out.println("            \"counter\": \"" + ctr + "\",");
-					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");
-					System.out.println("        },");
-					System.out.println("        \"output\": {");
-					System.out.println("            \"signature\": \"" + signature + "\"");
-					System.out.println("        }");
-					System.out.println("    },");
-				}
-
-				for (int ctr = 0; ctr < ctr_max; ctr++) {
-
-					// generate random data
-					byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
-
-					String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctr);
-					String signatureType = "possession_knowledge";
-
-					System.out.println("    {");
-					System.out.println("        \"input\": {");
-					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
-					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
-					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
-					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
-					System.out.println("            \"counter\": \"" + ctr + "\",");
-					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");
-					System.out.println("        },");
-					System.out.println("        \"output\": {");
-					System.out.println("            \"signature\": \"" + signature + "\"");
-					System.out.println("        }");
-					System.out.println("    },");
-
-				}
-
-				for (int ctr = 0; ctr < ctr_max; ctr++) {
-
-					// generate random data
-					byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
-
-					String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctr);
-					String signatureType = "possession_knowledge_biometry";
-
-					System.out.println("    {");
-					System.out.println("        \"input\": {");
-					System.out.println("            \"signaturePossessionKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)) + "\",");
-					System.out.println("            \"signatureKnowledgeKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)) + "\",");
-					System.out.println("            \"signatureBiometryKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)) + "\",");
-					System.out.println("            \"signatureType\": \"" + signatureType + "\",");
-					System.out.println("            \"counter\": \"" + ctr + "\",");
-					System.out.println("            \"data\": \"" + BaseEncoding.base64().encode(data) + "\"");
-					System.out.println("        },");
-					System.out.println("        \"output\": {");
-					System.out.println("            \"signature\": \"" + signature + "\"");
-					System.out.println("        }");
-					if (ctr == ctr_max - 1 && i == key_max - 1 && j == max - 1) {
-						System.out.println("    }");
-					} else {
-						System.out.println("    },");
-					}
-
-				}
-			}
-		}
-		System.out.println("]");
-	}
+    private static File testVectorFolder;
+    private static ObjectMapper objectMapper;
+
+    /**
+     * Register crypto providers
+     */
+    @BeforeClass
+    public static void setUp() {
+        // Add Bouncy Castle Security Provider
+        Security.addProvider(new BouncyCastleProvider());
+        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
+
+        // Create folder for test vectors
+        testVectorFolder = new File("target/test-vectors");
+        if (!testVectorFolder.exists()) {
+            if (!testVectorFolder.mkdirs()) {
+                fail("Could not create folder for test vectors.");
+            }
+        }
+
+        System.out.println("Test vectors will be generated in folder: " + testVectorFolder.getAbsolutePath());
+
+        // Create Object Mapper
+        objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    /**
+     * Generate test data for activation data signature.
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testVerifyActivationDataV2() throws Exception {
+        String activationOTP;
+        String activationIdShort;
+
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+
+        TestSet testSet = new TestSet("verify-activation-data-signature-v2.json", "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted activation data (version 2 of PowerAuth protocol: short activation ID, activation OTP) using the server master public key, for example when it's stored in the QR code.");
+
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        int max = 20;
+        for (int i = 0; i < max; i++) {
+            activationOTP = new IdentifierGenerator().generateActivationIdShort();
+            activationIdShort = new IdentifierGenerator().generateActivationOTP();
+
+            KeyPair kp = activationServer.generateServerKeyPair();
+            PrivateKey masterPrivateKey = kp.getPrivate();
+            PublicKey masterPublicKey = kp.getPublic();
+
+            byte[] activationSignature = activationServer.generateActivationSignature(activationIdShort, activationOTP, masterPrivateKey);
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("activationIdShort", activationIdShort);
+            input.put("activationOtp", activationOTP);
+            input.put("masterPrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)));
+            input.put("masterPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("activationSignature", BaseEncoding.base64().encode(activationSignature));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for activation data signature.
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testVerifyActivationDataV3() throws Exception {
+        String activationCode;
+
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+
+        TestSet testSet = new TestSet("verify-activation-data-signature-v3.json", "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted activation data (for version 3 of PowerAuth protocol: activation code) using the server master public key, for example when it's stored in the QR code.");
+
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        IdentifierGenerator identifierGenerator = new IdentifierGenerator();
+
+        int max = 20;
+        for (int i = 0; i < max; i++) {
+            activationCode = identifierGenerator.generateActivationCode();
+
+            KeyPair kp = activationServer.generateServerKeyPair();
+            PrivateKey masterPrivateKey = kp.getPrivate();
+            PublicKey masterPublicKey = kp.getPublic();
+
+            byte[] activationSignature = activationServer.generateActivationSignature(activationCode, masterPrivateKey);
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("activationCode", activationCode);
+            input.put("masterPrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)));
+            input.put("masterPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("activationSignature", BaseEncoding.base64().encode(activationSignature));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for public key encryption.
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testEncryptDevicePublicKeyV2() throws Exception {
+        PowerAuthClientActivation activation = new PowerAuthClientActivation();
+
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        TestSet testSet = new TestSet("encrypt-device-public-key-v2.json", "For \"/pa/activation/prepare\", client needs to be able to encrypt the public key using activation OTP, activation short ID and activation nonce. (activationIdShort, activationOtp, activationNonce, publicDeviceKey) => cPublicDeviceKey");
+
+        KeyPair masterKeyPair = new KeyGenerator().generateKeyPair();
+
+        int max = 20;
+        for (int i = 0; i < max; i++) {
+            String activationOTP = new IdentifierGenerator().generateActivationIdShort();
+            String activationIdShort = new IdentifierGenerator().generateActivationOTP();
+            byte[] activationNonce = activation.generateActivationNonce();
+            PublicKey publicKey = new KeyGenerator().generateKeyPair().getPublic();
+            byte[] applicationKey = new KeyGenerator().generateRandomBytes(16);
+            byte[] applicationSecret = new KeyGenerator().generateRandomBytes(16);
+
+            KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
+
+            byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, ephemeralKeyPair.getPrivate(), masterKeyPair.getPublic(), activationOTP, activationIdShort, activationNonce);
+            byte[] applicationSignature = activation.computeApplicationSignature(activationIdShort, activationNonce, cDevicePublicKey, applicationKey, applicationSecret);
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("activationIdShort", activationIdShort);
+            input.put("activationOtp", activationOTP);
+            input.put("activationNonce", BaseEncoding.base64().encode(activationNonce));
+            input.put("masterPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterKeyPair.getPublic())));
+            input.put("ephemeralPrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(ephemeralKeyPair.getPrivate())));
+            input.put("applicationKey", BaseEncoding.base64().encode(applicationKey));
+            input.put("applicationSecret", BaseEncoding.base64().encode(applicationSecret));
+            input.put("devicePublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("cDevicePublicKey", BaseEncoding.base64().encode(cDevicePublicKey));
+            output.put("applicationSignature", BaseEncoding.base64().encode(applicationSignature));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for master key derivation.
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testMasterKeyDerivation() throws Exception {
+
+        PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        TestSet testSet = new TestSet("compute-master-secret-key.json", "For \"/pa/activation/prepare\", client needs to be able to compute the master shared secret key from its private key and server's public key (devicePrivateKey, serverPublicKey) => masterSecretKey <= (serverPrivateKey, devicePublicKey).");
+
+        int max = 20;
+        for (int i = 0; i < max; i++) {
+            KeyPair deviceKeyPair = activationClient.generateDeviceKeyPair();
+            KeyPair serverKeyPair = activationServer.generateServerKeyPair();
+            SecretKey masterSecretKey = new KeyGenerator().computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("devicePrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())));
+            input.put("devicePublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(deviceKeyPair.getPublic())));
+            input.put("serverPrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(serverKeyPair.getPrivate())));
+            input.put("serverPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverKeyPair.getPublic())));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("masterSecretKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for key derivation.
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testDerivedKeyDerivation() throws Exception {
+
+        PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        TestSet testSet = new TestSet("compute-derived-keys.json", "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth 2.0 keys from master shared secret key (masterSecretKey) => (signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey, transportKey, vaultEncryptionKey).");
+
+        int max = 20;
+
+        for (int i = 0; i < max; i++) {
+            KeyPair deviceKeyPair = activationClient.generateDeviceKeyPair();
+            KeyPair serverKeyPair = activationServer.generateServerKeyPair();
+            SecretKey masterSecretKey = new KeyGenerator().computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
+
+            PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("masterSecretKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignaturePossessionKey(masterSecretKey))));
+            output.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey))));
+            output.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureBiometryKey(masterSecretKey))));
+            output.put("transportKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))));
+            output.put("vaultEncryptionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for decrypting server public key.
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testActivationAcceptV2() throws Exception {
+        String activationOTP;
+        String activationIdShort;
+        byte[] activationNonce;
+        PublicKey serverPublicKey;
+        byte[] cServerPublicKey;
+
+        PublicKey devicePublicKey;
+        PrivateKey devicePrivateKey;
+
+        PublicKey ephemeralPublicKey;
+        PrivateKey ephemeralPrivateKey;
+
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+        PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
+
+        TestSet testSet = new TestSet("decrypt-server-public-key-v2.json", "For \"/pa/activation/prepare\", client needs to be able to decrypt the server public key using activation OTP, activation short ID, activation nonce, ephemeral public key and a device private key.");
+
+        int max = 20;
+        for (int i = 0; i < max; i++) {
+
+            activationIdShort = new IdentifierGenerator().generateActivationIdShort();
+            activationOTP = new IdentifierGenerator().generateActivationOTP();
+            activationNonce = activationServer.generateActivationNonce();
+
+            KeyPair kp = activationClient.generateDeviceKeyPair();
+            devicePrivateKey = kp.getPrivate();
+            devicePublicKey = kp.getPublic();
+
+            kp = activationServer.generateServerKeyPair();
+            serverPublicKey = kp.getPublic();
+
+            kp = activationServer.generateServerKeyPair();
+            ephemeralPrivateKey = kp.getPrivate();
+            ephemeralPublicKey = kp.getPublic();
+
+            cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
+            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("activationIdShort", activationIdShort);
+            input.put("activationOtp", activationOTP);
+            input.put("activationNonce", BaseEncoding.base64().encode(activationNonce));
+            input.put("devicePrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(devicePrivateKey)));
+            input.put("devicePublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
+            input.put("encryptedServerPublicKey", BaseEncoding.base64().encode(cServerPublicKey));
+            input.put("ephemeralPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(ephemeralPublicKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("serverPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverPublicKey)));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for verifying server response data.
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testVerifyServerPublicKeySignatureV2() throws Exception {
+        String activationId;
+        String activationOTP;
+        String activationIdShort;
+        byte[] activationNonce;
+        PublicKey serverPublicKey;
+        byte[] cServerPublicKey;
+        PublicKey devicePublicKey;
+        PrivateKey ephemeralPrivateKey;
+
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+        PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
+
+        TestSet testSet = new TestSet("verify-encrypted-server-public-key-signature-v2.json", "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted server public key using the server master public key.");
+
+        int max = 20;
+        for (int i = 0; i < max; i++) {
+
+            activationId = new IdentifierGenerator().generateActivationId();
+            activationIdShort = new IdentifierGenerator().generateActivationIdShort();
+            activationOTP = new IdentifierGenerator().generateActivationOTP();
+            activationNonce = activationServer.generateActivationNonce();
+
+            KeyPair kp = activationClient.generateDeviceKeyPair();
+            devicePublicKey = kp.getPublic();
+
+            kp = activationServer.generateServerKeyPair();
+            serverPublicKey = kp.getPublic();
+
+            kp = activationServer.generateServerKeyPair();
+            ephemeralPrivateKey = kp.getPrivate();
+
+            kp = activationServer.generateServerKeyPair();
+            PrivateKey masterPrivateKey = kp.getPrivate();
+            PublicKey masterPublicKey = kp.getPublic();
+
+            cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
+            byte[] cServerPublicKeySignature = activationServer.computeServerDataSignature(activationId, cServerPublicKey, masterPrivateKey);
+
+            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("activationId", activationId);
+            input.put("encryptedServerPublicKey", BaseEncoding.base64().encode(cServerPublicKey));
+            input.put("masterServerPrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)));
+            input.put("masterServerPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("encryptedServerPublicKeySignature", BaseEncoding.base64().encode(cServerPublicKeySignature));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for signature validation
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testSignatureValidationV2() throws Exception {
+
+        TestSet testSet = new TestSet("signatures-v2.json", "Client must be able to compute PowerAuth 2.0 signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
+
+        int max = 5;
+        int key_max = 2;
+        int ctr_max = 10;
+        int data_max = 256;
+        for (int j = 0; j < max; j++) {
+
+            // Prepare data
+            KeyGenerator keyGenerator = new KeyGenerator();
+            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            PublicKey serverPublicKey = serverKeyPair.getPublic();
+
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
+
+            PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
+            PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
+
+            for (int i = 0; i < key_max; i++) {
+
+                // compute data signature
+                SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
+                SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
+                SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
+
+                for (int ctr = 0; ctr < ctr_max; ctr++) {
+
+                    // generate random data
+                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
+
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctr);
+                    String signatureType = "possession";
+
+                    Map<String, String> input = new LinkedHashMap<>();
+                    input.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signatureType", signatureType);
+                    input.put("counter", String.valueOf(ctr));
+                    input.put("data", BaseEncoding.base64().encode(data));
+                    Map<String, String> output = new LinkedHashMap<>();
+                    output.put("signature", signature);
+                    testSet.addData(input, output);
+                }
+
+                for (int ctr = 0; ctr < ctr_max; ctr++) {
+
+                    // generate random data
+                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
+
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctr);
+                    String signatureType = "possession_knowledge";
+
+                    Map<String, String> input = new LinkedHashMap<>();
+                    input.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signatureType", signatureType);
+                    input.put("counter", String.valueOf(ctr));
+                    input.put("data", BaseEncoding.base64().encode(data));
+                    Map<String, String> output = new LinkedHashMap<>();
+                    output.put("signature", signature);
+                    testSet.addData(input, output);
+                }
+
+                for (int ctr = 0; ctr < ctr_max; ctr++) {
+
+                    // generate random data
+                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
+
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctr);
+                    String signatureType = "possession_knowledge_biometry";
+
+                    Map<String, String> input = new LinkedHashMap<>();
+                    input.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signatureType", signatureType);
+                    input.put("counter", String.valueOf(ctr));
+                    input.put("data", BaseEncoding.base64().encode(data));
+                    Map<String, String> output = new LinkedHashMap<>();
+                    output.put("signature", signature);
+                    testSet.addData(input, output);
+                }
+            }
+        }
+        writeTestVector(testSet);
+    }
 
     @Test
     public void testPublicKeyFingerprint() throws Exception {
 
         PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 
-        System.out.println("## Public Key Fingerprint");
-        System.out.println("[");
+        TestSet testSet = new TestSet("public-key-fingerprint.json", "Fingerprint values for provided public keys, used for visual verification of the successful and untampered public key exchange.");
 
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
@@ -524,22 +519,20 @@ public class GenerateVectorDataTest {
                 devicePublicKeyBytes = Arrays.copyOfRange(devicePublicKeyBytes, 1, 33);
             }
 
-            System.out.println("    {");
-            System.out.println("        \"input\": {");
-            System.out.println("            \"publicKey\": \"" + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)) + "\"");
-            System.out.println("        },");
-            System.out.println("        \"output\": {");
-            System.out.println("            \"publicKeyCoordX\": \"" + BaseEncoding.base64().encode(devicePublicKeyBytes) + "\",");
-            System.out.println("            \"fingerprint\": \"" + fingerprint + "\"");
-            System.out.println("        }");
-            if (i == max - 1) {
-                System.out.println("    }");
-            } else {
-                System.out.println("    },");
-            }
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("publicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("publicKeyCoordX", BaseEncoding.base64().encode(devicePublicKeyBytes));
+            output.put("fingerprint", fingerprint);
+            testSet.addData(input, output);
         }
+        writeTestVector(testSet);
+    }
 
-        System.out.println("]");
+    private void writeTestVector(TestSet testSet) throws IOException {
+        FileWriter fw = new FileWriter(testVectorFolder.getAbsolutePath() + File.separator + testSet.getFileName());
+        objectMapper.writeValue(fw, testSet);
+        fw.close();
     }
 
 }

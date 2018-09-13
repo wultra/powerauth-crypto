@@ -1,0 +1,204 @@
+{
+  "description" : "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted server public key using the server master public key.",
+  "data" : [ {
+    "input" : {
+      "activationId" : "49b0dd35-0499-41f7-babe-d4afb3837169",
+      "encryptedServerPublicKey" : "y06qsY1//1qd0DGcagPI5LzXizr62/7nWP35cWEklm2UmCjnzU+6uc1OoNP8PVytuvpaugK3hUbmBCy9cVjIx5FqHlAxeB07DBjOSootke6kfW/XuDAK92jaGAtR9GHh",
+      "masterServerPrivateKey" : "G0zaKZ6we67w647eGEugxo/uiqyg/3c6/7c0Sb/zEPY=",
+      "masterServerPublicKey" : "BPPTT6uGU5zX2v6zTaPoAeNLgVg5fd4wOlAf/t9Ttf1DoQ30uVKfvnp/hjD6VIoYmfNd83Zs8w9WOB1YtXl5Abw="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BNqCRjn372GEY/2uMmQqLmPks1gSi1QstGBjwPkPcESWepr+BiP0ISwyddbRwDKry6NFQvnfeuzRYX3xwyW0S+w="
+    }
+  }, {
+    "input" : {
+      "activationId" : "27b534bc-203b-48bc-9ada-6471aae0572f",
+      "encryptedServerPublicKey" : "Rr1+CYXusk1Oueolw6OUfyFmV3w8I2prSN5/WMeBc1wWuLs79Rj/QrYf5rm6rBCMAey+/S7pISAqu8qMYOX1T73N163HGRnjvDASqSoIEyNnY2ewYM2UIGeEMc6PlEPX",
+      "masterServerPrivateKey" : "fhIszjPy5FTJ9pT5AxhsvIgqRRDbfJ9NiRx7YSTU4dk=",
+      "masterServerPublicKey" : "BDq90kOebKWFNWHjXgYvBCNT/XGeIUWawdzXyYafbYaKgeNAKV8Qh02n0ZAgdmj0F3sKNbsK4L5F05ZZlUg9O08="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BLs50CDgm9TeZI4fqjzSoFgn5Ygx78eoUgr8xk6aJP1rSP3Vtxwpca2TaVWvZhPEw0uLziLdyv3F7D4uxqj9kJg="
+    }
+  }, {
+    "input" : {
+      "activationId" : "d0b5ebea-7ce1-4d99-ad16-e29e95331f36",
+      "encryptedServerPublicKey" : "MlofJQdy+jkhefYK+jCKcqThami0/fGU7OtwJTNYT30UWXdMHSNDw3Ho0alJgLUr1F0ynpkVUlVxSL6mVCKpAPZ9JKzQdEochU3gw73ReW6R/x9UsZHFrMBm6YH0FdhK",
+      "masterServerPrivateKey" : "ANIiYdzYAQVVfITw8N5QQwBVL7RHhzS9LtOg8ewRHJbv",
+      "masterServerPublicKey" : "BH6bt7BgZS3bv45bDmp6qEBOfg7ZvD1fJoq2+BzVma92EDacptL59owPf1lwOOukfhsu52uxz9L3HoRliNXsqtE="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BGzEGi4TbCcrpfQq9oBKBg9fVKZsPu8lUg07DK9k1KiW056Yvsvu3no1rNHW4vmNHdM4mC4UNACFJiMbeV2E6Gw="
+    }
+  }, {
+    "input" : {
+      "activationId" : "0aa0ecd9-73ae-4b30-a006-bda12f8298f9",
+      "encryptedServerPublicKey" : "vAhcHTVPWyPbj+OOmAbxx4UVGz/PL0dw1p2dJW1KId9PJHHwzjCDUymWOGDCwm0CZ+uh2zJHttCfrrYxTUdVzOn9pGWoERQJdA8c4BfiLNrT87l7ouQVfcUtEKrM+t2A",
+      "masterServerPrivateKey" : "AIEk+WFy91K0QofZPaDg4nBZLiYok0c1hB76cBQbODBE",
+      "masterServerPublicKey" : "BPvpPuk6/rXaGnwPn5CoOVMYakBHlh/Ogyk0AnZhWp5db+9s6gt7f+G6wF16C68O4XgCWtoes7bSx+bCp3HieLs="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BLmbDQ/uqGL7JDJsM05af/SHQ8i33Yd5GcAig0jPjzrTDdomnaeEZTdtIX/LDtE0+QrJd+dn5sZCG2WPVJ0l5CU="
+    }
+  }, {
+    "input" : {
+      "activationId" : "9ebb7e3a-0c47-43ac-ab67-43b9496d412c",
+      "encryptedServerPublicKey" : "fSBv6Ts3jBQbq5n4kTkrKkMpjj4JNJdduScW5QzoRZlPCjAWkspbIP8KwlIET9x/xg4a0R+0+VDPtWgcQj92RNDdqvqbHqSDJ5YOrW/l0vBl0HWbVdEjQVMSuquJjT8d",
+      "masterServerPrivateKey" : "AKEQF6gs+Ix/FHYbJPljqX2GvOpPp/zASwdF9PgivRIb",
+      "masterServerPublicKey" : "BHQDdlbQnQoWKfEMt0Q42WN6SXN1lbQRPI50MNzdK1+vnipxpjTW5T3vfGMdT5I8UYd9R9BzBleOumWOB3qpgfE="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BNnJHJUldlTNl36uefUHK+4K6qhiGG6hgvsRvM0qAmNMxvtIYCejNb4JnqJOIdysGOnWWj7oibjVfv+MvmBuAhg="
+    }
+  }, {
+    "input" : {
+      "activationId" : "f26508bb-89bd-4a4e-b092-6cf383c1cf15",
+      "encryptedServerPublicKey" : "AHleXiBdloWjJ4rCTfpIYQS38svSan+8DGrsRCYCLbSRgcq6k4NP/WHJ51DNQtHeSnFIfI66T3aNgPON0WeMtXwtNedqLQxLLSUNEUJd5JGR1ksm1UMzDLH25ugG6Hvc",
+      "masterServerPrivateKey" : "cjJzUWUtXTpFpBe4IUu0Qn9gD7lyS3QPoT51SEtcb/o=",
+      "masterServerPublicKey" : "BDBgai42d2I/Pnj2QFMkzMkNx6l4b/9YaVPDw30voE/IhaVgxy0jBri5yo0HNFh6YkuptnU7NdHye4J8PAZa5CQ="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BFmZBQr+spCVnJDGY6yTP56sT91NEhtXIeF9SwGZNSzBx0bDqd3AwvGCcAllSGGiPfSSSm7SKI1mDrKqcznGF6g="
+    }
+  }, {
+    "input" : {
+      "activationId" : "c4732a52-5b4e-4cc1-9536-989df678bc4e",
+      "encryptedServerPublicKey" : "lZrklNXbAwB7qr7r7SoGuwWIDSMaIquapDnTUAx35558MIUA6cCu8ZsysWcjVqDLLxUrbIXjRryACiOIeUpdezRe3+f5JyEoeU6QvWQC2ih6v6SB8hZU2UyT4VIFkLGJ",
+      "masterServerPrivateKey" : "BltD/hWfK87AsTsQaEr+n0h2jXWA6mFeMNnVarLPhx0=",
+      "masterServerPublicKey" : "BCFZ9Aktylfrg/91pHlUB9PWJkGjJh8JkHnpyCMDkDoEHUR6dtB1Uf2TxPcPanfZ8ZRkP9MLnuJyLz6aHnd7Jh4="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BMKDHxGpH8cFBiqVSzRIj0aN9N5zWv8hvrxHE7EfPN8jMyQvPMOBRP4GU/Y+0K0E4OFUNgGjyb0NCc9nJurnBFk="
+    }
+  }, {
+    "input" : {
+      "activationId" : "13a16a9d-d421-48b7-8974-2dd17e0287f6",
+      "encryptedServerPublicKey" : "1+r6kg5FSHSv2TgXO/zVNsjSuP9Sam5GfGbOdClfdCgOQmdQSUKIi37Xwr7OydzfRZVBAQCCt+UALPc/52mJhtAiKWbPIM8rx9YluXErN4Yu8l8jPB5SOveBtGeoP1uL",
+      "masterServerPrivateKey" : "AKfegYnUDNYSXHznZ74Z+PNeEAGZEY1+8WC9AbHpZeJk",
+      "masterServerPublicKey" : "BG9VFo24+3fDnBNehTyCUKdqJtIqZwUQpz2D2MmNTeWpJBiVcP/MRHd8b/h9yA4nwKdaoI0kbi82Qyqaf1M5VcI="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BO2n0TywhrnQ5PCXfcAS0KYfId1ItKLaKcZc38GFOg/EVfn3/kHxrqmQmHQkjT1QkjQz618Vg8GEAh1oAsuFVZQ="
+    }
+  }, {
+    "input" : {
+      "activationId" : "730cbcfe-133e-46f1-811a-6b17f7b7fdf5",
+      "encryptedServerPublicKey" : "5LHO35SWEaPkHd5LovuFFsKl6icRbGHdpZWupDTfo+00Y2WAOBl9os2zzN5XUTvN76oqJbpnW7jplyO/Lfsme23EdX2IZ2btR19+ikU0/yfdBA4+GsX+pTUIfJDiCyao",
+      "masterServerPrivateKey" : "QCb8Evc6Nbsi+malG78pxmj8hFDAx5ULhmyBgP7Evgk=",
+      "masterServerPublicKey" : "BEZnE1wBUVczRw5JYfsYIFiT+q3I768EJp2KOKXmykjm7BFi5DNRyIKRFYzWfidA4E32s1YIuY/ts4bk2zPJjb4="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BLg9VTzXff0QLz18D01cGzeKyo/qJ3nIFJApHmVI9oUaGx9OV8dYkqClvB1pipwgc+uGMs/aVUppmvx0Cbzvzek="
+    }
+  }, {
+    "input" : {
+      "activationId" : "0ba393eb-e0ca-4d56-8cb2-1af77fe61f3a",
+      "encryptedServerPublicKey" : "bmdF0xzPByr5M+ukXD2Uxg2rS1ddZd5WRh5ewWZf1tun57V2DV3gNHoZ1yZM3Fo0x0xDgUVpcIHKyevdOwdDCmcFS2Syt53D8GolXEbqTcUbRUnvQrIPU+/2g/EQ9JLS",
+      "masterServerPrivateKey" : "UAtSAuhboUelRzT1I3FHH+RSpsYgip9kXgX62ifSU7I=",
+      "masterServerPublicKey" : "BPEYo3cZV1SgW5PTkHNUsPQvgT30MlEGBL4V7ab5BgHofjpG61+FOlSdefWIJyBuBC2yGOuDZw2XyHWPqkE0i/A="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BImTsBmgExUM2RTaR9usIheMsJxQi8vfo7ikl24+/Z/VsTEgHC2DiM8iN1X1cY4Vn3716aF58mqnuuaezNHu4sE="
+    }
+  }, {
+    "input" : {
+      "activationId" : "161932fa-4f03-4ce2-af33-b65fcff99794",
+      "encryptedServerPublicKey" : "ceEngVHkOd1joY5sRR/4LFCDp4W+DvWZyHTO7Mp8Ha3VrAxxxIkuJ4iiIlbFcoXGl4xmhPGpLQcntW8XOAsO0rkyC30Fz69pTyC7IuljX5frKLykFxUNXdxqlgAj2xVv",
+      "masterServerPrivateKey" : "AOWnPBZ/J04qucnU2DA6f0U3ukNF20v32T3Zn4hXSjb8",
+      "masterServerPublicKey" : "BH0Poeoa91MQ5HMJeT3dhxRPeRp59KBLdQXHWoHvidgGw5VUO7LdDKOBq8SLR/aYltTwrZasw2l7SVkMiDKhQ+c="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BKWR7jcQXXSjf1+2aZ8nMvttG5OGznFNGSqZfheqmSLhOXQncDkpHEniomu9THgeeCbmRSTHcKx3o8w0epQsIQA="
+    }
+  }, {
+    "input" : {
+      "activationId" : "5458d8d0-cb43-40d5-ba4f-edef74866cea",
+      "encryptedServerPublicKey" : "/L1se+bcMIMPdK0b/GKKThwBdaOsCrYrQ7sa2lDTvgMP31/qS6Cnz+tq1z5aLF6MBiBw7pF/SfXynKHKCCA+KceLfW5uI7Q7o6AE9nbGHdgGgWcSEvv8n2b0OQtn1kUh",
+      "masterServerPrivateKey" : "V9i5SjIo0UZvoh+gV+uZYCcF+UnLh2pmXv0RWfxOMis=",
+      "masterServerPublicKey" : "BM4C7hSvFUvdOLvM7NzbpNJQkHHrDJFB7lDNiHATm9LXKl+JGaieE81YLhSQF9lWSxidekzo5DWUl/OvYlq5mT8="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BE+fVTmhDXdt9OlsUPDuVUgIx6sIUMgAw+cyOtEaqTu7FuTPsJoVlpD8ilo2U1T4EnmXb8DWsLJV8b/zNV7dzdM="
+    }
+  }, {
+    "input" : {
+      "activationId" : "ed3af2ad-a50f-43e9-a7a2-07605315bcc3",
+      "encryptedServerPublicKey" : "FAybEk0MHfpc1sAcMt0dpPz+SObkKjYDUv71b2mzAjCHWQQsRYVi2FvDG22z/0OXqj431PMJQpMj6mQ5TuiGC7bnM36Ig/sRIJXy9QnGJsk6TPAjjccPRBODvpfuFu/3",
+      "masterServerPrivateKey" : "OImOSblnKYXObFu8hOy8TGsUEw/wLfw9il05YVcyHR8=",
+      "masterServerPublicKey" : "BDbUpct4guQ4a3VQLv+3pvWSbU65f/AqVAEcHFDp2uJhMV1IKitDgm/5e5ztvFSjY0fUpKtaMozVyz0hZVPFCcA="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BKykU5q8EmV46/TH6JjtNE3nSTwy27EvA6iv7mwdh/U1gKcuJlmJWNqaHIdRzOcmloRE184YKjtkOo/VOlXxvB8="
+    }
+  }, {
+    "input" : {
+      "activationId" : "c3527b63-3925-481f-b71f-a89413abff27",
+      "encryptedServerPublicKey" : "1uWAUrXgum3RuQhZyK4UaJrbNndJ8oYNm3eFMobICxTPYGUBYh8M3MI4genjzJQUthj4VPkMYFjkB55Um194y/M7yAZmjC3900Pf3rwJ7z0tsFcY0aio9hZ/svd/BuES",
+      "masterServerPrivateKey" : "AJwAHKMVntZ7be7rsL/6laiPh2QTvFNjrMgtxs9ZBljE",
+      "masterServerPublicKey" : "BJ/W+Pe6VCLV5ozXQxSix/HZ2mWhG1LVgpSL9zF6EJGaE7zQW/YM6ZS4Qp2384Flq6B+PNHtzr+wfwD6cWppQSk="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BP80j5+0R8fVylYW/c/Jx83OtBDUNRe11rJrm71DZygg78ErWtjM0VC4/dNGrgaCNW5O8kOl/dn8/0sUt7fR01Y="
+    }
+  }, {
+    "input" : {
+      "activationId" : "cf75d439-f886-4a98-b91c-c30b8b0f03dc",
+      "encryptedServerPublicKey" : "dzYrA+xJhT/ewvOIooIUSD8uwU3wsnrWsa3KQE3176SC77HqvLpTVKs9zoPAxT7tAdlSQobViRddeET/BNKzprEGuGQYcOFgzQqArljqSODZB6VNBzB2+Ck+iYrM3u7g",
+      "masterServerPrivateKey" : "APDLSTsRMYTgx35AHJ9+aFtCm6bh6BSGegByGL2QuDSc",
+      "masterServerPublicKey" : "BJa/Sib88A6oL6WxrnfOijIWsqL49dwLE1Ty2ZjF+TDYcJWRcN6NUWqCjs5Z15zDYFJCFldmMM/jZZJZY27xNk4="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BKHPX/qdBRSd9wRnLcDdOokCrr+44vBhkvO5C1DB+t88M7L9DELLAzqgiDTfTPVO2LXlq+VD2oKa0+0FCvoPMXc="
+    }
+  }, {
+    "input" : {
+      "activationId" : "b7240d88-efc3-44d4-b694-38e655c58e78",
+      "encryptedServerPublicKey" : "BafvI2idRVUpI0DwAtAA6lhx84oBt8IXlWfVyDQ8AKPh9jdOEFC9Wzf5weej8i2czlayGFgVBXxI3TTAu/q8VRGRmLFMhCOPbYMcKHyQjMn7fp3bpRn2MLxTKvfrD3Aw",
+      "masterServerPrivateKey" : "AN5S5FB4ApVFDfKi40CB1diHMw93dI6w4Ww5ot8+xbpP",
+      "masterServerPublicKey" : "BEhp8uOou6moXplwhHJuztong0eywEH/rcPxpDqdFZHw5MIIcoiy0KNekwL7KQW/5xNF8sNPgMGfWPMoM2gWcds="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BCy0eJo7d+ivQPGKsmKh/HLdhzGscUDYZSk0x0jyt3WcQ0PtMlgzj+EEerVoLsJYicahehKNKImZzCjcsPcFFQo="
+    }
+  }, {
+    "input" : {
+      "activationId" : "1c84708f-192a-45ad-be13-0cc4a4db4b56",
+      "encryptedServerPublicKey" : "Bgb/MVvuPZ0ivYQCT0Y3XFwAS8nmTdWhtHDtXDGEnX8wZxFkAlcKMxhVkiyLtxObfLrORkuH0Q7nUC5jhSSyyQKVTMI4DbzpDFi95P7mDXOiNWOiutw93NM9o80DM01I",
+      "masterServerPrivateKey" : "f/z5BOqAh7z1OplmyNTa2uYFO4bniGS8k9DhkP5+NHk=",
+      "masterServerPublicKey" : "BAXOG95vpzAtZQs+HJgqhTdG+zk1JHZaFyqcMo19LexXb7PiSjekjLP950Ws1N6fEFTUZ6eFjlCGVL34qnUhrrQ="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BA9ril62/klftTZi9bquU4sN4gU+imd62GbHajyk5cIvj50lnD+0I/9qu7/ms2D3js0AA4AfFq3Z7Y65iysJ3CA="
+    }
+  }, {
+    "input" : {
+      "activationId" : "8b591bbb-6f6e-4398-9eb3-500115061dfa",
+      "encryptedServerPublicKey" : "t9IU8HyGAPjAeXVj/5eBxuM8APc4crtqIhT+lbqm0TeSAnEfyzOxzBH3HBkFZsBXJ6a2CI9KvL3LkXP7sANInM6y2FkH73I3NmtRpFpCBwviDxZIgGrMwxSpSLn4vUIf",
+      "masterServerPrivateKey" : "AJLInTcqCiEFtbuG5d7phN7rBJkZsEUf3r0zxmgXnS+c",
+      "masterServerPublicKey" : "BEeWo4R3JnWRX8yQOgEOa/N7SOmhK12dP9mOJoBqVV7ylp/wngjIFcFvQxQQOaNXeCIGI290JMNpnXWCP5J5mWA="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BC/uhQ251j4cnsRacXD/X40xbQRbVyT5HEPq7s4Hyzt44P7dA1HC/1PYiBojNAn2l7MkwfIlIPyIbiDeo3mOPFM="
+    }
+  }, {
+    "input" : {
+      "activationId" : "d57584b6-3955-4c9b-8d26-8f306c055d7c",
+      "encryptedServerPublicKey" : "O8ZNcqGfM2l/oWPl71h1RhPyEqk/WXclajY6oB9E8dkcJJdD/N3TQTFr8v0W8uyXNLNreRcsLcp+rIDu6z3GksaXv/dIWq9diLiqpaWvA/J//ukuodF3jKB16sxWX6u3",
+      "masterServerPrivateKey" : "AO7D2u9PPAWzzwM/sKsoATymtdTR5+KMcO6xolUSIeQl",
+      "masterServerPublicKey" : "BE9clKGw+8fX6UBk7i3DWRHTLmXPycsKMPXzWqx0+meAxVwHrML/qM6gNRPTwAsg3sjCptl952Xk3Vntso781wQ="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BBv5FWp7L9NfQgNwftS4GfKGmfAHrbjkGZ8UsefojZZ698oJ2U00hfHWE5noaj2FR/OgfylAEKQH8XX2THkRNOI="
+    }
+  }, {
+    "input" : {
+      "activationId" : "903b801c-8148-435c-87cf-e55fc3798ca7",
+      "encryptedServerPublicKey" : "Yc+dSWJ8a++7hmqEyMDWUtx5jqwrvmG0RyanY0RgicNzkfvyv13+x8cNTrC2CWK6JM61LluDif5vPZzU7bEJIiV3+gvoN1WtKja3c3mERryVSOgnbxDSykJ08t3Em8WB",
+      "masterServerPrivateKey" : "AKMaz6OfWx15B9x/d3ihndZNycC0rI/nnlDqRuVDhd4J",
+      "masterServerPublicKey" : "BOmQp8rmTlA1lWk0F2AtPETYAYdzVuWtmKMJ41U7zJc9wDBjIaNZoBSzWDt2X+CKMaWbJa6L3FOTDomY7I25//g="
+    },
+    "output" : {
+      "encryptedServerPublicKeySignature" : "BA44xfEVLogPyWcs5zd/Xx8WYW9atyPzyxRzFJNbxZLbQxRrCg8TBdIGrfIawmUJPgBB9VUhY2tOEJFix2Q1LfM="
+    }
+  } ]
+}
