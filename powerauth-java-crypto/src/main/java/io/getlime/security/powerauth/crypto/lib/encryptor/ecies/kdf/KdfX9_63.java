@@ -31,16 +31,16 @@ public class KdfX9_63 {
     /**
      * Derive a new key using X9.63 with SHA256 digest.
      * @param secret Secret key to be used as the derivation base key.
-     * @param info Extra information used for derived key computation.
+     * @param sharedInfo Extra information used for derived key computation.
      * @param outputBytes Requested size of the key.
      * @return Derived key using the X9.63 KDF with SHA256 digest.
      */
-    public static byte[] derive(byte[] secret, byte[] info, int outputBytes) {
+    public static byte[] derive(byte[] secret, byte[] sharedInfo, int outputBytes) {
         if (secret == null) {
             return null;
         }
         byte[] result = new byte[0];
-        byte[] round = new byte[secret.length + 4 + (info == null ? 0 : info.length)];
+        byte[] round = new byte[secret.length + 4 + (sharedInfo == null ? 0 : sharedInfo.length)];
         byte[] temp;
         byte[] counter;
         int i = 1;
@@ -50,9 +50,9 @@ public class KdfX9_63 {
             // Copy counter
             counter = ByteBuffer.allocate(4).putInt(i).array();
             System.arraycopy(counter, 0, round, secret.length, 4);
-            // Copy additional info
-            if (info != null) {
-                System.arraycopy(info, 0, round, secret.length + 4, info.length);
+            // Copy additional sharedInfo
+            if (sharedInfo != null) {
+                System.arraycopy(sharedInfo, 0, round, secret.length + 4, sharedInfo.length);
             }
             // Hash the value
             temp = Hash.sha256(round);
