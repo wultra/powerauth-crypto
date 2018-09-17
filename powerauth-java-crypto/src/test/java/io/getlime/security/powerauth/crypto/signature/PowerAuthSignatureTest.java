@@ -19,7 +19,7 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounterGenerator;
+import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.crypto.server.signature.PowerAuthServerSignature;
@@ -218,8 +218,8 @@ public class PowerAuthSignatureTest {
         PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
         PowerAuthServerKeyFactory serverKeyFactory = new PowerAuthServerKeyFactory();
 
-        HashBasedCounterGenerator ctrGenerator = new HashBasedCounterGenerator();
-        byte[] ctrData = ctrGenerator.generateInitialValue();
+        HashBasedCounter ctrGenerator = new HashBasedCounter();
+        byte[] ctrData = ctrGenerator.init();
 
         for (int i = 0; i < 5; i++) {
 
@@ -262,7 +262,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
-                ctrData = ctrGenerator.generateNextValue(ctrData);
+                ctrData = ctrGenerator.next(ctrData);
             }
 
             System.out.println("# 2FA ====");
@@ -306,7 +306,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
-                ctrData = ctrGenerator.generateNextValue(ctrData);
+                ctrData = ctrGenerator.next(ctrData);
             }
         }
     }

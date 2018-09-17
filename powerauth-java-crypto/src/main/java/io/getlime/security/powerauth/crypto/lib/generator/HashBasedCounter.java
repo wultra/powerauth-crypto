@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,16 @@
  */
 package io.getlime.security.powerauth.crypto.lib.generator;
 
+import io.getlime.security.powerauth.crypto.lib.api.Counter;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 
 /**
- * Generator of hash based counter.
+ * Implementation of hash based counter.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  *
  */
-public class HashBasedCounterGenerator {
+public class HashBasedCounter implements Counter {
 
     /**
      * Number of bytes used in counter.
@@ -31,25 +32,27 @@ public class HashBasedCounterGenerator {
     private static final int HASH_COUNTER_RANDOM_BYTES_LENGTH = 16;
 
     /**
-     * Key generator is used for conversion of bytes.
+     * Key generator is used for operations with bytes.
      */
     private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
-     * Generate initial counter value.
-     * @return Initial counter value.
+     * Generate initial counter data.
+     * @return Initial counter data.
      */
-    public byte[] generateInitialValue() {
+    @Override
+    public byte[] init() {
         return keyGenerator.generateRandomBytes(HASH_COUNTER_RANDOM_BYTES_LENGTH);
     }
 
     /**
-     * Generate next counter value by hashing current counter value.
-     * @param currentValue Current counter value.
-     * @return Next counter value.
+     * Generate next counter data by hashing current counter data.
+     * @param ctrData Current counter data.
+     * @return Next counter data.
      */
-    public byte[] generateNextValue(byte[] currentValue) {
-        byte[] hashedValue = Hash.sha256(currentValue);
-        return keyGenerator.convert32Bto16B(hashedValue);
+    public byte[] next(byte[] ctrData) {
+        byte[] nextCtrData = Hash.sha256(ctrData);
+        return keyGenerator.convert32Bto16B(nextCtrData);
     }
+
 }

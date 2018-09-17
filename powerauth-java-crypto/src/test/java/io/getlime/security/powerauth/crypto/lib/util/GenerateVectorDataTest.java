@@ -23,7 +23,7 @@ import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientAct
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounterGenerator;
+import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.model.TestSet;
@@ -506,7 +506,7 @@ public class GenerateVectorDataTest {
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
-            HashBasedCounterGenerator hashBasedCounterGenerator = new HashBasedCounterGenerator();
+            HashBasedCounter hashBasedCounter = new HashBasedCounter();
 
             for (int i = 0; i < keyMax; i++) {
 
@@ -516,7 +516,7 @@ public class GenerateVectorDataTest {
                 SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
                 SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
 
-                byte[] counter = hashBasedCounterGenerator.generateInitialValue();
+                byte[] counter = hashBasedCounter.init();
 
                 for (int k = 0; k < signatureCount; k++) {
 
@@ -537,7 +537,7 @@ public class GenerateVectorDataTest {
                     output.put("signature", signature);
                     testSet.addData(input, output);
 
-                    counter = hashBasedCounterGenerator.generateNextValue(counter);
+                    counter = hashBasedCounter.next(counter);
                 }
 
                 for (int k = 0; k < signatureCount; k++) {
@@ -559,7 +559,7 @@ public class GenerateVectorDataTest {
                     output.put("signature", signature);
                     testSet.addData(input, output);
 
-                    counter = hashBasedCounterGenerator.generateNextValue(counter);
+                    counter = hashBasedCounter.next(counter);
                 }
 
                 for (int k = 0; k < signatureCount; k++) {
@@ -581,7 +581,7 @@ public class GenerateVectorDataTest {
                     output.put("signature", signature);
                     testSet.addData(input, output);
 
-                    counter = hashBasedCounterGenerator.generateNextValue(counter);
+                    counter = hashBasedCounter.next(counter);
                 }
             }
         }
