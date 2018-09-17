@@ -55,11 +55,14 @@ public class VaultTest {
     }
 	
 	/**
-	 * Test the secure vault implementation
+	 * Test the secure vault implementation.
+     *
+     * PowerAuth protocol version: 2.0
+     *
 	 * @throws Exception In case the test fails.
 	 */
 	@Test
-	public void testVault() throws Exception {
+	public void testVaultV2() throws Exception {
 		
 		System.out.println("# PowerAuth 2.0 Secure Vault");
         System.out.println();
@@ -98,7 +101,7 @@ public class VaultTest {
         
         // Get encrypted vault encryption key from the server
         for (long ctr = 0; ctr < 50; ctr++) {
-        	
+
         	System.out.println();
             System.out.println("## Counter: " + ctr);
             
@@ -111,7 +114,64 @@ public class VaultTest {
         	PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);
         	assertEquals(deviceKeyPair.getPrivate(), devicePrivateKeyLocal);
         }
-		
+
 	}
+
+    /**
+     * Test the secure vault implementation.
+     *
+     * PowerAuth protocol version: 3.0
+     *
+     * @throws Exception In case the test fails.
+     */
+    @Test
+    public void testVaultV3() throws Exception {
+
+        System.out.println("# PowerAuth 3.0 Secure Vault");
+        System.out.println();
+
+        PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
+
+        // Prepare test data
+        KeyGenerator keyGenerator = new KeyGenerator();
+        PowerAuthClientVault clientVault = new PowerAuthClientVault();
+        PowerAuthServerVault serverVault = new PowerAuthServerVault();
+
+        // Generate fake server and device keys
+        KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+        KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+
+        // Deduce shared master secret keys
+        SecretKey deviceMasterKey = keyGenerator.computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
+        SecretKey serverMasterKey = keyGenerator.computeSharedKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic());
+        assertEquals(deviceMasterKey, serverMasterKey);
+
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        System.out.println("## Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(deviceMasterKey)));
+
+        // Deduce client vault encryption key and client / server master transport key
+        SecretKey clientVaultEncryptionKey = keyFactory.generateServerEncryptedVaultKey(deviceMasterKey);
+        System.out.println("## Vault Encryption Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
+
+        SecretKey clientTransportKey = keyGenerator.deriveSecretKey(deviceMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
+        SecretKey serverTransportKey = keyGenerator.deriveSecretKey(serverMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
+        assertEquals(clientTransportKey, serverTransportKey);
+        System.out.println("## Master Transport Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(clientTransportKey)));
+
+        // Encrypt device private key
+        byte[] cDevicePrivateKey = clientVault.encryptDevicePrivateKey(deviceKeyPair.getPrivate(), clientVaultEncryptionKey);
+
+        // Get encrypted vault encryption key from the server
+        byte[] cVaultEncryptionKey = serverVault.encryptVaultEncryptionKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic());
+        System.out.println("## cVaultEncryptionKey: " + BaseEncoding.base64().encode(cVaultEncryptionKey));
+
+        SecretKey vaultEncryptionKeyLocal = clientVault.decryptVaultEncryptionKey(cVaultEncryptionKey, clientTransportKey);
+        assertEquals(clientVaultEncryptionKey, vaultEncryptionKeyLocal);
+
+        PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);
+        assertEquals(deviceKeyPair.getPrivate(), devicePrivateKeyLocal);
+
+    }
 
 }

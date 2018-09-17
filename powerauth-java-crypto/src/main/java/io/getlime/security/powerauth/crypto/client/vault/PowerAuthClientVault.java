@@ -40,12 +40,18 @@ public class PowerAuthClientVault {
     /**
      * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using a transport key
      * KEY_ENCRYPTION_VAULT_TRANSPORT.
+     *
+     * @deprecated Use {@link #decryptVaultEncryptionKey(byte[], SecretKey)}
+     *
+     * PowerAuth protocol version: 2.0
+     *
      * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.
      * @param masterTransportKey Master transport key used for deriving a transport key, used for decrypting vault encryption key.
-     * @param ctr Counter used for key derivation.
+     * @param ctr Numeric counter used for key derivation.
      * @return Original KEY_ENCRYPTION_VAULT
      * @throws InvalidKeyException In case invalid key is provided.
      */
+    @Deprecated
     public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey masterTransportKey, long ctr) throws InvalidKeyException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
@@ -54,6 +60,29 @@ public class PowerAuthClientVault {
         byte[] zeroBytes = new byte[16];
         try {
             byte[] keyBytes = aes.decrypt(cVaultEncryptionKey, zeroBytes, vaultEncryptionTransportKey);
+            return keyConvertor.convertBytesToSharedSecretKey(keyBytes);
+        } catch (IllegalBlockSizeException | BadPaddingException ex) {
+            Logger.getLogger(PowerAuthClientVault.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using KEY_TRANSPORT.
+     *
+     * PowerAuth protocol version: 3.0
+     *
+     * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.
+     * @param transportKey Transport key used for for decrypting vault encryption key.
+     * @return Original KEY_ENCRYPTION_VAULT
+     * @throws InvalidKeyException In case invalid key is provided.
+     */
+    public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey transportKey) throws InvalidKeyException {
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        byte[] zeroBytes = new byte[16];
+        try {
+            byte[] keyBytes = aes.decrypt(cVaultEncryptionKey, zeroBytes, transportKey);
             return keyConvertor.convertBytesToSharedSecretKey(keyBytes);
         } catch (IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(PowerAuthClientVault.class.getName()).log(Level.SEVERE, null, ex);
