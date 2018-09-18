@@ -267,155 +267,12 @@ public class BasicEciesEncryptorTest {
     }
 
     /**
-     * Test that values match client side test vectors.
-     *
-     * <h5>PowerAuth protocol versions:</h5>
-     * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
-     * </ul>
-     *
-     * @throws Exception When test fails.
-     */
-    @Test
-    public void testVectorsV2() throws Exception {
-
-        final PrivateKey privateKey = keyConversion.convertBytesToPrivateKey(BaseEncoding.base64().decode("ALNdDn6auRO69TOJGGmK3ZYbCVXa+d5kobWo028vugzd"));
-        final PublicKey publicKey = keyConversion.convertBytesToPublicKey(BaseEncoding.base64().decode("A1PS1QVrJBHlLLq7UFv87qtS0Ka2Ou5ehAbCqeSTjSid"));
-
-        byte[][] request = {
-                BaseEncoding.base64().decode("aGVsbG8gd29ybGQh"),
-                BaseEncoding.base64().decode("QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzIQ=="),
-                BaseEncoding.base64().decode("SXQncyBvdmVyIEpvaG55ISBJdCdzIG92ZXIu"),
-                "".getBytes("UTF-8"),
-                "".getBytes("UTF-8"),
-                "".getBytes("UTF-8")
-        };
-        byte[][] response = {
-                BaseEncoding.base64().decode("aGV5IHRoZXJlIQ=="),
-                BaseEncoding.base64().decode("Tk9QRSE="),
-                BaseEncoding.base64().decode("Tm90aGluZyBpcyBvdmVyISBOb3RoaW5nISBZb3UganVzdCBkb24ndCB0dXJuIGl0IG9mZiEgSXQgd2Fzbid0IG15IHdhciEgWW91IGFza2VkIG1lLCBJIGRpZG4ndCBhc2sgeW91ISBBbmQgSSBkaWQgd2hhdCBJIGhhZCB0byBkbyB0byB3aW4h"),
-                "".getBytes("UTF-8"),
-                "".getBytes("UTF-8"),
-                "".getBytes("UTF-8")
-        };
-        byte[][] sharedInfo = {
-                "".getBytes("UTF-8"),
-                BaseEncoding.base64().decode("dmVyeSBzZWNyZXQgaW5mb3JtYXRpb24="),
-                BaseEncoding.base64().decode("MDEyMzQ1Njc4OWFiY2RlZg=="),
-                BaseEncoding.base64().decode("MTIzNDUtNTY3ODk="),
-                "".getBytes("UTF-8"),
-                "".getBytes("UTF-8")
-        };
-        byte[][] ephemeralPublicKey = {
-                BaseEncoding.base64().decode("AtxcLBBO87sdmlGZaapgZCKpUNDxQA4uEGAa5GXVTmSj"),
-                BaseEncoding.base64().decode("AqgzPA+rkT8uaYWZOtBnPZL7pK9qD/UvZamWobBVgvLG"),
-                BaseEncoding.base64().decode("A4F/ksKE13u5QjzJ5WGPFF1cbWcYG6JCFCQasUEsLQsu"),
-                BaseEncoding.base64().decode("A+KiCfhwfdEGCDstnP50X3M/Dp/GtM9DFuqPppF+CR2O"),
-                BaseEncoding.base64().decode("A6e+pgj24/QFKilVm11Jm6LH5NdUCSVD57s3CN2PaO8D"),
-                BaseEncoding.base64().decode("AoiuMPw8KCmyMBqnIoYTfs+y0lMD3UimHsUrdaaqJmhw")
-        };
-
-        EciesPayload[] encryptedRequest = {
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[0]),
-                        BaseEncoding.base64().decode("DUClyueyHW3BWS5EcR6h+F6DSxgQZsB+utzcOIGadGA="),
-                        BaseEncoding.base64().decode("hw6NQximlwv0oE4e4TD88A==")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[1]),
-                        BaseEncoding.base64().decode("Zuy1DNzPGZ4UGBQ4OM3suBTX+VobgjIcm6ENCZFCKBA="),
-                        BaseEncoding.base64().decode("RAxwKcBykcsZf9fPUEJ+qkfQJ0Kw00IGYc17UfzP978=")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[2]),
-                        BaseEncoding.base64().decode("dsKrDGIVIyYAmKtm+hMA2yur2hjrQmERODtnNMYJvOA="),
-                        BaseEncoding.base64().decode("Q0+RkzSkNfT1D3E2VxVklSt0sdNNY70j3DmtqxXbrvM=")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[3]),
-                        BaseEncoding.base64().decode("f8nzdA70PeoCLMEcwr32LVqgoilkWOLX5GltuqbKE+8="),
-                        BaseEncoding.base64().decode("tIWVnWGfxqEN6juSBL0wBw==")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[4]),
-                        BaseEncoding.base64().decode("zqwyVtYsLc8HKReIX5YH+bea/bmD9xNBqHlWI3DW4bg="),
-                        BaseEncoding.base64().decode("hEUFGO/cyvYwrnPuYfAN5Q==")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[5]),
-                        BaseEncoding.base64().decode("WfPtqxADasfGPb7P/T6ZIaGPKWF87pdvGKKVDu9vWZc="),
-                        BaseEncoding.base64().decode("86SDx6jPqgWejE92hh2zxg==")
-                )
-        };
-
-        EciesPayload[] encryptedResponse = {
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[0]),
-                        BaseEncoding.base64().decode("+geGPQSxID9TM0kdWgqXiur1yOET7WvVgBJu0fXNAmk="),
-                        BaseEncoding.base64().decode("+7jbEirkDVAxbLo7DM8V6g==")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[1]),
-                        BaseEncoding.base64().decode("aqxaDtoXVnm3mkgjlA2bwGupbrONcgNkdrOM1oxtIHM="),
-                        BaseEncoding.base64().decode("3wtEfjEt90sIFT1X4+9rYg==")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[2]),
-                        BaseEncoding.base64().decode("hNQKCoc1g+/PPNOlF+z7Cx3m5bijAekQqHvuWlTzoIg="),
-                        BaseEncoding.base64().decode("MpHh1Sx5qofeYjSOrziLw6GyTGAT2929x1XZDZXtjZxHGXYwaUBlnMB5+zF7YsnbIAy/8ZB/8/bWKz0r6Sk/6Gw/e6V7mpR5dKjqVqMBn6ioLRCGBqhyv+Px7BAwHwN1ymfjz5o1aQJo/isdbxZjgIWjfiJc9W3mxFWQ5fGBxC8oPiMlx4SELd6WTWaCwa5E")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[3]),
-                        BaseEncoding.base64().decode("f8nzdA70PeoCLMEcwr32LVqgoilkWOLX5GltuqbKE+8="),
-                        BaseEncoding.base64().decode("tIWVnWGfxqEN6juSBL0wBw==")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[4]),
-                        BaseEncoding.base64().decode("zqwyVtYsLc8HKReIX5YH+bea/bmD9xNBqHlWI3DW4bg="),
-                        BaseEncoding.base64().decode("hEUFGO/cyvYwrnPuYfAN5Q==")
-                ),
-                new EciesPayload(
-                        keyConversion.convertBytesToPublicKey(ephemeralPublicKey[5]),
-                        BaseEncoding.base64().decode("WfPtqxADasfGPb7P/T6ZIaGPKWF87pdvGKKVDu9vWZc="),
-                        BaseEncoding.base64().decode("86SDx6jPqgWejE92hh2zxg==")
-                )
-        };
-
-        for (int i = 0; i < request.length; i++) {
-
-            System.out.println("## ECIES test vector (v2): " + i);
-
-            EciesPayload requestPayload = encryptedRequest[i];
-
-            BasicEciesDecryptor decryptor = new BasicEciesDecryptor((ECPrivateKey) privateKey, sharedInfo[i]);
-
-            final byte[] decryptedRequest = decryptor.decrypt(requestPayload, ephemeralPublicKey[i]);
-            assertArrayEquals(decryptedRequest, request[i]);
-
-            EciesPayload expectedResponsePayload = encryptedResponse[i];
-            final EciesPayload responsePayload = decryptor.encrypt(response[i], ephemeralPublicKey[i]);
-
-            assertArrayEquals(expectedResponsePayload.getEncryptedData(), responsePayload.getEncryptedData());
-            assertArrayEquals(expectedResponsePayload.getMac(), responsePayload.getMac());
-            assertEquals(expectedResponsePayload.getEphemeralPublicKey(), responsePayload.getEphemeralPublicKey());
-
-        }
-
-    }
-
-    /**
      * Test for matching client side generated test vectors for ECIES.
      *
-     * <h5>PowerAuth protocol versions:</h5>
-     * <ul>
-     *     <li>3.0</li>
-     * </ul>
-     *
      * @throws Exception When test fails.
      */
     @Test
-    public void testVectorsV3() throws Exception {
+    public void testVectors() throws Exception {
 
         // Add magical 0x0 byte which resolves the sign issue when converting the private key.
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
@@ -533,7 +390,7 @@ public class BasicEciesEncryptorTest {
 
         for (int i = 0; i < request.length; i++) {
 
-            System.out.println("## ECIES test vector (v3): " + i);
+            System.out.println("## ECIES test vector: " + i);
 
             EciesPayload requestPayload = encryptedRequest[i];
 
