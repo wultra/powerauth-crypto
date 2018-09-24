@@ -28,7 +28,7 @@ public class EciesCryptogram {
     private final byte[] encryptedData;
 
     /**
-     * ECIES cryptogram constructor.
+     * Constructor for ECIES cryptogram used in encrypted requests.
      *
      * @param ephemeralPublicKey Ephemeral public key.
      * @param mac MAC computed for key and data.
@@ -36,6 +36,18 @@ public class EciesCryptogram {
      */
     public EciesCryptogram(byte[] ephemeralPublicKey, byte[] mac, byte[] encryptedData) {
         this.ephemeralPublicKey = ephemeralPublicKey;
+        this.mac = mac;
+        this.encryptedData = encryptedData;
+    }
+
+    /**
+     * Constructor for ECIES cryptogram used in encrypted responses (ephemeral public key is optional).
+     *
+     * @param mac MAC computed for key and data.
+     * @param encryptedData Encrypted data.
+     */
+    public EciesCryptogram(byte[] mac, byte[] encryptedData) {
+        this.ephemeralPublicKey = null;
         this.mac = mac;
         this.encryptedData = encryptedData;
     }
