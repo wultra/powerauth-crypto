@@ -94,7 +94,8 @@ public class EciesDecryptor {
     }
 
     /**
-     * Encrypt response data and construct ECIES cryptogram.
+     * Encrypt response data and construct ECIES cryptogram. Use when the {@link #decryptRequest} method was
+     * already called and the ECIES envelope key is already derived.
      *
      * @param data Response data to encrypt.
      * @return ECIES cryptogram.
@@ -104,6 +105,25 @@ public class EciesDecryptor {
         if (!canEncryptResponse()) {
             throw new EciesException("Response encryption is not allowed");
         }
+        return encrypt(data);
+    }
+
+    /**
+     * Encrypt response data and construct ECIES cryptogram. Use provided ephemeral public key. Useful when handling
+     * the "request/response" cycle of the app in situation client request only sends an ephemeral public key,
+     * without any MAC and data.
+     *
+     * @param data Response data to encrypt.
+     * @return ECIES cryptogram.
+     * @throws EciesException In case response encryption fails.
+     */
+    public EciesCryptogram encryptResponse(byte[] data, byte[] ephemeralPublicKeyBytes) throws EciesException {
+        // Invalidate decryptor for decryption
+        canDecryptData = false;
+        canEncryptData = true;
+        // Derive envelope key
+        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
+        // Exception was not thrown which means the envelope key is valid, response data can be encrypted
         return encrypt(data);
     }
 
@@ -185,5 +205,7 @@ public class EciesDecryptor {
             throw new EciesException("Encryption error occurred", e);
         }
     }
+
+
 
 }
