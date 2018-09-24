@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Enumeration with constants for parameter sharedInfo1.
  */
-public enum SharedInfo1Constants {
+public enum EciesSharedInfo1 {
 
     ACTIVATION_LAYER_2("/pa/activation"),
     MIGRATION_START("/pa/migration"),
@@ -34,7 +34,7 @@ public enum SharedInfo1Constants {
      * Constructor with sharedInfo1 parameter for ECIES.
      * @param sharedInfo1 Parameter sharedInfo1 for ECIES.
      */
-    SharedInfo1Constants(String sharedInfo1) {
+    EciesSharedInfo1(String sharedInfo1) {
         this.value = sharedInfo1.getBytes(StandardCharsets.UTF_8);
     }
 
