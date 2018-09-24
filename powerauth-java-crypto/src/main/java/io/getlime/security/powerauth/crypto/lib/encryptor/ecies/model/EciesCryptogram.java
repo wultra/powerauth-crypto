@@ -23,21 +23,21 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model;
  */
 public class EciesCryptogram {
 
-    private final byte[] key;
+    private final byte[] ephemeralPublicKey;
     private final byte[] mac;
-    private final byte[] body;
+    private final byte[] encryptedData;
 
     /**
      * ECIES cryptogram constructor.
      *
-     * @param key Ephemeral public key.
+     * @param ephemeralPublicKey Ephemeral public key.
      * @param mac MAC computed for key and data.
-     * @param body Encrypted data.
+     * @param encryptedData Encrypted data.
      */
-    public EciesCryptogram(byte[] key, byte[] mac, byte[] body) {
-        this.key = key;
+    public EciesCryptogram(byte[] ephemeralPublicKey, byte[] mac, byte[] encryptedData) {
+        this.ephemeralPublicKey = ephemeralPublicKey;
         this.mac = mac;
-        this.body = body;
+        this.encryptedData = encryptedData;
     }
 
     /**
@@ -45,8 +45,8 @@ public class EciesCryptogram {
      *
      * @return Ephemeral public key bytes.
      */
-    public byte[] getKey() {
-        return key;
+    public byte[] getEphemeralPublicKey() {
+        return ephemeralPublicKey;
     }
 
     /**
@@ -63,7 +63,7 @@ public class EciesCryptogram {
      *
      * @return Encrypted data.
      */
-    public byte[] getBody() {
-        return body;
+    public byte[] getEncryptedData() {
+        return encryptedData;
     }
 }

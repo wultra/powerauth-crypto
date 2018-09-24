@@ -86,7 +86,7 @@ public class EciesDecryptor {
      * @throws EciesException In case request decryption fails.
      */
     public byte[] decryptRequest(EciesCryptogram cryptogram) throws EciesException {
-        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getKey(), sharedInfo1);
+        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getEphemeralPublicKey(), sharedInfo1);
         if (!canDecryptRequest()) {
             throw new EciesException("Request decryption is not allowed");
         }
@@ -110,14 +110,22 @@ public class EciesDecryptor {
 
     /**
      * Encrypt response data and construct ECIES cryptogram. Use provided ephemeral public key. Useful when handling
-     * the "request/response" cycle of the app in situation client request only sends an ephemeral public key,
-     * without any MAC and data.
+     * the "request/response" cycle of the app in situation when client request only sends an ephemeral public key,
+     * without any data and MAC.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
+     * For PowerAuth version 3.0 use {@link #encryptResponse(byte[])} because request data and MAC is always be available.
      *
      * @param data Response data to encrypt.
      * @return ECIES cryptogram.
      * @throws EciesException In case response encryption fails.
      */
-    public EciesCryptogram encryptResponse(byte[] data, byte[] ephemeralPublicKeyBytes) throws EciesException {
+    public EciesCryptogram encryptResponseDirect(byte[] data, byte[] ephemeralPublicKeyBytes) throws EciesException {
         // Invalidate decryptor for decryption
         canDecryptData = false;
         canEncryptData = true;
@@ -155,7 +163,7 @@ public class EciesDecryptor {
     private byte[] decrypt(EciesCryptogram cryptogram) throws EciesException {
         try {
             // Validate data MAC value
-            final byte[] macData = (sharedInfo2 == null ? cryptogram.getBody() : Bytes.concat(cryptogram.getBody(), sharedInfo2));
+            final byte[] macData = (sharedInfo2 == null ? cryptogram.getEncryptedData() : Bytes.concat(cryptogram.getEncryptedData(), sharedInfo2));
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
             if (!Arrays.equals(mac, cryptogram.getMac())) {
                 throw new EciesException("Invalid MAC");
@@ -170,7 +178,7 @@ public class EciesDecryptor {
             canDecryptData = false;
             canEncryptData = true;
 
-            return aes.decrypt(cryptogram.getBody(), iv, encKey);
+            return aes.decrypt(cryptogram.getEncryptedData(), iv, encKey);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new EciesException("Decryption error occurred", e);
         }

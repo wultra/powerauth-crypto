@@ -85,9 +85,9 @@ public class EciesEncryptorTest {
             final EciesCryptogram payloadRequest = encryptor.encryptRequest(request);
             System.out.println("# REQUEST");
             System.out.println("- Original data: " + BaseEncoding.base64().encode(request) + " (" + new String(request, "UTF-8") + ")");
-            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadRequest.getBody()));
+            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadRequest.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadRequest.getMac()));
-            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadRequest.getKey()));
+            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadRequest.getEphemeralPublicKey()));
             System.out.println();
 
             EciesDecryptor decryptor = new EciesDecryptor((ECPrivateKey) privateKey);
@@ -98,9 +98,9 @@ public class EciesEncryptorTest {
             final EciesCryptogram payloadResponse = decryptor.encryptResponse(response);
             System.out.println("# RESPONSE");
             System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, "UTF-8") + ")");
-            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getBody()));
+            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadResponse.getMac()));
-            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadResponse.getKey()));
+            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadResponse.getEphemeralPublicKey()));
             System.out.println();
 
 
@@ -132,13 +132,13 @@ public class EciesEncryptorTest {
             final EciesCryptogram payloadRequest = encryptor.encryptRequest(request);
             System.out.println("# REQUEST");
             System.out.println("- Original data: " + BaseEncoding.base64().encode(request) + " (" + new String(request, "UTF-8") + ")");
-            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadRequest.getBody()));
+            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadRequest.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadRequest.getMac()));
-            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadRequest.getKey()));
+            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadRequest.getEphemeralPublicKey()));
             System.out.println();
 
             byte[] macBroken = keyGenerator.generateRandomBytes(16);
-            EciesCryptogram broken = new EciesCryptogram(payloadRequest.getKey(), macBroken, payloadRequest.getBody());
+            EciesCryptogram broken = new EciesCryptogram(payloadRequest.getEphemeralPublicKey(), macBroken, payloadRequest.getEncryptedData());
 
             EciesDecryptor decryptor = new EciesDecryptor((ECPrivateKey) privateKey);
             byte[] originalBytesRequest;
@@ -158,13 +158,13 @@ public class EciesEncryptorTest {
             final EciesCryptogram payloadResponse = decryptor.encryptResponse(response);
             System.out.println("# RESPONSE");
             System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, "UTF-8") + ")");
-            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getBody()));
+            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadResponse.getMac()));
-            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadResponse.getKey()));
+            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadResponse.getEphemeralPublicKey()));
             System.out.println();
 
             byte[] macBrokenResponse = keyGenerator.generateRandomBytes(16);
-            EciesCryptogram brokenResponse = new EciesCryptogram(payloadResponse.getKey(), macBrokenResponse, payloadResponse.getBody());
+            EciesCryptogram brokenResponse = new EciesCryptogram(payloadResponse.getEphemeralPublicKey(), macBrokenResponse, payloadResponse.getEncryptedData());
 
             byte[] originalBytesResponse;
 
@@ -385,9 +385,9 @@ public class EciesEncryptorTest {
             EciesCryptogram expectedResponsePayload = encryptedResponse[i];
             final EciesCryptogram responsePayload = decryptor.encryptResponse(response[i]);
 
-            assertArrayEquals(expectedResponsePayload.getBody(), responsePayload.getBody());
+            assertArrayEquals(expectedResponsePayload.getEncryptedData(), responsePayload.getEncryptedData());
             assertArrayEquals(expectedResponsePayload.getMac(), responsePayload.getMac());
-            assertEquals(expectedResponsePayload.getKey(), responsePayload.getKey());
+            assertEquals(expectedResponsePayload.getEphemeralPublicKey(), responsePayload.getEphemeralPublicKey());
 
         }
 

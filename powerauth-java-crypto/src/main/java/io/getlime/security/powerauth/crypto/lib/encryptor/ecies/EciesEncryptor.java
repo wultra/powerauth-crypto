@@ -166,7 +166,7 @@ public class EciesEncryptor {
     private byte[] decrypt(EciesCryptogram cryptogram) throws EciesException {
         try {
             // Validate data MAC value
-            final byte[] macData = (sharedInfo2 == null ? cryptogram.getBody() : Bytes.concat(cryptogram.getBody(), sharedInfo2));
+            final byte[] macData = (sharedInfo2 == null ? cryptogram.getEncryptedData() : Bytes.concat(cryptogram.getEncryptedData(), sharedInfo2));
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
             if (!Arrays.equals(mac, cryptogram.getMac())) {
                 throw new EciesException("Invalid MAC");
@@ -180,7 +180,7 @@ public class EciesEncryptor {
             // Invalidate the encryptor
             canDecryptData = false;
 
-            return aes.decrypt(cryptogram.getBody(), iv, encKey);
+            return aes.decrypt(cryptogram.getEncryptedData(), iv, encKey);
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new EciesException("Response decryption failed");
         }
