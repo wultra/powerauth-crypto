@@ -86,10 +86,10 @@ public class EciesDecryptor {
      * @throws EciesException In case request decryption fails.
      */
     public byte[] decryptRequest(EciesCryptogram cryptogram) throws EciesException {
-        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getEphemeralPublicKey(), sharedInfo1);
         if (!canDecryptRequest()) {
             throw new EciesException("Request decryption is not allowed");
         }
+        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getEphemeralPublicKey(), sharedInfo1);
         return decrypt(cryptogram);
     }
 
@@ -131,7 +131,7 @@ public class EciesDecryptor {
         canEncryptData = true;
         // Derive envelope key
         this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
-        // Exception was not thrown which means the envelope key is valid, response data can be encrypted
+        // No exception was thrown which means the envelope key is valid, response data can be encrypted
         return encrypt(data);
     }
 

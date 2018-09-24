@@ -86,10 +86,10 @@ public class EciesEncryptor {
      * @throws EciesException In case request encryption fails.
      */
     public EciesCryptogram encryptRequest(byte[] data) throws EciesException {
-        this.envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
         if (!canEncryptRequest()) {
             throw new EciesException("Request encryption is not allowed");
         }
+        this.envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
         return encrypt(data);
     }
 

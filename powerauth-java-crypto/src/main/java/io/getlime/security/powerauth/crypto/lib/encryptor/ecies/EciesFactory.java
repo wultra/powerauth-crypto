@@ -16,7 +16,7 @@
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesScope;
-import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.SharedInfo1Constants;
+import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesSharedInfo1;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 
@@ -39,8 +39,8 @@ public class EciesFactory {
      * @param applicationSecret Application secret.
      * @return Initialized ECIES encryptor.
      */
-    public EciesEncryptor getEciesEnryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret) {
-        return getEciesEnryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, null);
+    public EciesEncryptor getEciesEncryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret) {
+        return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, null);
     }
 
 
@@ -53,9 +53,9 @@ public class EciesFactory {
      * @param sharedInfo1 Optional sharedInfo1 parameter.
      * @return Initialized ECIES encryptor.
      */
-    public EciesEncryptor getEciesEnryptorForActivation(ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, SharedInfo1Constants sharedInfo1) {
+    public EciesEncryptor getEciesEncryptorForActivation(ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) {
         byte[] sharedInfo1Value = sharedInfo1 == null ? null : sharedInfo1.value();
-        return getEciesEnryptor(EciesScope.ACTIVATION_SCOPE, publicKey, applicationSecret, transportKey, sharedInfo1Value);
+        return getEciesEncryptor(EciesScope.ACTIVATION_SCOPE, publicKey, applicationSecret, transportKey, sharedInfo1Value);
     }
 
     /**
@@ -68,7 +68,7 @@ public class EciesFactory {
      * @param sharedInfo1 Optional sharedInfo1 parameter.
      * @return Initialized ECIES encryptor.
      */
-    private EciesEncryptor getEciesEnryptor(EciesScope eciesScope, ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) {
+    private EciesEncryptor getEciesEncryptor(EciesScope eciesScope, ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) {
         switch (eciesScope) {
 
             case APPLICATION_SCOPE: {
@@ -109,7 +109,7 @@ public class EciesFactory {
      * @param sharedInfo1 Pre-defined sharedInfo1 parameter.
      * @return Initialized ECIES decryptor.
      */
-    public EciesDecryptor getEciesDecryptorForActivation(ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, SharedInfo1Constants sharedInfo1) {
+    public EciesDecryptor getEciesDecryptorForActivation(ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) {
         byte[] sharedInfo1Value = sharedInfo1 == null ? null : sharedInfo1.value();
         return getEciesDecryptor(EciesScope.ACTIVATION_SCOPE, privateKey, applicationSecret, transportKey, sharedInfo1Value);
     }
