@@ -589,7 +589,7 @@ public class GenerateVectorDataTest {
                     input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
                     input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
-                    input.put("counter", BaseEncoding.base64().encode(counter));
+                    input.put("counterData", BaseEncoding.base64().encode(counter));
                     input.put("data", BaseEncoding.base64().encode(data));
                     Map<String, String> output = new LinkedHashMap<>();
                     output.put("signature", signature);
@@ -611,7 +611,7 @@ public class GenerateVectorDataTest {
                     input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
                     input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
-                    input.put("counter", BaseEncoding.base64().encode(counter));
+                    input.put("counterData", BaseEncoding.base64().encode(counter));
                     input.put("data", BaseEncoding.base64().encode(data));
                     Map<String, String> output = new LinkedHashMap<>();
                     output.put("signature", signature);
