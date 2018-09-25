@@ -40,7 +40,7 @@ public class EciesFactory {
      * @return Initialized ECIES encryptor.
      */
     public EciesEncryptor getEciesEncryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret) {
-        return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, null);
+        return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value());
     }
 
     /**
@@ -49,11 +49,11 @@ public class EciesFactory {
      * @param publicKey Public key used for ECIES.
      * @param applicationSecret Application secret.
      * @param transportKey Transport key.
-     * @param sharedInfo1 Optional sharedInfo1 parameter.
+     * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @return Initialized ECIES encryptor.
      */
     public EciesEncryptor getEciesEncryptorForActivation(ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) {
-        byte[] sharedInfo1Value = sharedInfo1 == null ? null : sharedInfo1.value();
+        byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.ACTIVATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesEncryptor(EciesScope.ACTIVATION_SCOPE, publicKey, applicationSecret, transportKey, sharedInfo1Value);
     }
 
@@ -63,8 +63,8 @@ public class EciesFactory {
      * @param eciesScope ECIES scope.
      * @param publicKey Public key used for ECIES.
      * @param applicationSecret Application secret.
-     * @param transportKey Transport key.
-     * @param sharedInfo1 Optional sharedInfo1 parameter.
+     * @param transportKey Transport key for activation scope. Use null value for application scope.
+     * @param sharedInfo1 Additional information for sharedInfo1 parameter in bytes.
      * @return Initialized ECIES encryptor.
      */
     private EciesEncryptor getEciesEncryptor(EciesScope eciesScope, ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) {
@@ -95,7 +95,7 @@ public class EciesFactory {
      * @return Initialized ECIES decryptor.
      */
     public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret) {
-        return getEciesDecryptor(EciesScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, null);
+        return getEciesDecryptor(EciesScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value());
     }
 
     /**
@@ -103,12 +103,12 @@ public class EciesFactory {
      *
      * @param privateKey Private key used for ECIES.
      * @param applicationSecret Application secret.
-     * @param transportKey Transport key for activation scope. Use null value for application scope.
-     * @param sharedInfo1 Pre-defined sharedInfo1 parameter.
+     * @param transportKey Transport key.
+     * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @return Initialized ECIES decryptor.
      */
     public EciesDecryptor getEciesDecryptorForActivation(ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) {
-        byte[] sharedInfo1Value = sharedInfo1 == null ? null : sharedInfo1.value();
+        byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.ACTIVATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesDecryptor(EciesScope.ACTIVATION_SCOPE, privateKey, applicationSecret, transportKey, sharedInfo1Value);
     }
 
@@ -119,7 +119,7 @@ public class EciesFactory {
      * @param privateKey Private key used for ECIES.
      * @param applicationSecret Application secret.
      * @param transportKey Transport key for activation scope. Use null value for application scope.
-     * @param sharedInfo1 Optional additional information for sharedInfo1 parameter.
+     * @param sharedInfo1 Additional information for sharedInfo1 parameter in bytes.
      * @return Initialized ECIES decryptor.
      */
     private EciesDecryptor getEciesDecryptor(EciesScope eciesScope, ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) {

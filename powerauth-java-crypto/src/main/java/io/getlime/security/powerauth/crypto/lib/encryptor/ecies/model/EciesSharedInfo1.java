@@ -23,8 +23,10 @@ import java.nio.charset.StandardCharsets;
  */
 public enum EciesSharedInfo1 {
 
+    APPLICATION_SCOPE_GENERIC("/pa/generic/application"),
+    ACTIVATION_SCOPE_GENERIC("/pa/generic/activation"),
     ACTIVATION_LAYER_2("/pa/activation"),
-    MIGRATION_START("/pa/migration"),
+    MIGRATION("/pa/migration"),
     VAULT_UNLOCK("/pa/vault/unlock"),
     CREATE_TOKEN("/pa/token/create");
 
