@@ -43,7 +43,6 @@ public class EciesFactory {
         return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, null);
     }
 
-
     /**
      * Get ECIES encryptor instance for activation scope.
      *
@@ -89,7 +88,7 @@ public class EciesFactory {
     }
 
     /**
-     * Get ECIES encryptor instance for application scope.
+     * Get ECIES decryptor instance for application scope.
      *
      * @param privateKey Private key used for ECIES.
      * @param applicationSecret Application secret.
@@ -99,9 +98,8 @@ public class EciesFactory {
         return getEciesDecryptor(EciesScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, null);
     }
 
-
     /**
-     * Get ECIES encryptor instance for activation scope.
+     * Get ECIES decryptor instance for activation scope.
      *
      * @param privateKey Private key used for ECIES.
      * @param applicationSecret Application secret.
@@ -115,7 +113,7 @@ public class EciesFactory {
     }
 
     /**
-     * Get ECIES encryptor instance for given scope and parameters. Parameter sharedInfo2 is derived based on ECIES scope.
+     * Get ECIES decryptor instance for given scope and parameters. Parameter sharedInfo2 is derived based on ECIES scope.
      *
      * @param eciesScope ECIES scope.
      * @param privateKey Private key used for ECIES.
@@ -143,6 +141,5 @@ public class EciesFactory {
                 throw new IllegalStateException("Unsupported ECIES scope: "+eciesScope);
         }
     }
-
 
 }
