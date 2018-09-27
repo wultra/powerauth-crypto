@@ -172,6 +172,15 @@ public class PowerAuthServerActivation {
     /**
      * Method validates the signature of the activation data in order to prove that a correct
      * client application is attempting to complete the activation.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
+     * This method is obsolete for PowerAuth protocol version 3.0 and will be deprecated in a future release.
+     *
      * @param activationIdShort Short activation ID.
      * @param activationNonce Client activation nonce.
      * @param encryptedDevicePublicKey Encrypted device public key.
@@ -181,7 +190,6 @@ public class PowerAuthServerActivation {
      * @return True if the signature is correct, false otherwise.
      *
      */
-    @Deprecated
     public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) {
         try {
             String signatureBaseString = activationIdShort + "&"

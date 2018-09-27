@@ -114,6 +114,15 @@ public class PowerAuthClientActivation {
     /**
      * Method computes the signature of the activation data in order to prove that a correct
      * client application is attempting to complete the activation.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
+     * This method is obsolete for PowerAuth protocol version 3.0 and will be deprecated in a future release.
+     *
      * @param activationIdShort Short activation ID.
      * @param activationNonce Client activation nonce.
      * @param encryptedDevicePublicKey Encrypted device public key.
@@ -121,7 +130,6 @@ public class PowerAuthClientActivation {
      * @param applicationSecret Application secret.
      * @return Signature bytes.
      */
-    @Deprecated
     public byte[] computeApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret) {
         try {
             String signatureBaseString = activationIdShort + "&"
