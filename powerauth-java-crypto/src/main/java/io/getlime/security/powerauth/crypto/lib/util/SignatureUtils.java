@@ -81,18 +81,39 @@ public class SignatureUtils {
      * Compute PowerAuth 2.0 signature for given data using a secret signature
      * keys and counter.
      *
+     * PowerAuth protocol version: 2.0
+     *
+     * @deprecated Use {@link #computePowerAuthSignature(byte[], List, byte[])}.
+     *
      * @param data Data to be signed.
      * @param signatureKeys Keys for computing the signature.
-     * @param counter Counter / derived key index.
+     * @param counter Numeric counter / derived key index.
      * @return PowerAuth 2.0 signature for given data.
      *
      */
+    @Deprecated
     public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, long counter) {
+        // Prepare a counter
+        byte[] ctrData = ByteBuffer.allocate(16).putLong(8, counter).array();
+
+        // Compute signature using byte counter
+        return computePowerAuthSignature(data, signatureKeys, ctrData);
+    }
+
+    /**
+     * Compute PowerAuth signature for given data using a secret signature keys and counter byte array.
+     *
+     * Logic is used in PowerAuth protocol versions 2.0 and 3.0.
+     *
+     * @param data Data to be signed.
+     * @param signatureKeys Keys for computing the signature.
+     * @param ctrData Counter byte array / derived key index.
+     * @return PowerAuth signature for given data.
+     *
+     */
+    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) {
         // Prepare a hash
         HMACHashUtilities hmac = new HMACHashUtilities();
-
-        // Prepare a counter
-        byte[] ctr = ByteBuffer.allocate(16).putLong(8, counter).array();
 
         // Prepare holder for signature components
         String[] signatureComponents = new String[signatureKeys.size()];
@@ -101,11 +122,11 @@ public class SignatureUtils {
 
         for (int i = 0; i < signatureKeys.size(); i++) {
             byte[] signatureKey = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(i));
-            byte[] derivedKey = hmac.hash(signatureKey, ctr);
+            byte[] derivedKey = hmac.hash(signatureKey, ctrData);
 
             for (int j = 0; j < i; j++) {
                 byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
-                byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctr);
+                byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctrData);
                 derivedKey = hmac.hash(derivedKeyInner, derivedKey);
             }
 
@@ -126,13 +147,33 @@ public class SignatureUtils {
     /**
      * Validate the PowerAuth 2.0 signature for given data using provided keys.
      *
+     * PowerAuth protocol version: 2.0
+     *
+     * @deprecated Use {@link #validatePowerAuthSignature(byte[], String, List, byte[])}.
+     *
      * @param data Data that were signed.
      * @param signature Data signature.
      * @param signatureKeys Keys for signature validation.
      * @param counter Counter.
      * @return Return "true" if signature matches, "false" otherwise.
      */
+    @Deprecated
     public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, long counter) {
+        return signature.equals(computePowerAuthSignature(data, signatureKeys, counter));
+    }
+
+    /**
+     * Validate the PowerAuth 3.0 signature for given data using provided keys.
+     *
+     * PowerAuth protocol version: 3.0
+     *
+     * @param data Data that were signed.
+     * @param signature Data signature.
+     * @param signatureKeys Keys for signature validation.
+     * @param counter Counter.
+     * @return Return "true" if signature matches, "false" otherwise.
+     */
+    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] counter) {
         return signature.equals(computePowerAuthSignature(data, signatureKeys, counter));
     }
 

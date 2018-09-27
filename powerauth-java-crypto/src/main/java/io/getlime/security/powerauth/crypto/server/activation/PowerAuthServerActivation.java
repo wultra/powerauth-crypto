@@ -20,6 +20,7 @@ import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientAct
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.ECPublicKeyFingerprint;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
@@ -67,8 +68,11 @@ public class PowerAuthServerActivation {
      * identifier is unique among all activation records in CREATED or OTP_USED
      * states, so that there are no collisions in activations.
      *
+     * Use {@link #generateActivationCode()}.
+     *
      * @return A new short activation ID.
      */
+    @Deprecated
     public String generateActivationIdShort() {
         return identifierGenerator.generateActivationIdShort();
     }
@@ -78,10 +82,22 @@ public class PowerAuthServerActivation {
      * string with 5+5 random Base32 characters (separated with the "-"
      * character).
      *
+     * Use {@link #generateActivationCode()}.
+     *
      * @return A new activation OTP.
      */
+    @Deprecated
     public String generateActivationOTP() {
         return identifierGenerator.generateActivationOTP();
+    }
+
+    /**
+     * Generate a pseudo-unique activation code. The format of activation code is "ABCDE-FGHIJ-KLMNO-PQRST".
+     *
+     * @return A new activation code.
+     */
+    public String generateActivationCode() {
+        return identifierGenerator.generateActivationCode();
     }
 
     /**
@@ -107,11 +123,36 @@ public class PowerAuthServerActivation {
      * @param masterPrivateKey Master Private Key.
      * @return Signature of activation data using Master Private Key.
      * @throws InvalidKeyException In case Master Private Key is invalid.
+     *
+     * Use {@link #generateActivationSignature(String, PrivateKey)}.
+     *
      */
+    @Deprecated
     public byte[] generateActivationSignature(String activationIdShort, String activationOTP,
                                               PrivateKey masterPrivateKey) throws InvalidKeyException {
         try {
             byte[] bytes = (activationIdShort + "-" + activationOTP).getBytes("UTF-8");
+            return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
+        } catch (UnsupportedEncodingException | SignatureException ex) {
+            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * Generate signature for the activation code.
+     *
+     * Signature is then computed using the master private key.
+     *
+     * @param activationCode Short activation ID.
+     * @param masterPrivateKey Master Private Key.
+     * @return Signature of activation data using Master Private Key.
+     * @throws InvalidKeyException In case Master Private Key is invalid.
+     */
+    public byte[] generateActivationSignature(String activationCode,
+                                              PrivateKey masterPrivateKey) throws InvalidKeyException {
+        try {
+            byte[] bytes = activationCode.getBytes("UTF-8");
             return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
         } catch (UnsupportedEncodingException | SignatureException ex) {
             Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
@@ -131,6 +172,15 @@ public class PowerAuthServerActivation {
     /**
      * Method validates the signature of the activation data in order to prove that a correct
      * client application is attempting to complete the activation.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
+     * This method is obsolete for PowerAuth protocol version 3.0 and will be deprecated in a future release.
+     *
      * @param activationIdShort Short activation ID.
      * @param activationNonce Client activation nonce.
      * @param encryptedDevicePublicKey Encrypted device public key.
@@ -138,6 +188,7 @@ public class PowerAuthServerActivation {
      * @param applicationSecret Application secret.
      * @param signature Signature to be checked against.
      * @return True if the signature is correct, false otherwise.
+     *
      */
     public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) {
         try {
@@ -155,6 +206,8 @@ public class PowerAuthServerActivation {
 
     /**
      * Decrypt the device public key using activation OTP.
+     *
+     * PowerAuth protocol version: 2.0
      *
      * @param C_devicePublicKey Encrypted device public key.
      * @param activationIdShort Short activation ID.
@@ -203,6 +256,8 @@ public class PowerAuthServerActivation {
      * As a technical component for public key encryption, an ephemeral private
      * key is used (in order to deduce ephemeral symmetric key using ECDH).
      *
+     * PowerAuth protocol version: 2.0
+     *
      * @param serverPublicKey Server public key to be encrypted.
      * @param devicePublicKey Device public key used for encryption.
      * @param ephemeralPrivateKey Ephemeral private key.
@@ -241,27 +296,31 @@ public class PowerAuthServerActivation {
     }
 
     /**
-     * Returns an encrypted status blob as described in PowerAuth 2.0 Specification.
+     * Returns an encrypted status blob as described in PowerAuth Specification.
      * @param statusByte Byte determining the status of the activation.
-     * @param counter Bytes with a counter information.
+     * @param currentVersionByte Current crypto protocol version.
+     * @param upgradeVersionByte Crypto version for possible migration.
      * @param failedAttempts Number of failed attempts at the moment.
      * @param maxFailedAttempts Number of allowed failed attempts.
      * @param transportKey A key used to protect the transport.
      * @return Encrypted status blob
      * @throws InvalidKeyException When invalid key is provided.
      */
-    public byte[] encryptedStatusBlob(byte statusByte, long counter, byte failedAttempts, byte maxFailedAttempts, SecretKey transportKey)
+    public byte[] encryptedStatusBlob(byte statusByte, byte currentVersionByte, byte upgradeVersionByte, byte failedAttempts, byte maxFailedAttempts, SecretKey transportKey)
             throws InvalidKeyException {
         try {
             byte[] padding = new KeyGenerator().generateRandomBytes(17);
             byte[] zeroIv = new byte[16];
+            byte[] reservedBytes = new byte[6];
             byte[] statusBlob = ByteBuffer.allocate(32)
-                    .putInt(0xDEC0DED1)     // 4 bytes
-                    .put(statusByte)        // 1 byte
-                    .putLong(counter)        // 8 bytes
-                    .put(failedAttempts)    // 1 byte
-                    .put(maxFailedAttempts) // 1 byte
-                    .put(padding)           // 17 bytes
+                    .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
+                    .put(statusByte)         // 1 byte
+                    .put(currentVersionByte) // 1 byte
+                    .put(upgradeVersionByte) // 1 byte
+                    .put(reservedBytes)      // 6 bytes
+                    .put(failedAttempts)     // 1 byte
+                    .put(maxFailedAttempts)  // 1 byte
+                    .put(padding)            // 17 bytes
                     .array();
             AESEncryptionUtils aes = new AESEncryptionUtils();
             return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");

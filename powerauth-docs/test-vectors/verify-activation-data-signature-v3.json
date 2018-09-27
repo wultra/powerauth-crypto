@@ -1,0 +1,184 @@
+{
+  "description" : "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted activation data (for version 3 of PowerAuth protocol: activation code) using the server master public key, for example when it's stored in the QR code.",
+  "data" : [ {
+    "input" : {
+      "activationCode" : "GYA4L-D4C7K-OP2NV-USYYQ",
+      "masterPrivateKey" : "Qn4H0e+3LQLQ2s9khHnppTY9tfpv0XO5nnc7ebluHvc=",
+      "masterPublicKey" : "BBIopY8zZ4nV02QHS4nGMXsqZUP94jrvR59MvLXtAINmG4VqqcBWo2DnIAevHAt5/TElIAP0TZP6kVcNt824EfQ="
+    },
+    "output" : {
+      "activationSignature" : "MEYCIQCihC0iR9m/y0Kq+GcK75DFQVIInekVIWjqw3+QJtilYQIhALHZGVGij7ADgt3xOLZiTBxueIikC8zi8jQaMrDzDkCN"
+    }
+  }, {
+    "input" : {
+      "activationCode" : "V5767-CY2T5-BVNZZ-RC2HA",
+      "masterPrivateKey" : "NbX3KUuF0XzVvYbjH4MdKIIPPj+x+EymJCH0AC9l1dk=",
+      "masterPublicKey" : "BHRMolrs8ZRe9LlvOYAbs+wEA80bHMc7qU/jf9tg7Fvw25S2U7dJ+P6gpQl6cV3oc/h0dVyROyAsu3yF2K5i0TM="
+    },
+    "output" : {
+      "activationSignature" : "MEYCIQD75O6o/jrIVo239zGTsefVd4RkgTCcPV6YlkNaY+FeNQIhAPRL1SoctTWDRaA7wCMHuMZtsKxsXQxqrvlzbgzE+lut"
+    }
+  }, {
+    "input" : {
+      "activationCode" : "ANMF6-T7RNH-DHNP6-BV22Q",
+      "masterPrivateKey" : "AIqbSXPd7geIRcbGqRgcl00iMfYEaxbNJE8JqXr06aKQ",
+      "masterPublicKey" : "BOuG7ox8RofYbYjnGWNfb5OdMCh/6fdgBKPKwWAiD6VHDczYqa/nF4g4pySn+LQdt3rHOduq90ajaZze0hb8Ov0="
+    },
+    "output" : {
+      "activationSignature" : "MEQCIE2p6Qj52d2i83ao0BYRsjZKiE5+SsOWH4RqVmwBwp2PAiAy0/gOvnk2Q2TXh3aP7vP2Ksgco9Oi6rCEL3k+Nst3BA=="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "3WIFJ-SBQFU-XXTZB-TXAHQ",
+      "masterPrivateKey" : "WDl7msyPOij6zdGzd72tCOAFNu8J2x5XVDpmpcRI67M=",
+      "masterPublicKey" : "BDW7xURe+5cZYCx7Q/3834vKt4HcsNCkHHeNdCsoYA8VgqEl4Ul8X2tpBZsG3SNzvtk6C4yUWnhGbRsqHZpqqe0="
+    },
+    "output" : {
+      "activationSignature" : "MEQCIEwCcqmRo8DgrZoWAQ8LO/DhcHRNTf/p7AWshEtlIgTUAiAc6a2hmtPR3Y+VOPs1504f+0oF9e5lmqxM8YV2TOsVGw=="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "MKC7F-EOE4M-5CARI-TVNMQ",
+      "masterPrivateKey" : "AKB9oHkSr6YhDJ/2x9Sggew5apKpKl6TF8zer4xWcvrx",
+      "masterPublicKey" : "BJUTYVyZUS23DBhuhq8zj74CKvSSqWIES6lE4n8MS3J5Pv0+mtanny3mN+YRb3tEi22zKsxXJMTgHUPpL0rtaR0="
+    },
+    "output" : {
+      "activationSignature" : "MEQCIHBuMcvG4ZSLypPVTInaXjr9RrbBhDm02qFyQLw4GDTVAiAvnoulgwLN55a+avDWGzCyA/+V5CQVpDiDVk8hUgwz/Q=="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "LBZCO-QWHVU-2DGSG-U7SVA",
+      "masterPrivateKey" : "AIEJ8IcDyURsI6Y++tDOi8i4dTaOK98E3zvCpfes4UwR",
+      "masterPublicKey" : "BEsCAUsl/M4K+IocPMdauge293YeS7yqYt6DSy1D4saWcFtzqL1t/br4wEQwLJaSTFK6LxrS9LDDdUxzHxtqOuw="
+    },
+    "output" : {
+      "activationSignature" : "MEYCIQCtEyJ4sYDJk2dS8CAA7heszTejsRrr1f37EqO6hyXjAgIhAJ1Q4fzapjsUX1LqGSV57pIuJUJAyYtQ909BhuZbSmrg"
+    }
+  }, {
+    "input" : {
+      "activationCode" : "FAUYY-IAWWZ-VSCEV-V6MIA",
+      "masterPrivateKey" : "AOKaZ7gHZVVblucOZVt6VG81je+6pjd7X94ia7IxsI4y",
+      "masterPublicKey" : "BHcBqj0SdNxLRcrxHcf/9+yJDDsuOoPnYfcQp4xf9KhhoN0KpnowdrGZDhJ0/EWdyJSV4VPzSGYUgxls8pGuua8="
+    },
+    "output" : {
+      "activationSignature" : "MEUCIEouhj7+81DJV/H0SJKJhAg7EEd1+koA4/1veL+5PsTsAiEA+JZPPqI4Bc8y0ZwbcmVTdvZyTC0rUUD5DZXQ8WIs27A="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "BK2JY-QPRFX-LCLED-TLPBA",
+      "masterPrivateKey" : "f2bDMGaQic6mrXf7WRusIJBimRATCJhpXetPZI9MDhA=",
+      "masterPublicKey" : "BMUNHrBeLBqJJU7s3phUo+eXWwbfN5Gd1iToXe0MO3240HaXbOWVheorzfqQscqX8lwlS/OSWyPjb1fY/IbhdBI="
+    },
+    "output" : {
+      "activationSignature" : "MEUCIBh/NSVCPlypxTqrpcAV4zfG1hj6gNoRMe6RhWaS8Nw4AiEAuTHRmIBC4j3iOiZHJCdM8ywRXjJsXEm9d+K2xxa07Jg="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "O4OJF-4UO22-OBGMS-KOVWA",
+      "masterPrivateKey" : "XUZsS9D28OGXj+tyHPoB9HEUUHWXs3poRhzYC4t1vjs=",
+      "masterPublicKey" : "BJMIwfHPV85GSoLUZZh3O63pfLfofU7jyMe0/6/OXH0am/uFxhN5SeUAmNS2EkmYhwQMIwXEjMsaYlwfIDKpKAk="
+    },
+    "output" : {
+      "activationSignature" : "MEUCIQCG62AUEkLfdA44Yv/lLc/hPxEKWcB/jeN+cdKkM71LJwIgVaCcDj60K1EFSEepW71Z8ku81IU9YA5DhvZAr47uio8="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "VEIFV-N56V2-LIV7U-KIZTA",
+      "masterPrivateKey" : "KC02C3Z1pQE2qmg/kne0HAHeiniiIPAAEiviUKpk0gI=",
+      "masterPublicKey" : "BJnyze6yDhHOje4zETDzLY8A2kAOrx2gTTHQamirRE0oD1nW/6Xw8aBhh9E3qUlprsL5Gr0i4WuBFgRMi9uXKN4="
+    },
+    "output" : {
+      "activationSignature" : "MEUCICs670nl2/odp5C3Uhhdf4RvBJwGAnQfEks6xsBQgXkJAiEAtCVwkVudyWYqKdLna22F6E2y+R66wrIjrEdWENMVqCE="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "IKHRK-Z3VZX-LRNZA-T2WQA",
+      "masterPrivateKey" : "AJpw5rewLaFyd98vF95Q3YM/5zK6tpmhoErPUy2/D8yz",
+      "masterPublicKey" : "BBr8E2YD6Ul4Zuwc7q7F62z2e3q3xvNvhXiVr8emBmkxOBhIKK+tHly/QRz71cH67ZJl3xG6jaMYzFlKlKFqHpk="
+    },
+    "output" : {
+      "activationSignature" : "MEQCIGLgiZwjVq35ohb/bnDlAQuhl1LZ9Q11yyf2lVJUVlXSAiBFlgUxJfzfzklNNh3JXPQzy3Xnfj+1lIrl3LTclx1JbA=="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "P7L6Q-BF64M-IIHSB-V657Q",
+      "masterPrivateKey" : "TkLvb/JZlokZPxH7RhFLk8/HIzSMGwcB8DQgaCtulZk=",
+      "masterPublicKey" : "BHPAWIt7FyRSeicpLVtvcfiRtVVWKEzq5s+XbzuixXYNYZzpFRIPZTDUBGFbzqhINmc5BT6gG9PHx4tkj5U7VvY="
+    },
+    "output" : {
+      "activationSignature" : "MEYCIQCI53jYbd6OvRMZfYr1CMvu8Ja2XvLzgek2SOxr8GVFmgIhAJEyCFMVYfS9jAuNwNgHSl/gcRjyFZN/bP/Mwu6SysGy"
+    }
+  }, {
+    "input" : {
+      "activationCode" : "6J3JA-3VS63-P32XE-OSKWQ",
+      "masterPrivateKey" : "AdFVAyiNmruXHeHhgVK2At2hwoXN+cni43FubXm18fw=",
+      "masterPublicKey" : "BJ9DxXVPrps1fgksTeub0JbUkTKy4roW1jHn5EHDCoSxMuU5C9VnvVFWiWg1VmzidEc9n5YBIAb2CP//z0wOu4E="
+    },
+    "output" : {
+      "activationSignature" : "MEUCIHxD0AY5dmlkm/T0oohHHEqKX51tmGYq+WPwRW/nndaIAiEAodAyHnBkXh5NhMW+WZwSDyMUlXE34YDTZHlmFQxg8Dg="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "T5PMR-EXF4U-GWGCS-PCTLA",
+      "masterPrivateKey" : "aUhC0eA/k4pikCCzNFThj8rbwZKUWJlq4X3cKxyRoLE=",
+      "masterPublicKey" : "BC7Des31sTDUWEQ2gpqnSwp/QhKzDMguHpJl4ytFjqKLR73yOKZKCeGyyxIj/hqFBPpWu/PeETxN34TKBVT5ZmM="
+    },
+    "output" : {
+      "activationSignature" : "MEUCICjBJiQ+zmpkz55PHIDXCkVECfuzq4pQ871Bqq8wroRrAiEAkcG0R05hN/jDcIcGVwRQ2aJSfpbIxUMR1/tSKG2nbfQ="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "KXUHT-GOHT4-GDVG3-CHU7A",
+      "masterPrivateKey" : "ZdrVQ9J+9JbsONxSK188/VJfUVJ9i/+DTiyqZkstWHo=",
+      "masterPublicKey" : "BO8l9CAv29IfoFFaCz/U6lpfxKkyI4sE+QgooNhDSuzO2Wz6/1I5Y0jXK3OS7eD2hK3y2gwt/wq3JmIj+qMroZI="
+    },
+    "output" : {
+      "activationSignature" : "MEUCIAhmC40+Immpante9mVnvimamrd9B2hHIoTDOpyq17vDAiEA3e5H2VzVNYcdvjW5xZS6IMgYv32c980RVHuiu8gUZpg="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "FTXRY-MGYPT-SBN7L-YV6WA",
+      "masterPrivateKey" : "dBV9ucLIms1UPt15wWbbo/ifjPwVVT8r4fZnkYbgRHM=",
+      "masterPublicKey" : "BOOaJs8gNo+ccLpNiywZ/NKolpprs5x36Aie0sI2zGaZA4mm454zemG3vuHrBWm83p5J3o5UrncYi6fW0MJTSBg="
+    },
+    "output" : {
+      "activationSignature" : "MEUCIQCYmI7Tj4r5kZQPV4VYlkEbFjcfTmdmxk24++vUWkqdPQIgavjhHyoroOxLDJDJ1TlYyfmbLEI5oJzc6pHTNWkbXjI="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "F4OL2-YKNSG-TKZX4-ZIKNQ",
+      "masterPrivateKey" : "f/jL/Lqvp1UB8h9MjN6lmqP8ORZ80ZfaIqDewWeDfvU=",
+      "masterPublicKey" : "BB4yskHzknGfkWuqF8k2N7xrfAebLM34puEWUpgHJAW5HB52BmK/1yBh17uz7Fd1HXKGP50SEo/mPgZvzXXu6I0="
+    },
+    "output" : {
+      "activationSignature" : "MEUCIF8rN6QkLIVAeRDG6qTLtSbuMbXL56e+EGqlV3iVXjZyAiEAtxS96j3/Dk/aV1boyXr9Pilg0pWJiFct8jSwMdSBups="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "GGCCX-5XIGO-STFCK-533QQ",
+      "masterPrivateKey" : "AI/RgNjA0xmCIcfNwGwmXK5LdnDmCzVZ+UxsW4FG//2h",
+      "masterPublicKey" : "BAbq2dg/ru6/N8sdUC5kgvy9SzKpeoSRxo7tPy4mdLAi0vKbF+lSU8QI+TF7jlmtTeXIuRH8ZarykCBEFyizFic="
+    },
+    "output" : {
+      "activationSignature" : "MEUCIQDZk9jrFUN6aAgD4Gzarz+/PAna/I8IxVo7tC2K13FluQIgDvYfzGvOIoT+BXcrwZdPWPupeRCPm+Ja8JGtMSeVdqg="
+    }
+  }, {
+    "input" : {
+      "activationCode" : "JXARU-T7LOW-PX5O4-4JFLQ",
+      "masterPrivateKey" : "DJ0xTGOZ1bgagT6H+COagm+F08meuENgJv/y00irCq8=",
+      "masterPublicKey" : "BB47++4kIDnt/tL0VgoYWF1yT+k/XkWjTHYfjl05OOyXu/VuQ/NT9S8aYCwD0VLRyvry/P66R76FfYGQXJZmqeY="
+    },
+    "output" : {
+      "activationSignature" : "MEYCIQCq4m4sMiKizZCx1cCJegylaXs+qnq85JPy2zorzdu2JgIhAJelxC4SMMYjRh1/qcL4OPPMZBFCgRPyQnjPe7ic8KhS"
+    }
+  }, {
+    "input" : {
+      "activationCode" : "6JFWM-JMNOO-YRNZA-2D4BQ",
+      "masterPrivateKey" : "ANpaZCGO1N8917Sxm+9sQPWQ+sOC365EwaUv/nv6X10U",
+      "masterPublicKey" : "BKzpVZkhKjrP6rxG05QMW0mIQUlJp0zxHUrbM9pDwm3n89mUWtHtZyeQPPVsUWIE8auPKltLsqWZ85PTkvi07AI="
+    },
+    "output" : {
+      "activationSignature" : "MEYCIQDp2qQrPJAfNyAvavk2q9u9jFVod86vGXV8BN706bNarQIhANpoorSEFsPUViE7ncIS4mafzIiv20wpap4Fu3XHcBdd"
+    }
+  } ]
+}

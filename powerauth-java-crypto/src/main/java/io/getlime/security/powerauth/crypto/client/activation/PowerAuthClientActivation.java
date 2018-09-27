@@ -59,10 +59,33 @@ public class PowerAuthClientActivation {
      * @param masterPublicKey Master Public Key.
      * @return Returns "true" if the signature matches activation data, "false" otherwise.
      * @throws InvalidKeyException If provided master public key is invalid.
+     *
+     * @deprecated Use {@link #verifyActivationCodeSignature(String, byte[], PublicKey)}.
+     *
      */
+    @Deprecated
     public boolean verifyActivationDataSignature(String activationIdShort, String activationOTP, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException {
         try {
             byte[] bytes = (activationIdShort + "-" + activationOTP).getBytes("UTF-8");
+            return signatureUtils.validateECDSASignature(bytes, signature, masterPublicKey);
+        } catch (SignatureException | UnsupportedEncodingException ex) {
+            Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
+     * Verify the signature of activation code using Master Public Key.
+     *
+     * @param activationCode Activation code.
+     * @param signature Activation data signature.
+     * @param masterPublicKey Master Public Key.
+     * @return Returns "true" if the signature matches activation data, "false" otherwise.
+     * @throws InvalidKeyException If provided master public key is invalid.
+     */
+    public boolean verifyActivationCodeSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException {
+        try {
+            byte[] bytes = activationCode.getBytes("UTF-8");
             return signatureUtils.validateECDSASignature(bytes, signature, masterPublicKey);
         } catch (SignatureException | UnsupportedEncodingException ex) {
             Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
@@ -91,6 +114,15 @@ public class PowerAuthClientActivation {
     /**
      * Method computes the signature of the activation data in order to prove that a correct
      * client application is attempting to complete the activation.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
+     * This method is obsolete for PowerAuth protocol version 3.0 and will be deprecated in a future release.
+     *
      * @param activationIdShort Short activation ID.
      * @param activationNonce Client activation nonce.
      * @param encryptedDevicePublicKey Encrypted device public key.
@@ -113,6 +145,8 @@ public class PowerAuthClientActivation {
 
     /**
      * Encrypt a device public key using the activation OTP.
+     *
+     * PowerAuth protocol version: 2.0
      *
      * @param devicePublicKey Device public key to be encrypted.
      * @param clientEphemeralPrivateKey Ephemeral private key.
@@ -168,6 +202,8 @@ public class PowerAuthClientActivation {
      * Decrypt server public key using activation OTP and device private key. As a technical component for public key encryption, an ephemeral public key is
      * used (in order to deduce ephemeral symmetric key using ECDH).
      *
+     * PowerAuth protocol version: 2.0
+     *
      * @param C_serverPublicKey Encrypted server public key.
      * @param devicePrivateKey Device private key.
      * @param ephemeralPublicKey Ephemeral public key.
@@ -213,7 +249,7 @@ public class PowerAuthClientActivation {
     }
 
     /**
-     * Returns an activation status from the encrypted activation blob as described in PowerAuth 2.0 Specification.
+     * Returns an activation status from the encrypted activation blob as described in PowerAuth Specification.
      *
      * @param cStatusBlob Encrypted activation status blob
      * @param transportKey A key used to protect the transport.
@@ -227,7 +263,8 @@ public class PowerAuthClientActivation {
                 // return mock status in case byte array has weird length
                 ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
                 statusInfo.setActivationStatus((byte) 5);
-                statusInfo.setCounter(0L);
+                statusInfo.setCurrentVersion((byte) 3);
+                statusInfo.setUpgradeVersion((byte) 3);
                 statusInfo.setFailedAttempts((byte) 0);
                 statusInfo.setMaxFailedAttempts((byte) 5);
                 statusInfo.setValid(false);
@@ -245,13 +282,16 @@ public class PowerAuthClientActivation {
 
             // check if the prefix is OK
             int prefix = buffer.getInt(0);
-            statusInfo.setValid(prefix == 0xDEC0DED1);
+            statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE);
 
             // fetch the activation status byte
             statusInfo.setActivationStatus(buffer.get(4));
 
-            // fetch the counter info
-            statusInfo.setCounter(buffer.getLong(5));
+            // fetch the current version status byte
+            statusInfo.setCurrentVersion(buffer.get(5));
+
+            // fetch the upgrade version status byte
+            statusInfo.setUpgradeVersion(buffer.get(6));
 
             // fetch the failed attempt count
             statusInfo.setFailedAttempts(buffer.get(13));
