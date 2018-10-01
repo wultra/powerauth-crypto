@@ -109,6 +109,8 @@ public class EciesDecryptor {
     }
 
     /**
+     * This method will be deprecated in a future release and is used only in legacy ECIES support.
+     *
      * Encrypt response data and construct ECIES cryptogram. Use provided ephemeral public key. Useful when handling
      * the "request/response" cycle of the app in situation when client request only sends an ephemeral public key,
      * without any data and MAC.
