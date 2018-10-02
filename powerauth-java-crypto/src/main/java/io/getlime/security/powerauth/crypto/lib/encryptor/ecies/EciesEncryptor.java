@@ -55,7 +55,7 @@ public class EciesEncryptor {
     private boolean canDecryptData;
 
     /**
-     * Create basic ECIES encryptor with null sharedInfo1 and sharedInfo2.
+     * Construct a new encryptor with null sharedInfo1 and sharedInfo2.
      *
      * @param publicKey Public key used for encryption.
      */
@@ -64,7 +64,7 @@ public class EciesEncryptor {
     }
 
     /**
-     * Create basic ECIES encryptor with provided sharedInfo1 and sharedInfo2.
+     * Construct a new encryptor with provided sharedInfo1 and sharedInfo2.
      *
      * @param publicKey Public key used for encryption.
      * @param sharedInfo1 Additional shared information used during key derivation.
@@ -79,7 +79,7 @@ public class EciesEncryptor {
     }
 
     /**
-     * Constructs an encryptor from existing ECIES envelope key and sharedInfo2 parameter. The derivation of
+     * Construct an encryptor from existing ECIES envelope key and sharedInfo2 parameter. The derivation of
      * envelope key is skipped. The privateKey and sharedInfo1 values are unknown. The encryptor can be only
      * used for decrypting the response.
      *
