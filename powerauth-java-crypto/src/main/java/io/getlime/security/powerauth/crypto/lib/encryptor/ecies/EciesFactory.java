@@ -58,6 +58,17 @@ public class EciesFactory {
     }
 
     /**
+     * Get ECIES encryptor for existing envelope key and sharedInfo2 parameter.
+     *
+     * @param envelopeKey ECIES envelope key.
+     * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
+     * @return Initialized ECIES encryptor.
+     */
+    public EciesEncryptor getEciesEncryptor(EciesEnvelopeKey envelopeKey, byte[] sharedInfo2) {
+        return new EciesEncryptor(envelopeKey, sharedInfo2);
+    }
+
+    /**
      * Get ECIES encryptor instance for given scope and parameters. Parameter sharedInfo2 is derived based on ECIES scope.
      *
      * @param eciesScope ECIES scope.
@@ -96,6 +107,17 @@ public class EciesFactory {
      */
     public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret) {
         return getEciesDecryptor(EciesScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value());
+    }
+
+    /**
+     * Get ECIES decryptor for existing envelope key and sharedInfo2 parameter.
+     *
+     * @param envelopeKey ECIES envelope key.
+     * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
+     * @return Initialized ECIES decryptor.
+     */
+    public EciesDecryptor getEciesDecryptor(EciesEnvelopeKey envelopeKey, byte[] sharedInfo2) {
+        return new EciesDecryptor(envelopeKey, sharedInfo2);
     }
 
     /**

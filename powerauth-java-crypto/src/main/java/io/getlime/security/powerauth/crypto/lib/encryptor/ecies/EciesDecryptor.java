@@ -79,6 +79,23 @@ public class EciesDecryptor {
     }
 
     /**
+     * Constructs a decryptor from existing ECIES envelope key and sharedInfo2 parameter. The derivation of
+     * envelope key is skipped. The privateKey and sharedInfo1 values are unknown.
+     *
+     * @param envelopeKey ECIES envelope key.
+     * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
+     */
+    public EciesDecryptor(EciesEnvelopeKey envelopeKey, byte[] sharedInfo2) {
+        this.privateKey = null;
+        this.envelopeKey = envelopeKey;
+        this.sharedInfo1 = null;
+        this.sharedInfo2 = sharedInfo2;
+        // Allow decrypt to support request decryption with provided envelope key and sharedInfo2
+        this.canDecryptData = true;
+        this.canEncryptData = false;
+    }
+
+    /**
      * Decrypt request data from cryptogram.
      *
      * @param cryptogram ECIES cryptogram.
@@ -89,7 +106,10 @@ public class EciesDecryptor {
         if (!canDecryptRequest()) {
             throw new EciesException("Request decryption is not allowed");
         }
-        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getEphemeralPublicKey(), sharedInfo1);
+        // Derive envelope key, but only in case it does not exist yet
+        if (envelopeKey == null) {
+            envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getEphemeralPublicKey(), sharedInfo1);
+        }
         return decrypt(cryptogram);
     }
 
@@ -131,10 +151,28 @@ public class EciesDecryptor {
         // Invalidate decryptor for decryption
         canDecryptData = false;
         canEncryptData = true;
-        // Derive envelope key
-        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
+        // Derive envelope key, but only in case it does not exist yet
+        if (envelopeKey == null) {
+            envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
+        }
         // No exception was thrown which means the envelope key is valid, response data can be encrypted
         return encrypt(data);
+    }
+
+    /**
+     * Get parameter sharedInfo2 for ECIES.
+     * @return Parameter sharedInfo2 for ECIES.
+     */
+    public byte[] getSharedInfo2() {
+        return sharedInfo2;
+    }
+
+    /**
+     * Get ECIES envelope key.
+     * @return ECIES envelope key.
+     */
+    public EciesEnvelopeKey getEnvelopeKey() {
+        return envelopeKey;
     }
 
     /**
