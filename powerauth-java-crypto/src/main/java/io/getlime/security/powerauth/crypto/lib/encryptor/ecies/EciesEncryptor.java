@@ -55,7 +55,7 @@ public class EciesEncryptor {
     private boolean canDecryptData;
 
     /**
-     * Create basic ECIES encryptor with null sharedInfo1 and sharedInfo2.
+     * Construct a new encryptor with null sharedInfo1 and sharedInfo2.
      *
      * @param publicKey Public key used for encryption.
      */
@@ -64,7 +64,7 @@ public class EciesEncryptor {
     }
 
     /**
-     * Create basic ECIES encryptor with provided sharedInfo1 and sharedInfo2.
+     * Construct a new encryptor with provided sharedInfo1 and sharedInfo2.
      *
      * @param publicKey Public key used for encryption.
      * @param sharedInfo1 Additional shared information used during key derivation.
@@ -79,6 +79,25 @@ public class EciesEncryptor {
     }
 
     /**
+     * Construct an encryptor from existing ECIES envelope key and sharedInfo2 parameter. The derivation of
+     * envelope key is skipped. The privateKey and sharedInfo1 values are unknown. The encryptor can be only
+     * used for decrypting the response.
+     *
+     * @param envelopeKey ECIES envelope key.
+     * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
+     */
+    public EciesEncryptor(EciesEnvelopeKey envelopeKey, byte[] sharedInfo2) {
+        this.publicKey = null;
+        this.envelopeKey = envelopeKey;
+        this.sharedInfo1 = null;
+        this.sharedInfo2 = sharedInfo2;
+        // Allow decrypt only to avoid accidentally reusing the same encryptor for encryption, a new envelope key with
+        // a new ephemeral keypair is always generated for encryption.
+        this.canEncryptData = false;
+        this.canDecryptData = true;
+    }
+
+    /**
      * Encrypt request data.
      *
      * @param data Request data.
@@ -89,7 +108,7 @@ public class EciesEncryptor {
         if (!canEncryptRequest()) {
             throw new EciesException("Request encryption is not allowed");
         }
-        this.envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
+        envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
         return encrypt(data);
     }
 
@@ -105,6 +124,22 @@ public class EciesEncryptor {
             throw new EciesException("Response decryption is not allowed");
         }
         return decrypt(cryptogram);
+    }
+
+    /**
+     * Get parameter sharedInfo2 for ECIES.
+     * @return Parameter sharedInfo2 for ECIES.
+     */
+    public byte[] getSharedInfo2() {
+        return sharedInfo2;
+    }
+
+    /**
+     * Get ECIES envelope key.
+     * @return ECIES envelope key.
+     */
+    public EciesEnvelopeKey getEnvelopeKey() {
+        return envelopeKey;
     }
 
     /**

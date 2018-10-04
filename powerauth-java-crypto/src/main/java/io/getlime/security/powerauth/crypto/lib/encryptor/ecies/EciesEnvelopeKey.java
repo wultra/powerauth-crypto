@@ -38,7 +38,7 @@ import java.security.spec.InvalidKeySpecException;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-class EciesEnvelopeKey {
+public class EciesEnvelopeKey {
 
     private static final int ENVELOPE_KEY_SIZE = 32;
 
@@ -49,14 +49,14 @@ class EciesEnvelopeKey {
     private final byte[] ephemeralKeyPublic;
 
     /**
-     * Private EciesEnvelopeKey constructor, used only internally.
+     * EciesEnvelopeKey constructor with secret key and ephemeral public key.
      *
      * @param secretKey Derived secret key.
-     * @param ephemeralKeyPublic Ephemeral public key.
+     * @param ephemeralPublicKey Ephemeral public key.
      */
-    private EciesEnvelopeKey(byte[] secretKey, byte[] ephemeralKeyPublic) {
+    public EciesEnvelopeKey(byte[] secretKey, byte[] ephemeralPublicKey) {
         this.secretKey = secretKey;
-        this.ephemeralKeyPublic = ephemeralKeyPublic;
+        this.ephemeralKeyPublic = ephemeralPublicKey;
     }
 
     /**
@@ -127,12 +127,13 @@ class EciesEnvelopeKey {
      * Get secret key for encryption or decryption.
      *
      * @return Secret key for encryption or decryption.
+     * @throws EciesException In case encryption key is not valid.
      */
-    byte[] getEncKey() throws EciesException {
+    public byte[] getEncKey() throws EciesException {
         if (!isValid()) {
             throw new EciesException("Encryption key is not valid");
         }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(16);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(ENVELOPE_KEY_SIZE / 2);
         byteBuffer.put(secretKey, 0, ENVELOPE_KEY_SIZE / 2);
         return byteBuffer.array();
     }
@@ -141,14 +142,27 @@ class EciesEnvelopeKey {
      * Get key for HMAC calculation.
      *
      * @return Key for HMAC calculation.
+     * @throws EciesException In case MAC key is not valid.
      */
-    byte[] getMacKey() throws EciesException {
+    public byte[] getMacKey() throws EciesException {
         if (!isValid()) {
             throw new EciesException("MAC key is not valid");
         }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(16);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(ENVELOPE_KEY_SIZE / 2);
         byteBuffer.put(secretKey, ENVELOPE_KEY_SIZE / 2, ENVELOPE_KEY_SIZE / 2);
         return byteBuffer.array();
+    }
+
+    /**
+     * Get the complete secret key for ECIES.
+     * @return Secret key for ECIES.
+     * @throws EciesException In case secret key is not valid.
+     */
+    public byte[] getSecretKey() throws EciesException {
+        if (!isValid()) {
+            throw new EciesException("Secret key is not valid");
+        }
+        return secretKey;
     }
 
     /**
@@ -156,7 +170,7 @@ class EciesEnvelopeKey {
      *
      * @return Ephemeral public key.
      */
-    byte[] getEphemeralKeyPublic() {
+    public byte[] getEphemeralKeyPublic() {
         return ephemeralKeyPublic;
     }
 
@@ -165,7 +179,7 @@ class EciesEnvelopeKey {
      *
      * @return Whether derived secret key is valid.
      */
-    boolean isValid() {
+    public boolean isValid() {
         return secretKey.length == ENVELOPE_KEY_SIZE;
     }
 }

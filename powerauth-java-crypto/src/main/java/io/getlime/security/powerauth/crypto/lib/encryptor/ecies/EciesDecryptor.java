@@ -55,7 +55,7 @@ public class EciesDecryptor {
     private boolean canEncryptData;
 
     /**
-     * Constructs a new decryptor with the base private key and null sharedInfo1 and sharedInfo2 parameters.
+     * Construct a new decryptor with the base private key and null sharedInfo1 and sharedInfo2 parameters.
      *
      * @param encryptionPrivateKey Private key to be used for decryption.
      */
@@ -64,7 +64,7 @@ public class EciesDecryptor {
     }
 
     /**
-     * Constructs a new decryptor with the base private key and provided sharedInfo1 and sharedInfo2 parameters.
+     * Construct a new decryptor with the base private key and provided sharedInfo1 and sharedInfo2 parameters.
      *
      * @param encryptionPrivateKey Private key to be used for decryption.
      * @param sharedInfo1 Additional shared information used during key derivation.
@@ -79,6 +79,39 @@ public class EciesDecryptor {
     }
 
     /**
+     * Construct a decryptor from existing ECIES envelope key and sharedInfo2 parameter. The derivation of
+     * envelope key is skipped. The privateKey and sharedInfo1 values are unknown.
+     *
+     * @param envelopeKey ECIES envelope key.
+     * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
+     */
+    public EciesDecryptor(EciesEnvelopeKey envelopeKey, byte[] sharedInfo2) {
+        this.privateKey = null;
+        this.envelopeKey = envelopeKey;
+        this.sharedInfo1 = null;
+        this.sharedInfo2 = sharedInfo2;
+        // Allow decrypt to support request decryption with provided envelope key and sharedInfo2
+        this.canDecryptData = true;
+        this.canEncryptData = false;
+    }
+
+    /**
+     * Initialize envelope key for decryptor using provided ephemeral public key. This method is used either when there
+     * is no incoming encrypted request to decrypt which would initialize the envelope key or the decryptor parameters
+     * are transported over network and the decryptor is reconstructed on another server using envelope key
+     * and sharedInfo2 parameter.
+     *
+     * @param ephemeralPublicKeyBytes Ephemeral public key for ECIES.
+     * @throws EciesException In case envelope key initialization fails.
+     */
+    public void initEnvelopeKey(byte[] ephemeralPublicKeyBytes) throws EciesException {
+        envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
+        // Invalidate this decryptor for decryption
+        canDecryptData = false;
+        canEncryptData = true;
+    }
+
+    /**
      * Decrypt request data from cryptogram.
      *
      * @param cryptogram ECIES cryptogram.
@@ -89,7 +122,10 @@ public class EciesDecryptor {
         if (!canDecryptRequest()) {
             throw new EciesException("Request decryption is not allowed");
         }
-        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getEphemeralPublicKey(), sharedInfo1);
+        // Derive envelope key, but only in case it does not exist yet
+        if (envelopeKey == null) {
+            envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getEphemeralPublicKey(), sharedInfo1);
+        }
         return decrypt(cryptogram);
     }
 
@@ -109,32 +145,19 @@ public class EciesDecryptor {
     }
 
     /**
-     * This method will be deprecated in a future release and is used only in legacy ECIES support.
-     *
-     * Encrypt response data and construct ECIES cryptogram. Use provided ephemeral public key. Useful when handling
-     * the "request/response" cycle of the app in situation when client request only sends an ephemeral public key,
-     * without any data and MAC.
-     *
-     * <h5>PowerAuth protocol versions:</h5>
-     * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
-     * </ul>
-     *
-     * For PowerAuth version 3.0 use {@link #encryptResponse(byte[])} because request data and MAC is always be available.
-     *
-     * @param data Response data to encrypt.
-     * @return ECIES cryptogram.
-     * @throws EciesException In case response encryption fails.
+     * Get parameter sharedInfo2 for ECIES.
+     * @return Parameter sharedInfo2 for ECIES.
      */
-    public EciesCryptogram encryptResponseDirect(byte[] data, byte[] ephemeralPublicKeyBytes) throws EciesException {
-        // Invalidate decryptor for decryption
-        canDecryptData = false;
-        canEncryptData = true;
-        // Derive envelope key
-        this.envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
-        // No exception was thrown which means the envelope key is valid, response data can be encrypted
-        return encrypt(data);
+    public byte[] getSharedInfo2() {
+        return sharedInfo2;
+    }
+
+    /**
+     * Get ECIES envelope key.
+     * @return ECIES envelope key.
+     */
+    public EciesEnvelopeKey getEnvelopeKey() {
+        return envelopeKey;
     }
 
     /**
@@ -143,7 +166,8 @@ public class EciesDecryptor {
      * @return Whether request data can be decrypted.
      */
     private boolean canDecryptRequest() {
-        return canDecryptData && privateKey != null;
+        // For decryption either private key must exist or the envelope key must exist and be valid
+        return canDecryptData && (privateKey != null || (envelopeKey != null && envelopeKey.isValid()));
     }
 
     /**
