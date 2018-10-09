@@ -39,8 +39,9 @@ public class EciesFactory {
      * @param applicationSecret Application secret.
      * @return Initialized ECIES encryptor.
      */
-    public EciesEncryptor getEciesEncryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret) {
-        return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value());
+    public EciesEncryptor getEciesEncryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) {
+        byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();
+        return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, sharedInfo1Value);
     }
 
     /**
@@ -105,19 +106,9 @@ public class EciesFactory {
      * @param applicationSecret Application secret.
      * @return Initialized ECIES decryptor.
      */
-    public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret) {
-        return getEciesDecryptor(EciesScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value());
-    }
-
-    /**
-     * Get ECIES decryptor for existing envelope key and sharedInfo2 parameter.
-     *
-     * @param envelopeKey ECIES envelope key.
-     * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
-     * @return Initialized ECIES decryptor.
-     */
-    public EciesDecryptor getEciesDecryptor(EciesEnvelopeKey envelopeKey, byte[] sharedInfo2) {
-        return new EciesDecryptor(envelopeKey, sharedInfo2);
+    public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) {
+        byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();
+        return getEciesDecryptor(EciesScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, sharedInfo1Value);
     }
 
     /**
@@ -132,6 +123,17 @@ public class EciesFactory {
     public EciesDecryptor getEciesDecryptorForActivation(ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.ACTIVATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesDecryptor(EciesScope.ACTIVATION_SCOPE, privateKey, applicationSecret, transportKey, sharedInfo1Value);
+    }
+
+    /**
+     * Get ECIES decryptor for existing envelope key and sharedInfo2 parameter.
+     *
+     * @param envelopeKey ECIES envelope key.
+     * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
+     * @return Initialized ECIES decryptor.
+     */
+    public EciesDecryptor getEciesDecryptor(EciesEnvelopeKey envelopeKey, byte[] sharedInfo2) {
+        return new EciesDecryptor(envelopeKey, sharedInfo2);
     }
 
     /**
