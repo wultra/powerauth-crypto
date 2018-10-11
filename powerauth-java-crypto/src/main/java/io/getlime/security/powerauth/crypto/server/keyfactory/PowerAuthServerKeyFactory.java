@@ -96,7 +96,7 @@ public class PowerAuthServerKeyFactory {
      * Generate a transport key KEY_ENCRYPTED_VAULT from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
-     * @see KeyGenerator#deriveSecretKey(SecretKey, long)
+     * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_ENCRYPTED_VAULT.
      */
@@ -126,7 +126,7 @@ public class PowerAuthServerKeyFactory {
      * Generate a signature key KEY_SIGNATURE_BIOMETRY from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
-     * @see KeyGenerator#deriveSecretKey(SecretKey, long)
+     * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_BIOMETRY.
      */
@@ -141,7 +141,7 @@ public class PowerAuthServerKeyFactory {
      * Generate a signature key KEY_SIGNATURE_KNOWLEDGE from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
-     * @see KeyGenerator#deriveSecretKey(SecretKey, long)
+     * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_KNOWLEDGE.
      */
@@ -156,7 +156,7 @@ public class PowerAuthServerKeyFactory {
      * Generate a signature key KEY_SIGNATURE_POSSESSION from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
-     * @see KeyGenerator#deriveSecretKey(SecretKey, long)
+     * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_POSSESSION.
      */
@@ -171,7 +171,7 @@ public class PowerAuthServerKeyFactory {
      * Generate a transport key KEY_TRANSPORT from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
-     * @see KeyGenerator#deriveSecretKey(SecretKey, long)
+     * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_TRANSPORT.
      */

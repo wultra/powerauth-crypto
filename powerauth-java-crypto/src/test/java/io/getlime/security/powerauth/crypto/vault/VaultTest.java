@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
+import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -104,11 +105,12 @@ public class VaultTest {
 
         	System.out.println();
             System.out.println("## Counter: " + ctr);
-            
-        	byte[] cVaultEncryptionKey = serverVault.encryptVaultEncryptionKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic(), ctr);
+
+            byte[] ctrBytes = ByteBuffer.allocate(16).putLong(0L).putLong(ctr).array();
+        	byte[] cVaultEncryptionKey = serverVault.encryptVaultEncryptionKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic(), ctrBytes);
             System.out.println("## cVaultEncryptionKey: " + BaseEncoding.base64().encode(cVaultEncryptionKey));
             
-        	SecretKey vaultEncryptionKeyLocal = clientVault.decryptVaultEncryptionKey(cVaultEncryptionKey, clientTransportKey, ctr);
+        	SecretKey vaultEncryptionKeyLocal = clientVault.decryptVaultEncryptionKey(cVaultEncryptionKey, clientTransportKey, ctrBytes);
         	assertEquals(clientVaultEncryptionKey, vaultEncryptionKeyLocal);
         	
         	PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);

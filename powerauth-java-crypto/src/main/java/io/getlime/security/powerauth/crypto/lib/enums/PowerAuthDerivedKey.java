@@ -15,6 +15,7 @@
  */
 package io.getlime.security.powerauth.crypto.lib.enums;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,11 +76,11 @@ public enum PowerAuthDerivedKey {
     }
 
     /**
-     * Get the enum value (key index).
-     * @return Get the enum value (key index).
+     * Get the byte array value of key index.
+     * @return Get the byte array value of key index.
      */
-    public long getIndex() {
-        return index;
+    public byte[] getIndex() {
+        return ByteBuffer.allocate(16).putLong(0L).putLong(index).array();
     }
 
 }
