@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -94,8 +95,9 @@ public class GenerateVectorDataTest {
      */
     @Test
     public void testVerifyActivationDataV2() throws Exception {
-        String activationOTP;
+        String activationCode;
         String activationIdShort;
+        String activationOtp;
 
         PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 
@@ -105,18 +107,19 @@ public class GenerateVectorDataTest {
 
         int max = 20;
         for (int i = 0; i < max; i++) {
-            activationOTP = new IdentifierGenerator().generateActivationIdShort();
-            activationIdShort = new IdentifierGenerator().generateActivationOTP();
+            activationCode = new IdentifierGenerator().generateActivationCode();
+            activationIdShort = activationCode.substring(0, 11);
+            activationOtp = activationCode.substring(12);
 
             KeyPair kp = activationServer.generateServerKeyPair();
             PrivateKey masterPrivateKey = kp.getPrivate();
             PublicKey masterPublicKey = kp.getPublic();
 
-            byte[] activationSignature = activationServer.generateActivationSignature(activationIdShort, activationOTP, masterPrivateKey);
+            byte[] activationSignature = activationServer.generateActivationSignature(activationCode, masterPrivateKey);
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationIdShort", activationIdShort);
-            input.put("activationOtp", activationOTP);
+            input.put("activationOtp", activationOtp);
             input.put("masterPrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)));
             input.put("masterPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterPublicKey)));
             Map<String, String> output = new LinkedHashMap<>();
@@ -182,8 +185,9 @@ public class GenerateVectorDataTest {
 
         int max = 20;
         for (int i = 0; i < max; i++) {
-            String activationOTP = new IdentifierGenerator().generateActivationIdShort();
-            String activationIdShort = new IdentifierGenerator().generateActivationOTP();
+            String activationCode = new IdentifierGenerator().generateActivationCode();
+            String activationIdShort = activationCode.substring(0, 11);
+            String activationOtp = activationCode.substring(12);
             byte[] activationNonce = activation.generateActivationNonce();
             PublicKey publicKey = new KeyGenerator().generateKeyPair().getPublic();
             byte[] applicationKey = new KeyGenerator().generateRandomBytes(16);
@@ -191,12 +195,12 @@ public class GenerateVectorDataTest {
 
             KeyPair ephemeralKeyPair = new KeyGenerator().generateKeyPair();
 
-            byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, ephemeralKeyPair.getPrivate(), masterKeyPair.getPublic(), activationOTP, activationIdShort, activationNonce);
+            byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, ephemeralKeyPair.getPrivate(), masterKeyPair.getPublic(), activationOtp, activationIdShort, activationNonce);
             byte[] applicationSignature = activation.computeApplicationSignature(activationIdShort, activationNonce, cDevicePublicKey, applicationKey, applicationSecret);
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationIdShort", activationIdShort);
-            input.put("activationOtp", activationOTP);
+            input.put("activationOtp", activationOtp);
             input.put("activationNonce", BaseEncoding.base64().encode(activationNonce));
             input.put("masterPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(masterKeyPair.getPublic())));
             input.put("ephemeralPrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(ephemeralKeyPair.getPrivate())));
@@ -294,8 +298,9 @@ public class GenerateVectorDataTest {
      */
     @Test
     public void testActivationAcceptV2() throws Exception {
-        String activationOTP;
+        String activationCode;
         String activationIdShort;
+        String activationOtp;
         byte[] activationNonce;
         PublicKey serverPublicKey;
         byte[] cServerPublicKey;
@@ -314,8 +319,9 @@ public class GenerateVectorDataTest {
         int max = 20;
         for (int i = 0; i < max; i++) {
 
-            activationIdShort = new IdentifierGenerator().generateActivationIdShort();
-            activationOTP = new IdentifierGenerator().generateActivationOTP();
+            activationCode = new IdentifierGenerator().generateActivationCode();
+            activationIdShort = activationCode.substring(0, 11);
+            activationOtp = activationCode.substring(12);
             activationNonce = activationServer.generateActivationNonce();
 
             KeyPair kp = activationClient.generateDeviceKeyPair();
@@ -329,12 +335,12 @@ public class GenerateVectorDataTest {
             ephemeralPrivateKey = kp.getPrivate();
             ephemeralPublicKey = kp.getPublic();
 
-            cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
+            cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOtp, activationIdShort, activationNonce);
             CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationIdShort", activationIdShort);
-            input.put("activationOtp", activationOTP);
+            input.put("activationOtp", activationOtp);
             input.put("activationNonce", BaseEncoding.base64().encode(activationNonce));
             input.put("devicePrivateKey", BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(devicePrivateKey)));
             input.put("devicePublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
@@ -357,7 +363,8 @@ public class GenerateVectorDataTest {
     @Test
     public void testVerifyServerPublicKeySignatureV2() throws Exception {
         String activationId;
-        String activationOTP;
+        String activationCode;
+        String activationOtp;
         String activationIdShort;
         byte[] activationNonce;
         PublicKey serverPublicKey;
@@ -374,8 +381,9 @@ public class GenerateVectorDataTest {
         for (int i = 0; i < max; i++) {
 
             activationId = new IdentifierGenerator().generateActivationId();
-            activationIdShort = new IdentifierGenerator().generateActivationIdShort();
-            activationOTP = new IdentifierGenerator().generateActivationOTP();
+            activationCode = new IdentifierGenerator().generateActivationCode();
+            activationIdShort = activationCode.substring(0, 11);
+            activationOtp = activationCode.substring(12);
             activationNonce = activationServer.generateActivationNonce();
 
             KeyPair kp = activationClient.generateDeviceKeyPair();
@@ -391,7 +399,7 @@ public class GenerateVectorDataTest {
             PrivateKey masterPrivateKey = kp.getPrivate();
             PublicKey masterPublicKey = kp.getPublic();
 
-            cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOTP, activationIdShort, activationNonce);
+            cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOtp, activationIdShort, activationNonce);
             byte[] cServerPublicKeySignature = activationServer.computeServerDataSignature(activationId, cServerPublicKey, masterPrivateKey);
 
             CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
@@ -452,7 +460,8 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctr);
+                    byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData);
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -472,7 +481,8 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctr);
+                    byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData);
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -492,7 +502,8 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctr);
+                    byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData);
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();

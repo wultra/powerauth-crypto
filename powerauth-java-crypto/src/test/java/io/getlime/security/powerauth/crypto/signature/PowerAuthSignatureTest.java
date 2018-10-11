@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
+import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -116,7 +117,8 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
                 System.out.println("### Client Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKey)));
 
-                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctr);
+                byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
+                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctrData);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -131,7 +133,8 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKey)));
                 assertEquals(signatureClientKey, signatureServerKey);
 
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctr);
+                ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctrData);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
@@ -156,7 +159,8 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKeyKnowledge = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
                 System.out.println("### Client Signature Key - Knowledge:  " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKeyKnowledge)));
 
-                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctr);
+                byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
+                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -174,7 +178,8 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKeyKnowledge)));
                 assertEquals(signatureClientKeyKnowledge, signatureServerKeyKnowledge);
 
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctr);
+                ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
