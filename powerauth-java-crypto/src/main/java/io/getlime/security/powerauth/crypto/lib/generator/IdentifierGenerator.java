@@ -58,34 +58,6 @@ public class IdentifierGenerator {
     }
 
     /**
-     * Generate a new short activation ID. The format of short activation ID is
-     * "ABCDE-FGHIJ" - two components, each of them 5 random characters from
-     * Base32 encoding, separated by "-" character.
-     *
-     * Use {@link #generateActivationCode()}.
-     *
-     * @return A new short activation ID.
-     */
-    @Deprecated
-    public String generateActivationIdShort() {
-        return generateBase32Token() + "-" + generateBase32Token();
-    }
-
-    /**
-     * Generate a new activation OTP. The format of activation OTP is
-     * "ABCDE-FGHIJ" - two components, each of them 5 random characters from
-     * Base32 encoding, separated by "-" character.
-     *
-     * Use {@link #generateActivationCode()}.
-     *
-     * @return A new activation OTP.
-     */
-    @Deprecated
-    public String generateActivationOTP() {
-        return generateBase32Token() + "-" + generateBase32Token();
-    }
-
-    /**
      * Generate a new string of a default length (5) with characters from Base32 encoding.
      *
      * @return New string with Base32 characters of a given length.

@@ -32,25 +32,6 @@ public class PowerAuthServerSignature {
     private final SignatureUtils signatureUtils = new SignatureUtils();
 
     /**
-     * Verify a PowerAuth 2.0 signature against data using signature key list and
-     * counter.
-     *
-     * PowerAuth protocol version: 2.0
-     *
-     * @deprecated Use {@link #verifySignatureForData(byte[], String, List, byte[])}.
-     *
-     * @param data Signed data.
-     * @param signature Signature for the data.
-     * @param signatureKeys Keys used for signature.
-     * @param ctr Numeric counter / derived signing key index.
-     * @return Returns "true" if the signature matches, "false" otherwise.
-     */
-    @Deprecated
-    public boolean verifySignatureForData(byte[] data, String signature, List<SecretKey> signatureKeys, long ctr) {
-        return signatureUtils.validatePowerAuthSignature(data, signature, signatureKeys, ctr);
-    }
-
-    /**
      * Verify a PowerAuth 3.0 signature against data using signature key list and
      * counter.
      *
