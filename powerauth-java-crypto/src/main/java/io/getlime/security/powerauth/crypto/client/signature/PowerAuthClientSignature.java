@@ -31,27 +31,6 @@ public class PowerAuthClientSignature {
     private final SignatureUtils signatureUtils = new SignatureUtils();
 
     /**
-     * Compute a PowerAuth 2.0 signature for given data, signature keys and
-     * counter. Signature keys are symmetric keys deduced using
-     * private device key KEY_DEVICE_PRIVATE and server public key
-     * KEY_SERVER_PUBLIC, and then using KDF function with proper index. See
-     * PowerAuth protocol specification for details.
-     *
-     * PowerAuth protocol version: 2.0
-     *
-     * @deprecated Use {@link #signatureForData(byte[], List, byte[])}.
-     *
-     * @param data Data to be signed.
-     * @param signatureKeys A signature keys.
-     * @param ctr Numeric counter / index of the derived key KEY_DERIVED.
-     * @return PowerAuth 2.0 signature for given data.
-     */
-    @Deprecated
-    public String signatureForData(byte[] data, List<SecretKey> signatureKeys, long ctr) {
-        return signatureUtils.computePowerAuthSignature(data, signatureKeys, ctr);
-    }
-
-    /**
      * Compute a PowerAuth 3.0 signature for given data, signature keys and
      * counter. Signature keys are symmetric keys deduced using
      * private device key KEY_DEVICE_PRIVATE and server public key

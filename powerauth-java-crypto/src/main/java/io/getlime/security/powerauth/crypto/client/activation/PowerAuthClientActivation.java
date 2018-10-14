@@ -48,33 +48,6 @@ public class PowerAuthClientActivation {
     private final SignatureUtils signatureUtils = new SignatureUtils();
 
     /**
-     * Verify the signature of activation data using Master Public Key. Signature is computed as the concatenation of activationIdShort and activationOTP,
-     * separated with the "-" character:
-     *
-     * activationData = activationIdShort + "-" + activationOTP
-     *
-     * @param activationIdShort Short activation ID.
-     * @param activationOTP Activation OTP value.
-     * @param signature Activation data signature.
-     * @param masterPublicKey Master Public Key.
-     * @return Returns "true" if the signature matches activation data, "false" otherwise.
-     * @throws InvalidKeyException If provided master public key is invalid.
-     *
-     * @deprecated Use {@link #verifyActivationCodeSignature(String, byte[], PublicKey)}.
-     *
-     */
-    @Deprecated
-    public boolean verifyActivationDataSignature(String activationIdShort, String activationOTP, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException {
-        try {
-            byte[] bytes = (activationIdShort + "-" + activationOTP).getBytes("UTF-8");
-            return signatureUtils.validateECDSASignature(bytes, signature, masterPublicKey);
-        } catch (SignatureException | UnsupportedEncodingException ex) {
-            Logger.getLogger(PowerAuthClientActivation.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
      * Verify the signature of activation code using Master Public Key.
      *
      * @param activationCode Activation code.

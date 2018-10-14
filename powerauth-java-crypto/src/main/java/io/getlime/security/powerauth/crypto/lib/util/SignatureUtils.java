@@ -78,29 +78,6 @@ public class SignatureUtils {
     }
 
     /**
-     * Compute PowerAuth 2.0 signature for given data using a secret signature
-     * keys and counter.
-     *
-     * PowerAuth protocol version: 2.0
-     *
-     * @deprecated Use {@link #computePowerAuthSignature(byte[], List, byte[])}.
-     *
-     * @param data Data to be signed.
-     * @param signatureKeys Keys for computing the signature.
-     * @param counter Numeric counter / derived key index.
-     * @return PowerAuth 2.0 signature for given data.
-     *
-     */
-    @Deprecated
-    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, long counter) {
-        // Prepare a counter
-        byte[] ctrData = ByteBuffer.allocate(16).putLong(8, counter).array();
-
-        // Compute signature using byte counter
-        return computePowerAuthSignature(data, signatureKeys, ctrData);
-    }
-
-    /**
      * Compute PowerAuth signature for given data using a secret signature keys and counter byte array.
      *
      * Logic is used in PowerAuth protocol versions 2.0 and 3.0.
@@ -142,24 +119,6 @@ public class SignatureUtils {
         }
 
         return Joiner.on("-").join(signatureComponents);
-    }
-
-    /**
-     * Validate the PowerAuth 2.0 signature for given data using provided keys.
-     *
-     * PowerAuth protocol version: 2.0
-     *
-     * @deprecated Use {@link #validatePowerAuthSignature(byte[], String, List, byte[])}.
-     *
-     * @param data Data that were signed.
-     * @param signature Data signature.
-     * @param signatureKeys Keys for signature validation.
-     * @param counter Counter.
-     * @return Return "true" if signature matches, "false" otherwise.
-     */
-    @Deprecated
-    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, long counter) {
-        return signature.equals(computePowerAuthSignature(data, signatureKeys, counter));
     }
 
     /**
