@@ -42,8 +42,6 @@ public class PowerAuthServerVault {
      * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using
      * a correct KEY_ENCRYPTION_VAULT_TRANSPORT.
      *
-     * @deprecated Use {@link #encryptVaultEncryptionKey(PrivateKey, PublicKey)}
-     *
      * PowerAuth protocol version: 2.0
      *
      * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE
@@ -52,8 +50,7 @@ public class PowerAuthServerVault {
      * @return Encrypted vault encryption key.
      * @throws InvalidKeyException In case a provided key is incorrect.
      */
-    @Deprecated
-    public byte[] encryptVaultEncryptionKey(PrivateKey serverPrivateKey, PublicKey devicePublicKey, long ctr) throws InvalidKeyException {
+    public byte[] encryptVaultEncryptionKey(PrivateKey serverPrivateKey, PublicKey devicePublicKey, byte[] ctr) throws InvalidKeyException {
         try {
             KeyGenerator keyGenerator = new KeyGenerator();
             SecretKey keyMasterSecret = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);

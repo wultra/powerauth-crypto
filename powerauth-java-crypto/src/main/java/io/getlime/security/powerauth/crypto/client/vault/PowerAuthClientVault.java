@@ -41,8 +41,6 @@ public class PowerAuthClientVault {
      * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using a transport key
      * KEY_ENCRYPTION_VAULT_TRANSPORT.
      *
-     * @deprecated Use {@link #decryptVaultEncryptionKey(byte[], SecretKey)}
-     *
      * PowerAuth protocol version: 2.0
      *
      * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.
@@ -51,8 +49,7 @@ public class PowerAuthClientVault {
      * @return Original KEY_ENCRYPTION_VAULT
      * @throws InvalidKeyException In case invalid key is provided.
      */
-    @Deprecated
-    public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey masterTransportKey, long ctr) throws InvalidKeyException {
+    public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey masterTransportKey, byte[] ctr) throws InvalidKeyException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         KeyGenerator keyGen = new KeyGenerator();
