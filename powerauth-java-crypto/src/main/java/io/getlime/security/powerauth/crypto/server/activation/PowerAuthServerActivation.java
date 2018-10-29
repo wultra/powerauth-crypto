@@ -239,7 +239,7 @@ public class PowerAuthServerActivation {
      * Returns an encrypted status blob as described in PowerAuth Specification.
      * @param statusByte Byte determining the status of the activation.
      * @param currentVersionByte Current crypto protocol version.
-     * @param upgradeVersionByte Crypto version for possible migration.
+     * @param upgradeVersionByte Crypto version for possible upgrade.
      * @param failedAttempts Number of failed attempts at the moment.
      * @param maxFailedAttempts Number of allowed failed attempts.
      * @param transportKey A key used to protect the transport.
