@@ -26,7 +26,7 @@ public enum EciesSharedInfo1 {
     APPLICATION_SCOPE_GENERIC("/pa/generic/application"),
     ACTIVATION_SCOPE_GENERIC("/pa/generic/activation"),
     ACTIVATION_LAYER_2("/pa/activation"),
-    MIGRATION("/pa/migration"),
+    UPGRADE("/pa/upgrade"),
     VAULT_UNLOCK("/pa/vault/unlock"),
     CREATE_TOKEN("/pa/token/create");
 

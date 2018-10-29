@@ -83,16 +83,16 @@ public class ActivationStatusBlobInfo {
     }
 
     /**
-     * Get crypto version for possible migration.
-     * @return Crypto version for possible migration.
+     * Get crypto version for possible upgrade.
+     * @return Crypto version for possible upgrade.
      */
     public byte getUpgradeVersion() {
         return upgradeVersion;
     }
 
     /**
-     * Set crypto version for possible migration.
-     * @param upgradeVersion Crypto version for possible migration.
+     * Set crypto version for possible upgrade.
+     * @param upgradeVersion Crypto version for possible upgrade.
      */
     public void setUpgradeVersion(byte upgradeVersion) {
         this.upgradeVersion = upgradeVersion;
