@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,21 +79,17 @@ public class SignatureUtils {
     }
 
     /**
-     * Compute PowerAuth 2.0 signature for given data using a secret signature
-     * keys and counter.
+     * Compute PowerAuth signature for given data using a secret signature keys and counter byte array.
      *
      * @param data Data to be signed.
      * @param signatureKeys Keys for computing the signature.
-     * @param counter Counter / derived key index.
-     * @return PowerAuth 2.0 signature for given data.
+     * @param ctrData Counter byte array / derived key index.
+     * @return PowerAuth signature for given data.
      *
      */
-    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, long counter) {
+    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) {
         // Prepare a hash
         HMACHashUtilities hmac = new HMACHashUtilities();
-
-        // Prepare a counter
-        byte[] ctr = ByteBuffer.allocate(16).putLong(8, counter).array();
 
         // Prepare holder for signature components
         String[] signatureComponents = new String[signatureKeys.size()];
@@ -101,11 +98,11 @@ public class SignatureUtils {
 
         for (int i = 0; i < signatureKeys.size(); i++) {
             byte[] signatureKey = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(i));
-            byte[] derivedKey = hmac.hash(signatureKey, ctr);
+            byte[] derivedKey = hmac.hash(signatureKey, ctrData);
 
             for (int j = 0; j < i; j++) {
                 byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
-                byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctr);
+                byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctrData);
                 derivedKey = hmac.hash(derivedKeyInner, derivedKey);
             }
 
@@ -124,16 +121,16 @@ public class SignatureUtils {
     }
 
     /**
-     * Validate the PowerAuth 2.0 signature for given data using provided keys.
+     * Validate the PowerAuth signature for given data using provided keys.
      *
      * @param data Data that were signed.
      * @param signature Data signature.
      * @param signatureKeys Keys for signature validation.
-     * @param counter Counter.
+     * @param ctrData Counter data.
      * @return Return "true" if signature matches, "false" otherwise.
      */
-    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, long counter) {
-        return signature.equals(computePowerAuthSignature(data, signatureKeys, counter));
+    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) {
+        return signature.equals(computePowerAuthSignature(data, signatureKeys, ctrData));
     }
 
 }

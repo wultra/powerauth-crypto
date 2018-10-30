@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,6 @@ import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.ByteBuffer;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
@@ -145,19 +145,18 @@ public class KeyGenerator {
      * Derives a new secret key KEY_SHARED from a master secret key KEY_MASTER
      * based on following KDF:
      *
-     * BYTES = index, padded from left with 0x00, total 16 bytes
+     * BYTES = index, total 16 bytes
      * KEY_SHARED[BYTES] = AES(BYTES, KEY_MASTER)
      *
-     * @param secret A master shared key
-     * @param index An index of the key
+     * @param secret A master shared key.
+     * @param index A byte array index of the key.
      * @return A new derived key from a master key with given index.
      */
-    public SecretKey deriveSecretKey(SecretKey secret, long index) {
+    public SecretKey deriveSecretKey(SecretKey secret, byte[] index) {
         try {
             AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] bytes = ByteBuffer.allocate(16).putLong(0L).putLong(index).array();
             byte[] iv = new byte[16];
-            byte[] encryptedBytes = aes.encrypt(bytes, iv, secret);
+            byte[] encryptedBytes = aes.encrypt(index, iv, secret);
             return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
             Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);

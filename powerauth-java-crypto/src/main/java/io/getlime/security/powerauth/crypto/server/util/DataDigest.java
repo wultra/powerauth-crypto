@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +19,8 @@ package io.getlime.security.powerauth.crypto.server.util;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -65,20 +66,16 @@ public class DataDigest {
      * @return Digest fo provided data, including seed used to compute that digest.
      */
     public Result generateDigest(List<String> items) {
-        try {
-            if (items.size() == 0) {
-                return null;
-            }
-            byte[] operationData = String.join("&", items).getBytes("UTF-8");
-            byte[] randomKey = new KeyGenerator().generateRandomBytes(16);
-            byte[] otpHash = hmac.hash(randomKey, operationData);
-            BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(AUTHORIZATION_CODE_LENGTH));
-            String digitFormat = "%" + String.format("%02d", AUTHORIZATION_CODE_LENGTH) + "d";
-            String digest = String.format(digitFormat, otp);
-            return new Result(digest, randomKey);
-        } catch (UnsupportedEncodingException ex) {
+        if (items.size() == 0) {
             return null;
         }
+        byte[] operationData = String.join("&", items).getBytes(StandardCharsets.UTF_8);
+        byte[] randomKey = new KeyGenerator().generateRandomBytes(16);
+        byte[] otpHash = hmac.hash(randomKey, operationData);
+        BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(AUTHORIZATION_CODE_LENGTH));
+        String digitFormat = "%" + String.format("%02d", AUTHORIZATION_CODE_LENGTH) + "d";
+        String digest = String.format(digitFormat, otp);
+        return new Result(digest, randomKey);
     }
 
 }

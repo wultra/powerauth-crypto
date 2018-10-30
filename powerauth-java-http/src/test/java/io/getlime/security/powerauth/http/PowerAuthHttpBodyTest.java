@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +19,9 @@ package io.getlime.security.powerauth.http;
 import com.google.common.io.BaseEncoding;
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for HTTP body normalization routine.
@@ -43,7 +44,7 @@ public class PowerAuthHttpBodyTest {
     }**/
 
     @Test
-    public void testSignatureBaseString() throws UnsupportedEncodingException {
+    public void testSignatureBaseString() {
 
         // HTTP method - POST
         String method;
@@ -63,53 +64,53 @@ public class PowerAuthHttpBodyTest {
         method = "POST";
         resourceId = "/pa/login";
         nonce = BaseEncoding.base64().decode("vkueT796IGqdXlfVIJrB9A==");
-        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes("UTF-8");
+        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "POST&L3BhL2xvZ2lu&vkueT796IGqdXlfVIJrB9A==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "GET";
         resourceId = "/pa/login";
         nonce = BaseEncoding.base64().decode("t5W/nUcGPKAVUjA11ydJeQ==");
-        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes("UTF-8");
+        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "GET&L3BhL2xvZ2lu&t5W/nUcGPKAVUjA11ydJeQ==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "POST";
         nonce = BaseEncoding.base64().decode("oXcwuuRCCEHiw/pFiIg4bA==");
-        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes("UTF-8");
+        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, null, nonce, body);
         assertEquals(signatureBaseString, "POST&&oXcwuuRCCEHiw/pFiIg4bA==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "POST";
         resourceId = "/pa/login";
         nonce = BaseEncoding.base64().decode("U2EjaQ2N7KMlrghn7KL+3A==");
-        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes("UTF-8");
+        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "POST&L3BhL2xvZ2lu&U2EjaQ2N7KMlrghn7KL+3A==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "POST";
         resourceId = "/pa/login";
         nonce = BaseEncoding.base64().decode("UWtQ9nMNGtJQbZ9zx/J3FQ==");
-        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes("UTF-8");
+        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "POST&L3BhL2xvZ2lu&UWtQ9nMNGtJQbZ9zx/J3FQ==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         resourceId = "/pa/login";
         nonce = BaseEncoding.base64().decode("UWtQ9nMNGtJQbZ9zx/J3FQ==");
-        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes("UTF-8");
+        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(null, resourceId, nonce, body);
         assertEquals(signatureBaseString, "GET&L3BhL2xvZ2lu&UWtQ9nMNGtJQbZ9zx/J3FQ==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "POST";
         resourceId = "/pa/login";
-        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes("UTF-8");
+        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, null, body);
         assertEquals(signatureBaseString, "POST&L3BhL2xvZ2lu&&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "POST";
         resourceId = "/pa/login";
         nonce = new byte[16];
-        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes("UTF-8");
+        body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "POST&L3BhL2xvZ2lu&AAAAAAAAAAAAAAAAAAAAAA==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 

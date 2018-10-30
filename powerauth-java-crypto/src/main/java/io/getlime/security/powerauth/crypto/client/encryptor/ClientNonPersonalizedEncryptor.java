@@ -14,7 +14,7 @@ import java.security.PublicKey;
 /**
  * Class that simulates client side encryption steps.
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class ClientNonPersonalizedEncryptor {
 

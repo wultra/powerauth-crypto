@@ -1,4 +1,4 @@
-# PowerAuth 2.0
+# PowerAuth
 
 [![Coverity Scan Build Status](https://img.shields.io/coverity/scan/8967.svg)](https://scan.coverity.com/projects/wultra-powerauth-crypto)
 [![Build Status](https://travis-ci.org/wultra/powerauth-crypto.svg?branch=master)](https://travis-ci.org/wultra/powerauth-crypto)
@@ -7,9 +7,9 @@
 [![Twitter](https://img.shields.io/badge/twitter-@wultra-blue.svg?style=flat)](http://twitter.com/wultra)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/wultra/powerauth-crypto/blob/master/LICENSE.txt)
 
-PowerAuth 2.0 is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or identity management applications. It defines all items that are required for a complete security solution: a used cryptography, a security scheme and standard RESTful API end-points.
+PowerAuth is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or identity management applications. It defines all items that are required for a complete security solution: a used cryptography, a security scheme and standard RESTful API end-points.
 
-A typical use-case for PowerAuth 2.0 protocol would be assuring the security of a mobile banking application. User usually downloads a "blank" (non-personalized) mobile banking app from the mobile application market. Then, user activates (personalizes, using a key-exchange algorithm) the mobile banking using some application that is assumed secure, for example via the internet banking or via the branch kiosk system. Finally, user can use activated mobile banking application to create signed requests - to log in to mobile banking, send a payment, certify contracts, etc.
+A typical use-case for PowerAuth protocol would be assuring the security of a mobile banking application. User usually downloads a "blank" (non-personalized) mobile banking app from the mobile application market. Then, user activates (personalizes, using a key-exchange algorithm) the mobile banking using some application that is assumed secure, for example via the internet banking or via the branch kiosk system. Finally, user can use activated mobile banking application to create signed requests - to log in to mobile banking, send a payment, certify contracts, etc.
 
 ## Documentation
 
@@ -17,4 +17,4 @@ For the most recent documentation and tutorials, please [visit our Wiki](https:/
 
 # License
 
-All sources are licensed using Apache 2.0 license, you can use them with no restriction. If you are using PowerAuth 2.0, please let us know. We will be happy to share and promote your project.
+All sources are licensed using Apache 2.0 license, you can use them with no restriction. If you are using PowerAuth, please let us know. We will be happy to share and promote your project.

@@ -3,7 +3,7 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.model;
 /**
  * Class representing a personalized E2EE encrypted message.
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class PersonalizedEncryptedMessage extends EncryptedMessage {
 

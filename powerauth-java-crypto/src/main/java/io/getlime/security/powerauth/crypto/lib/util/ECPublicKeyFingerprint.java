@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +28,7 @@ import java.util.Arrays;
  * Class that is used for computing EC public key fingerprint. Goal of the public key fingerprint is to
  * enable user to visually check that the public key was successfully exchanged between client and server.
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class ECPublicKeyFingerprint {
 
