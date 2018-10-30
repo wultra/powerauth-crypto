@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,13 +63,17 @@ public class PowerAuthSignatureTest {
     /**
      * Test of signature generation and validation.
      *
-     * PowerAuth protocol version: 2.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
      *
      * @throws java.lang.Exception If the test fails.
      */
     @Test
     public void testSignatureForDataV2() throws Exception {
-        System.out.println("# PowerAuth 2.0 Signature");
+        System.out.println("# PowerAuth Signature");
         System.out.println();
 
         // Prepare data
@@ -98,7 +103,7 @@ public class PowerAuthSignatureTest {
         for (int i = 0; i < 5; i++) {
 
             System.out.println();
-            System.out.println("# PowerAuth 2.0 Signature Test - Round " + i);
+            System.out.println("# PowerAuth Signature Test - Round " + i);
             System.out.println("# 1FA ====");
 
             for (int ctr = 0; ctr < 20; ctr++) {
@@ -190,13 +195,16 @@ public class PowerAuthSignatureTest {
     /**
      * Test of signature generation and validation.
      *
-     * PowerAuth protocol version: 3.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>3.0</li>
+     * </ul>
      *
      * @throws java.lang.Exception If the test fails.
      */
     @Test
     public void testSignatureForDataV3() throws Exception {
-        System.out.println("# PowerAuth 3.0 Signature");
+        System.out.println("# PowerAuth Signature");
         System.out.println();
 
         // Prepare data
@@ -229,7 +237,7 @@ public class PowerAuthSignatureTest {
         for (int i = 0; i < 5; i++) {
 
             System.out.println();
-            System.out.println("# PowerAuth 2.0 Signature Test - Round " + i);
+            System.out.println("# PowerAuth Signature Test - Round " + i);
             System.out.println("# 1FA ====");
 
             for (int j = 0; j < 20; j++) {

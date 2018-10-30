@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +43,15 @@ public class PowerAuthServerVault {
      * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using
      * a correct KEY_ENCRYPTION_VAULT_TRANSPORT.
      *
-     * PowerAuth protocol version: 2.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
      *
      * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE
      * @param devicePublicKey Device public key KEY_DEVICE_PUBLIC
-     * @param ctr Numeric counter.
+     * @param ctr Counter data.
      * @return Encrypted vault encryption key.
      * @throws InvalidKeyException In case a provided key is incorrect.
      */
@@ -72,7 +77,10 @@ public class PowerAuthServerVault {
     /**
      * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using KEY_TRANSPORT.
      *
-     * PowerAuth protocol version: 3.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>3.0</li>
+     * </ul>
      *
      * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE
      * @param devicePublicKey Device public key KEY_DEVICE_PUBLIC

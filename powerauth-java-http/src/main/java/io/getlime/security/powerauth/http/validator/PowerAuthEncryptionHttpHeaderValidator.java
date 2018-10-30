@@ -1,4 +1,5 @@
 /*
+ * PowerAuth Crypto Library
  * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +56,7 @@ public class PowerAuthEncryptionHttpHeaderValidator {
         // Check that version is present
         String version = header.getVersion();
 
-        if (version == null) {
+        if (version == null || version.isEmpty()) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
         }
 

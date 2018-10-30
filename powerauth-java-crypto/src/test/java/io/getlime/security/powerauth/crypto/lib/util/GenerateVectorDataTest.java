@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -89,7 +89,11 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for activation data signature.
      *
-     * PowerAuth protocol version: 2.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */
@@ -169,7 +173,11 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for public key encryption.
      *
-     * PowerAuth protocol version: 2.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */
@@ -218,7 +226,12 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for master key derivation.
      *
-     * PowerAuth protocol version: 2.0 and 3.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     *     <li>3.0</li>
+     * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */
@@ -253,7 +266,12 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for key derivation.
      *
-     * PowerAuth protocol version: 2.0 and 3.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     *     <li>3.0</li>
+     * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */
@@ -265,7 +283,7 @@ public class GenerateVectorDataTest {
 
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
-        TestSet testSet = new TestSet("compute-derived-keys.json", "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth 2.0 keys from master shared secret key (masterSecretKey) => (signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey, transportKey, vaultEncryptionKey).");
+        TestSet testSet = new TestSet("compute-derived-keys.json", "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth keys from master shared secret key (masterSecretKey) => (signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey, transportKey, vaultEncryptionKey).");
 
         int max = 20;
 
@@ -292,9 +310,13 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for decrypting server public key.
      *
-     * PowerAuth protocol version: 2.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
      *
-     * * @throws Exception In case any unknown error occurs.
+     *@throws Exception In case any unknown error occurs.
      */
     @Test
     public void testActivationAcceptV2() throws Exception {
@@ -356,9 +378,13 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for verifying server response data.
      *
-     * PowerAuth protocol version: 2.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
      *
-     * * @throws Exception In case any unknown error occurs.
+     * @throws Exception In case any unknown error occurs.
      */
     @Test
     public void testVerifyServerPublicKeySignatureV2() throws Exception {
@@ -419,14 +445,18 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for signature validation
      *
-     * PowerAuth protocol version: 2.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */
     @Test
     public void testSignatureValidationV2() throws Exception {
 
-        TestSet testSet = new TestSet("signatures-v2.json", "Client must be able to compute PowerAuth 2.0 signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
+        TestSet testSet = new TestSet("signatures-v2.json", "Client must be able to compute PowerAuth signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
 
         int max = 5;
         int key_max = 2;
@@ -525,14 +555,17 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for signature validation.
      *
-     * PowerAuth protocol version: 3.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>3.0</li>
+     * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */
     @Test
     public void testSignatureValidationV3() throws Exception {
 
-        TestSet testSet = new TestSet("signatures-v3.json", "Client must be able to compute PowerAuth 3.0 signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
+        TestSet testSet = new TestSet("signatures-v3.json", "Client must be able to compute PowerAuth signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
 
         int max = 5;
         int keyMax = 2;
@@ -563,14 +596,14 @@ public class GenerateVectorDataTest {
                 SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
                 SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
 
-                byte[] counter = hashBasedCounter.init();
+                byte[] ctrData = hashBasedCounter.init();
 
                 for (int k = 0; k < signatureCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), counter);
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData);
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -578,13 +611,13 @@ public class GenerateVectorDataTest {
                     input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
                     input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
-                    input.put("counterData", BaseEncoding.base64().encode(counter));
+                    input.put("counterData", BaseEncoding.base64().encode(ctrData));
                     input.put("data", BaseEncoding.base64().encode(data));
                     Map<String, String> output = new LinkedHashMap<>();
                     output.put("signature", signature);
                     testSet.addData(input, output);
 
-                    counter = hashBasedCounter.next(counter);
+                    ctrData = hashBasedCounter.next(ctrData);
                 }
 
                 for (int k = 0; k < signatureCount; k++) {
@@ -592,7 +625,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), counter);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData);
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -600,13 +633,13 @@ public class GenerateVectorDataTest {
                     input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
                     input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
-                    input.put("counterData", BaseEncoding.base64().encode(counter));
+                    input.put("counterData", BaseEncoding.base64().encode(ctrData));
                     input.put("data", BaseEncoding.base64().encode(data));
                     Map<String, String> output = new LinkedHashMap<>();
                     output.put("signature", signature);
                     testSet.addData(input, output);
 
-                    counter = hashBasedCounter.next(counter);
+                    ctrData = hashBasedCounter.next(ctrData);
                 }
 
                 for (int k = 0; k < signatureCount; k++) {
@@ -614,7 +647,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), counter);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData);
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -622,13 +655,13 @@ public class GenerateVectorDataTest {
                     input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
                     input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
-                    input.put("counterData", BaseEncoding.base64().encode(counter));
+                    input.put("counterData", BaseEncoding.base64().encode(ctrData));
                     input.put("data", BaseEncoding.base64().encode(data));
                     Map<String, String> output = new LinkedHashMap<>();
                     output.put("signature", signature);
                     testSet.addData(input, output);
 
-                    counter = hashBasedCounter.next(counter);
+                    ctrData = hashBasedCounter.next(ctrData);
                 }
             }
         }
@@ -638,7 +671,12 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for public key fingerprint test.
      *
-     * PowerAuth protocol version: 2.0 and 3.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     *     <li>3.0</li>
+     * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */

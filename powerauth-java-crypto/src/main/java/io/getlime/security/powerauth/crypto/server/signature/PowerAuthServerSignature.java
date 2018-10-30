@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +33,8 @@ public class PowerAuthServerSignature {
     private final SignatureUtils signatureUtils = new SignatureUtils();
 
     /**
-     * Verify a PowerAuth 3.0 signature against data using signature key list and
+     * Verify a PowerAuth signature against data using signature key list and
      * counter.
-     *
-     * PowerAuth protocol version: 3.0
      *
      * @param data Signed data.
      * @param signature Signature for the data.

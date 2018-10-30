@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +42,16 @@ public class PowerAuthClientVault {
      * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using a transport key
      * KEY_ENCRYPTION_VAULT_TRANSPORT.
      *
-     * PowerAuth protocol version: 2.0
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
      *
      * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.
      * @param masterTransportKey Master transport key used for deriving a transport key, used for decrypting vault encryption key.
-     * @param ctr Numeric counter used for key derivation.
+     * @param ctr Counter data used for key derivation.
      * @return Original KEY_ENCRYPTION_VAULT
      * @throws InvalidKeyException In case invalid key is provided.
      */
@@ -67,7 +73,10 @@ public class PowerAuthClientVault {
     /**
      * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using KEY_TRANSPORT.
      *
-     * PowerAuth protocol version: 3.0
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>3.0</li>
+     * </ul>
      *
      * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.
      * @param transportKey Transport key used for for decrypting vault encryption key.

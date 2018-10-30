@@ -1,4 +1,5 @@
 /*
+ * PowerAuth Crypto Library
  * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +35,7 @@ import org.junit.Test;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -47,7 +49,7 @@ import static org.junit.Assert.*;
  * Test to validate functionality of {@link EciesEncryptor}
  * and {@link EciesDecryptor} classes.
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class EciesEncryptorTest {
 
@@ -76,15 +78,15 @@ public class EciesEncryptorTest {
         final PrivateKey privateKey = fixedKeyPair.getPrivate();
         final PublicKey publicKey = fixedKeyPair.getPublic();
 
-        byte[] request = "Hello Alice.".getBytes("UTF-8");
-        byte[] response = "Hello Bob".getBytes("UTF-8");
+        byte[] request = "Hello Alice.".getBytes(StandardCharsets.UTF_8);
+        byte[] response = "Hello Bob".getBytes(StandardCharsets.UTF_8);
 
         for (int i = 0; i < 100; i++) {
 
             EciesEncryptor encryptor = new EciesEncryptor((ECPublicKey) publicKey);
             final EciesCryptogram payloadRequest = encryptor.encryptRequest(request);
             System.out.println("# REQUEST");
-            System.out.println("- Original data: " + BaseEncoding.base64().encode(request) + " (" + new String(request, "UTF-8") + ")");
+            System.out.println("- Original data: " + BaseEncoding.base64().encode(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadRequest.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadRequest.getMac()));
             System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadRequest.getEphemeralPublicKey()));
@@ -97,7 +99,7 @@ public class EciesEncryptorTest {
 
             final EciesCryptogram payloadResponse = decryptor.encryptResponse(response);
             System.out.println("# RESPONSE");
-            System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, "UTF-8") + ")");
+            System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadResponse.getMac()));
             System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadResponse.getEphemeralPublicKey()));
@@ -123,15 +125,15 @@ public class EciesEncryptorTest {
         final PrivateKey privateKey = fixedKeyPair.getPrivate();
         final PublicKey publicKey = fixedKeyPair.getPublic();
 
-        byte[] request = "Hello Alice.".getBytes("UTF-8");
-        byte[] response = "Hello Bob".getBytes("UTF-8");
+        byte[] request = "Hello Alice.".getBytes(StandardCharsets.UTF_8);
+        byte[] response = "Hello Bob".getBytes(StandardCharsets.UTF_8);
 
         for (int i = 0; i < 5; i++) {
 
             EciesEncryptor encryptor = new EciesEncryptor((ECPublicKey) publicKey);
             final EciesCryptogram payloadRequest = encryptor.encryptRequest(request);
             System.out.println("# REQUEST");
-            System.out.println("- Original data: " + BaseEncoding.base64().encode(request) + " (" + new String(request, "UTF-8") + ")");
+            System.out.println("- Original data: " + BaseEncoding.base64().encode(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadRequest.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadRequest.getMac()));
             System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadRequest.getEphemeralPublicKey()));
@@ -157,7 +159,7 @@ public class EciesEncryptorTest {
 
             final EciesCryptogram payloadResponse = decryptor.encryptResponse(response);
             System.out.println("# RESPONSE");
-            System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, "UTF-8") + ")");
+            System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadResponse.getMac()));
             System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadResponse.getEphemeralPublicKey()));
@@ -268,7 +270,7 @@ public class EciesEncryptorTest {
                 BaseEncoding.base64().decode("aGVsbG8gd29ybGQh"),
                 BaseEncoding.base64().decode("QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzIQ=="),
                 BaseEncoding.base64().decode("SXQncyBvdmVyIEpvaG55ISBJdCdzIG92ZXIu"),
-                "".getBytes("UTF-8"),
+                "".getBytes(StandardCharsets.UTF_8),
                 BaseEncoding.base64().decode("e30="),
                 BaseEncoding.base64().decode("e30=")
         };
@@ -276,25 +278,25 @@ public class EciesEncryptorTest {
                 BaseEncoding.base64().decode("aGV5IHRoZXJlIQ=="),
                 BaseEncoding.base64().decode("Tk9QRSE="),
                 BaseEncoding.base64().decode("Tm90aGluZyBpcyBvdmVyISBOb3RoaW5nISBZb3UganVzdCBkb24ndCB0dXJuIGl0IG9mZiEgSXQgd2Fzbid0IG15IHdhciEgWW91IGFza2VkIG1lLCBJIGRpZG4ndCBhc2sgeW91ISBBbmQgSSBkaWQgd2hhdCBJIGhhZCB0byBkbyB0byB3aW4h"),
-                "".getBytes("UTF-8"),
+                "".getBytes(StandardCharsets.UTF_8),
                 BaseEncoding.base64().decode("e30="),
-                "".getBytes("UTF-8")
+                "".getBytes(StandardCharsets.UTF_8)
         };
         byte[][] sharedInfo1 = {
-                "".getBytes("UTF-8"),
+                "".getBytes(StandardCharsets.UTF_8),
                 BaseEncoding.base64().decode("dmVyeSBzZWNyZXQgaW5mb3JtYXRpb24="),
                 BaseEncoding.base64().decode("MDEyMzQ1Njc4OWFiY2RlZg=="),
                 BaseEncoding.base64().decode("MTIzNDUtNTY3ODk="),
-                "".getBytes("UTF-8"),
-                "".getBytes("UTF-8")
+                "".getBytes(StandardCharsets.UTF_8),
+                "".getBytes(StandardCharsets.UTF_8)
         };
         byte[][] sharedInfo2 = {
-                "".getBytes("UTF-8"),
+                "".getBytes(StandardCharsets.UTF_8),
                 BaseEncoding.base64().decode("bm90LXNvLXNlY3JldA=="),
                 BaseEncoding.base64().decode("Sm9obiBUcmFtb250YQ=="),
                 BaseEncoding.base64().decode("WlgxMjg="),
-                "".getBytes("UTF-8"),
-                "".getBytes("UTF-8")
+                "".getBytes(StandardCharsets.UTF_8),
+                "".getBytes(StandardCharsets.UTF_8)
         };
         byte[][] ephemeralPublicKey = {
                 BaseEncoding.base64().decode("AhzMrk7VZ98yCfi4iPw+1ib/e+CraDPy/zix3efvBJHv"),

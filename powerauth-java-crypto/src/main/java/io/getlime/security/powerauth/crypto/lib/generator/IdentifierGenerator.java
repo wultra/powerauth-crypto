@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,6 +106,9 @@ public class IdentifierGenerator {
      * @return Whether activation code is correct.
      */
     public boolean validateActivationCode(String activationCode) {
+        if (activationCode == null) {
+            return false;
+        }
         // Verify activation code using regular expression
         if (!activationCode.matches("[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}")) {
             return false;

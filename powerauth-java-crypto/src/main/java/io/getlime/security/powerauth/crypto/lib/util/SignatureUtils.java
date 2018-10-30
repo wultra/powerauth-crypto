@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,8 +81,6 @@ public class SignatureUtils {
     /**
      * Compute PowerAuth signature for given data using a secret signature keys and counter byte array.
      *
-     * Logic is used in PowerAuth protocol versions 2.0 and 3.0.
-     *
      * @param data Data to be signed.
      * @param signatureKeys Keys for computing the signature.
      * @param ctrData Counter byte array / derived key index.
@@ -122,18 +121,16 @@ public class SignatureUtils {
     }
 
     /**
-     * Validate the PowerAuth 3.0 signature for given data using provided keys.
-     *
-     * PowerAuth protocol version: 3.0
+     * Validate the PowerAuth signature for given data using provided keys.
      *
      * @param data Data that were signed.
      * @param signature Data signature.
      * @param signatureKeys Keys for signature validation.
-     * @param counter Counter.
+     * @param ctrData Counter data.
      * @return Return "true" if signature matches, "false" otherwise.
      */
-    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] counter) {
-        return signature.equals(computePowerAuthSignature(data, signatureKeys, counter));
+    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) {
+        return signature.equals(computePowerAuthSignature(data, signatureKeys, ctrData));
     }
 
 }

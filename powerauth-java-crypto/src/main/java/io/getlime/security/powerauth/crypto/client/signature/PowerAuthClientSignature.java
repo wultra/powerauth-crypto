@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,18 +32,16 @@ public class PowerAuthClientSignature {
     private final SignatureUtils signatureUtils = new SignatureUtils();
 
     /**
-     * Compute a PowerAuth 3.0 signature for given data, signature keys and
+     * Compute a PowerAuth signature for given data, signature keys and
      * counter. Signature keys are symmetric keys deduced using
      * private device key KEY_DEVICE_PRIVATE and server public key
      * KEY_SERVER_PUBLIC, and then using KDF function with proper index. See
      * PowerAuth protocol specification for details.
      *
-     * PowerAuth protocol version: 3.0
-     *
      * @param data Data to be signed.
      * @param signatureKeys A signature keys.
      * @param ctrData Hash based counter / index of the derived key KEY_DERIVED.
-     * @return PowerAuth 3.0 signature for given data.
+     * @return PowerAuth signature for given data.
      */
     public String signatureForData(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) {
         return signatureUtils.computePowerAuthSignature(data, signatureKeys, ctrData);

@@ -1,5 +1,5 @@
 {
-  "description" : "Client must be able to compute PowerAuth 3.0 signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type",
+  "description" : "Client must be able to compute PowerAuth signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type",
   "data" : [ {
     "input" : {
       "signaturePossessionKey" : "bVnPC6jRFYlIkjKDJWOxVQ==",

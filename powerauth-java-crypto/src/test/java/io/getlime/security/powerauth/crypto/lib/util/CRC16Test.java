@@ -1,4 +1,5 @@
 /*
+ * PowerAuth Crypto Library
  * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,37 +31,25 @@ public class CRC16Test {
     }
 
     @Test
-    public void testCRC16WithReset() {
-        assertEquals(50923, computeCRC16("iV6jP5Xr0z", true));
-        assertEquals(10082, computeCRC16("dD5HnVp68n", true));
-        assertEquals(20455, computeCRC16("Fuu5G0DUJR", true));
-        assertEquals(13179, computeCRC16("iPeHJFjSCh", true));
-        assertEquals(55500, computeCRC16("vBS8tFjAOx", true));
-        assertEquals(58775, computeCRC16("iJA6cuvi4q", true));
-        assertEquals(58683, computeCRC16("MeIWdZggy0", true));
-        assertEquals(63310, computeCRC16("kNu1i4Fben", true));
-        assertEquals(32651, computeCRC16("B5IQaGOYSv", true));
-        assertEquals(43790, computeCRC16("E31xKoJqXA", true));
+    public void testCRC16() {
+        assertEquals(0xC6EB, computeCRC16("iV6jP5Xr0z"));
+        assertEquals(0x2762, computeCRC16("dD5HnVp68n"));
+        assertEquals(0x4FE7, computeCRC16("Fuu5G0DUJR"));
+        assertEquals(0x337B, computeCRC16("iPeHJFjSCh"));
+        assertEquals(0xD8CC, computeCRC16("vBS8tFjAOx"));
+        assertEquals(0xE597, computeCRC16("iJA6cuvi4q"));
+        assertEquals(0xE53B, computeCRC16("MeIWdZggy0"));
+        assertEquals(0x843D, computeCRC16("The quick brown fox jumps over the lazy dog."));
+        assertEquals(0xA8E2, computeCRC16("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+                + "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
+                + "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo "
+                + "consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse "
+                + "cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat "
+                + "non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
     }
 
-    @Test
-    public void testCRC16WithoutReset() {
-        assertEquals(43807, computeCRC16("SVVqcvxwIr", false));
-        assertEquals(31786, computeCRC16("5BlzhKRrbS", false));
-        assertEquals(33751, computeCRC16("4It3gbOUil", false));
-        assertEquals(38709, computeCRC16("d114VnQMPt", false));
-        assertEquals(41549, computeCRC16("2y9MrpsTHd", false));
-        assertEquals(60241, computeCRC16("A8SwsnadQr", false));
-        assertEquals(59417, computeCRC16("pBFaVscMaF", false));
-        assertEquals(32027, computeCRC16("VRCFJDt5M1", false));
-        assertEquals(54413, computeCRC16("JC1JWvmr5v", false));
-        assertEquals(11983, computeCRC16("mJkRVaxR7T", false));
-    }
-
-    private long computeCRC16(String inputData, boolean reset) {
-        if (reset) {
-            crc16.reset();
-        }
+    private long computeCRC16(String inputData) {
+        crc16.reset();
         crc16.update(inputData.getBytes(), 0, inputData.length());
         return crc16.getValue();
     }

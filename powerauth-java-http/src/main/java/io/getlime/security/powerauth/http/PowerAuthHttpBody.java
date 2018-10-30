@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Wultra s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@ package io.getlime.security.powerauth.http;
 
 import com.google.common.io.BaseEncoding;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Helper class simplifying working with HTTP request body in context of PowerAuth protocol.
@@ -39,13 +40,7 @@ public class PowerAuthHttpBody {
 
         String requestUriHash = "";
         if (requestUri != null) {
-            byte[] bytes;
-            try {
-                bytes = requestUri.getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                // System must support UTF-8
-                return null;
-            }
+            byte[] bytes = requestUri.getBytes(StandardCharsets.UTF_8);
             requestUriHash = BaseEncoding.base64().encode(bytes);
         }
 
