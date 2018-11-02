@@ -142,7 +142,7 @@ public class KeyGenerator {
     }
 
     /**
-     * Derives a new secret key KEY_SHARED from a master secret key KEY_MASTER
+     * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
      * based on following KDF:
      *
      * BYTES = index, total 16 bytes
@@ -164,6 +164,17 @@ public class KeyGenerator {
         return null;
     }
 
+    /**
+     * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
+     * based on following KDF:
+     *
+     * BYTES = index, total 16 bytes
+     * KEY_SHARED[BYTES] = 32B_TO_16B(HMAC-SHA256(BYTES, KEY_MASTER))
+     *
+     * @param secret A master shared key.
+     * @param index A byte array index of the key.
+     * @return A new derived key from a master key with given index.
+     */
     public SecretKey deriveSecretKeyHmac(SecretKey secret, byte[] index) {
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
