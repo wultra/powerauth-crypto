@@ -21,6 +21,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesShare
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -41,8 +42,9 @@ public class EciesFactory {
      * @param applicationSecret Application secret.
      * @return Initialized ECIES encryptor.
      * @throws GenericCryptoException In case encryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public EciesEncryptor getEciesEncryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException {
+    public EciesEncryptor getEciesEncryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, sharedInfo1Value);
     }
@@ -56,8 +58,9 @@ public class EciesFactory {
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @return Initialized ECIES encryptor.
      * @throws GenericCryptoException In case encryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public EciesEncryptor getEciesEncryptorForActivation(ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException {
+    public EciesEncryptor getEciesEncryptorForActivation(ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.ACTIVATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesEncryptor(EciesScope.ACTIVATION_SCOPE, publicKey, applicationSecret, transportKey, sharedInfo1Value);
     }
@@ -83,8 +86,9 @@ public class EciesFactory {
      * @param sharedInfo1 Additional information for sharedInfo1 parameter in bytes.
      * @return Initialized ECIES encryptor.
      * @throws GenericCryptoException In case encryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private EciesEncryptor getEciesEncryptor(EciesScope eciesScope, ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) throws GenericCryptoException {
+    private EciesEncryptor getEciesEncryptor(EciesScope eciesScope, ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         switch (eciesScope) {
 
             case APPLICATION_SCOPE: {
@@ -110,9 +114,10 @@ public class EciesFactory {
      * @param privateKey Private key used for ECIES.
      * @param applicationSecret Application secret.
      * @return Initialized ECIES decryptor.
-     * @throws GenericCryptoException TIn case decryptor could not be initialized.
+     * @throws GenericCryptoException In case decryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException {
+    public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesDecryptor(EciesScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, sharedInfo1Value);
     }
@@ -126,8 +131,9 @@ public class EciesFactory {
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @return Initialized ECIES decryptor.
      * @throws GenericCryptoException In case decryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public EciesDecryptor getEciesDecryptorForActivation(ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException {
+    public EciesDecryptor getEciesDecryptorForActivation(ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.ACTIVATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesDecryptor(EciesScope.ACTIVATION_SCOPE, privateKey, applicationSecret, transportKey, sharedInfo1Value);
     }
@@ -153,8 +159,9 @@ public class EciesFactory {
      * @param sharedInfo1 Additional information for sharedInfo1 parameter in bytes.
      * @return Initialized ECIES decryptor.
      * @throws GenericCryptoException In case decryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private EciesDecryptor getEciesDecryptor(EciesScope eciesScope, ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) throws GenericCryptoException {
+    private EciesDecryptor getEciesDecryptor(EciesScope eciesScope, ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         switch (eciesScope) {
 
             case APPLICATION_SCOPE: {

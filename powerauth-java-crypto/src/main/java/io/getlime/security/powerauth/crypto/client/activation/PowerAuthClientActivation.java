@@ -101,8 +101,9 @@ public class PowerAuthClientActivation {
      * @param applicationSecret Application secret.
      * @return Signature bytes.
      * @throws GenericCryptoException In case hash computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] computeApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret) throws GenericCryptoException {
+    public byte[] computeApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret) throws GenericCryptoException, CryptoProviderException {
         String signatureBaseString = activationIdShort + "&"
                 + BaseEncoding.base64().encode(activationNonce) + "&"
                 + BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
@@ -185,8 +186,9 @@ public class PowerAuthClientActivation {
      * @return Decrypted server public key.
      * @throws InvalidKeyException In case some of the provided keys is invalid.
      * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public PublicKey decryptServerPublicKey(byte[] C_serverPublicKey, PrivateKey devicePrivateKey, PublicKey ephemeralPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException, GenericCryptoException {
+    public PublicKey decryptServerPublicKey(byte[] C_serverPublicKey, PrivateKey devicePrivateKey, PublicKey ephemeralPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
         try {
             KeyGenerator keyGenerator = new KeyGenerator();
@@ -200,7 +202,7 @@ public class PowerAuthClientActivation {
             byte[] decryptedServerPublicKeyBytes = aes.decrypt(decryptedTMP, activationNonce, otpBasedSymmetricKey);
 
             return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedServerPublicKeyBytes);
-        } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | CryptoProviderException ex) {
+        } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }

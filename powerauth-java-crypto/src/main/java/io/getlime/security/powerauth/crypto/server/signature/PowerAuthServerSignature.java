@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.server.signature;
 
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -43,8 +44,9 @@ public class PowerAuthServerSignature {
      * @param ctrData Hash based counter / derived signing key index.
      * @return Returns "true" if the signature matches, "false" otherwise.
      * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifySignatureForData(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException {
+    public boolean verifySignatureForData(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         return signatureUtils.validatePowerAuthSignature(data, signature, signatureKeys, ctrData);
     }
 

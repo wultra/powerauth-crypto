@@ -55,8 +55,9 @@ public class ClientNonPersonalizedEncryptor {
      * @param data Original data.
      * @return Encrypted payload.
      * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public NonPersonalizedEncryptedMessage encrypt(byte[] data) throws GenericCryptoException {
+    public NonPersonalizedEncryptedMessage encrypt(byte[] data) throws GenericCryptoException, CryptoProviderException {
         return this.encryptor.encrypt(data);
     }
 
@@ -65,8 +66,9 @@ public class ClientNonPersonalizedEncryptor {
      * @param message Encrypted payload message.
      * @return Original data.
      * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws GenericCryptoException {
+    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws GenericCryptoException, CryptoProviderException {
         return this.encryptor.decrypt(message);
     }
 

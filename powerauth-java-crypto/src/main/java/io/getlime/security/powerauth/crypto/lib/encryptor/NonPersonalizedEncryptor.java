@@ -71,8 +71,9 @@ public class NonPersonalizedEncryptor {
      * @param originalData Data to be encrypted.
      * @return Message object with encrypted data.
      * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public NonPersonalizedEncryptedMessage encrypt(byte[] originalData) throws GenericCryptoException {
+    public NonPersonalizedEncryptedMessage encrypt(byte[] originalData) throws GenericCryptoException, CryptoProviderException {
         try {
             byte[] adHocIndex = generator.generateRandomBytes(16);
             byte[] macIndex = generator.generateRandomBytes(16);
@@ -108,7 +109,7 @@ public class NonPersonalizedEncryptor {
             message.setMac(mac);
 
             return message;
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | CryptoProviderException ex) {
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -118,8 +119,9 @@ public class NonPersonalizedEncryptor {
      * @param message Message object to be decrypted.
      * @return Original decrypted bytes.
      * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws GenericCryptoException {
+    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws GenericCryptoException, CryptoProviderException {
 
         try {
             byte[] adHocIndex = message.getAdHocIndex();
@@ -148,7 +150,7 @@ public class NonPersonalizedEncryptor {
 
             return aes.decrypt(encryptedData, nonce, encryptionKey);
 
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | CryptoProviderException ex) {
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }

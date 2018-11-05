@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.server.token;
 
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 /**
  * Class to simplify token verification on the server side.
@@ -47,8 +48,9 @@ public class ServerTokenVerifier {
      * @param tokenDigest Token digest, 32 bytes to be validated.
      * @return Token digest computed using provided data bytes with given token secret.
      * @throws GenericCryptoException In case digest computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException {
+    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
         return tokenUtils.validateTokenDigest(nonce, timestamp, tokenSecret, tokenDigest);
     }
 

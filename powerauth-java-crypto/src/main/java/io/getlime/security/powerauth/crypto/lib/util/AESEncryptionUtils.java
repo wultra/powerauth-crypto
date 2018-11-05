@@ -55,9 +55,9 @@ public class AESEncryptionUtils {
             Cipher cipherForCryptoResponse = Cipher.getInstance(padding, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             cipherForCryptoResponse.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
             throw new CryptoProviderException(ex.getMessage(), ex);
-        } catch (NoSuchPaddingException | InvalidAlgorithmParameterException ex) {
+        } catch (NoSuchPaddingException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -100,9 +100,9 @@ public class AESEncryptionUtils {
             Cipher cipherForCryptoResponse = Cipher.getInstance(padding, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             cipherForCryptoResponse.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
             throw new CryptoProviderException(ex.getMessage(), ex);
-        } catch (NoSuchPaddingException | InvalidAlgorithmParameterException ex) {
+        } catch (NoSuchPaddingException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }

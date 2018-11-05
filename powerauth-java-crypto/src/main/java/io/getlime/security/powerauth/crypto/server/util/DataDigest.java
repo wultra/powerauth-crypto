@@ -19,6 +19,7 @@ package io.getlime.security.powerauth.crypto.server.util;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -80,7 +81,7 @@ public class DataDigest {
             String digitFormat = "%" + String.format("%02d", AUTHORIZATION_CODE_LENGTH) + "d";
             String digest = String.format(digitFormat, otp);
             return new Result(digest, randomKey);
-        } catch (GenericCryptoException ex) {
+        } catch (GenericCryptoException | CryptoProviderException ex) {
             return null;
         }
     }

@@ -177,8 +177,9 @@ public class KeyGenerator {
      * @param index A byte array index of the key.
      * @return A new derived key from a master key with given index.
      * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey deriveSecretKeyHmac(SecretKey secret, byte[] index) throws GenericCryptoException {
+    public SecretKey deriveSecretKeyHmac(SecretKey secret, byte[] index) throws GenericCryptoException, CryptoProviderException {
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
         HMACHashUtilities hmac = new HMACHashUtilities();

@@ -128,15 +128,16 @@ public class PowerAuthClientVault {
      * @return Original private key.
      * @throws InvalidKeyException In case invalid key is provided.
      * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public PrivateKey decryptDevicePrivateKey(byte[] cDevicePrivateKey, SecretKey vaultEncryptionKey) throws InvalidKeyException, GenericCryptoException {
+    public PrivateKey decryptDevicePrivateKey(byte[] cDevicePrivateKey, SecretKey vaultEncryptionKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] zeroBytes = new byte[16];
         try {
             byte[] keyBytes = aes.decrypt(cDevicePrivateKey, zeroBytes, vaultEncryptionKey);
             return keyConvertor.convertBytesToPrivateKey(keyBytes);
-        } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | CryptoProviderException ex) {
+        } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }

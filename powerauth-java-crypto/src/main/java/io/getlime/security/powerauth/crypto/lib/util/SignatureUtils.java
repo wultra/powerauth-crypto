@@ -90,8 +90,9 @@ public class SignatureUtils {
      * @param ctrData Counter byte array / derived key index.
      * @return PowerAuth signature for given data.
      * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException {
+    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         // Prepare a hash
         HMACHashUtilities hmac = new HMACHashUtilities();
 
@@ -133,8 +134,9 @@ public class SignatureUtils {
      * @param ctrData Counter data.
      * @return Return "true" if signature matches, "false" otherwise.
      * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException {
+    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         return signature.equals(computePowerAuthSignature(data, signatureKeys, ctrData));
     }
 
