@@ -17,7 +17,7 @@
 package io.getlime.security.powerauth.provider.exception;
 
 /**
- * Exception used for handling case when cryptography provider is not configured.
+ * Exception used for handling case when cryptography provider is incorrectly initialized.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
