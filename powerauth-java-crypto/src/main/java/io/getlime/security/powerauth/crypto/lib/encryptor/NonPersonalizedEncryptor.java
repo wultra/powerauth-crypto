@@ -83,7 +83,7 @@ public class NonPersonalizedEncryptor {
             if (attemptCount < MAX_ATTEMPT_COUNT) { // make sure that there is no issue with random data generator
                 attemptCount++;
             } else {
-                return null;
+                throw new GenericCryptoException("Random byte array generation failed");
             }
         }
 
@@ -124,7 +124,7 @@ public class NonPersonalizedEncryptor {
 
         // make sure the indexes are different
         if (Arrays.equals(adHocIndex, macIndex)) {
-            return null;
+            throw new GenericCryptoException("Invalid index");
         }
 
         byte[] nonce = message.getNonce();
@@ -140,7 +140,7 @@ public class NonPersonalizedEncryptor {
 
         // make sure the macs are the same
         if (!Arrays.equals(mac, macExpected)) {
-            return null;
+            throw new GenericCryptoException("Invalid mac");
         }
 
         return aes.decrypt(encryptedData, nonce, encryptionKey);

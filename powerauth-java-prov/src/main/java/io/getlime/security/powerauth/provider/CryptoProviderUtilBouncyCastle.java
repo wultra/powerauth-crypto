@@ -75,7 +75,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
 
             ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
             if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
-                return null;
+                throw new CryptoProviderException("Crypto provider does not support the secp256r1 curve");
             }
             ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
             ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);

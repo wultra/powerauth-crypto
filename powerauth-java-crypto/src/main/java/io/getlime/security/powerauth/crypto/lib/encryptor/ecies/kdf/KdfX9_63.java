@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf;
 
 import com.google.common.primitives.Bytes;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 
 import java.nio.ByteBuffer;
@@ -35,10 +36,11 @@ public class KdfX9_63 {
      * @param sharedInfo Extra information used for derived key computation.
      * @param outputBytes Requested size of the key.
      * @return Derived key using the X9.63 KDF with SHA256 digest.
+     * @throws GenericCryptoException In case key derivation fails.
      */
-    public static byte[] derive(byte[] secret, byte[] sharedInfo, int outputBytes) {
+    public static byte[] derive(byte[] secret, byte[] sharedInfo, int outputBytes) throws GenericCryptoException {
         if (secret == null) {
-            return null;
+            throw new GenericCryptoException("Missing secret for KDF X9.63");
         }
         byte[] result = new byte[0];
         byte[] round = new byte[secret.length + 4 + (sharedInfo == null ? 0 : sharedInfo.length)];
