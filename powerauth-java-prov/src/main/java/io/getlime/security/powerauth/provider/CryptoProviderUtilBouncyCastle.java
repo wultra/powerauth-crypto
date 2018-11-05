@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.provider;
 
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
@@ -30,8 +31,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Crypto provider based on BouncyCastle crypto provider.
@@ -68,8 +67,9 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @return An instance of the EC public key on success, or null on failure.
      * @throws InvalidKeySpecException When provided bytes are not a correct key
      *                                 representation.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
      */
-    public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException {
+    public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
         try {
             KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
 
@@ -82,9 +82,8 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
 
             return kf.generatePublic(pubSpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
@@ -105,8 +104,9 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @return An instance of EC private key decoded from the input bytes.
      * @throws InvalidKeySpecException The provided key bytes are not a valid EC
      *                                 private key.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
      */
-    public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException {
+    public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
         try {
             KeyFactory kf = KeyFactory.getInstance("ECDH", getProviderName());
             BigInteger keyInteger = new BigInteger(keyBytes);
@@ -115,9 +115,8 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
 
             return kf.generatePrivate(pubSpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**

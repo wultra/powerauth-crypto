@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.server.util;
 
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 
 import java.math.BigInteger;
@@ -62,6 +63,8 @@ public class DataDigest {
      * by '&amp;' character), then a random key is generated and hash (HMAC-SHA256) is computed. Finally,
      * the resulting MAC is decimalized to the signature of a length 8 numeric digits.
      *
+     * In case the digest could not be computed, null value is returned.
+     *
      * @param items Items to be serialized into digest.
      * @return Digest fo provided data, including seed used to compute that digest.
      */
@@ -71,11 +74,15 @@ public class DataDigest {
         }
         byte[] operationData = String.join("&", items).getBytes(StandardCharsets.UTF_8);
         byte[] randomKey = new KeyGenerator().generateRandomBytes(16);
-        byte[] otpHash = hmac.hash(randomKey, operationData);
-        BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(AUTHORIZATION_CODE_LENGTH));
-        String digitFormat = "%" + String.format("%02d", AUTHORIZATION_CODE_LENGTH) + "d";
-        String digest = String.format(digitFormat, otp);
-        return new Result(digest, randomKey);
+        try {
+            byte[] otpHash = hmac.hash(randomKey, operationData);
+            BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(AUTHORIZATION_CODE_LENGTH));
+            String digitFormat = "%" + String.format("%02d", AUTHORIZATION_CODE_LENGTH) + "d";
+            String digest = String.format(digitFormat, otp);
+            return new Result(digest, randomKey);
+        } catch (GenericCryptoException ex) {
+            return null;
+        }
     }
 
 }

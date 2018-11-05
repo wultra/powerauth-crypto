@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.client.token;
 
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
 
 
@@ -54,8 +55,9 @@ public class ClientTokenGenerator {
      * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (from string representation).
      * @param tokenSecret Token secret, 16 random bytes.
      * @return Token digest computed using provided data bytes with given token secret.
+     * @throws GenericCryptoException In case digest computation fails.
      */
-    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) {
+    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) throws GenericCryptoException {
         return tokenUtils.computeTokenDigest(nonce, timestamp, tokenSecret);
     }
 

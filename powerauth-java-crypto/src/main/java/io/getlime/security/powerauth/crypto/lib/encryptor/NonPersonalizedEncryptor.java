@@ -19,6 +19,7 @@ package io.getlime.security.powerauth.crypto.lib.encryptor;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.NonPersonalizedEncryptedMessage;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
@@ -28,8 +29,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class responsible for encrypting / decrypting data using non-personalized encryption
@@ -70,8 +69,9 @@ public class NonPersonalizedEncryptor {
      * Encrypt original data using components in this encryptor.
      * @param originalData Data to be encrypted.
      * @return Message object with encrypted data.
+     * @throws GenericCryptoException In case encryption fails.
      */
-    public NonPersonalizedEncryptedMessage encrypt(byte[] originalData) {
+    public NonPersonalizedEncryptedMessage encrypt(byte[] originalData) throws GenericCryptoException {
         try {
             byte[] adHocIndex = generator.generateRandomBytes(16);
             byte[] macIndex = generator.generateRandomBytes(16);
@@ -108,17 +108,17 @@ public class NonPersonalizedEncryptor {
 
             return message;
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
-            Logger.getLogger(NonPersonalizedEncryptor.class.getName()).log(Level.SEVERE, null, ex);
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
      * Decrypt the encrypted message from the message payload using this encryptor.
      * @param message Message object to be decrypted.
      * @return Original decrypted bytes.
+     * @throws GenericCryptoException In case decryption fails.
      */
-    public byte[] decrypt(NonPersonalizedEncryptedMessage message) {
+    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws GenericCryptoException {
 
         try {
             byte[] adHocIndex = message.getAdHocIndex();
@@ -148,9 +148,8 @@ public class NonPersonalizedEncryptor {
             return aes.decrypt(encryptedData, nonce, encryptionKey);
 
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
-            Logger.getLogger(NonPersonalizedEncryptor.class.getName()).log(Level.SEVERE, null, ex);
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     public byte[] getApplicationKey() {

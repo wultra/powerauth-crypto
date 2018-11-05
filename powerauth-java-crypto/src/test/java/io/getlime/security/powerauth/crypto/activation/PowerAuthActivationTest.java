@@ -20,6 +20,7 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
@@ -55,7 +56,7 @@ public class PowerAuthActivationTest {
 	 * Test that the keys are correctly generated.
 	 */
 	@Test
-	public void testGenerateKeys() {
+	public void testGenerateKeys() throws GenericCryptoException {
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 		KeyGenerator keyGenerator = new KeyGenerator();
 		KeyPair kp = keyGenerator.generateKeyPair();

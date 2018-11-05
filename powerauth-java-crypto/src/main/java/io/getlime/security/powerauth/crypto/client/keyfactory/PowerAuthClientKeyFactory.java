@@ -19,6 +19,7 @@ package io.getlime.security.powerauth.crypto.client.keyfactory;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -90,8 +91,9 @@ public class PowerAuthClientKeyFactory {
      * @param masterSecretKey Master Key Secret
      * @return List with keys constructed from master secret that are needed to
      *         get requested signature type.
+     * @throws GenericCryptoException In case key derivation fails.
      */
-    public List<SecretKey> keysForSignatureType(PowerAuthSignatureTypes signatureType, SecretKey masterSecretKey) {
+    public List<SecretKey> keysForSignatureType(PowerAuthSignatureTypes signatureType, SecretKey masterSecretKey) throws GenericCryptoException {
 
         List<SecretKey> signatureKeys = new ArrayList<>();
 
@@ -150,8 +152,9 @@ public class PowerAuthClientKeyFactory {
      * @return Computed symmetric key KEY_MASTER_SECRET.
      * @throws InvalidKeyException
      *             In case some provided key is invalid.
+     * @throws GenericCryptoException In case shared key computation fails.
      */
-    public SecretKey generateClientMasterSecretKey(PrivateKey devicePrivateKey, PublicKey serverPublicKey) throws InvalidKeyException {
+    public SecretKey generateClientMasterSecretKey(PrivateKey devicePrivateKey, PublicKey serverPublicKey) throws InvalidKeyException, GenericCryptoException {
         return keyGenerator.computeSharedKey(devicePrivateKey, serverPublicKey);
     }
 
@@ -163,8 +166,9 @@ public class PowerAuthClientKeyFactory {
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_BIOMETRY.
+     * @throws GenericCryptoException In case key derivation fails.
      */
-    public SecretKey generateClientSignatureBiometryKey(SecretKey masterSecretKey) {
+    public SecretKey generateClientSignatureBiometryKey(SecretKey masterSecretKey) throws GenericCryptoException {
         return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_BIOMETRY.getIndex());
     }
 
@@ -176,8 +180,9 @@ public class PowerAuthClientKeyFactory {
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_KNOWLEDGE.
+     * @throws GenericCryptoException In case key derivation fails.
      */
-    public SecretKey generateClientSignatureKnowledgeKey(SecretKey masterSecretKey) {
+    public SecretKey generateClientSignatureKnowledgeKey(SecretKey masterSecretKey) throws GenericCryptoException {
         return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_KNOWLEDGE.getIndex());
     }
 
@@ -189,8 +194,9 @@ public class PowerAuthClientKeyFactory {
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_POSSESSION.
+     * @throws GenericCryptoException In case key derivation fails.
      */
-    public SecretKey generateClientSignaturePossessionKey(SecretKey masterSecretKey) {
+    public SecretKey generateClientSignaturePossessionKey(SecretKey masterSecretKey) throws GenericCryptoException {
         return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_POSSESSION.getIndex());
     }
 
@@ -202,8 +208,9 @@ public class PowerAuthClientKeyFactory {
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_ENCRYPTED_VAULT.
+     * @throws GenericCryptoException In case key derivation fails.
      */
-    public SecretKey generateServerEncryptedVaultKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerEncryptedVaultKey(SecretKey masterSecretKey) throws GenericCryptoException {
         return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
     }
 
@@ -215,8 +222,9 @@ public class PowerAuthClientKeyFactory {
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_TRANSPORT.
+     * @throws GenericCryptoException In case key derivation fails.
      */
-    public SecretKey generateServerTransportKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerTransportKey(SecretKey masterSecretKey) throws GenericCryptoException {
         return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
     }
 

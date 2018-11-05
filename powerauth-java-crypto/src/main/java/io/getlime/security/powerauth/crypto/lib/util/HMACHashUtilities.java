@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -24,8 +25,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Simple utility class for HMAC-SHA256 algorithm
@@ -39,17 +38,17 @@ public class HMACHashUtilities {
      * @param key Key for the HMAC-SHA256 algorithm
      * @param data Data for the HMAC-SHA256 algorithm.
      * @return HMAC-SHA256 of given data using given key.
+     * @throws GenericCryptoException In case hash computation fails.
      */
-    public byte[] hash(byte[] key, byte[] data) {
+    public byte[] hash(byte[] key, byte[] data) throws GenericCryptoException {
         try {
             Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA256");
             hmacSha256.init(hmacKey);
             return hmacSha256.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException ex) {
-            Logger.getLogger(HMACHashUtilities.class.getName()).log(Level.SEVERE, null, ex);
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
@@ -57,16 +56,16 @@ public class HMACHashUtilities {
      * @param hmacKey Key for the HMAC-SHA256 algorithm
      * @param data Data for the HMAC-SHA256 algorithm.
      * @return HMAC-SHA256 of given data using given key.
+     * @throws GenericCryptoException In case hash computation fails.
      */
-    public byte[] hash(SecretKey hmacKey, byte[] data) {
+    public byte[] hash(SecretKey hmacKey, byte[] data) throws GenericCryptoException {
         try {
             Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             hmacSha256.init(hmacKey);
             return hmacSha256.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException ex) {
-            Logger.getLogger(HMACHashUtilities.class.getName()).log(Level.SEVERE, null, ex);
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return null;
     }
 
 }

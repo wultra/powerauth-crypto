@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -92,8 +93,9 @@ public class TokenUtils {
      * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (string representation).
      * @param tokenSecret Token secret, 16 random bytes.
      * @return Token digest computed using provided data bytes with given token secret.
+     * @throws GenericCryptoException In case digest computation fails.
      */
-    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) {
+    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) throws GenericCryptoException {
         byte[] amp = "&".getBytes(StandardCharsets.UTF_8);
         byte[] data = Bytes.concat(nonce, amp, timestamp);
         return hmac.hash(tokenSecret, data);
@@ -106,8 +108,9 @@ public class TokenUtils {
      * @param tokenSecret Token secret, 16 random bytes.
      * @param tokenDigest Token digest, 32 bytes to be validated.
      * @return Token digest computed using provided data bytes with given token secret.
+     * @throws GenericCryptoException In case digest computation fails.
      */
-    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) {
+    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException {
         return Arrays.equals(computeTokenDigest(nonce, timestamp, tokenSecret), tokenDigest);
     }
 

@@ -4,6 +4,7 @@ import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.NonPersonalizedEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.NonPersonalizedEncryptedMessage;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 
 import javax.crypto.SecretKey;
@@ -27,8 +28,9 @@ public class ClientNonPersonalizedEncryptor {
      * @param appKey App key.
      * @param masterPublicKey Master Server Public Key.
      * @throws InvalidKeyException In case an invalid key is provided.
+     * @throws GenericCryptoException In case of any other cryptography error.
      */
-    public ClientNonPersonalizedEncryptor(byte[] appKey, PublicKey masterPublicKey) throws InvalidKeyException {
+    public ClientNonPersonalizedEncryptor(byte[] appKey, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException {
 
         final KeyGenerator generator = new KeyGenerator();
         byte[] sessionIndex = generator.generateRandomBytes(16);
@@ -49,18 +51,20 @@ public class ClientNonPersonalizedEncryptor {
     /**
      * Encrypt data using current encryptor (non-personalized encryption).
      * @param data Original data.
-     * @return Encrypted payload, or null in case decryption fails.
+     * @return Encrypted payload.
+     * @throws GenericCryptoException In case encryption fails.
      */
-    public NonPersonalizedEncryptedMessage encrypt(byte[] data) {
+    public NonPersonalizedEncryptedMessage encrypt(byte[] data) throws GenericCryptoException {
         return this.encryptor.encrypt(data);
     }
 
     /**
      * Decrypt original data from encrypted using current encryptor (non-personalized encryption).
      * @param message Encrypted payload message.
-     * @return Original data, or null in case decryption fails.
+     * @return Original data.
+     * @throws GenericCryptoException In case decryption fails.
      */
-    public byte[] decrypt(NonPersonalizedEncryptedMessage message) {
+    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws GenericCryptoException {
         return this.encryptor.decrypt(message);
     }
 

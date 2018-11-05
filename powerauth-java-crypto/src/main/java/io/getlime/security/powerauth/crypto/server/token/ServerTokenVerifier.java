@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.server.token;
 
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
 
 /**
@@ -45,8 +46,9 @@ public class ServerTokenVerifier {
      * @param tokenSecret Token secret, 16 random bytes.
      * @param tokenDigest Token digest, 32 bytes to be validated.
      * @return Token digest computed using provided data bytes with given token secret.
+     * @throws GenericCryptoException In case digest computation fails.
      */
-    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) {
+    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException {
         return tokenUtils.validateTokenDigest(nonce, timestamp, tokenSecret, tokenDigest);
     }
 

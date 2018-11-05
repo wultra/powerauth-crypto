@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesScope;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesSharedInfo1;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 
@@ -39,8 +40,9 @@ public class EciesFactory {
      * @param publicKey Public key used for ECIES.
      * @param applicationSecret Application secret.
      * @return Initialized ECIES encryptor.
+     * @throws GenericCryptoException In case encryptor could not be initialized.
      */
-    public EciesEncryptor getEciesEncryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) {
+    public EciesEncryptor getEciesEncryptorForApplication(ECPublicKey publicKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, sharedInfo1Value);
     }
@@ -53,8 +55,9 @@ public class EciesFactory {
      * @param transportKey Transport key.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @return Initialized ECIES encryptor.
+     * @throws GenericCryptoException In case encryptor could not be initialized.
      */
-    public EciesEncryptor getEciesEncryptorForActivation(ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) {
+    public EciesEncryptor getEciesEncryptorForActivation(ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.ACTIVATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesEncryptor(EciesScope.ACTIVATION_SCOPE, publicKey, applicationSecret, transportKey, sharedInfo1Value);
     }
@@ -79,8 +82,9 @@ public class EciesFactory {
      * @param transportKey Transport key for activation scope. Use null value for application scope.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter in bytes.
      * @return Initialized ECIES encryptor.
+     * @throws GenericCryptoException In case encryptor could not be initialized.
      */
-    private EciesEncryptor getEciesEncryptor(EciesScope eciesScope, ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) {
+    private EciesEncryptor getEciesEncryptor(EciesScope eciesScope, ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) throws GenericCryptoException {
         switch (eciesScope) {
 
             case APPLICATION_SCOPE: {
@@ -96,7 +100,7 @@ public class EciesFactory {
             }
 
             default:
-                throw new IllegalStateException("Unsupported ECIES scope: "+eciesScope);
+                throw new GenericCryptoException("Unsupported ECIES scope: "+eciesScope);
         }
     }
 
@@ -106,8 +110,9 @@ public class EciesFactory {
      * @param privateKey Private key used for ECIES.
      * @param applicationSecret Application secret.
      * @return Initialized ECIES decryptor.
+     * @throws GenericCryptoException TIn case decryptor could not be initialized.
      */
-    public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) {
+    public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesDecryptor(EciesScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, sharedInfo1Value);
     }
@@ -120,8 +125,9 @@ public class EciesFactory {
      * @param transportKey Transport key.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @return Initialized ECIES decryptor.
+     * @throws GenericCryptoException In case decryptor could not be initialized.
      */
-    public EciesDecryptor getEciesDecryptorForActivation(ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) {
+    public EciesDecryptor getEciesDecryptorForActivation(ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.ACTIVATION_SCOPE_GENERIC.value() : sharedInfo1.value();
         return getEciesDecryptor(EciesScope.ACTIVATION_SCOPE, privateKey, applicationSecret, transportKey, sharedInfo1Value);
     }
@@ -146,8 +152,9 @@ public class EciesFactory {
      * @param transportKey Transport key for activation scope. Use null value for application scope.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter in bytes.
      * @return Initialized ECIES decryptor.
+     * @throws GenericCryptoException In case decryptor could not be initialized.
      */
-    private EciesDecryptor getEciesDecryptor(EciesScope eciesScope, ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) {
+    private EciesDecryptor getEciesDecryptor(EciesScope eciesScope, ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) throws GenericCryptoException {
         switch (eciesScope) {
 
             case APPLICATION_SCOPE: {
@@ -163,7 +170,7 @@ public class EciesFactory {
             }
 
             default:
-                throw new IllegalStateException("Unsupported ECIES scope: "+eciesScope);
+                throw new GenericCryptoException("Unsupported ECIES scope: "+eciesScope);
         }
     }
 
