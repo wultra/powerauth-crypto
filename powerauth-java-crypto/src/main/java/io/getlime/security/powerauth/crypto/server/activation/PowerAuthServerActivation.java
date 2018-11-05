@@ -28,8 +28,6 @@ import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -185,7 +183,7 @@ public class PowerAuthServerActivation {
 
             }
 
-        } catch (IllegalBlockSizeException | InvalidKeySpecException | BadPaddingException | InvalidKeyException ex) {
+        } catch (InvalidKeySpecException | InvalidKeyException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -216,27 +214,21 @@ public class PowerAuthServerActivation {
     public byte[] encryptServerPublicKey(PublicKey serverPublicKey, PublicKey devicePublicKey,
                                          PrivateKey ephemeralPrivateKey, String activationOTP, String activationIdShort, byte[] activationNonce)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        try {
+        // Convert public key to bytes
+        byte[] serverPublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(serverPublicKey);
 
-            // Convert public key to bytes
-            byte[] serverPublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(serverPublicKey);
+        // Generate symmetric keys
+        KeyGenerator keyGenerator = new KeyGenerator();
+        SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, devicePublicKey);
 
-            // Generate symmetric keys
-            KeyGenerator keyGenerator = new KeyGenerator();
-            SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, devicePublicKey);
+        byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
+        SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP,
+                activationIdShortBytes);
 
-            byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
-            SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP,
-                    activationIdShortBytes);
-
-            // Encrypt the data
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] encryptedTMP = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
-            return aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
-
-        } catch (IllegalBlockSizeException | BadPaddingException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+        // Encrypt the data
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        byte[] encryptedTMP = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
+        return aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
     }
 
     /**
@@ -254,25 +246,21 @@ public class PowerAuthServerActivation {
      */
     public byte[] encryptedStatusBlob(byte statusByte, byte currentVersionByte, byte upgradeVersionByte, byte failedAttempts, byte maxFailedAttempts, SecretKey transportKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        try {
-            byte[] padding = new KeyGenerator().generateRandomBytes(17);
-            byte[] zeroIv = new byte[16];
-            byte[] reservedBytes = new byte[6];
-            byte[] statusBlob = ByteBuffer.allocate(32)
-                    .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
-                    .put(statusByte)         // 1 byte
-                    .put(currentVersionByte) // 1 byte
-                    .put(upgradeVersionByte) // 1 byte
-                    .put(reservedBytes)      // 6 bytes
-                    .put(failedAttempts)     // 1 byte
-                    .put(maxFailedAttempts)  // 1 byte
-                    .put(padding)            // 17 bytes
-                    .array();
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
-        } catch (IllegalBlockSizeException | BadPaddingException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+        byte[] padding = new KeyGenerator().generateRandomBytes(17);
+        byte[] zeroIv = new byte[16];
+        byte[] reservedBytes = new byte[6];
+        byte[] statusBlob = ByteBuffer.allocate(32)
+                .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
+                .put(statusByte)         // 1 byte
+                .put(currentVersionByte) // 1 byte
+                .put(upgradeVersionByte) // 1 byte
+                .put(reservedBytes)      // 6 bytes
+                .put(failedAttempts)     // 1 byte
+                .put(maxFailedAttempts)  // 1 byte
+                .put(padding)            // 17 bytes
+                .array();
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
     }
 
     /**

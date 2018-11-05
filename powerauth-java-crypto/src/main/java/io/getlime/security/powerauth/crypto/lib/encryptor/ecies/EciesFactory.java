@@ -115,7 +115,6 @@ public class EciesFactory {
      * @param applicationSecret Application secret.
      * @return Initialized ECIES decryptor.
      * @throws GenericCryptoException In case decryptor could not be initialized.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();

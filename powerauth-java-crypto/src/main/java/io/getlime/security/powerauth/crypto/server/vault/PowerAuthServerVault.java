@@ -24,8 +24,6 @@ import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
 import java.security.PrivateKey;
@@ -58,21 +56,17 @@ public class PowerAuthServerVault {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] encryptVaultEncryptionKey(PrivateKey serverPrivateKey, PublicKey devicePublicKey, byte[] ctr) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        try {
-            KeyGenerator keyGenerator = new KeyGenerator();
-            SecretKey keyMasterSecret = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
-            SecretKey keyMasterTransport = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.TRANSPORT.getIndex());
-            SecretKey keyVaultEncryptionTransport = keyGenerator.deriveSecretKey(keyMasterTransport, ctr);
-            SecretKey keyVaultEncryption = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
+        KeyGenerator keyGenerator = new KeyGenerator();
+        SecretKey keyMasterSecret = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
+        SecretKey keyMasterTransport = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.TRANSPORT.getIndex());
+        SecretKey keyVaultEncryptionTransport = keyGenerator.deriveSecretKey(keyMasterTransport, ctr);
+        SecretKey keyVaultEncryption = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
 
-            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-            byte[] keyVaultEncryptionBytes = keyConvertor.convertSharedSecretKeyToBytes(keyVaultEncryption);
-            byte[] iv = new byte[16];
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            return aes.encrypt(keyVaultEncryptionBytes, iv, keyVaultEncryptionTransport);
-        } catch (IllegalBlockSizeException | BadPaddingException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        byte[] keyVaultEncryptionBytes = keyConvertor.convertSharedSecretKeyToBytes(keyVaultEncryption);
+        byte[] iv = new byte[16];
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        return aes.encrypt(keyVaultEncryptionBytes, iv, keyVaultEncryptionTransport);
     }
 
     /**
@@ -91,20 +85,16 @@ public class PowerAuthServerVault {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] encryptVaultEncryptionKey(PrivateKey serverPrivateKey, PublicKey devicePublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        try {
-            KeyGenerator keyGenerator = new KeyGenerator();
-            SecretKey keyMasterSecret = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
-            SecretKey keyTransport = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.TRANSPORT.getIndex());
-            SecretKey keyVaultEncryption = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
+        KeyGenerator keyGenerator = new KeyGenerator();
+        SecretKey keyMasterSecret = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
+        SecretKey keyTransport = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.TRANSPORT.getIndex());
+        SecretKey keyVaultEncryption = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
 
-            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-            byte[] keyVaultEncryptionBytes = keyConvertor.convertSharedSecretKeyToBytes(keyVaultEncryption);
-            byte[] iv = new byte[16];
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            return aes.encrypt(keyVaultEncryptionBytes, iv, keyTransport);
-        } catch (IllegalBlockSizeException | BadPaddingException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        byte[] keyVaultEncryptionBytes = keyConvertor.convertSharedSecretKeyToBytes(keyVaultEncryption);
+        byte[] iv = new byte[16];
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        return aes.encrypt(keyVaultEncryptionBytes, iv, keyTransport);
     }
 
 }

@@ -25,8 +25,6 @@ import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
 import java.util.Arrays;
@@ -70,89 +68,82 @@ public class NonPersonalizedEncryptor {
      * Encrypt original data using components in this encryptor.
      * @param originalData Data to be encrypted.
      * @return Message object with encrypted data.
+     * @throws InvalidKeyException In case encryption key is invalid.
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public NonPersonalizedEncryptedMessage encrypt(byte[] originalData) throws GenericCryptoException, CryptoProviderException {
-        try {
-            byte[] adHocIndex = generator.generateRandomBytes(16);
-            byte[] macIndex = generator.generateRandomBytes(16);
+    public NonPersonalizedEncryptedMessage encrypt(byte[] originalData) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        byte[] adHocIndex = generator.generateRandomBytes(16);
+        byte[] macIndex = generator.generateRandomBytes(16);
 
-            // make sure the indexes are different
-            int attemptCount = 0;
-            while (Arrays.equals(adHocIndex, macIndex)) {
-                macIndex = generator.generateRandomBytes(16);
-                if (attemptCount < MAX_ATTEMPT_COUNT) { // make sure that there is no issue with random data generator
-                    attemptCount++;
-                } else {
-                    return null;
-                }
+        // make sure the indexes are different
+        int attemptCount = 0;
+        while (Arrays.equals(adHocIndex, macIndex)) {
+            macIndex = generator.generateRandomBytes(16);
+            if (attemptCount < MAX_ATTEMPT_COUNT) { // make sure that there is no issue with random data generator
+                attemptCount++;
+            } else {
+                return null;
             }
-
-            byte[] nonce = generator.generateRandomBytes(16);
-
-            SecretKey sessionKey = keyConversion.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
-            SecretKey encryptionKey = generator.deriveSecretKeyHmac(sessionKey, adHocIndex);
-            SecretKey macKey = generator.deriveSecretKeyHmac(sessionKey, macIndex);
-
-            byte[] encryptedData = aes.encrypt(originalData, nonce, encryptionKey);
-            byte[] mac = hmac.hash(macKey, encryptedData);
-
-            NonPersonalizedEncryptedMessage message = new NonPersonalizedEncryptedMessage();
-            message.setApplicationKey(applicationKey);
-            message.setEphemeralPublicKey(ephemeralPublicKey);
-            message.setSessionIndex(sessionIndex);
-            message.setAdHocIndex(adHocIndex);
-            message.setMacIndex(macIndex);
-            message.setNonce(nonce);
-            message.setEncryptedData(encryptedData);
-            message.setMac(mac);
-
-            return message;
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
         }
+
+        byte[] nonce = generator.generateRandomBytes(16);
+
+        SecretKey sessionKey = keyConversion.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
+        SecretKey encryptionKey = generator.deriveSecretKeyHmac(sessionKey, adHocIndex);
+        SecretKey macKey = generator.deriveSecretKeyHmac(sessionKey, macIndex);
+
+        byte[] encryptedData = aes.encrypt(originalData, nonce, encryptionKey);
+        byte[] mac = hmac.hash(macKey, encryptedData);
+
+        NonPersonalizedEncryptedMessage message = new NonPersonalizedEncryptedMessage();
+        message.setApplicationKey(applicationKey);
+        message.setEphemeralPublicKey(ephemeralPublicKey);
+        message.setSessionIndex(sessionIndex);
+        message.setAdHocIndex(adHocIndex);
+        message.setMacIndex(macIndex);
+        message.setNonce(nonce);
+        message.setEncryptedData(encryptedData);
+        message.setMac(mac);
+
+        return message;
     }
 
     /**
      * Decrypt the encrypted message from the message payload using this encryptor.
      * @param message Message object to be decrypted.
      * @return Original decrypted bytes.
+     * @throws InvalidKeyException In case decryption key is invalid.
      * @throws GenericCryptoException In case decryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws GenericCryptoException, CryptoProviderException {
+    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
-        try {
-            byte[] adHocIndex = message.getAdHocIndex();
-            byte[] macIndex = message.getMacIndex();
+        byte[] adHocIndex = message.getAdHocIndex();
+        byte[] macIndex = message.getMacIndex();
 
-            // make sure the indexes are different
-            if (Arrays.equals(adHocIndex, macIndex)) {
-                return null;
-            }
-
-            byte[] nonce = message.getNonce();
-
-            SecretKey sessionKey = keyConversion.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
-            SecretKey encryptionKey = generator.deriveSecretKeyHmac(sessionKey, adHocIndex);
-            SecretKey macKey = generator.deriveSecretKeyHmac(sessionKey, macIndex);
-
-            byte[] encryptedData = message.getEncryptedData();
-
-            byte[] macExpected = hmac.hash(macKey, encryptedData);
-            byte[] mac = message.getMac();
-
-            // make sure the macs are the same
-            if (!Arrays.equals(mac, macExpected)) {
-                return null;
-            }
-
-            return aes.decrypt(encryptedData, nonce, encryptionKey);
-
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
+        // make sure the indexes are different
+        if (Arrays.equals(adHocIndex, macIndex)) {
+            return null;
         }
+
+        byte[] nonce = message.getNonce();
+
+        SecretKey sessionKey = keyConversion.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
+        SecretKey encryptionKey = generator.deriveSecretKeyHmac(sessionKey, adHocIndex);
+        SecretKey macKey = generator.deriveSecretKeyHmac(sessionKey, macIndex);
+
+        byte[] encryptedData = message.getEncryptedData();
+
+        byte[] macExpected = hmac.hash(macKey, encryptedData);
+        byte[] mac = message.getMac();
+
+        // make sure the macs are the same
+        if (!Arrays.equals(mac, macExpected)) {
+            return null;
+        }
+
+        return aes.decrypt(encryptedData, nonce, encryptionKey);
     }
 
     public byte[] getApplicationKey() {

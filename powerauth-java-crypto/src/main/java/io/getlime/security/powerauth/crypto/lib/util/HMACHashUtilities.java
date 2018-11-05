@@ -60,7 +60,7 @@ public class HMACHashUtilities {
      * @param hmacKey Key for the HMAC-SHA256 algorithm
      * @param data Data for the HMAC-SHA256 algorithm.
      * @return HMAC-SHA256 of given data using given key.
-     * @throws GenericCryptoException In case hash computation fails.
+     * @throws GenericCryptoException  In case hash computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] hash(SecretKey hmacKey, byte[] data) throws GenericCryptoException, CryptoProviderException {

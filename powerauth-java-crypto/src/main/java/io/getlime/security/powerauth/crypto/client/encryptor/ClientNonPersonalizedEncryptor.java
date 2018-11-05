@@ -54,10 +54,11 @@ public class ClientNonPersonalizedEncryptor {
      * Encrypt data using current encryptor (non-personalized encryption).
      * @param data Original data.
      * @return Encrypted payload.
+     * @throws InvalidKeyException In case encryption key is invalid.
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public NonPersonalizedEncryptedMessage encrypt(byte[] data) throws GenericCryptoException, CryptoProviderException {
+    public NonPersonalizedEncryptedMessage encrypt(byte[] data) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return this.encryptor.encrypt(data);
     }
 
@@ -65,10 +66,11 @@ public class ClientNonPersonalizedEncryptor {
      * Decrypt original data from encrypted using current encryptor (non-personalized encryption).
      * @param message Encrypted payload message.
      * @return Original data.
+     * @throws InvalidKeyException In case encryption key is invalid.
      * @throws GenericCryptoException In case decryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws GenericCryptoException, CryptoProviderException {
+    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return this.encryptor.decrypt(message);
     }
 

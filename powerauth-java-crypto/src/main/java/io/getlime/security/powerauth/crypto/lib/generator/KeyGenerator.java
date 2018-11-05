@@ -23,7 +23,9 @@ import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
-import javax.crypto.*;
+import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
@@ -152,18 +154,15 @@ public class KeyGenerator {
      * @param secret A master shared key.
      * @param index A byte array index of the key.
      * @return A new derived key from a master key with given index.
+     * @throws InvalidKeyException In case secret key is invalid.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey deriveSecretKey(SecretKey secret, byte[] index) throws GenericCryptoException, CryptoProviderException {
-        try {
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] iv = new byte[16];
-            byte[] encryptedBytes = aes.encrypt(index, iv, secret);
-            return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+    public SecretKey deriveSecretKey(SecretKey secret, byte[] index) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        byte[] iv = new byte[16];
+        byte[] encryptedBytes = aes.encrypt(index, iv, secret);
+        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
     }
 
     /**
