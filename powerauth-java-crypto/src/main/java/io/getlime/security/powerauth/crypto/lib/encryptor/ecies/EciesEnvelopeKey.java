@@ -21,6 +21,7 @@ import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
@@ -90,7 +91,7 @@ public class EciesEnvelopeKey {
 
             // Return envelope key with derived secret key and ephemeral public key bytes
             return new EciesEnvelopeKey(secretKey, ephemeralPublicKeyBytes);
-        } catch (InvalidKeyException | CryptoProviderException ex) {
+        } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
             throw new EciesException("Key derivation failed", ex);
         }
     }
@@ -120,7 +121,7 @@ public class EciesEnvelopeKey {
 
             // Return envelope key with derived secret key and ephemeral public key bytes
             return new EciesEnvelopeKey(secretKey, ephemeralPublicKeyBytes);
-        } catch (InvalidKeyException | InvalidKeySpecException | CryptoProviderException ex) {
+        } catch (InvalidKeyException | InvalidKeySpecException | GenericCryptoException | CryptoProviderException ex) {
             throw new EciesException("Key derivation failed", ex);
         }
     }
