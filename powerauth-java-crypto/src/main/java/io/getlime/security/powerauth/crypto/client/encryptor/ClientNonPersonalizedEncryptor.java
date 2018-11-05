@@ -6,6 +6,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.model.NonPersonalizedE
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -29,8 +30,9 @@ public class ClientNonPersonalizedEncryptor {
      * @param masterPublicKey Master Server Public Key.
      * @throws InvalidKeyException In case an invalid key is provided.
      * @throws GenericCryptoException In case of any other cryptography error.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public ClientNonPersonalizedEncryptor(byte[] appKey, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException {
+    public ClientNonPersonalizedEncryptor(byte[] appKey, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
         final KeyGenerator generator = new KeyGenerator();
         byte[] sessionIndex = generator.generateRandomBytes(16);

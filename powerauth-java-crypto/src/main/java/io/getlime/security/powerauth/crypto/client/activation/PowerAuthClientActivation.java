@@ -56,23 +56,20 @@ public class PowerAuthClientActivation {
      * @return Returns "true" if the signature matches activation data, "false" otherwise.
      * @throws InvalidKeyException If provided master public key is invalid.
      * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyActivationCodeSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException {
-        try {
-            byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
-            return signatureUtils.validateECDSASignature(bytes, signature, masterPublicKey);
-        } catch (SignatureException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+    public boolean verifyActivationCodeSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
+        return signatureUtils.validateECDSASignature(bytes, signature, masterPublicKey);
     }
 
     /**
      * Generate a device related activation key pair.
      *
      * @return A new device key pair.
-     * @throws GenericCryptoException In case cryptography provider is incorrectly initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public KeyPair generateDeviceKeyPair() throws GenericCryptoException {
+    public KeyPair generateDeviceKeyPair() throws CryptoProviderException {
         return new KeyGenerator().generateKeyPair();
     }
 
@@ -131,8 +128,9 @@ public class PowerAuthClientActivation {
      * @return An encrypted device public key.
      * @throws InvalidKeyException In case provided public key is invalid.
      * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encryptDevicePublicKey(PublicKey devicePublicKey, PrivateKey clientEphemeralPrivateKey, PublicKey masterPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException, GenericCryptoException {
+    public byte[] encryptDevicePublicKey(PublicKey devicePublicKey, PrivateKey clientEphemeralPrivateKey, PublicKey masterPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
             KeyGenerator keyGenerator = new KeyGenerator();
             byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
@@ -158,17 +156,14 @@ public class PowerAuthClientActivation {
      * @return Returns "true" if signature matches encrypted data, "false" otherwise.
      * @throws InvalidKeyException If provided master public key is invalid.
      * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyServerDataSignature(String activationId, byte[] C_serverPublicKey, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException {
-        try {
-            byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-            String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
-            String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
-            byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
-            return signatureUtils.validateECDSASignature(result, signature, masterPublicKey);
-        } catch (SignatureException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+    public boolean verifyServerDataSignature(String activationId, byte[] C_serverPublicKey, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
+        String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
+        String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
+        byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
+        return signatureUtils.validateECDSASignature(result, signature, masterPublicKey);
     }
 
     /**
@@ -215,13 +210,13 @@ public class PowerAuthClientActivation {
      *
      * @param devicePublicKey Public key for computing fingerprint.
      * @return Fingerprint of the public key.
-     * @throws GenericCryptoException In case cryptography provider is incorrectly initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public String computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) throws GenericCryptoException {
+    public String computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) throws CryptoProviderException {
         try {
             return ECPublicKeyFingerprint.compute(((ECPublicKey)devicePublicKey));
         } catch (NoSuchAlgorithmException ex) {
-            throw new GenericCryptoException(ex.getMessage(), ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
 
@@ -233,8 +228,9 @@ public class PowerAuthClientActivation {
      * @return Status information from the status blob.
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException {
+    public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
 
             if (cStatusBlob.length != 32) {

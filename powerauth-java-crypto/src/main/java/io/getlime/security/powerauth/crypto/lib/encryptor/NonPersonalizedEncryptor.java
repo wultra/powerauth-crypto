@@ -23,6 +23,7 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -107,7 +108,7 @@ public class NonPersonalizedEncryptor {
             message.setMac(mac);
 
             return message;
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | CryptoProviderException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -147,7 +148,7 @@ public class NonPersonalizedEncryptor {
 
             return aes.decrypt(encryptedData, nonce, encryptionKey);
 
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | CryptoProviderException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }

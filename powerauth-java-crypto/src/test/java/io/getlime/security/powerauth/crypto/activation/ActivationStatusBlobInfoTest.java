@@ -25,6 +25,7 @@ import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class ActivationStatusBlobInfoTest {
     }
 
     @Test
-    public void testActivationStatusBlob() throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, GenericCryptoException {
+    public void testActivationStatusBlob() throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, GenericCryptoException, CryptoProviderException {
         final PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
         final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         // Simulate generating of device and server key pairs

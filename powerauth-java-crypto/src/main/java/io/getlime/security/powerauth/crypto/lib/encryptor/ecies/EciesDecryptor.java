@@ -24,6 +24,7 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -207,7 +208,7 @@ public class EciesDecryptor {
             canEncryptData = true;
 
             return aes.decrypt(cryptogram.getEncryptedData(), iv, encKey);
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | GenericCryptoException ex) {
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | GenericCryptoException | CryptoProviderException ex) {
             throw new EciesException("Request decryption failed", ex);
         }
     }
@@ -237,7 +238,7 @@ public class EciesDecryptor {
 
             // Return encrypted payload
             return new EciesCryptogram(envelopeKey.getEphemeralKeyPublic(), mac, body);
-        } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | GenericCryptoException ex) {
+        } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | GenericCryptoException | CryptoProviderException ex) {
             throw new EciesException("Response encryption failed", ex);
         }
     }

@@ -55,8 +55,9 @@ public class PowerAuthClientVault {
      * @return Original KEY_ENCRYPTION_VAULT
      * @throws InvalidKeyException In case invalid key is provided.
      * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey masterTransportKey, byte[] ctr) throws InvalidKeyException, GenericCryptoException {
+    public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey masterTransportKey, byte[] ctr) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         KeyGenerator keyGen = new KeyGenerator();
@@ -83,8 +84,9 @@ public class PowerAuthClientVault {
      * @return Original KEY_ENCRYPTION_VAULT
      * @throws InvalidKeyException In case invalid key is provided.
      * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException {
+    public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] zeroBytes = new byte[16];
@@ -104,8 +106,9 @@ public class PowerAuthClientVault {
      * @return Encrypted private key.
      * @throws InvalidKeyException In case invalid key is provided.
      * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encryptDevicePrivateKey(PrivateKey devicePrivateKey, SecretKey vaultEncryptionKey) throws InvalidKeyException, GenericCryptoException {
+    public byte[] encryptDevicePrivateKey(PrivateKey devicePrivateKey, SecretKey vaultEncryptionKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
             AESEncryptionUtils aes = new AESEncryptionUtils();
             CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
