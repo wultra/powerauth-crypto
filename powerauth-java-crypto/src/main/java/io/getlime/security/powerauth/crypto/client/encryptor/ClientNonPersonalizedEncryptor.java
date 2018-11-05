@@ -66,7 +66,7 @@ public class ClientNonPersonalizedEncryptor {
      * Decrypt original data from encrypted using current encryptor (non-personalized encryption).
      * @param message Encrypted payload message.
      * @return Original data.
-     * @throws InvalidKeyException In case encryption key is invalid.
+     * @throws InvalidKeyException In case decryption key is invalid.
      * @throws GenericCryptoException In case decryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
