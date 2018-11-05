@@ -37,9 +37,6 @@ public class ClientNonPersonalizedEncryptor {
         final KeyGenerator generator = new KeyGenerator();
         byte[] sessionIndex = generator.generateRandomBytes(16);
         KeyPair ephemeralKeyPair = generator.generateKeyPair();
-        if (ephemeralKeyPair == null) {
-            throw new InvalidKeyException("Unable to generate EC key pair. Check your Bouncy Castle settings.");
-        }
         final SecretKey ephemeralSecretKey = generator.computeSharedKey(ephemeralKeyPair.getPrivate(), masterPublicKey);
         final SecretKey sessionRelatedSecretKey = generator.deriveSecretKeyHmac(ephemeralSecretKey, sessionIndex);
 
