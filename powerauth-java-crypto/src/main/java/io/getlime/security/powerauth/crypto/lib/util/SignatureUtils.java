@@ -18,14 +18,14 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.base.Joiner;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.security.*;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Utility class for signature calculation and validation used both on client and server.
@@ -42,18 +42,20 @@ public class SignatureUtils {
      * @param masterPrivateKey Private key for computing the signature.
      * @return Signature for given data.
      * @throws InvalidKeyException In case invalid key was provided.
-     * @throws SignatureException In case signature calculation fails.
+     * @throws GenericCryptoException In case signature calculation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, SignatureException {
+    public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
             Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             ecdsa.initSign(masterPrivateKey);
             ecdsa.update(bytes);
             return ecdsa.sign();
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            Logger.getLogger(SignatureUtils.class.getName()).log(Level.SEVERE, null, ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (SignatureException ex) {
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
@@ -64,18 +66,20 @@ public class SignatureUtils {
      * @param masterPublicKey Public key for validating the signature.
      * @return Returns "true" if signature matches, "false" otherwise.
      * @throws InvalidKeyException In case invalid key was provided.
-     * @throws SignatureException In case signature calculation fails.
+     * @throws GenericCryptoException In case signature calculation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validateECDSASignature(byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, SignatureException {
+    public boolean validateECDSASignature(byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
             Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             ecdsa.initVerify(masterPublicKey);
             ecdsa.update(signedBytes);
             return ecdsa.verify(signature);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            Logger.getLogger(SignatureUtils.class.getName()).log(Level.SEVERE, null, ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (SignatureException ex) {
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return false;
     }
 
     /**
@@ -85,9 +89,10 @@ public class SignatureUtils {
      * @param signatureKeys Keys for computing the signature.
      * @param ctrData Counter byte array / derived key index.
      * @return PowerAuth signature for given data.
-     *
+     * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) {
+    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         // Prepare a hash
         HMACHashUtilities hmac = new HMACHashUtilities();
 
@@ -128,8 +133,10 @@ public class SignatureUtils {
      * @param signatureKeys Keys for signature validation.
      * @param ctrData Counter data.
      * @return Return "true" if signature matches, "false" otherwise.
+     * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) {
+    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         return signature.equals(computePowerAuthSignature(data, signatureKeys, ctrData));
     }
 

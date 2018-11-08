@@ -25,6 +25,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesE
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCryptogram;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
@@ -189,7 +190,7 @@ public class EciesEncryptorTest {
      * Test KDF implementation (X9.63 with SHA 256).
      */
     @Test
-    public void testKdf() {
+    public void testKdf() throws GenericCryptoException {
 
         for (int i = 0 ; i < 100 ; i++) {
             final SecretKey secretKey = keyGenerator.generateRandomSecretKey();

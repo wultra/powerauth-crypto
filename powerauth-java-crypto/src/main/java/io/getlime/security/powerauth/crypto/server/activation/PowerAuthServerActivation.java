@@ -21,13 +21,13 @@ import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.ECPublicKeyFingerprint;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -35,8 +35,6 @@ import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class implementing cryptography used on a server side in order to assure
@@ -74,8 +72,9 @@ public class PowerAuthServerActivation {
      * Generate a server related activation key pair.
      *
      * @return A new server key pair.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public KeyPair generateServerKeyPair() {
+    public KeyPair generateServerKeyPair() throws CryptoProviderException {
         return new KeyGenerator().generateKeyPair();
     }
 
@@ -88,16 +87,13 @@ public class PowerAuthServerActivation {
      * @param masterPrivateKey Master Private Key.
      * @return Signature of activation data using Master Private Key.
      * @throws InvalidKeyException In case Master Private Key is invalid.
+     * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] generateActivationSignature(String activationCode,
-                                              PrivateKey masterPrivateKey) throws InvalidKeyException {
-        try {
-            byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
-            return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
-        } catch (SignatureException ex) {
-            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+                                              PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
+        return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
     }
 
     /**
@@ -128,9 +124,10 @@ public class PowerAuthServerActivation {
      * @param applicationSecret Application secret.
      * @param signature Signature to be checked against.
      * @return True if the signature is correct, false otherwise.
-     *
+     * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) {
+    public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) throws GenericCryptoException, CryptoProviderException {
         String signatureBaseString = activationIdShort + "&"
                 + BaseEncoding.base64().encode(activationNonce) + "&"
                 + BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
@@ -156,8 +153,10 @@ public class PowerAuthServerActivation {
      * @param activationNonce Activation nonce, used as an initialization vector
      * for AES encryption.
      * @return A decrypted public key.
+     * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public PublicKey decryptDevicePublicKey(byte[] C_devicePublicKey, String activationIdShort, PrivateKey masterPrivateKey, PublicKey ephemeralPublicKey, String activationOTP, byte[] activationNonce) {
+    public PublicKey decryptDevicePublicKey(byte[] C_devicePublicKey, String activationIdShort, PrivateKey masterPrivateKey, PublicKey ephemeralPublicKey, String activationOTP, byte[] activationNonce) throws GenericCryptoException, CryptoProviderException {
         try {
             // Derive longer key from short activation ID and activation OTP
             byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
@@ -184,10 +183,9 @@ public class PowerAuthServerActivation {
 
             }
 
-        } catch (IllegalBlockSizeException | InvalidKeySpecException | BadPaddingException | InvalidKeyException ex) {
-            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidKeySpecException | InvalidKeyException ex) {
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
@@ -210,32 +208,27 @@ public class PowerAuthServerActivation {
      * for AES encryption.
      * @return Encrypted server public key.
      * @throws InvalidKeyException In case some of the provided keys is invalid.
+     * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] encryptServerPublicKey(PublicKey serverPublicKey, PublicKey devicePublicKey,
                                          PrivateKey ephemeralPrivateKey, String activationOTP, String activationIdShort, byte[] activationNonce)
-            throws InvalidKeyException {
-        try {
+            throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        // Convert public key to bytes
+        byte[] serverPublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(serverPublicKey);
 
-            // Convert public key to bytes
-            byte[] serverPublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(serverPublicKey);
+        // Generate symmetric keys
+        KeyGenerator keyGenerator = new KeyGenerator();
+        SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, devicePublicKey);
 
-            // Generate symmetric keys
-            KeyGenerator keyGenerator = new KeyGenerator();
-            SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, devicePublicKey);
+        byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
+        SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP,
+                activationIdShortBytes);
 
-            byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
-            SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP,
-                    activationIdShortBytes);
-
-            // Encrypt the data
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] encryptedTMP = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
-            return aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
-
-        } catch (IllegalBlockSizeException | BadPaddingException ex) {
-            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        // Encrypt the data
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        byte[] encryptedTMP = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
+        return aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
     }
 
     /**
@@ -248,30 +241,26 @@ public class PowerAuthServerActivation {
      * @param transportKey A key used to protect the transport.
      * @return Encrypted status blob
      * @throws InvalidKeyException When invalid key is provided.
+     * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] encryptedStatusBlob(byte statusByte, byte currentVersionByte, byte upgradeVersionByte, byte failedAttempts, byte maxFailedAttempts, SecretKey transportKey)
-            throws InvalidKeyException {
-        try {
-            byte[] padding = new KeyGenerator().generateRandomBytes(17);
-            byte[] zeroIv = new byte[16];
-            byte[] reservedBytes = new byte[6];
-            byte[] statusBlob = ByteBuffer.allocate(32)
-                    .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
-                    .put(statusByte)         // 1 byte
-                    .put(currentVersionByte) // 1 byte
-                    .put(upgradeVersionByte) // 1 byte
-                    .put(reservedBytes)      // 6 bytes
-                    .put(failedAttempts)     // 1 byte
-                    .put(maxFailedAttempts)  // 1 byte
-                    .put(padding)            // 17 bytes
-                    .array();
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
-        } catch (IllegalBlockSizeException | BadPaddingException ex) {
-            // Cryptography should be set correctly at this point
-            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+            throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        byte[] padding = new KeyGenerator().generateRandomBytes(17);
+        byte[] zeroIv = new byte[16];
+        byte[] reservedBytes = new byte[6];
+        byte[] statusBlob = ByteBuffer.allocate(32)
+                .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
+                .put(statusByte)         // 1 byte
+                .put(currentVersionByte) // 1 byte
+                .put(upgradeVersionByte) // 1 byte
+                .put(reservedBytes)      // 6 bytes
+                .put(failedAttempts)     // 1 byte
+                .put(maxFailedAttempts)  // 1 byte
+                .put(padding)            // 17 bytes
+                .array();
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
     }
 
     /**
@@ -283,19 +272,16 @@ public class PowerAuthServerActivation {
      * @param masterPrivateKey Master Private Key.
      * @return Signature of the encrypted server public key.
      * @throws InvalidKeyException If master private key is invalid.
+     * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] computeServerDataSignature(String activationId, byte[] C_serverPublicKey, PrivateKey masterPrivateKey)
-            throws InvalidKeyException {
-        try {
-            byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-            String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
-            String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
-            byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
-            return signatureUtils.computeECDSASignature(result, masterPrivateKey);
-        } catch (SignatureException ex) {
-            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+            throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
+        String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
+        String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
+        byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
+        return signatureUtils.computeECDSASignature(result, masterPrivateKey);
     }
 
     /**
@@ -304,14 +290,14 @@ public class PowerAuthServerActivation {
      *
      * @param devicePublicKey Public key for computing fingerprint.
      * @return Fingerprint of the public key.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public String computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) {
+    public String computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) throws CryptoProviderException {
         try {
             return ECPublicKeyFingerprint.compute(((ECPublicKey)devicePublicKey));
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(PowerAuthServerActivation.class.getName()).log(Level.SEVERE, null, ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
         }
-        return null;
     }
 
 }

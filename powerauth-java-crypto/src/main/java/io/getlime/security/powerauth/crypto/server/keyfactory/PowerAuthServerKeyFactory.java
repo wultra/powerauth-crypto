@@ -19,6 +19,8 @@ package io.getlime.security.powerauth.crypto.server.keyfactory;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -44,8 +46,11 @@ public class PowerAuthServerKeyFactory {
      * @param masterSecretKey Master Key Secret
      * @return List with keys constructed from master secret that are needed to get
      * requested signature type.
+     * @throws InvalidKeyException In case master secret key is invalid.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public List<SecretKey> keysForSignatureType(PowerAuthSignatureTypes signatureType, SecretKey masterSecretKey) {
+    public List<SecretKey> keysForSignatureType(PowerAuthSignatureTypes signatureType, SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
         List<SecretKey> signatureKeys = new ArrayList<>();
 
@@ -100,8 +105,11 @@ public class PowerAuthServerKeyFactory {
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_ENCRYPTED_VAULT.
+     * @throws InvalidKeyException In case master secret key is invalid.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateServerEncryptedVaultKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerEncryptedVaultKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
                 PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex()
@@ -116,10 +124,11 @@ public class PowerAuthServerKeyFactory {
      * @param devicePublicKey Device public key KEY_DEVICE_PUBLIC.
      * @return Computed symmetric key KEY_MASTER_SECRET.
      * @throws InvalidKeyException In case some provided key is invalid.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public SecretKey generateServerMasterSecretKey(
             PrivateKey serverPrivateKey,
-            PublicKey devicePublicKey) throws InvalidKeyException {
+            PublicKey devicePublicKey) throws InvalidKeyException, CryptoProviderException {
         return keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
     }
 
@@ -130,8 +139,11 @@ public class PowerAuthServerKeyFactory {
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_BIOMETRY.
+     * @throws InvalidKeyException In case master secret key is invalid.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateServerSignatureBiometryKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerSignatureBiometryKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
                 PowerAuthDerivedKey.SIGNATURE_BIOMETRY.getIndex()
@@ -145,8 +157,11 @@ public class PowerAuthServerKeyFactory {
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_KNOWLEDGE.
+     * @throws InvalidKeyException In case master secret key is invalid.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateServerSignatureKnowledgeKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerSignatureKnowledgeKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
                 PowerAuthDerivedKey.SIGNATURE_KNOWLEDGE.getIndex()
@@ -160,8 +175,11 @@ public class PowerAuthServerKeyFactory {
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_SIGNATURE_POSSESSION.
+     * @throws InvalidKeyException In case master secret key is invalid.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateServerSignaturePossessionKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerSignaturePossessionKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
                 PowerAuthDerivedKey.SIGNATURE_POSSESSION.getIndex()
@@ -175,8 +193,11 @@ public class PowerAuthServerKeyFactory {
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey Master secret key KEY_MASTER_SECRET.
      * @return An instance of signature key KEY_TRANSPORT.
+     * @throws InvalidKeyException In case master secret key is invalid.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateServerTransportKey(SecretKey masterSecretKey) {
+    public SecretKey generateServerTransportKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return keyGenerator.deriveSecretKey(
                 masterSecretKey,
                 PowerAuthDerivedKey.TRANSPORT.getIndex()

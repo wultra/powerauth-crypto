@@ -23,6 +23,7 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class PowerAuthActivationTest {
 	 * Test that the keys are correctly generated.
 	 */
 	@Test
-	public void testGenerateKeys() {
+	public void testGenerateKeys() throws CryptoProviderException {
 		CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 		KeyGenerator keyGenerator = new KeyGenerator();
 		KeyPair kp = keyGenerator.generateKeyPair();

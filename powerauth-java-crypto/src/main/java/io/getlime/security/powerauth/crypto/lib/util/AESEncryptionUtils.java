@@ -17,6 +17,8 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -24,8 +26,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A utility class for AES encryption.
@@ -45,18 +45,19 @@ public class AESEncryptionUtils {
      * @param padding Padding to be used, for example "AES/CBC/PKCS7Padding".
      * @return Encrypted bytes.
      * @throws InvalidKeyException In case an invalid key is provided.
-     * @throws IllegalBlockSizeException In case invalid key size is provided.
-     * @throws BadPaddingException In case invalid padding is provided. 
+     * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
             Cipher cipherForCryptoResponse = Cipher.getInstance(padding, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             cipherForCryptoResponse.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | InvalidAlgorithmParameterException ex) {
-            Logger.getLogger(AESEncryptionUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException ex) {
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
@@ -68,10 +69,10 @@ public class AESEncryptionUtils {
      * @param secret Secret signature key.
      * @return Encrypted bytes.
      * @throws InvalidKeyException In case an invalid key is provided.
-     * @throws IllegalBlockSizeException In case invalid key size is provided.
-     * @throws BadPaddingException In case invalid padding is provided.
+     * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return this.encrypt(bytes, iv, secret, "AES/CBC/PKCS7Padding");
     }
 
@@ -85,18 +86,19 @@ public class AESEncryptionUtils {
      * @param padding Padding to be used, for example "AES/CBC/PKCS7Padding".
      * @return Original decrypted bytes.
      * @throws InvalidKeyException In case an invalid key is provided.
-     * @throws IllegalBlockSizeException In case invalid key size is provided.
-     * @throws BadPaddingException In case invalid padding is provided.
+     * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
             Cipher cipherForCryptoResponse = Cipher.getInstance(padding, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             cipherForCryptoResponse.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | InvalidAlgorithmParameterException ex) {
-            Logger.getLogger(AESEncryptionUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException ex) {
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
@@ -108,10 +110,10 @@ public class AESEncryptionUtils {
      * @param secret Secret signature key.
      * @return Original decrypted bytes.
      * @throws InvalidKeyException In case an invalid key is provided.
-     * @throws IllegalBlockSizeException In case invalid key size is provided.
-     * @throws BadPaddingException In case invalid padding is provided.
+     * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return this.decrypt(bytes, iv, secret, "AES/CBC/PKCS7Padding");
     }
 
