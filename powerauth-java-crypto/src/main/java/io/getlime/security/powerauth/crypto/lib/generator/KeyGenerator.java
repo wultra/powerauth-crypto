@@ -145,7 +145,7 @@ public class KeyGenerator {
     }
 
     /**
-     * Derives a new secret key KEY_SHARED from a master secret key KEY_MASTER
+     * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
      * based on following KDF:
      *
      * BYTES = index, total 16 bytes
