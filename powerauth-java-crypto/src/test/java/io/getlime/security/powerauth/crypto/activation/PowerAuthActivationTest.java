@@ -19,6 +19,7 @@ package io.getlime.security.powerauth.crypto.activation;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
@@ -188,6 +189,7 @@ public class PowerAuthActivationTest {
         for (int i = 0; i < 20; i++) {
 
             // SERVER: Generate data for activation
+            String activationId = new IdentifierGenerator().generateActivationId();
             String activationCode = serverActivation.generateActivationCode();
             byte[] activationSignature = serverActivation.generateActivationSignature(activationCode, masterPrivateKey);
             KeyPair serverKeyPair = serverActivation.generateServerKeyPair();
@@ -206,8 +208,8 @@ public class PowerAuthActivationTest {
             // Public keys are exchanged using ECIES which guarantees delivery of same values
 
             // CLIENT and SERVER: Compute activation fingerprint
-            String devicePublicKeyFingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey);
-            String devicePublicKeyFingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey);
+            String devicePublicKeyFingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId, ActivationVersion.VERSION_3);
+            String devicePublicKeyFingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId, ActivationVersion.VERSION_3);
             assertEquals(devicePublicKeyFingerprintClient, devicePublicKeyFingerprintServer);
 
             // CLIENT and SERVER: Compute shared master secret
