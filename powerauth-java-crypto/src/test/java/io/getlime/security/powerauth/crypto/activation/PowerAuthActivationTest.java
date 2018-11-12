@@ -166,8 +166,7 @@ public class PowerAuthActivationTest {
      *
      * <h5>PowerAuth protocol versions:</h5>
      * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
+     *     <li>3.0</li>
      * </ul>
      *
      * @throws Exception In case test fails
