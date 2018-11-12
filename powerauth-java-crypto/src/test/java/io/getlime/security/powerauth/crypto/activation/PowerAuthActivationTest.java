@@ -205,7 +205,7 @@ public class PowerAuthActivationTest {
 
             // Public keys are exchanged using ECIES which guarantees delivery of same values
 
-            // CLIENT and SERVER: Compute device public key fingerprint
+            // CLIENT and SERVER: Compute activation fingerprint
             String devicePublicKeyFingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey);
             String devicePublicKeyFingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey);
             assertEquals(devicePublicKeyFingerprintClient, devicePublicKeyFingerprintServer);
