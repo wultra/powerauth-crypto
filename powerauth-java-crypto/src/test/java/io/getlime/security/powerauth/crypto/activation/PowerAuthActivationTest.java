@@ -20,6 +20,7 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
@@ -67,10 +68,16 @@ public class PowerAuthActivationTest {
 	/**
 	 * Test of the complete activation process, orchestration between client and server.
 	 *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
 	 * @throws Exception In case test fails
 	 */
 	@Test
-	public void testActivationProcess() throws Exception {
+	public void testActivationProcessV2() throws Exception {
 
 		System.out.println("TEST: Activation Process");
 
@@ -142,8 +149,8 @@ public class PowerAuthActivationTest {
 			assertEquals(serverPublicKey, decryptedServerPublicKey);
 
 			// CLIENT and SERVER: Compute device public key fingerprint
-			String devicePublicKeyFingerprintClient = clientActivation.computeDevicePublicKeyFingerprint(devicePublicKey);
-            String devicePublicKeyFingerprintServer = serverActivation.computeDevicePublicKeyFingerprint(decryptedDevicePublicKey);
+			String devicePublicKeyFingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey);
+            String devicePublicKeyFingerprintServer = serverActivation.computeActivationFingerprint(decryptedDevicePublicKey);
 			assertEquals(devicePublicKeyFingerprintClient, devicePublicKeyFingerprintServer);
 
 			// CLIENT and SERVER: Compute shared master secret
@@ -153,6 +160,64 @@ public class PowerAuthActivationTest {
 
 		}
 	}
+
+    /**
+     * Test of the complete activation process, orchestration between client and server.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
+     * @throws Exception In case test fails
+     */
+    @Test
+    public void testActivationProcessV3() throws Exception {
+
+        System.out.println("TEST: Activation Process");
+
+        // Prepare test data
+        KeyGenerator keyGenerator = new KeyGenerator();
+        PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
+        PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
+        KeyPair masterKeyPair = keyGenerator.generateKeyPair();
+
+        // Generate master keypair
+        PrivateKey masterPrivateKey = masterKeyPair.getPrivate();
+        PublicKey masterPublicKey = masterKeyPair.getPublic();
+
+        for (int i = 0; i < 20; i++) {
+
+            // SERVER: Generate data for activation
+            String activationCode = serverActivation.generateActivationCode();
+            byte[] activationSignature = serverActivation.generateActivationSignature(activationCode, masterPrivateKey);
+            KeyPair serverKeyPair = serverActivation.generateServerKeyPair();
+            PrivateKey serverPrivateKey = serverKeyPair.getPrivate();
+            PublicKey serverPublicKey = serverKeyPair.getPublic();
+
+            // CLIENT: Verify activation signature
+            boolean activationSignatureOK = clientActivation.verifyActivationCodeSignature(activationCode, activationSignature, masterPublicKey);
+            assertTrue(activationSignatureOK);
+
+            // CLIENT: Generate key pair
+            KeyPair deviceKeyPair = clientActivation.generateDeviceKeyPair();
+            PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
+            PublicKey devicePublicKey = deviceKeyPair.getPublic();
+
+            // Public keys are exchanged using ECIES which guarantees delivery of same values
+
+            // CLIENT and SERVER: Compute device public key fingerprint
+            String devicePublicKeyFingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey);
+            String devicePublicKeyFingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey);
+            assertEquals(devicePublicKeyFingerprintClient, devicePublicKeyFingerprintServer);
+
+            // CLIENT and SERVER: Compute shared master secret
+            SecretKey sharedMasterSecretDevice = keyGenerator.computeSharedKey(devicePrivateKey, serverPublicKey);
+            SecretKey sharedMasterSecretServer = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
+            assertEquals(sharedMasterSecretDevice, sharedMasterSecretServer);
+        }
+    }
 
 	/**
 	 * Test public key encryption.
@@ -177,40 +242,94 @@ public class PowerAuthActivationTest {
 
 		byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, eph, mpk, activationOTP, activationIdShort, activationNonce);
 		assertArrayEquals(cDevicePublicKey, BaseEncoding.base64().decode("tnAyB0C5I9xblLlFCPONUT4GtABvutPkRvvx2oTeGIuUMAmUYTqJluKn/Zge+vbq+VArIVNYVTd+0yuBZGVtkkd1mTcc2eTDhqZSQJS6mMgmKeCqv64c6E4dm4INOkxh"));
-		
 	}
 
 	/**
 	 * Test that public key fingerprints are correctly computed.
 	 *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
+     * @throws Exception When test fails.
+	 */
+	@Test
+	public void testPublicKeyFingerprintV2() throws Exception {
+
+		String[] publicKeysBase64 = {
+				"BLaTpcUMJU3BYuF8kgeQjYUZp3nHrepNzeOp68bJbdcUtayIWDhLVtX5qFkLoXXsMH6UnxEJXaMbGOCN3i8eDOI",
+				"BFxZEGvqTOFolI6cvdJLiQZR3vSFfsajfJz6qHiOtDlKp5PcoMkUKlxC7hXUcRnZy9C8e6wHATahy2y5Y5OzOKc=",
+				"BFUKKJvx/jhAuqvCHWet0mY42ACPT+eKL54kusaDgcoIgN9OcrFbPFS0wuTIMM65YAcUvkcmW9SjHs7QwKjMGQM="
+		};
+		String[] publicKeyFingerprint = {
+				"85240323",
+				"27352787",
+				"52209841"
+		};
+
+		PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
+		PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
+
+		for (int i = 0; i < publicKeyFingerprint.length; i++) {
+			byte[] publicKeyBytes = BaseEncoding.base64().decode(publicKeysBase64[i]);
+			PublicKey publicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(publicKeyBytes);
+			final String fingerprintClient = clientActivation.computeActivationFingerprint(publicKey);
+			final String fingerprintServer = serverActivation.computeActivationFingerprint(publicKey);
+			assertEquals(publicKeyFingerprint[i], fingerprintClient);
+			assertEquals(publicKeyFingerprint[i], fingerprintServer);
+		}
+	}
+
+	/**
+	 * Test that public key fingerprints are correctly computed.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>3.0</li>
+     * </ul>
+     *
 	 * @throws Exception When test fails.
 	 */
 	@Test
-	public void testPublicKeyFingerprint() throws Exception {
+	public void testPublicKeyFingerprintV3() throws Exception {
 
-		String[] publicKeysBase64 = {
-		        "BLaTpcUMJU3BYuF8kgeQjYUZp3nHrepNzeOp68bJbdcUtayIWDhLVtX5qFkLoXXsMH6UnxEJXaMbGOCN3i8eDOI",
-                "BFxZEGvqTOFolI6cvdJLiQZR3vSFfsajfJz6qHiOtDlKp5PcoMkUKlxC7hXUcRnZy9C8e6wHATahy2y5Y5OzOKc=",
-                "BFUKKJvx/jhAuqvCHWet0mY42ACPT+eKL54kusaDgcoIgN9OcrFbPFS0wuTIMM65YAcUvkcmW9SjHs7QwKjMGQM="
+		String[] devicePublicKeysBase64 = {
+				"BHS5kLb7nQkN4D8hMNbYs7uAj1yVHShh5l/YKIZowo8cN4CK6Q/9X5jb0mQruk/RB4AenmNB9jSKv00T9J8EneA=",
+				"BNkeX5+Uhnpqth/CeyUPkVY5ZKAhH5nmXVyutFz2r+PwRJOq9WncHRzu4HB4zzFD/qyF1r582WwY2leNJFryNvM=",
+				"BPDPY3g+kQSkTu915tVjxhGAhtPH9ylWieXmqrS/cNHlC3/BNx3fWztUmLjDEToacSn0zMe997nwsNGV4ZYKemM="
+		};
+		String[] serverPublicKeysBase64 = {
+				"BLVfJ2NrOBByBZhfS4UtEQU3fLhnzYbWdp3ZVEQPfKtTGXzXIpKqxCVwpRl3X++4OJQJoemybZ/cmkLU5fY2SZE=",
+				"BHeql+2IAKdUV9PEfiYF6ydfi4sbNaSiX9pZerDl1X7Ow9eCEFXFM1jV+Pp8FenON4/QIr2kKqYw0h5tGDFo0Oc=",
+				"BKoVSkmONQ0BCF+C9VxZZnB8O8acL4rwQY/GaT+Xl/BctT1zqoVcvq3LjsjK/ID/ec8ksLD/FIKNBK6UtA7/trY="
+		};
+		String[] activationId = {
+				"6ae8cd16-67a7-4840-8d37-33d9aab6ea51",
+				"95ff8d92-9511-4a2b-b531-de03b7b942cf",
+				"615c9552-6e89-49ca-bc37-9108dc8553d8"
 		};
 		String[] publicKeyFingerprint = {
-		        "85240323",
-                "27352787",
-                "52209841"
+				"80201993",
+				"26445499",
+				"07506106"
 		};
 
-        PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
-        PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
+		PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
+		PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
 
-        for (int i = 0; i < publicKeyFingerprint.length; i++) {
-            byte[] publicKeyBytes = BaseEncoding.base64().decode(publicKeysBase64[i]);
-            PublicKey publicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(publicKeyBytes);
-            final String fingerprintClient = clientActivation.computeDevicePublicKeyFingerprint(publicKey);
-            final String fingerprintServer = serverActivation.computeDevicePublicKeyFingerprint(publicKey);
-            assertEquals(publicKeyFingerprint[i], fingerprintClient);
-            assertEquals(publicKeyFingerprint[i], fingerprintServer);
-        }
-
+		for (int i = 0; i < publicKeyFingerprint.length; i++) {
+			byte[] devicePublicKeyBytes = BaseEncoding.base64().decode(devicePublicKeysBase64[i]);
+			byte[] serverPublicKeyBytes = BaseEncoding.base64().decode(serverPublicKeysBase64[i]);
+			String activation1 = activationId[i];
+			PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(devicePublicKeyBytes);
+			PublicKey serverPublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(serverPublicKeyBytes);
+			final String fingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1, ActivationVersion.VERSION_3);
+			final String fingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1, ActivationVersion.VERSION_3);
+			assertEquals(publicKeyFingerprint[i], fingerprintClient);
+			assertEquals(publicKeyFingerprint[i], fingerprintServer);
+		}
 	}
 
 }

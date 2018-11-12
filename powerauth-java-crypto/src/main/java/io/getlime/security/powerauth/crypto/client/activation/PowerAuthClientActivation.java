@@ -20,6 +20,7 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
+import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.ECPublicKeyFingerprint;
@@ -30,7 +31,10 @@ import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 
@@ -198,18 +202,36 @@ public class PowerAuthClientActivation {
     }
 
     /**
-     * Compute a fingerprint of the device public key. The fingerprint can be used for visual validation of an exchanged public key.
+     * Compute a fingerprint for the version 2 activation. The fingerprint can be used for visual validation of exchanged device public key.
      *
-     * @param devicePublicKey Public key for computing fingerprint.
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
+     * </ul>
+     *
+     * @param devicePublicKey Device public key.
      * @return Fingerprint of the public key.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case fingerprint could not be calculated.
      */
-    public String computeDevicePublicKeyFingerprint(PublicKey devicePublicKey) throws CryptoProviderException {
-        try {
-            return ECPublicKeyFingerprint.compute(((ECPublicKey)devicePublicKey));
-        } catch (NoSuchAlgorithmException ex) {
-            throw new CryptoProviderException(ex.getMessage(), ex);
-        }
+    public String computeActivationFingerprint(PublicKey devicePublicKey) throws GenericCryptoException, CryptoProviderException {
+        return computeActivationFingerprint(devicePublicKey, null, null, ActivationVersion.VERSION_2);
+    }
+
+    /**
+     * Compute a fingerprint for the activation. The fingerprint can be used for visual validation of exchanged public keys.
+     *
+     * @param devicePublicKey Device public key.
+     * @param serverPublicKey Server public key.
+     * @param activationId Activation ID.
+     * @param activationVersion Activation version.
+     * @return Fingerprint of the public keys.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case fingerprint could not be calculated.
+     */
+    public String computeActivationFingerprint(PublicKey devicePublicKey, PublicKey serverPublicKey, String activationId, ActivationVersion activationVersion) throws GenericCryptoException, CryptoProviderException {
+        return ECPublicKeyFingerprint.compute(((ECPublicKey)devicePublicKey), (ECPublicKey)serverPublicKey, activationId, activationVersion);
     }
 
     /**
