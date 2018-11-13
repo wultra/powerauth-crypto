@@ -21,7 +21,6 @@ import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientAct
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
@@ -208,8 +207,8 @@ public class PowerAuthActivationTest {
             // Public keys are exchanged using ECIES which guarantees delivery of same values
 
             // CLIENT and SERVER: Compute activation fingerprint
-            String devicePublicKeyFingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId, ActivationVersion.VERSION_3);
-            String devicePublicKeyFingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId, ActivationVersion.VERSION_3);
+            String devicePublicKeyFingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId);
+            String devicePublicKeyFingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId);
             assertEquals(devicePublicKeyFingerprintClient, devicePublicKeyFingerprintServer);
 
             // CLIENT and SERVER: Compute shared master secret
@@ -325,8 +324,8 @@ public class PowerAuthActivationTest {
             String activation1 = activationId[i];
             PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(devicePublicKeyBytes);
             PublicKey serverPublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(serverPublicKeyBytes);
-            final String fingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1, ActivationVersion.VERSION_3);
-            final String fingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1, ActivationVersion.VERSION_3);
+            final String fingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
+            final String fingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             assertEquals(publicKeyFingerprint[i], fingerprintClient);
             assertEquals(publicKeyFingerprint[i], fingerprintServer);
         }

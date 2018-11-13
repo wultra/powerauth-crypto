@@ -220,6 +220,25 @@ public class PowerAuthClientActivation {
     }
 
     /**
+     * Compute a fingerprint for the version 3 activation. The fingerprint can be used for visual validation of exchanged device public key.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>3.0</li>
+     * </ul>
+     *
+     * @param devicePublicKey Device public key.
+     * @param serverPublicKey Server public key.
+     * @param activationId Activation ID.
+     * @return Fingerprint of the public key.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case fingerprint could not be calculated.
+     */
+    public String computeActivationFingerprint(PublicKey devicePublicKey, PublicKey serverPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
+        return computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId, ActivationVersion.VERSION_3);
+    }
+
+    /**
      * Compute a fingerprint for the activation. The fingerprint can be used for visual validation of exchanged public keys.
      *
      * @param devicePublicKey Device public key.
