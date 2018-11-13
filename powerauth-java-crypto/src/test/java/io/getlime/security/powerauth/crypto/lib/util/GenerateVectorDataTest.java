@@ -26,6 +26,7 @@ import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.util.model.TestSet;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
@@ -675,42 +676,101 @@ public class GenerateVectorDataTest {
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
-     *     <li>3.0</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */
     @Test
-    public void testPublicKeyFingerprint() throws Exception {
+    public void testPublicKeyFingerprintV2() throws Exception {
 
-        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+        PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
 
-        TestSet testSet = new TestSet("public-key-fingerprint.json", "Fingerprint values for provided public keys, used for visual verification of the successful and untampered public key exchange.");
+        TestSet testSet = new TestSet("public-key-fingerprint-v2.json", "Fingerprint values for provided public keys, used for visual verification of the successful and untampered public key exchange.");
 
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         int max = 100;
         for (int i = 0; i < max; i++) {
-            KeyPair kp = activationServer.generateServerKeyPair();
-            ECPublicKey publicKey = (ECPublicKey) kp.getPublic();
+            KeyPair kpDevice = activationClient.generateDeviceKeyPair();
+            ECPublicKey kpDeviceEC = (ECPublicKey) kpDevice.getPublic();
 
-            final String fingerprint = ECPublicKeyFingerprint.compute(publicKey);
+            final String fingerprint = ECPublicKeyFingerprint.compute(kpDeviceEC, null, null, ActivationVersion.VERSION_2);
 
-            // Replicate the key normalization for the testing purposes.
-            final BigInteger x = publicKey.getW().getAffineX();
-            byte[] devicePublicKeyBytes = x.toByteArray();
-            if (devicePublicKeyBytes[0] == 0x00) {
-                devicePublicKeyBytes = Arrays.copyOfRange(devicePublicKeyBytes, 1, 33);
-            }
+            byte[] devicePublicKeyBytes = toByteArray(kpDeviceEC);
 
             Map<String, String> input = new LinkedHashMap<>();
-            input.put("publicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(publicKey)));
+            input.put("publicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(kpDeviceEC)));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("publicKeyCoordX", BaseEncoding.base64().encode(devicePublicKeyBytes));
             output.put("fingerprint", fingerprint);
             testSet.addData(input, output);
         }
         writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for public key fingerprint test.
+     *
+     * <h5>PowerAuth protocol versions:</h5>
+     * <ul>
+     *     <li>3.0</li>
+     * </ul>
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testPublicKeyFingerprintV3() throws Exception {
+
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+        PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
+
+        IdentifierGenerator generator = new IdentifierGenerator();
+
+        TestSet testSet = new TestSet("public-key-fingerprint-v3.json", "Fingerprint values for provided public keys, used for visual verification of the successful and untampered public key exchange.");
+
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        int max = 100;
+        for (int i = 0; i < max; i++) {
+            KeyPair kpServer = activationServer.generateServerKeyPair();
+            KeyPair kpDevice = activationClient.generateDeviceKeyPair();
+            ECPublicKey serverPublicKey = (ECPublicKey) kpServer.getPublic();
+            ECPublicKey devicePublicKey = (ECPublicKey) kpDevice.getPublic();
+
+            String activationId = generator.generateActivationId();
+
+            final String fingerprint = ECPublicKeyFingerprint.compute(devicePublicKey, serverPublicKey, activationId, ActivationVersion.VERSION_3);
+
+            byte[] devicePublicKeyBytes = toByteArray(devicePublicKey);
+            byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("devicePublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
+            input.put("serverPublicKey", BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverPublicKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("devicePublicKeyCoordX", BaseEncoding.base64().encode(devicePublicKeyBytes));
+            output.put("serverPublicKeyCoordX", BaseEncoding.base64().encode(serverPublicKeyBytes));
+            output.put("activationId", activationId);
+            output.put("fingerprint", fingerprint);
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Convert EC public key to byte array.
+     *
+     * @param publicKey EC public key.
+     * @return Byte array representation of public key.
+     */
+    private byte[] toByteArray(ECPublicKey publicKey) {
+        // Replicate the key normalization for the testing purposes.
+        final BigInteger x = publicKey.getW().getAffineX();
+        byte[] publicKeyBytes = x.toByteArray();
+        if (publicKeyBytes[0] == 0x00) {
+            publicKeyBytes = Arrays.copyOfRange(publicKeyBytes, 1, publicKeyBytes.length);
+        }
+        return publicKeyBytes;
     }
 
     /**
