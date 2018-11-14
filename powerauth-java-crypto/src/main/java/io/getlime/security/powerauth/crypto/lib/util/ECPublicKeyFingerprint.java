@@ -48,6 +48,9 @@ public class ECPublicKeyFingerprint {
      * @throws CryptoProviderException Thrown in case cryptography provider is initialized incorrectly.
      */
     public static String compute(ECPublicKey devicePublicKey, ECPublicKey serverPublicKey, String activationId, ActivationVersion activationVersion) throws GenericCryptoException, CryptoProviderException {
+        if (devicePublicKey == null) {
+            throw new GenericCryptoException("Device public key is invalid");
+        }
         try {
             // Prepare fingerprint data
             byte[] fingerprintData;
@@ -58,6 +61,12 @@ public class ECPublicKeyFingerprint {
                     break;
 
                 case VERSION_3:
+                    if (serverPublicKey == null) {
+                        throw new GenericCryptoException("Server public key is invalid");
+                    }
+                    if (activationId == null) {
+                        throw new GenericCryptoException("Activation ID is invalid");
+                    }
                     // In version 3 the activation fingerprint is computed as devicePublicKeyBytes + activationIdBytes + serverPublicKeyBytes
                     byte[] devicePublicKeyBytes = toByteArray(devicePublicKey);
                     byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
