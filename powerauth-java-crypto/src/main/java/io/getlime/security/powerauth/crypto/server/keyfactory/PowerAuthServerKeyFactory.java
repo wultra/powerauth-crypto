@@ -204,4 +204,23 @@ public class PowerAuthServerKeyFactory {
         );
     }
 
+    /**
+     * Derive transport key KEY_TRANSPORT in two steps:
+     * 1. Generate KEY_MASTER_SECRET using KEY_SERVER_PRIVATE and KEY_DEVICE_PUBLIC.
+     * 2. Generate KEY_TRANSPORT from previously generated KEY_MASTER_SECRET using KDF.
+     *
+     * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE.
+     * @param devicePublicKey Device public key KEY_DEVICE_PUBLIC.
+     * @return Derived transport key KEY_TRANSPORT.
+     * @throws InvalidKeyException In case key is invalid.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public SecretKey deriveTransportKey(PrivateKey serverPrivateKey, PublicKey devicePublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        // Compute master secret key using ECDH
+        SecretKey masterSecretKey = generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+        // Generate server transport key from master secret key
+        return generateServerTransportKey(masterSecretKey);
+    }
+
 }
