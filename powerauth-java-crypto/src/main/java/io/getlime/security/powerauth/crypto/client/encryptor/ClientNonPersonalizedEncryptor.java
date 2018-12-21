@@ -16,6 +16,14 @@ import java.security.PublicKey;
 /**
  * Class that simulates client side encryption steps.
  *
+ * <h5>PowerAuth protocol versions:</h5>
+ * <ul>
+ *     <li>2.0</li>
+ *     <li>2.1</li>
+ * </ul>
+ *
+ * Warning: this class will be removed in the future, use ECIES encryption for PowerAuth protocol version 3.0 or higher.
+ *
  * @author Petr Dvorak, petr@wultra.com
  */
 public class ClientNonPersonalizedEncryptor {
