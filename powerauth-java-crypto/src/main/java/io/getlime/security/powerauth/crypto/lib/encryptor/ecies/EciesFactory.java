@@ -40,6 +40,7 @@ public class EciesFactory {
      *
      * @param publicKey Public key used for ECIES.
      * @param applicationSecret Application secret.
+     * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @return Initialized ECIES encryptor.
      * @throws GenericCryptoException In case encryptor could not be initialized.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
@@ -113,8 +114,10 @@ public class EciesFactory {
      *
      * @param privateKey Private key used for ECIES.
      * @param applicationSecret Application secret.
+     * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @return Initialized ECIES decryptor.
      * @throws GenericCryptoException In case decryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public EciesDecryptor getEciesDecryptorForApplication(ECPrivateKey privateKey, byte[] applicationSecret, EciesSharedInfo1 sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();

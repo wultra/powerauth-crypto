@@ -20,7 +20,7 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.model;
  * Class representing a base encrypted message, with attributes that are
  * required for PowerAuth 2.0 E2EE to work.
  *
- * <h5>PowerAuth protocol versions:</h5>
+ * <p><b>PowerAuth protocol versions:</b>
  * <ul>
  *     <li>2.0</li>
  *     <li>2.1</li>

@@ -67,10 +67,10 @@ public class PowerAuthActivationTest {
     /**
      * Test of the complete activation process, orchestration between client and server.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
-     * <li>2.0</li>
-     * <li>2.1</li>
+     *     <li>2.0</li>
+     *     <li>2.1</li>
      * </ul>
      *
      * @throws Exception In case test fails
@@ -163,7 +163,7 @@ public class PowerAuthActivationTest {
     /**
      * Test of the complete activation process, orchestration between client and server.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      * <li>3.0</li>
      * </ul>
@@ -246,7 +246,7 @@ public class PowerAuthActivationTest {
     /**
      * Test that public key fingerprints are correctly computed.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      * <li>2.0</li>
      * <li>2.1</li>
@@ -284,7 +284,7 @@ public class PowerAuthActivationTest {
     /**
      * Test that public key fingerprints are correctly computed.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      * <li>3.0</li>
      * </ul>
