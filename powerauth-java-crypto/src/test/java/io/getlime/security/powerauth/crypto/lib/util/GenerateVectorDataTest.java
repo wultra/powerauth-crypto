@@ -90,7 +90,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for activation data signature.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -174,7 +174,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for public key encryption.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -227,7 +227,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for master key derivation.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -267,7 +267,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for key derivation.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -311,7 +311,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for decrypting server public key.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -379,7 +379,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for verifying server response data.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -446,7 +446,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for signature validation
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -556,7 +556,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for signature validation.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
      * </ul>
@@ -672,7 +672,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for public key fingerprint test.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -711,7 +711,7 @@ public class GenerateVectorDataTest {
     /**
      * Generate test data for public key fingerprint test.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
      * </ul>

@@ -33,7 +33,7 @@ import java.util.Arrays;
  * Class responsible for encrypting / decrypting data using non-personalized encryption
  * as documented in PowerAuth 2.0 E2EE documentation.
  *
- * <h5>PowerAuth protocol versions:</h5>
+ * <p><b>PowerAuth protocol versions:</b>
  * <ul>
  *     <li>2.0</li>
  *     <li>2.1</li>

@@ -113,7 +113,7 @@ public class PowerAuthServerActivation {
      * Method validates the signature of the activation data in order to prove that a correct
      * client application is attempting to complete the activation.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -143,7 +143,7 @@ public class PowerAuthServerActivation {
     /**
      * Decrypt the device public key using activation OTP.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -197,7 +197,7 @@ public class PowerAuthServerActivation {
      * As a technical component for public key encryption, an ephemeral private
      * key is used (in order to deduce ephemeral symmetric key using ECDH).
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -291,7 +291,7 @@ public class PowerAuthServerActivation {
     /**
      * Compute a fingerprint for the version 2 activation. The fingerprint can be used for visual validation of exchanged device public key.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -309,7 +309,7 @@ public class PowerAuthServerActivation {
     /**
      * Compute a fingerprint for the version 3 activation. The fingerprint can be used for visual validation of exchanged device public key.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
      * </ul>

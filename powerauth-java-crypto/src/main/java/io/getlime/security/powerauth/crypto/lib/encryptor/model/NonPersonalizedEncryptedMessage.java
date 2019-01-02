@@ -3,7 +3,7 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.model;
 /**
  * Class representing a non-personalized E2EE encrypted message.
  *
- * <h5>PowerAuth protocol versions:</h5>
+ * <p><b>PowerAuth protocol versions:</b>
  * <ul>
  *     <li>2.0</li>
  *     <li>2.1</li>

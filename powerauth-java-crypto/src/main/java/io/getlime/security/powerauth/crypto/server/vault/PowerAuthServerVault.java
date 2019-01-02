@@ -41,7 +41,7 @@ public class PowerAuthServerVault {
      * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using
      * a correct KEY_ENCRYPTION_VAULT_TRANSPORT.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>
@@ -72,7 +72,7 @@ public class PowerAuthServerVault {
     /**
      * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using KEY_TRANSPORT.
      *
-     * <h5>PowerAuth protocol versions:</h5>
+     * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
      * </ul>
