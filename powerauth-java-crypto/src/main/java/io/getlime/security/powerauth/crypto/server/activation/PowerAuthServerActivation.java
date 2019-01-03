@@ -242,26 +242,28 @@ public class PowerAuthServerActivation {
      * @param upgradeVersionByte Crypto version for possible upgrade.
      * @param failedAttempts Number of failed attempts at the moment.
      * @param maxFailedAttempts Number of allowed failed attempts.
+     * @param ctrData Counter data.
      * @param transportKey A key used to protect the transport.
      * @return Encrypted status blob
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encryptedStatusBlob(byte statusByte, byte currentVersionByte, byte upgradeVersionByte, byte failedAttempts, byte maxFailedAttempts, SecretKey transportKey)
+    public byte[] encryptedStatusBlob(byte statusByte, byte currentVersionByte, byte upgradeVersionByte, byte failedAttempts, byte maxFailedAttempts, byte[] ctrData, SecretKey transportKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        byte[] padding = new KeyGenerator().generateRandomBytes(17);
         byte[] zeroIv = new byte[16];
-        byte[] reservedBytes = new byte[6];
+        byte[] randomBytes = new KeyGenerator().generateRandomBytes(6);
+        byte[] reservedByte = new byte[1];
         byte[] statusBlob = ByteBuffer.allocate(32)
                 .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
                 .put(statusByte)         // 1 byte
                 .put(currentVersionByte) // 1 byte
                 .put(upgradeVersionByte) // 1 byte
-                .put(reservedBytes)      // 6 bytes
+                .put(randomBytes)        // 6 bytes
                 .put(failedAttempts)     // 1 byte
                 .put(maxFailedAttempts)  // 1 byte
-                .put(padding)            // 17 bytes
+                .put(reservedByte)       // 1 byte
+                .put(ctrData)            // 16 bytes
                 .array();
         AESEncryptionUtils aes = new AESEncryptionUtils();
         return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");

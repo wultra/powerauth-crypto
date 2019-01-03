@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.client.activation;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
@@ -37,6 +38,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 
 /**
  * Class implementing a cryptography used on the client side in order
@@ -272,6 +274,8 @@ public class PowerAuthClientActivation {
             statusInfo.setUpgradeVersion((byte) 3);
             statusInfo.setFailedAttempts((byte) 0);
             statusInfo.setMaxFailedAttempts((byte) 5);
+            // generate random counter data
+            statusInfo.setCtrData(new HashBasedCounter().init());
             statusInfo.setValid(false);
             return statusInfo;
         }
@@ -303,6 +307,10 @@ public class PowerAuthClientActivation {
 
         // fetch the max allowed failed attempt count
         statusInfo.setMaxFailedAttempts(buffer.get(14));
+
+        // extract counter data from second half of status blob
+        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, 32);
+        statusInfo.setCtrData(ctrData);
 
         return statusInfo;
     }

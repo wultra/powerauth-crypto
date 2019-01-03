@@ -33,6 +33,7 @@ public class ActivationStatusBlobInfo {
     private byte upgradeVersion;
     private byte failedAttempts;
     private byte maxFailedAttempts;
+    private byte[] ctrData;
 
     /**
      * Return true in case the parsed data was valid (correctly decrypted using transport key), false otherwise.
@@ -131,4 +132,19 @@ public class ActivationStatusBlobInfo {
         this.maxFailedAttempts = maxFailedAttempts;
     }
 
+    /**
+     * Get counter data.
+     * @return Counter data.
+     */
+    public byte[] getCtrData() {
+        return ctrData;
+    }
+
+    /**
+     * Set counter data.
+     * @param ctrData Counter data.
+     */
+    public void setCtrData(byte[] ctrData) {
+        this.ctrData = ctrData;
+    }
 }
