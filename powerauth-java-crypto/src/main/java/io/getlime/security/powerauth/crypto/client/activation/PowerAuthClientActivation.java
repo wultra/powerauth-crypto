@@ -18,7 +18,6 @@ package io.getlime.security.powerauth.crypto.client.activation;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
@@ -267,17 +266,7 @@ public class PowerAuthClientActivation {
      */
     public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         if (cStatusBlob.length != 32) {
-            // return mock status in case byte array has weird length
-            ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
-            statusInfo.setActivationStatus((byte) 5);
-            statusInfo.setCurrentVersion((byte) 3);
-            statusInfo.setUpgradeVersion((byte) 3);
-            statusInfo.setFailedAttempts((byte) 0);
-            statusInfo.setMaxFailedAttempts((byte) 5);
-            // generate random counter data
-            statusInfo.setCtrData(new HashBasedCounter().init());
-            statusInfo.setValid(false);
-            return statusInfo;
+            throw new GenericCryptoException("Invalid status blob size");
         }
 
         // Decrypt the status blob
