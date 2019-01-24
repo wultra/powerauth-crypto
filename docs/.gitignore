@@ -1,0 +1,21 @@
+**/.DS_Store
+**/target/
+**/src/main/java/generated/
+**/.springBeans
+
+### NetBeans template
+**/nbproject/private/
+**/nbproject/
+
+### Eclipse template
+**/.settings
+**/.project
+**/.classpath
+
+### JetBrains template
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio
+*.iml
+## Directory-based project format:
+.idea/
+.mvn
+dist/
