@@ -39,11 +39,6 @@ Following keys are used in the PowerAuth cryptography scheme.
 		<td>Stored on client, used to assure authenticity of <code>KEY_DEVICE_PUBLIC</code> while transferring from server to client</td>
 	</tr>
 	<tr>
-		<td><code>ACTIVATION_OTP</code></td>
-		<td>Random OTP</td>
-		<td>A 16b random OTP generated during activation, AES encrypts/decrypts data sent from server to client and vice versa</td>
-	</tr>
-	<tr>
 		<td><code>KEY_MASTER_SECRET</code></td>
 		<td>ECDH - pre-shared</td>
 		<td>A key deduced using ECDH derivation, <code>KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE,KEY_SERVER_PUBLIC) = ECDH.phase(KEY_SERVER_PRIVATE,KEY_DEVICE_PUBLIC)</code></td>
@@ -67,25 +62,5 @@ Following keys are used in the PowerAuth cryptography scheme.
 		<td><code>KEY_TRANSPORT</code></td>
 		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
 		<td>A key deduced using KDF derivation with <code>INDEX = 1000</code>, <code>KEY_TRANSPORT = KDF.expand(KEY_MASTER_SECRET, INDEX)</code>, used for encrypted data transport. This key is used as master transport key for end-to-end encryption key derivation.</td>
-	</tr>
-	<tr>
-		<td><code>KEY_TRANSPORT_PARTIAL</code></td>
-		<td>KDF derived key from <code>KEY_TRANSPORT</code> using random 16B long <code>SESSION_INDEX</code> as index.</td>
-		<td>A base key used for encrypted transport key derivation, deduced using KDF_INTERNAL derivation with <code>INDEX = SESSION_INDEX = Generator.randomBytes(16)</code>, <code>KEY_TRANSPORT_PARTIAL = KDF_INTERNAL.derive(KEY_TRANSPORT, INDEX)</code></td>
-	</tr>
-	<tr>
-		<td><code>KEY_TRANSPORT_ENCRYPTION</code></td>
-		<td>KDF derived key from <code>KEY_TRANSPORT_PARTIAL</code> using random 16B long <code>AD_HOC_INDEX</code> as index.</td>
-		<td>A key used for particular data encryption, deduced using KDF_INTERNAL derivation with <code>INDEX = AD_HOC_INDEX = Generator.randomBytes(16)</code>, <code>KEY_TRANSPORT_ENCRYPTION = KDF_INTERNAL.derive(KEY_TRANSPORT_PARTIAL, INDEX)</code></td>
-	</tr>
-	<tr>
-		<td><code>KEY_ENCRYPTION_VAULT</code></td>
-		<td>KDF derived key from <code>KEY_MASTER_SECRET</code></td>
-		<td>A key deduced using KDF derivation with <code>INDEX = 2000</code>, <code>KEY_ENCRYPTION_VAULT = KDF.expand(KEY_MASTER_SECRET, 2000)</code>, used for encrypting a vault that stores the secret data, such as <code>KEY_DEVICE_PRIVATE</code>.</td>
-	</tr>
-  	<tr>
-		<td><code>KEY_ENCRYPTION_VAULT_TRANSPORT</code></td>
-		<td>KDF derived key from <code>KEY_TRANSPORT</code> using <code>CTR</code> as index.</td>
-		<td>A one-time key used for encrypted transport of the key vault encryption, deduced using KDF derivation with <code>INDEX = CTR</code>, <code>KEY_ENCRYPTION_VAULT_TRANSPORT = KDF.derive(KEY_TRANSPORT, INDEX)</code></td>
 	</tr>
 </table>
