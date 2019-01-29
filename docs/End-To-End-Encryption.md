@@ -38,7 +38,7 @@ Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and 
     ```
 7. Prepare ECIES payload.
     ```java
-    ECIESPayload payload = (DATA_ENCRYPTED, MAC, KEY_EPH_PUB)
+    EciesPayload payload = (DATA_ENCRYPTED, MAC, KEY_EPH_PUB)
     ```
 
 ### ECIES Decryption
@@ -77,7 +77,7 @@ Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of th
 
 Practical implementation of ECIES encryption in PowerAuth accounts for a typical request-response cycle, since encrypting RESTful API requests and responses is the most common use-case.
 
-Client implementation creates an encryptor object that allows encrypting the request and decrypting the response. When encrypting the request, encryptor object accepts a `byte[]` and a public key (for example, `MASTER_SERVER_PUBLIC_KEY`) and produces an instance of `ECIESPayload` class. After it receives an encrypted response from the server, which is essentially another instance of `ECIESPayload`, it is able to use the original encryption context (the shared encryption keys) to decrypt the response.
+Client implementation creates an encryptor object that allows encrypting the request and decrypting the response. When encrypting the request, encryptor object accepts a `byte[]` and a public key (for example, `MASTER_SERVER_PUBLIC_KEY`) and produces an instance of `EciesPayload` class. After it receives an encrypted response from the server, which is essentially another instance of `EciesPayload`, it is able to use the original encryption context (the shared encryption keys) to decrypt the response.
 
 Server implementation creates a decryptor object that allows decrypting the original request data and encrypting the response. When server receives an encrypted request, essentially as an `EciesPayload` instance again, it uses a private key (for example, `MASTER_SERVER_PRIVATE_KEY`) to decrypt the original bytes and uses the encryption context to encrypt a response to the client.
 
@@ -87,7 +87,7 @@ Each encryption context can only be used once, for a single request-response cyc
 
 ### Structure of EciesPayload
 
-The structure of the `ECIESPayload` is following:
+The structure of the `EciesPayload` is following:
 
 ```java
 public class EciesPayload {
@@ -97,6 +97,24 @@ public class EciesPayload {
 }
 ```
 
+The typical JSON encoded request is following:
+
+```json
+{
+    "ephemeralPublicKey" : "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
+    "encryptedData" : "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
+    "mac" : "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+}
+```
+
+The JSON response is similar, but without "ephemeralPublicKey" field:
+
+```json
+{
+    "encryptedData" : "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
+    "mac" : "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+}
+```
 
 ## ECIES Scopes
 
@@ -118,6 +136,11 @@ ECIES in application scope has following configuration of parameters:
 
 *Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.*
 
+HTTP header example:
+```
+X-PowerAuth-Encryption: PowerAuth version="3.0", application_key="UNfS0VZX3JhbmRvbQ=="
+```
+
 ### Activation scope
 
 ECIES in activation scope has following configuration of parameters:
@@ -131,6 +154,12 @@ ECIES in activation scope has following configuration of parameters:
   
 *Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.*
 
+HTTP header example:
+```
+X-PowerAuth-Encryption: PowerAuth version="3.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+```
+Note, that the header must not be added to the request, when ECIES encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
+  
 ### Pre-shared constants
 
 PowerAuth protocol defines following `SHARED_INFO_1` constants for its own internal purposes:
