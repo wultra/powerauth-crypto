@@ -25,21 +25,21 @@ When using more than one factor / key, the keys are added additively in the sign
  * Compute the signature for given data using provided keys and current counter.
  * @param data - data to be signed
  * @param signatureKey - array of symmetric keys used for signature
- * @param CTR - counter
+ * @param CTR_DATA - hash based counter
  */
-public String computeSignature(byte[] data, List<SecretKey> signatureKeys, int CTR) {
+public String computeSignature(byte[] data, List<SecretKey> signatureKeys, byte[] CTR_DATA) {
 
 	// ... compute signature components
 	String[] signatureComponents = new String[signatureKeys.size()];
 	for (int i = 0; i < signatureKeys.size(); i++) {
 		byte[] KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(0));
-		byte[] KEY_DERIVED = Mac.hmacSha256(KEY_SIGNATURE, CTR);
+		byte[] KEY_DERIVED = Mac.hmacSha256(KEY_SIGNATURE, CTR_DATA);
 
 		// ... compute signature key using more than one keys, at most 2 extra keys
 		// ... this skips the key with index 0 when i == 0
 		for (int j = 0; j < i; j++) {
 			KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(j + 1));
-			KEY_DERIVED_CURRENT = Mac.hmacSha256(KEY_SIGNATURE, CTR);
+			KEY_DERIVED_CURRENT = Mac.hmacSha256(KEY_SIGNATURE, CTR_DATA);
 			KEY_DERIVED = Mac.hmacSha256(KEY_DERIVED_CURRENT, KEY_DERIVED);
 		}
 
@@ -109,15 +109,19 @@ PowerAuth Server can validate the signature using the following mechanism:
 1. Compute the expected signature for obtained data and check if the expected signature matches the one sent with the client. Since the PowerAuth Client may be ahead with counter from PowerAuth Server, server should try couple extra indexes ahead:
 
 ```java
-// input: CTR, TOLERANCE, data and signatureKeys
+// input: CTR, CTR_DATA, TOLERANCE, data and signatureKeys
 boolean VERIFIED = false
+byte[] CTR_DATA_ITER = CTR_DATA
 for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER < CRT + TOLERANCE) {
-    //... compute signature for given CTR_ITER, data and signature keys (see the algorithm above)
-    String SIGNATURE = computeSignature(data, signatureKeys, CTR_ITER);
+    //... compute signature for given CTR_DATA_ITER, data and signature keys (see the algorithm above)
+    String SIGNATURE = computeSignature(data, signatureKeys, CTR_DATA_ITER);
     if (SIGNATURE.equals(SIGNATURE_PROVIDED) && !VERIFIED) {
         VERIFIED = true
-        CTR = CTR_ITER
+        CTR_DATA = CTR_DATA_ITER
+        break
     }
+    // Move to the next hash-based counter's value
+    CTR_DATA_ITER = ByteUtils.convert32Bto16B(Hash.sha256(CTR_DATA_ITER))
 }
 return VERIFIED;
 ```
