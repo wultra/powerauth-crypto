@@ -73,10 +73,10 @@ PowerAuth Server decrypts both levels of encryption and returns following data:
     
 After receiving the response, PowerAuth Client decrypts both layers of response data and continues with the activation process. You can check the documentation for an [Activation](./Activation.md) for more details.
 
-
-|-------------------|----------------------------|
-| Method            | `POST`                     |
-| Resource URI      | `/pa/v3/activation/create` |
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/activation/create`  |
 | ECIES (level 1)   | `application, sh1="/pa/generic/application"` |
 | ECIES (level 2)   | `application, sh1="/pa/activation"`          |
 
@@ -91,7 +91,7 @@ JSON request object before ECIES level 2 encryption:
 {
     "devicePublicKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
     "activationName": "My iPhone",
-    "extras": ""Any data in string format"
+    "extras": "Any data in string format"
 }
 ```
 
