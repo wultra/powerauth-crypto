@@ -21,55 +21,24 @@ Examples:
 
 ## Creating a Token
 
-In order to create a new token, the client application must call a PowerAuth Standard RESTful API endpoint `/pa/token/create`.
+In order to create a new token, the client application must call a PowerAuth Standard RESTful API endpoint `/pa/v3/token/create`.
 
 This endpoint must be called with a standard PowerAuth signature. It can be any type of a signature - 1FA, 2FA or 3FA. The token then implicitly carries the information about the signature it was issued with. Using the PowerAuth signature assures authenticity and integrity of the request data.
 
-The endpoint then uses the same request and response encryption principles as described in a dedicated chapter for [End-to-End Encryption](./End-To-End-Encryption.md). The difference on the request side is that since there are no data to be encrypted and authenticity and integrity of the request is accomplished using the PowerAuth signature, the request does not need to contain encrypted data and a MAC value. It only contains the ephemeral public key.
+The endpoint then uses the same request and response encryption principles as described in a dedicated chapter for [End-to-End Encryption](./End-To-End-Encryption.md). 
 
-To look at this topic from the cryptographic perspective, the client first generates an ephemeral key pair.
-
-```java
-KeyPair kp = KeyGenerator.randomKeyPair();
-PrivateKey ephPrivateKey = kp.getPrivate();
-PublicKey ephPublicKey = kp.getPublic();
-```
-
-The client stores the ephemeral private key from the key pair for the purpose of future response decryption (it uses the ephemeral private key and `KEY_SERVER_MASTER_PUBLIC` to derive encryption keys). Then the client creates a request object consisting of a single property with a Base64 encoded ephemeral public key.
-
-```json
-{
-    "requestObject": {
-        "ephemeralPublicKey": "AhntJuqdqTli2sOwb3GtGR7qD0jElYpVI2AlpyNGOiH4"
-    }
-}
-```
-
-As mentioned, the consistency and authenticity of this public key (for example, to protect agains MITM) is achieved via standard PowerAuth data signature sent in the HTTP header.
-
-Upon receiving and successfully validating a request authenticated using PowerAuth signature, server generates a new token for given activation ID. Information about used signature type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client (it uses the ephemeral public key and `KEY_SERVER_MASTER_PRIVATE` to derive encryption keys).
-
-```json
-{
-    "requestObject": {
-        "mac": "xvJ1Zq0mOtgvVqbspLhWMt2NJaTDZ5GkPBbcDxXRB9M=",
-        "encryptedData": "6jeU9S2FeN5i+OWsTWh/iA5Tx5e9JKFW0u1D062lFsMRIQwcNJZYkPoxWXQDIHdT5OIQrxMe4+qH+pNec5HlzBacZPAy3fB3fCc25OJAoXIaBOTatVbAcsuToseNanIX3+ZNcyxIEVj16OoawPhm1w==",
-    }
-}
-```
-
-The client is able to decrypt response using the private key it stored earlier and `KEY_SERVER_MASTER_PUBLIC`.
+Upon receiving and successfully validating a request authenticated using PowerAuth signature, server generates a new token for given activation ID. Information about used signature type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client. 
 
 The decrypted response data payload contains following raw response format:
 
 ```json
 {
-   "token_id": "d6561669-34d6-4fee-8913-89477687a5cb",  
-   "token_secret": "VqAXEhziiT27lxoqREjtcQ=="
+   "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb",  
+   "tokenSecret": "VqAXEhziiT27lxoqREjtcQ=="
 }
 ```
 
-The `token_id` value is in UUID level 4 format and it uniquely identifies the token in the system and is sent with every request that requires MAC token based authentication. The `token_secret` value is random 16B value encoded as Base64, it is stored on the device and used as a secret key for computing the MAC later.
+The `tokenId` value is in UUID level 4 format and it uniquely identifies the token in the system and is sent with every request that requires MAC token based authentication. The `token_secret` value is random 16B value encoded as Base64, it is stored on the device and used as a secret key for computing the MAC later.
 
 Client stores both `token_id` and `token_secret` in a suitable local storage (iOS Keychain, Android Shared Preferences).
 

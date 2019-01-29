@@ -95,7 +95,7 @@ JSON request object before ECIES level 2 encryption:
 }
 ```
 
-JSON request object before ECIES level 1 encryption:
+JSON request object before ECIES level 1 encryption. The `activationData` field contains previous object after the ECIES level 2 encryption:
 ```json
 {
     "activationType": "CODE",
@@ -146,7 +146,7 @@ JSON response after ECIES level 1 decryption:
 }
 ```
 
-JSON response after ECIES level 2 decryption:
+The `activationData` contains an encrypted level 2 response. So, the JSON response after ECIES level 2 decryption is following:
 ```json
 {
     "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
@@ -161,16 +161,10 @@ Get the status of an activation with given activation ID. The PowerAuth Server r
 
 This endpoint also returns a `customObject` object with custom application specific data. This object may be used for example to provide service specific data (current timestamp, info about service status, ...) in order to minimize number of required request in practical deployments (for example, mobile banking needs to ask for the service status data on application launch).
 
-<table>
-    <tr>
-        <td>Method</td>
-        <td><code>POST</code></td>
-    </tr>
-    <tr>
-        <td>Resource URI</td>
-        <td><code>/pa/v3/activation/status</code></td>
-    </tr>
-</table>
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/activation/status`  |
 
 ### Request
 
@@ -212,16 +206,11 @@ PowerAuth Client sends an authenticated request using an activation ID - authent
 
 In order to construct the PowerAuth Client signature, use `/pa/activation/remove` as URI identifier part of the signature data.
 
-<table>
-    <tr>
-        <td>Method</td>
-        <td><code>POST</code></td>
-    </tr>
-    <tr>
-        <td>Resource URI</td>
-        <td><code>/pa/v3/activation/remove</code></td>
-    </tr>
-</table>
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/activation/status`  |
+| Signature uriId   | `/pa/activation/remove`     |
 
 ### Request
 
@@ -246,46 +235,34 @@ In order to construct the PowerAuth Client signature, use `/pa/activation/remove
 
 Create a static token which can be used for repeated requests to data resources which support token based authentication.
 
-The request contains:
-   - `ephemeralPublicKey` - a Base64 encoded ephemeral public key which is used for response encryption using ECIES scheme.
-
-In case the PowerAuth signature is verified correctly, the server returns a response which contains encrypted ECIES envelope:
-   - `mac` - MAC signature of the response, Base64 encoded
-   - `encryptedData` - data encrypted using ECIES scheme, Base64 encoded
-
-The encrypted data payload contains following object:
-
-```json
-{
-   "token_id": "d6561669-34d6-4fee-8913-89477687a5cb",  
-   "token_secret": "VqAXEhziiT27lxoqREjtcQ=="
-}
-```
-
-<table>
-    <tr>
-        <td>Method</td>
-        <td><code>POST</code></td>
-    </tr>
-    <tr>
-        <td>Resource URI</td>
-        <td><code>/pa/v3/token/create</code></td>
-    </tr>
-</table>
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/token/create`       |
+| Signature uriId   | `/pa/token/create`          |
+| ECIES             | `activation, sh1="/pa/token/create"` |
 
 ### Request
 
 - Headers
     - `Content-Type: application/json`
     - `X-PowerAuth-Authorization: PowerAuth ...`
-- Body:
+
+JSON request object, before ECIES encryption (is actually an empty JSON object):
+```json
+{}
+```
+
+Actual JSON request body, after the encryption:
 ```json
 {
-    "requestObject": {
-        "ephemeralPublicKey": "AhntJuqdqTli2sOwb3GtGR7qD0jElYpVI2AlpyNGOiH4"
-    }
+    "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
+    "encryptedData": "19gyYaW5ZhdGlvblkb521fYWNSDKJHSDkhadkhSDKJHASDKHSADkjhasdkhSADKHASKDHASKDJHASDKHJ0aX9JRaAhbG9duZ==",
+    "mac": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
 }
 ```
+
+*Note that PowerAuth Signature must be calculated from the final, encrypted data (e.g. it's "encrypt-then-sign" mode).*
 
 #### Response
 
@@ -293,36 +270,41 @@ The encrypted data payload contains following object:
 - Headers
     - `Content-Type: application/json`
 
+JSON response before the decryption:
 ```json
 {
-    "requestObject": {
-        "mac": "xvJ1Zq0mOtgvVqbspLhWMt2NJaTDZ5GkPBbcDxXRB9M=",
-        "encryptedData": "6jeU9S2FeN5i+OWsTWh/iA5Tx5e9JKFW0u1D062lFsMRIQwcNJZYkPoxWXQDIHdT5OIQrxMe4+qH+pNec5HlzBacZPAy3fB3fCc25OJAoXIaBOTatVbAcsuToseNanIX3+ZNcyxIEVj16OoawPhm1w==",
-    }
+    "mac": "xvJ1Zq0mOtgvVqbspLhWMt2NJaTDZ5GkPBbcDxXRB9M=",
+    "encryptedData": "6YkPoxWXQDIHdT5OIQrxMe4+qH+pNec5HlzBacZPAy3fB3fCc25OJAoXIaBOTatVbAcsuToseNanIX3+ZNcyxIEVj16OoawPhm1w=="
 }
 ```
+
+JSON object after the decryption:
+```json
+{
+   "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb",  
+   "tokenSecret": "VqAXEhziiT27lxoqREjtcQ=="
+}
+```
+
 
 ## Remove token
 
 Remove a previously created token.
 
-<table>
-    <tr>
-        <td>Method</td>
-        <td><code>POST</code></td>
-    </tr>
-    <tr>
-        <td>Resource URI</td>
-        <td><code>/pa/v3/token/remove</code></td>
-    </tr>
-</table>
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/token/remove`       |
+| Signature uriId   | `/pa/token/remove`          |
+
 
 ### Request
 
 - Headers
     - `Content-Type: application/json`
     - `X-PowerAuth-Authorization: PowerAuth ...`
-- Body:
+
+JSON request body:
 ```json
 {
     "requestObject": {
@@ -337,59 +319,63 @@ Remove a previously created token.
 - Headers
     - `Content-Type: application/json`
 
+JSON response:
 ```json
-{
-    "requestObject": {
-        "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb"
-    }
-}
+{}
 ```
 
 ## Vault unlock
 
 Get the vault unlock key in order to decrypt data stored in the vault, for example the original `KEY_DEVICE_PRIVATE`.
 
-PowerAuth Client sends an authenticated request using an activation ID - authentication is carried around using the standard PowerAuth signature with at least 2 factors (2FA).
+PowerAuth Client sends an encrypted and authenticated request using an activation ID - authentication is carried around using the standard PowerAuth signature with at least 2 factors (2FA). The combination of "possession" and "knowledge" factors is mandatory.
 
-In response, PowerAuth Server sends a `KEY_ENCRYPTION_VAULT` key encrypted using `KEY_ENCRYPTION_VAULT_TRANSPORT` key associated with given counter (derived from the `KEY_TRANSPORT` master key, see the `PowerAuth Key Derivation` chapter for details).
+In response, PowerAuth Server sends a `KEY_ENCRYPTION_VAULT` key encrypted using `KEY_TRANSPORT` (see the [PowerAuth Key Derivation](./Key-derivation.md) chapter for details).
 
-- `encryptedVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
+- `encryptedVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_TRANSPORT)`
 
 PowerAuth Client can later decrypt the key using the inverse mechanism:
 
-- `encryptedVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT)`
+- `encryptedVaultEncryptionKey = AES.encrypt(KeyConversion.getBytes(KEY_ENCRYPTION_VAULT), ByteUtils.zeroBytes(16), KEY_TRANSPORT)`
 
-_Note: Both the signature calculation / validation and `KEY_ENCRYPTION_VAULT_TRANSPORT` key derivation should increase the counter `CTR`! In other words, if signature uses value of `CTR = N`, key derivation should use `CTR = N + 1`. For technical reason, the client should compute the `KEY_ENCRYPTION_VAULT_TRANSPORT` ahead - we need to assure that only server may be behind the client with a `CTR` value, not vice versa._
+_Note: The protection of the vault encryption key transmission, is based on our ECIES scheme. So, it's no longer required to deduce an additional decryption keys as it was in PowerAuth protocol V2. The additional `KEY_TRANSPORT` encryption is added to the scheme only due the fact, that we don't want to expose such a sensitive key in plaintext, in managed runtime environments (like Java or Objective-C)._
 
-<table>
-    <tr>
-        <td>Method</td>
-        <td><code>POST</code></td>
-    </tr>
-    <tr>
-        <td>Resource URI</td>
-        <td><code>/pa/v3/vault/unlock</code></td>
-    </tr>
-</table>
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/vault/unlock`       |
+| Signature uriId   | `/pa/vault/unlock`         |
+| ECIES             | `activation, sh1="/pa/vault/unlock"` |
 
 ### Request
 
 - Headers:
     - `Content-Type: application/json`
     - `X-PowerAuth-Authorization: PowerAuth ...`
-- Body:
 
+
+JSON request before ECIES encryption:
 ```json
 {
-    "reason": "NOT_SPECIFIED"
+    "reason": "ADD_BIOMETRY"
 }
 ```
 
-You can provide any "reason" for vault unlocking. Our SDKs use following states by default:
+You can provide following reasons for a vault unlocking:
 
 - `ADD_BIOMETRY` - call was used to enable biometric authentication.
 - `FETCH_ENCRYPTION_KEY` - call was used to fetch a generic data encryption key.
 - `SIGN_WITH_DEVICE_PRIVATE_KEY` - call was used to unlock device private key used for ECDSA signatures.
+
+Actual JSON request body, after the encryption:
+```json
+{
+    "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
+    "encryptedData": "19gyYaW5ZhdGlvblkb521fYWNSDKJHSDkhadkhSDKJHASDKHSADkjhasdkhSADKHASKDHASKDJHASDKHJ0aX9JRaAhbG9duZ==",
+    "mac": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+}
+```
+*Note that PowerAuth Signature must be calculated from the final, encrypted data (e.g. it's "encrypt-then-sign" mode).*
 
 ### Response
 
@@ -397,14 +383,12 @@ You can provide any "reason" for vault unlocking. Our SDKs use following states 
 - Headers:
     - `Content-Type: application/json`
 
+JSON response after the decryption:
 ```json
-    {
-        "status": "OK",
-        "responseObject": {
-            "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-            "encryptedVaultEncryptionKey": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
-        }
-    }
+{
+    "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+    "encryptedVaultEncryptionKey": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+}
 ```
 
 ## Validate signature
@@ -420,24 +404,19 @@ Following signature types are supported:
 
 The request body should contain data used for computing the signature.
 
-<table>
-    <tr>
-        <td>Method</td>
-        <td><code>GET/POST/PUT/DELETE</code></td>
-    </tr>
-    <tr>
-        <td>Resource URI</td>
-        <td><code>/pa/v3/signature/validate</code></td>
-    </tr>
-</table>
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`, `GET`, `PUT`, `DELETE` |
+| Resource URI      | `/pa/v3/signature/validate`    |
+| Signature uriId   | `/pa/signature/validate`       |
 
 ### Request
 
 - Headers:
     - `Content-Type: application/json`
     - `X-PowerAuth-Authorization: PowerAuth ...`
-- Body:
 
+JSON request body can contain any data:
 ```json
 { 
   "... signed request data"
@@ -451,9 +430,9 @@ The request body should contain data used for computing the signature.
     - `Content-Type: application/json`
 
 ```json
-    {
-        "status": "OK"
-    }
+{
+    "status": "OK"
+}
 ```
 
 ### Response (validation failed)
@@ -463,11 +442,79 @@ The request body should contain data used for computing the signature.
     - `Content-Type: application/json`
 
 ```json
-    {
-        "status": "ERROR",
-        "responseObject": {
-            "code": "POWERAUTH_AUTH_FAIL",
-            "message": "Signature validation failed"
-        }
+{
+    "status": "ERROR",
+    "responseObject": {
+        "code": "POWERAUTH_AUTH_FAIL",
+        "message": "Signature validation failed"
     }
+}
+```
+
+
+## Upgrade Start
+
+Start a process to upgrade from protocol version 2, to version 3. PowerAuth Client simply receives an initial value for `CTR_DATA`, a hash-based counter.
+
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/upgrade/start`      |
+| ECIES             | `activation, sh1="/pa/upgrade"` |
+
+### Request
+
+- Headers:
+    - `Content-Type: application/json`
+    - `X-PowerAuth-Encryption: PowerAuth ...`
+
+JSON request body before the encryption (an empty JSON):
+```json
+{}
+```
+
+### Response
+
+- Status Code: `200`
+- Headers:
+    - `Content-Type: application/json`
+
+JSON response after the decryption:
+```json
+{
+    "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J=="
+}
+```
+
+
+## Upgrade Commit
+
+Finish an upgrade process. In this step, the PowerAuth signature must be calculated with respecting a new, protocol V3 scheme (e.g. must use `CTR_DATA` instead of old `CTR`).
+
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/upgrade/commit`     |
+| Signature uriId   | `/pa/upgrade/commit`        |
+
+### Request
+
+- Headers:
+    - `Content-Type: application/json`
+    - `X-PowerAuth-Authorization: PowerAuth ...`
+
+JSON request body (an empty JSON):
+```json
+{}
+```
+
+### Response
+
+- Status Code: `200`
+- Headers:
+    - `Content-Type: application/json`
+
+JSON response body (an empty JSON):
+```json
+{}
 ```

@@ -73,15 +73,6 @@ This key should be stored encrypted using a key derived using PowerAuth Client d
 
 ### Encrypted Vault
 
-#### Vault Encryption Key Transport Key
-
-Transport key used for transferring an encryption key for vault encryption `KEY_ENCRYPTION_VAULT`. It is deduced using the master transport key and counter (same one as the one used for authentication of the request that unlocks the key).
-
-```java
-SecretKey KEY_ENCRYPTION_VAULT_TRANSPORT = KDF.derive(KEY_TRANSPORT, CTR);
-```
-This key is computed on the fly, using `KEY_TRANSPORT` and `CTR`, and therefore it does not need to be stored on the device.
-
 #### Vault Encryption Key
 
 An encryption key used for storing the original private key `KEY_DEVICE_PRIVATE`, deduced as:
@@ -90,10 +81,10 @@ An encryption key used for storing the original private key `KEY_DEVICE_PRIVATE`
 SecretKey KEY_ENCRYPTION_VAULT = KDF.derive(KEY_MASTER_SECRET, 2000);
 ```
 
-This key must not be stored on the PowerAuth Client at all. It must be sent upon successful 2FA or 3FA authentication from PowerAuth Server. The `KEY_ENCRYPTION_VAULT` is sent from the server encrypted using one-time transport key `KEY_ENCRYPTION_VAULT_TRANSPORT` key (see above):
+This key **MUST NOT** be stored on the PowerAuth Client at all. It must be sent upon successful 2FA authentication from PowerAuth Server. The `KEY_ENCRYPTION_VAULT` is sent from the server encrypted using they `KEY_TRANSPORT` key (see above):
 
 ```java
-byte[] C_KEY_ENCRYPTION_VAULT = AES.encrypt(KEY_ENCRYPTION_VAULT, ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT_TRANSPORT);
+byte[] C_KEY_ENCRYPTION_VAULT = AES.encrypt(KEY_ENCRYPTION_VAULT, ByteUtils.zeroBytes(16), KEY_TRANSPORT);
 ```
 
 The primary use-case for having an encrypted vault is storage of the original device primary key `KEY_DEVICE_PRIVATE`. This key should be stored on the device in a following way just after the activation:
@@ -102,4 +93,4 @@ The primary use-case for having an encrypted vault is storage of the original de
 byte[] C_KEY_DEVICE_PRIVATE = AES.encrypt(KEY_DEVICE_PRIVATE, ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT);
 ```
 
-Since `KEY_ENCRYPTION_VAULT` is not stored on the client side, it must be fetched using authenticated request on server for decryption. Once server verifies the authentication status (signature matches) and returns encrypted `C_KEY_ENCRYPTION_VAULT` key, client can decrypt it using `KEY_ENCRYPTION_VAULT_TRANSPORT` and then decrypt `KEY_DEVICE_PRIVATE`.
+Since `KEY_ENCRYPTION_VAULT` is not stored on the client side, it must be fetched using authenticated request on server for decryption. Once server verifies the authentication status (signature matches) and returns encrypted `C_KEY_ENCRYPTION_VAULT` key, client can decrypt it using `KEY_ENCRYPTION_VAULT_TRANSPORT` and then decrypt `KEY_DEVICE_PRIVATE`. The whole request and response protection is based on our ECIES scheme. 
