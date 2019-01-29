@@ -15,6 +15,8 @@ A typical use-case for PowerAuth protocol would be assuring the security of a mo
 - [End-To-End Encryption](./End-To-End-Encryption.md)
 - [Standard RESTful API](./Standard-restful-api.md)
 - [Implementation Details](./Implementation-notes.md)
+    - [Activation Code](./Activation-Code.md)
+    - [Activation Upgrade](./Activation-Upgrade.md)
 - [List of Used Keys](./List-of-used-keys.md)
 
 ## Deployment
