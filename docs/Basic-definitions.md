@@ -50,7 +50,8 @@ These functions are used in the pseudo-codes:
   - `byte[] randomBytes = Generator.randomBytes(int N)` - Generate N random bytes using a secure random generator.
   - `String randomBase32 Generator.randomBase32String(int N)` - Generate string in Base32 encoding with N characters using a secure random generator.
   - `String uuid = Generator.randomUUID()` - Generate a new UUID level 4 and return it in string representation.
-
+  - `String code = Generator.randomActivationCode()` - Generate a new `ACTIVATION_CODE`. See [Activation Code](./Activation-Code.md) for more details.
+  
 - Hashing and MAC functions.
   - `byte[] signature = Mac.hmacSha256(SharedKey key, byte[] message)` - Compute HMAC-SHA256 signature for given message using provided symmetric key.
   - `byte[] hash = Hash.sha256(byte[] original)` - Compute SHA256 hash of a given input.
