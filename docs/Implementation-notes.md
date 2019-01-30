@@ -70,19 +70,26 @@ c564e700-7e86-4a87-b6c8-a5a0cc89683f
 
 _Note: A single UUID for an activation in CREATED state must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most)._
 
-Since the UUID is too long and inconvenient for practical applications, `ACTIVATION_ID` is exchanged between client and server automatically, using `ACTIVATION_ID_SHORT` - a shorter and more convenient identifier of an activation. This is the identifier user can rewrite or scan via the QR code.  `ACTIVATION_ID_SHORT` is a Base32 string, 2x 5 characters:
+Since the UUID is too long and inconvenient for practical applications, `ACTIVATION_ID` is exchanged between client and server automatically, using `ACTIVATION_CODE` - a shorter and more convenient identifier of an activation. This is the identifier user can rewrite or scan via the QR code. The next chapter explains more details about the code.
+
+
+## Activation Code
+
+The `ACTIVATION_CODE` is a Base32 string 4 x 5 characters. The code is randomly generated and contains CRC-16 checksum which can detect a few typing errors in the code. For more details, check a [dedicated document](./Activation-Code.md) about the code construction and validation. 
+
+A single `ACTIVATION_CODE` must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most). Also, the activation code can be used only once - the moment client application sends and receives the encrypted public keys, it must be marked as "already used".
 
 ```sql
 DO {
-    ACTIVATION_ID_SHORT = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
-    COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.ID_SHORT = ACTIVATION_ID_SHORT
+    ACTIVATION_CODE = Generator.randomActivationCode()
+    COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.CODE = ACTIVATION_CODE
 } WHILE (COUNT > 0);
 ```
 
-Example of short activation ID:
+Example of activation code:
 
 ```
-XDA57-24TBC
+MMMMM-MMMMM-MMMMM-MUTOA
 ```
 
 ## Application ID and Application Secret
@@ -94,24 +101,6 @@ Both identifiers are embedded in the PowerAuth Client application (for example, 
 Application ID is sent with every PowerAuth Signature as `pa_applicationId`.
 
 Application secret is a part of the PowerAuth signature (sent in `pa_signature`), it enters the algorithm in final HMAC_SHA256 as a part of the DATA.
-
-## Activation OTP
-
-The `ACTIVATION_OTP` is a Base32 string, 2 x 5 characters:
-
-```
-ACTIVATION_OTP = BASE32_RANDOM_STRING(5) + "-" + BASE32_RANDOM_STRING(5)
-```
-
-Example of activation OTP:
-
-```
-TB24C-A57XD
-```
-
-This format matches the `ACTIVATION_ID_SHORT` format.
-
-_Note: A single `ACTIVATION_OTP` must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most). Also, the activation OTP can be used only once - the moment client application sends and receives the encrypted public keys, it must be marked as "already used"._
 
 ## Entering Values in Client Application
 
