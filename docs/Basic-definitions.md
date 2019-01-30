@@ -13,7 +13,7 @@ Following basic cryptography algorithms and parameters are used in the PowerAuth
   - `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key, String padding)` - decrypt bytes using symmetric key with given initialization vector and given padding.
 
 - **PBKDF2** - An algorithm for key stretching, converts a short password into long key by performing repeated hash iteration on the original data, HMAC-SHA1 algorithm is used for a pseudo-random function. Implementations must make sure resulting key is converted in format usable by AES algorithm. One method is defined for this algorithm:
-  - `SharedKey expandedKey = PBKDF2.expand(char[] password, byte[] salt, long iterations, long lengthInBits)` - stretch the password using given number of iterations to achieve key of given length in bits, use given salt.
+  - `SecretKey expandedKey = PBKDF2.expand(char[] password, byte[] salt, long iterations, long lengthInBits)` - stretch the password using given number of iterations to achieve key of given length in bits, use given salt.
 
 - **X9.63 (with SHA256)** - A standard KDF function based on X9.63, with SHA256 as an internal hash function. It uses iterations of SHA256 hash function to derive a key of expected length of 32B.
   - `byte[] bytes = KDF_X9_63_SHA256.derive(byte[] secret, byte[] info)`
@@ -53,7 +53,7 @@ These functions are used in the pseudo-codes:
   - `String code = Generator.randomActivationCode()` - Generate a new `ACTIVATION_CODE`. See [Activation Code](./Activation-Code.md) for more details.
   
 - Hashing and MAC functions.
-  - `byte[] signature = Mac.hmacSha256(SharedKey key, byte[] message)` - Compute HMAC-SHA256 signature for given message using provided symmetric key.
+  - `byte[] signature = Mac.hmacSha256(SecretKey key, byte[] message)` - Compute HMAC-SHA256 signature for given message using provided symmetric key.
   - `byte[] hash = Hash.sha256(byte[] original)` - Compute SHA256 hash of a given input.
 
 - Utility functions.

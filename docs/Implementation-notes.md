@@ -115,17 +115,19 @@ _Note: A single `ACTIVATION_OTP` must be valid only for a limited period of time
 
 ## Entering Values in Client Application
 
-Entering `ACTIVATION_ID_SHORT`, `ACTIVATION_OTP` and `ACTIVATION_SIGNATURE` can be expedited for example by using QR code for the storage. PowerAuth defines using following format of information:
+Entering `ACTIVATION_CODE` and `ACTIVATION_SIGNATURE` can be expedited for example by using QR code for the storage. PowerAuth defines using following format of information:
 
 ```
-${ACTIVATION_ID_SHORT}-${ACTIVATION_OTP}#${ACTIVATION_SIGNATURE}
+${ACTIVATION_CODE}#${ACTIVATION_SIGNATURE}
 ```
 
 Example concatenated string:
 
 ```
-XDA57-24TBC-TB24C-A57XD#1234567890
+MMMMM-MMMMM-MMMMM-MUTOA#1234567890
 ```
+
+*You can also check [Activation Code](./Activation-Code.md) document to get a more details about an activation code.*
 
 ## Generating Key Pairs
 

@@ -76,7 +76,7 @@ X-PowerAuth-Token: PowerAuth token_id="${TOKEN_ID}"
     token_digest="${TOKEN_DIGEST}"
     nonce="${NONCE}"
     timestamp="${TIMESTAMP}"
-    version="2.1"
+    version="3.0"
 ```
 
 Transport representation of the HTTP header properties is following:
@@ -89,7 +89,7 @@ Transport representation of the HTTP header properties is following:
 
 ## Token Removal
 
-You can remove a token with given ID anytime by sending a signed request to the PowerAuth Standard RESTful API endpoint `/pa/token/remove`:
+You can remove a token with given ID anytime by sending a signed request to the PowerAuth Standard RESTful API endpoint `/pa/v3/token/remove`:
 
 ```json
 {
@@ -101,7 +101,7 @@ You can remove a token with given ID anytime by sending a signed request to the 
 
 You can use any signature type to authenticate the token removal request. All signature types are allowed because the tokens are mostly used for a simplified access. Allowing user to restrict the access again should be simple, as long as there is at least some authentication that would prevent removing token to the malicious party (causing DoS to the legitimate user).
 
-In case the signature validation is successful and after validating that the token is associated with the activation used for computing the signature, the token is removed on the server side. The response object only confirms the removal:
+In case the signature validation is successful and after validating that the token is associated with the activation used for computing the signature, the token is removed on the server side. The response object only confirms the removal and the payload is typically ignored in the PowerAuth Mobile SDK:
 
 ```json
 {

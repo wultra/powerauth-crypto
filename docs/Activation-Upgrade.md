@@ -97,4 +97,4 @@ The PowerAuth Client is typically implementing the upgrade process as a silent, 
 
 If the last step succeeds without an error, then the protocol is fully migrated to version 3. 
 
-The whole upgrade process is designed to be reliable against a random network connection errors. The PowerAuth Client can typically recovery from such networking errors by simply retrying the whole upgrade process.
+The whole upgrade process is designed to be reliable against a random network connection errors. The PowerAuth Client can typically recover from such networking errors by simply retrying the whole upgrade process.

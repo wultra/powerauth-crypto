@@ -6,7 +6,7 @@ PowerAuth supports a standard ECIES encryption (integrated encryption scheme tha
 
 ### ECIES Encryption
 
-Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and a `SHARED_INFO_1` and `SHARED_INFO_2` constants (`byte[]`) as an encryption parameters. ECIES encryption works in a following way:
+Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and a `SHARED_INFO_1` and `SHARED_INFO_2` constants (`byte[]`) as encryption parameters. ECIES encryption works in a following way:
 
 1. Generate an ephemeral key pair:
     ```java
@@ -21,10 +21,11 @@ Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and 
     byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
     SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO)
     ```
-4. Split the 32b long `KEY_SECRET` to two 16b keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`.
+4. Split the 32 bytes long `KEY_SECRET` to two 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`.
     ```java
-    SecretKey KEY_ENC = ByteUtils.subarray(KEY_SECRET, 0, 16);
-    SecretKey KEY_MAC = ByteUtils.subarray(KEY_SECRET, 16, 16);
+    byte[] KEY_SECRET_BYTES = KeyConversion.getBytes(KEY_SECRET);
+    SecretKey KEY_ENC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET, 0, 16));
+    SecretKey KEY_MAC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET, 16, 16));
     ```
 5. Compute the encrypted data using AES, with zero `iv` value.
     ```java
@@ -43,7 +44,7 @@ Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and 
 
 ### ECIES Decryption
 
-Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of the ECIES payload `(DATA_ENCRYPTED, MAC, KEY_EPH_PUB)` and a `SHARED_INFO_1` and `SHARED_INFO_2` constants (`byte[]`) as an decryption parameters. ECIES decryption works in a following way:
+Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of the ECIES payload `(DATA_ENCRYPTED, MAC, KEY_EPH_PUB)` and a `SHARED_INFO_1` and `SHARED_INFO_2` constants (`byte[]`) as decryption parameters. ECIES decryption works in a following way:
 
 1. Derive base secret key from the private key and ephemeral public key from the ECIES payload (in this step, we do not trim the key to 16b only, we keep all 32b).
     ```java
@@ -54,10 +55,11 @@ Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of th
     byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
     SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO)
     ```
-3. Split the 32b long `KEY_SECRET` to two 16b keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`.
+3. Split the 32 bytes long `KEY_SECRET` to two 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`.
     ```java
-    SecretKey KEY_ENC = ByteUtils.subarray(KEY_SECRET, 0, 16);
-    SecretKey KEY_MAC = ByteUtils.subarray(KEY_SECRET, 16, 16);
+    byte[] KEY_SECRET_BYTES = KeyConversion.getBytes(KEY_SECRET);
+    SecretKey KEY_ENC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET_BYTES, 0, 16));
+    SecretKey KEY_MAC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET_BYTES, 16, 16));
     ```
 4. Validate the MAC value in payload against expected MAC value. Include `SHARED_INFO_2`. If the MAC values are different, terminate the decryption.
     ```java
@@ -93,7 +95,7 @@ The structure of the `EciesPayload` is following:
 public class EciesPayload {
     private byte[] encryptedData;
     private byte[] mac;
-    private PublicKey ephemeralPublicKey;
+    private byte[] ephemeralPublicKey;
 }
 ```
 
@@ -162,7 +164,7 @@ Note, that the header must not be added to the request, when ECIES encryption is
   
 ### Pre-shared constants
 
-PowerAuth protocol defines following `SHARED_INFO_1` constants for its own internal purposes:
+PowerAuth protocol defines following `SHARED_INFO_1` (also called as `sh1` or `sharedInfo1`) constants for its own internal purposes:
 
 | RESTful endpoint                      | ECIES scope  | `SHARED_INFO_1` value | 
 | ------------------------------------- | ------------ | --------------------- | 
