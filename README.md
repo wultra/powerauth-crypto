@@ -5,7 +5,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/wultra/powerauth-crypto.svg?maxAge=2592000)](https://github.com/wultra/powerauth-crypto/issues)
 [![Maven Central](https://img.shields.io/maven-central/v/io.getlime.security/powerauth-java-crypto.svg?maxAge=2592000)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.getlime.security%22)
 [![Twitter](https://img.shields.io/badge/twitter-@wultra-blue.svg?style=flat)](http://twitter.com/wultra)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/wultra/powerauth-crypto/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE.txt)
 
 PowerAuth is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or identity management applications. It defines all items that are required for a complete security solution: a used cryptography, a security scheme and standard RESTful API end-points.
 
@@ -13,7 +13,7 @@ A typical use-case for PowerAuth protocol would be assuring the security of a mo
 
 ## Documentation
 
-For the most recent documentation and tutorials, please [visit our Wiki](https://github.com/wultra/powerauth-crypto/wiki).
+For the most recent documentation and tutorials, please visit [PowerAuth Crypto Documentation](./docs/Home.md).
 
 # License
 
