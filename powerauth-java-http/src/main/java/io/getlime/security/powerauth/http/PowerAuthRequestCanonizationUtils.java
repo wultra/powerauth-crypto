@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.getlime.security.powerauth.http;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PowerAuthRequestCanonizationUtils {
 
@@ -53,8 +57,8 @@ public class PowerAuthRequestCanonizationUtils {
                 if (tmp.length != 2) { // ... skip invalid values (this will likely fail signature verification)
                     continue;
                 }
-                String key = URLDecoder.decode(tmp[0], "UTF-8"); // decoded GET query attribute key
-                String val = URLDecoder.decode(tmp[1], "UTF-8"); // decoded GET query attribute value
+                String key = URLDecoder.decode(tmp[0], StandardCharsets.UTF_8.name()); // decoded GET query attribute key
+                String val = URLDecoder.decode(tmp[1], StandardCharsets.UTF_8.name()); // decoded GET query attribute value
                 Map<String, String> pair = new HashMap<>();
                 pair.put(KEY, key);
                 pair.put(VAL, val);
@@ -85,9 +89,9 @@ public class PowerAuthRequestCanonizationUtils {
                 } else {
                     firstSkipped = true;
                 }
-                signatureBaseString.append(URLEncoder.encode(key, "UTF-8"));
+                signatureBaseString.append(URLEncoder.encode(key, StandardCharsets.UTF_8.name()));
                 signatureBaseString.append("=");
-                signatureBaseString.append(URLEncoder.encode(val, "UTF-8"));
+                signatureBaseString.append(URLEncoder.encode(val, StandardCharsets.UTF_8.name()));
             }
 
             return signatureBaseString.length() > 0 ? signatureBaseString.toString() : null;

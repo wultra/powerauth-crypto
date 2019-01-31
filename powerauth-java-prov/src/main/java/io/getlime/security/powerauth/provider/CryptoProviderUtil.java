@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.getlime.security.powerauth.provider;
+
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.security.PrivateKey;
@@ -52,8 +54,9 @@ public interface CryptoProviderUtil {
      * @return An instance of the EC public key on success, or null on failure.
      * @throws InvalidKeySpecException When provided bytes are not a correct key
      *                                 representation.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
      */
-    PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException;
+    PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException;
 
     /**
      * Converts an EC private key to bytes by encoding the D number parameter.
@@ -71,8 +74,9 @@ public interface CryptoProviderUtil {
      * @return An instance of EC private key decoded from the input bytes.
      * @throws InvalidKeySpecException The provided key bytes are not a valid EC
      *                                 private key.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
      */
-    PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException;
+    PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException;
 
     /**
      * Converts a shared secret key (usually used for AES based operations) to a

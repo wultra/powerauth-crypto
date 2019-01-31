@@ -1,5 +1,6 @@
 /*
- * Copyright 2017 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,15 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.model;
  * Class representing a base encrypted message, with attributes that are
  * required for PowerAuth 2.0 E2EE to work.
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>2.0</li>
+ *     <li>2.1</li>
+ * </ul>
+ *
+ * Warning: this class will be removed in the future, use ECIES encryption for PowerAuth protocol version 3.0 or higher.
+ *
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class EncryptedMessage {
 

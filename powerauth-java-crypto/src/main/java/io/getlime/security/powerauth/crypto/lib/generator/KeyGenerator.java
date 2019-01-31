@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +17,21 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
-import javax.crypto.*;
+import javax.crypto.KeyAgreement;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.ByteBuffer;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An implementation of a high-level key generator class. Keys are generated
@@ -47,17 +49,17 @@ public class KeyGenerator {
      * Generate a new ECDH key pair using P256r1 curve.
      *
      * @return A new key pair instance, or null in case of an error.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public KeyPair generateKeyPair() {
+    public KeyPair generateKeyPair() throws CryptoProviderException {
         try {
             // we assume BouncyCastle provider
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
@@ -69,8 +71,9 @@ public class KeyGenerator {
      *                to 16 byte key using byte-by-byte xor operation.
      * @return A new instance of the pre-shared key.
      * @throws InvalidKeyException One of the provided keys are not valid keys.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey, boolean keep32b) throws InvalidKeyException {
+    public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey, boolean keep32b) throws InvalidKeyException, CryptoProviderException {
         try {
             KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             keyAgreement.init(privateKey);
@@ -84,9 +87,8 @@ public class KeyGenerator {
             }
             return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(resultSecret);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
         }
-        return null;
     }
 
     /**
@@ -99,8 +101,9 @@ public class KeyGenerator {
      * @param publicKey A public key.
      * @return A new instance of the pre-shared key.
      * @throws InvalidKeyException One of the provided keys are not valid keys.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
+    public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException, CryptoProviderException {
         return computeSharedKey(privateKey, publicKey, false);
     }
 
@@ -142,30 +145,40 @@ public class KeyGenerator {
     }
 
     /**
-     * Derives a new secret key KEY_SHARED from a master secret key KEY_MASTER
+     * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
      * based on following KDF:
      *
-     * BYTES = index, padded from left with 0x00, total 16 bytes
+     * BYTES = index, total 16 bytes
      * KEY_SHARED[BYTES] = AES(BYTES, KEY_MASTER)
      *
-     * @param secret A master shared key
-     * @param index An index of the key
+     * @param secret A master shared key.
+     * @param index A byte array index of the key.
      * @return A new derived key from a master key with given index.
+     * @throws InvalidKeyException In case secret key is invalid.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey deriveSecretKey(SecretKey secret, long index) {
-        try {
-            AESEncryptionUtils aes = new AESEncryptionUtils();
-            byte[] bytes = ByteBuffer.allocate(16).putLong(0L).putLong(index).array();
-            byte[] iv = new byte[16];
-            byte[] encryptedBytes = aes.encrypt(bytes, iv, secret);
-            return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
-            Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public SecretKey deriveSecretKey(SecretKey secret, byte[] index) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        AESEncryptionUtils aes = new AESEncryptionUtils();
+        byte[] iv = new byte[16];
+        byte[] encryptedBytes = aes.encrypt(index, iv, secret);
+        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
     }
 
-    public SecretKey deriveSecretKeyHmac(SecretKey secret, byte[] index) {
+    /**
+     * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
+     * based on following KDF:
+     *
+     * BYTES = index, total 16 bytes
+     * KEY_SHARED[BYTES] = 32B_TO_16B(HMAC-SHA256(BYTES, KEY_MASTER))
+     *
+     * @param secret A master shared key.
+     * @param index A byte array index of the key.
+     * @return A new derived key from a master key with given index.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public SecretKey deriveSecretKeyHmac(SecretKey secret, byte[] index) throws GenericCryptoException, CryptoProviderException {
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
         HMACHashUtilities hmac = new HMACHashUtilities();
@@ -181,8 +194,9 @@ public class KeyGenerator {
      * @param password A password used for key derivation.
      * @param salt A salt used for key derivation.
      * @return A new secret key derived from the password.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt) {
+    public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt) throws CryptoProviderException {
         return deriveSecretKeyFromPassword(password, salt, PowerAuthConfiguration.PBKDF_ITERATIONS);
     }
 
@@ -194,17 +208,17 @@ public class KeyGenerator {
      * @param salt A salt used for key derivation.
      * @param iterations Number of iterations used in PBKDF.
      * @return A new secret key derived from the password.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt, int iterations) {
+    public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt, int iterations) throws CryptoProviderException {
         try {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, 128);
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
             return new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
-            Logger.getLogger(KeyGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
         }
-        return null;
     }
 
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +16,15 @@
  */
 package io.getlime.security.powerauth.crypto.client.token;
 
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 
 /**
  * Class that simplifies working with tokens on the client side.
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class ClientTokenGenerator {
 
@@ -53,8 +56,10 @@ public class ClientTokenGenerator {
      * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (from string representation).
      * @param tokenSecret Token secret, 16 random bytes.
      * @return Token digest computed using provided data bytes with given token secret.
+     * @throws GenericCryptoException In case digest computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) {
+    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
         return tokenUtils.computeTokenDigest(nonce, timestamp, tokenSecret);
     }
 

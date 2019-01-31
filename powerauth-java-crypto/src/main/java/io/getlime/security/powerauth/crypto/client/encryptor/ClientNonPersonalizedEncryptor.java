@@ -4,7 +4,9 @@ import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.NonPersonalizedEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.NonPersonalizedEncryptedMessage;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -14,7 +16,15 @@ import java.security.PublicKey;
 /**
  * Class that simulates client side encryption steps.
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>2.0</li>
+ *     <li>2.1</li>
+ * </ul>
+ *
+ * Warning: this class will be removed in the future, use ECIES encryption for PowerAuth protocol version 3.0 or higher.
+ *
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class ClientNonPersonalizedEncryptor {
 
@@ -27,15 +37,14 @@ public class ClientNonPersonalizedEncryptor {
      * @param appKey App key.
      * @param masterPublicKey Master Server Public Key.
      * @throws InvalidKeyException In case an invalid key is provided.
+     * @throws GenericCryptoException In case of any other cryptography error.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public ClientNonPersonalizedEncryptor(byte[] appKey, PublicKey masterPublicKey) throws InvalidKeyException {
+    public ClientNonPersonalizedEncryptor(byte[] appKey, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
         final KeyGenerator generator = new KeyGenerator();
         byte[] sessionIndex = generator.generateRandomBytes(16);
         KeyPair ephemeralKeyPair = generator.generateKeyPair();
-        if (ephemeralKeyPair == null) {
-            throw new InvalidKeyException("Unable to generate EC key pair. Check your Bouncy Castle settings.");
-        }
         final SecretKey ephemeralSecretKey = generator.computeSharedKey(ephemeralKeyPair.getPrivate(), masterPublicKey);
         final SecretKey sessionRelatedSecretKey = generator.deriveSecretKeyHmac(ephemeralSecretKey, sessionIndex);
 
@@ -49,18 +58,24 @@ public class ClientNonPersonalizedEncryptor {
     /**
      * Encrypt data using current encryptor (non-personalized encryption).
      * @param data Original data.
-     * @return Encrypted payload, or null in case decryption fails.
+     * @return Encrypted payload.
+     * @throws InvalidKeyException In case encryption key is invalid.
+     * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public NonPersonalizedEncryptedMessage encrypt(byte[] data) {
+    public NonPersonalizedEncryptedMessage encrypt(byte[] data) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return this.encryptor.encrypt(data);
     }
 
     /**
      * Decrypt original data from encrypted using current encryptor (non-personalized encryption).
      * @param message Encrypted payload message.
-     * @return Original data, or null in case decryption fails.
+     * @return Original data.
+     * @throws InvalidKeyException In case decryption key is invalid.
+     * @throws GenericCryptoException In case decryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] decrypt(NonPersonalizedEncryptedMessage message) {
+    public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         return this.encryptor.decrypt(message);
     }
 

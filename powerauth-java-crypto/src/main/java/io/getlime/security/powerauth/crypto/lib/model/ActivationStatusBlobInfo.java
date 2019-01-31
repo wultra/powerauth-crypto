@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +25,15 @@ package io.getlime.security.powerauth.crypto.lib.model;
  */
 public class ActivationStatusBlobInfo {
 
+    public static final int ACTIVATION_STATUS_MAGIC_VALUE = 0xDEC0DED1;
+
     private boolean valid;
     private byte activationStatus;
-    private long counter;
+    private byte currentVersion;
+    private byte upgradeVersion;
     private byte failedAttempts;
     private byte maxFailedAttempts;
+    private byte[] ctrData;
 
     /**
      * Return true in case the parsed data was valid (correctly decrypted using transport key), false otherwise.
@@ -64,19 +69,35 @@ public class ActivationStatusBlobInfo {
     }
 
     /**
-     * Get activation counter value.
-     * @return Activation counter value.
+     * Get current crypto protocol version.
+     * @return Current crypto protocol version.
      */
-    public long getCounter() {
-        return counter;
+    public byte getCurrentVersion() {
+        return currentVersion;
     }
 
     /**
-     * Set activation counter value.
-     * @param counter Åctivation counter value.
+     * Set current crypto protocol version.
+     * @param currentVersion Current crypto protocol version.
      */
-    public void setCounter(long counter) {
-        this.counter = counter;
+    public void setCurrentVersion(byte currentVersion) {
+        this.currentVersion = currentVersion;
+    }
+
+    /**
+     * Get crypto version for possible upgrade.
+     * @return Crypto version for possible upgrade.
+     */
+    public byte getUpgradeVersion() {
+        return upgradeVersion;
+    }
+
+    /**
+     * Set crypto version for possible upgrade.
+     * @param upgradeVersion Crypto version for possible upgrade.
+     */
+    public void setUpgradeVersion(byte upgradeVersion) {
+        this.upgradeVersion = upgradeVersion;
     }
 
     /**
@@ -111,4 +132,19 @@ public class ActivationStatusBlobInfo {
         this.maxFailedAttempts = maxFailedAttempts;
     }
 
+    /**
+     * Get counter data.
+     * @return Counter data.
+     */
+    public byte[] getCtrData() {
+        return ctrData;
+    }
+
+    /**
+     * Set counter data.
+     * @param ctrData Counter data.
+     */
+    public void setCtrData(byte[] ctrData) {
+        this.ctrData = ctrData;
+    }
 }

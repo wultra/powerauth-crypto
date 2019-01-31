@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +16,14 @@
  */
 package io.getlime.security.powerauth.crypto.lib.enums;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Enum with a derived key identifier and indexes.
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * @author Petr Dvorak, petr@wultra.com
  *
  */
 public enum PowerAuthDerivedKey {
@@ -75,11 +77,11 @@ public enum PowerAuthDerivedKey {
     }
 
     /**
-     * Get the enum value (key index).
-     * @return Get the enum value (key index).
+     * Get the byte array value of key index.
+     * @return Get the byte array value of key index.
      */
-    public long getIndex() {
-        return index;
+    public byte[] getIndex() {
+        return ByteBuffer.allocate(16).putLong(0L).putLong(index).array();
     }
 
 }

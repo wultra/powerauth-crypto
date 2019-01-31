@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,8 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -26,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
  *
  * - SHA256
  *
- * @author Petr Dvorak, petr@lime-company.eu
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class Hash {
 
@@ -60,11 +62,7 @@ public class Hash {
      * @return SHA256 hash of provided string.
      */
     public static byte[] sha256(String string) {
-        try {
-            return sha256(string, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        return sha256(string, StandardCharsets.UTF_8);
     }
 
     /**
@@ -72,9 +70,8 @@ public class Hash {
      * @param string Original string to be hashed.
      * @param charset Charset to be used to convert string to bytes.
      * @return SHA256 hash of provided string.
-     * @throws UnsupportedEncodingException In case invalid charset is provided.
      */
-    public static byte[] sha256(String string, String charset) throws UnsupportedEncodingException {
+    public static byte[] sha256(String string, Charset charset) {
         byte[] originalBytes = string.getBytes(charset);
         return sha256(originalBytes);
     }

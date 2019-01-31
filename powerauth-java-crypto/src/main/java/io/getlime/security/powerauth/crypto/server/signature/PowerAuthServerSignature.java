@@ -1,5 +1,6 @@
 /*
- * Copyright 2016 Lime - HighTech Solutions s.r.o.
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,9 @@
  */
 package io.getlime.security.powerauth.crypto.server.signature;
 
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -32,17 +35,19 @@ public class PowerAuthServerSignature {
     private final SignatureUtils signatureUtils = new SignatureUtils();
 
     /**
-     * Verify a PowerAuth 2.0 signature against data using signature key list and
+     * Verify a PowerAuth signature against data using signature key list and
      * counter.
      *
      * @param data Signed data.
      * @param signature Signature for the data.
      * @param signatureKeys Keys used for signature.
-     * @param ctr Counter / derived signing key index.
+     * @param ctrData Hash based counter / derived signing key index.
      * @return Returns "true" if the signature matches, "false" otherwise.
+     * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifySignatureForData(byte[] data, String signature, List<SecretKey> signatureKeys, long ctr) {
-        return signatureUtils.validatePowerAuthSignature(data, signature, signatureKeys, ctr);
+    public boolean verifySignatureForData(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
+        return signatureUtils.validatePowerAuthSignature(data, signature, signatureKeys, ctrData);
     }
 
 }
