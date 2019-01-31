@@ -120,6 +120,9 @@ public class EciesDecryptor {
      * @throws EciesException In case request decryption fails.
      */
     public byte[] decryptRequest(EciesCryptogram cryptogram) throws EciesException {
+        if (cryptogram == null || cryptogram.getEncryptedData() == null || cryptogram.getMac() == null || (envelopeKey == null && cryptogram.getEphemeralPublicKey() == null)) {
+            throw new EciesException("Parameter cryptogram for request decryption is invalid");
+        }
         if (!canDecryptRequest()) {
             throw new EciesException("Request decryption is not allowed");
         }
@@ -139,6 +142,9 @@ public class EciesDecryptor {
      * @throws EciesException In case response encryption fails.
      */
     public EciesCryptogram encryptResponse(byte[] data) throws EciesException {
+        if (data == null) {
+            throw new EciesException("Parameter data for response encryption is null");
+        }
         if (!canEncryptResponse()) {
             throw new EciesException("Response encryption is not allowed");
         }
