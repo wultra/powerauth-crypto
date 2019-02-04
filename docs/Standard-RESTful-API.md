@@ -68,7 +68,7 @@ PowerAuth Server decrypts both levels of encryption and returns following data:
     - `activationId` - Represents a long `ACTIVATION_ID` that uniquely identifies given activation records.
     - `serverPublicKey` - Public key `KEY_SERVER_PUBLIC` of the server.
     - `ctrData` - Initial value for hash-based counter.
-- Response values encrypted with ECIES level 2 
+- Response values encrypted with ECIES level 1 
     - `customAttributes` - Structure for application-specific data.
     
 After receiving the response, PowerAuth Client decrypts both layers of response data and continues with the activation process. You can check the documentation for an [Activation](./Activation.md) for more details.
