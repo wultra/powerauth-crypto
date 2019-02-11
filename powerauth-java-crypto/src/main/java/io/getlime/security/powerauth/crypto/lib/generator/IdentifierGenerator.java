@@ -25,7 +25,8 @@ import java.util.UUID;
 /**
  * Generator of identifiers used in PowerAuth protocol.
  *
- * @author Petr Dvorak
+ * @author Petr Dvorak, petr.dvorak@wultra.com
+ * @author Roman Strobl, roman.strobl@wultra.com
  *
  */
 public class IdentifierGenerator {
@@ -70,7 +71,7 @@ public class IdentifierGenerator {
 
     /**
      * Generate version 3.0 or higher activation code. The format of activation code is "ABCDE-FGHIJ-KLMNO-PQRST".
-     *
+     * <p>
      * Activation code construction:
      * <ul>
      * <li>Generate 10 random bytes.</li>
@@ -79,6 +80,7 @@ public class IdentifierGenerator {
      * <li>Generate Base32 representation from these 12 bytes, without padding characters.</li>
      * <li>Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.</li>
      * </ul>
+     *
      * @return Generated activation code.
      */
     public String generateActivationCode() {
@@ -90,11 +92,11 @@ public class IdentifierGenerator {
 
         // Calculate CRC-16 from that 10 bytes.
         CRC16 crc16 = new CRC16();
-        crc16.update(randomBytes, 0, 10);
+        crc16.update(randomBytes, 0, ACTIVATION_CODE_RANDOM_BYTES_LENGTH);
         long crc = crc16.getValue();
 
         // Append CRC-16 (2 bytes) in big endian order at the end of random bytes.
-        byteBuffer.putShort((short)crc);
+        byteBuffer.putShort((short) crc);
 
         // Encode activation code.
         return encodeActivationCode(byteBuffer.array());
@@ -102,6 +104,7 @@ public class IdentifierGenerator {
 
     /**
      * Validate activation code using CRC-16 checksum. The expected format of activation code is "ABCDE-FGHIJ-KLMNO-PQRST".
+     *
      * @param activationCode Activation code.
      * @return Whether activation code is correct.
      */
@@ -109,8 +112,10 @@ public class IdentifierGenerator {
         if (activationCode == null) {
             return false;
         }
+        String partRegexp = "[A-Z2-7]{" + BASE32_KEY_LENGTH + "}";
+        String activationCodeRegexp = partRegexp + "-" + partRegexp + "-" + partRegexp + "-" + partRegexp;
         // Verify activation code using regular expression
-        if (!activationCode.matches("[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}-[A-Z2-7]{5}")) {
+        if (!activationCode.matches(activationCodeRegexp)) {
             return false;
         }
 
@@ -118,17 +123,17 @@ public class IdentifierGenerator {
         byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
 
         // Verify byte array length
-        if (activationCodeBytes.length != 12) {
+        if (activationCodeBytes.length != ACTIVATION_CODE_BYTES_LENGTH) {
             return false;
         }
 
         // Compute checksum from first 10 bytes
         CRC16 crc16 = new CRC16();
-        crc16.update(activationCodeBytes, 0, 10);
+        crc16.update(activationCodeBytes, 0, ACTIVATION_CODE_RANDOM_BYTES_LENGTH);
         long actualChecksum = crc16.getValue();
 
         // Convert the two CRC-16 bytes to long, see Longs.fromByteArray()
-        long expectedChecksum = ((long)activationCodeBytes[10] & 255L) << 8 | (long)activationCodeBytes[11] & 255L;
+        long expectedChecksum = ((long) activationCodeBytes[ACTIVATION_CODE_BYTES_LENGTH - 2] & 255L) << 8 | (long) activationCodeBytes[ACTIVATION_CODE_BYTES_LENGTH - 1] & 255L;
 
         // Compare checksum values
         return expectedChecksum == actualChecksum;
@@ -136,6 +141,7 @@ public class IdentifierGenerator {
 
     /**
      * Convert activation code bytes to Base32 String representation.
+     *
      * @param activationCodeBytes Raw activation code bytes.
      * @return Base32 String representation of activation code.
      */
@@ -144,13 +150,13 @@ public class IdentifierGenerator {
         String base32Encoded = BaseEncoding.base32().omitPadding().encode(activationCodeBytes);
 
         // Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.
-        return base32Encoded.substring(0, 5)
+        return base32Encoded.substring(0, BASE32_KEY_LENGTH)
                 + "-"
-                + base32Encoded.substring(5, 10)
+                + base32Encoded.substring(BASE32_KEY_LENGTH, BASE32_KEY_LENGTH * 2)
                 + "-"
-                + base32Encoded.substring(10, 15)
+                + base32Encoded.substring(BASE32_KEY_LENGTH * 2, BASE32_KEY_LENGTH * 3)
                 + "-"
-                + base32Encoded.substring(15, 20);
+                + base32Encoded.substring(BASE32_KEY_LENGTH * 3, BASE32_KEY_LENGTH * 4);
     }
 
 }
