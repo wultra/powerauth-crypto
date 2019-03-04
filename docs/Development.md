@@ -21,7 +21,7 @@ You can build all PowerAuth Java projects using similar steps:
 - [PowerAuth Admin](https://github.com/wultra/powerauth-admin)
 - [PowerAuth Push Server](https://github.com/wultra/powerauth-push-server)
 - [PowerAuth CMD Tool](https://github.com/wultra/powerauth-cmd-tool)
-- [PowerAuth Crypto](Home.md)
+- [PowerAuth Crypto](./Readme.md)
 - [PowerAuth Web Flow](https://github.com/wultra/powerauth-webflow)
 - [SDK for RESTful APIs](https://github.com/wultra/powerauth-restful-integration)
 
