@@ -1,4 +1,4 @@
-## Interpretation of Activation Status in UI
+# Interpretation of Activation Status in UI
 
 After the application decrypts and decodes the status blob, it needs to react to the information appropriately.
 
