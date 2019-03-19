@@ -29,7 +29,8 @@ public enum EciesSharedInfo1 {
     ACTIVATION_LAYER_2("/pa/activation"),
     UPGRADE("/pa/upgrade"),
     VAULT_UNLOCK("/pa/vault/unlock"),
-    CREATE_TOKEN("/pa/token/create");
+    CREATE_TOKEN("/pa/token/create"),
+    RECOVERY_CODE_CONFIRM("/pa/recovery/confirm");
 
     private byte[] value;
 
