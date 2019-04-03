@@ -79,7 +79,15 @@ public class PasswordHash {
         if (input == null) {
             return false;
         }
-        Argon2Parameters.Builder builder = new Argon2Parameters.Builder()
+        // Convert algorithm name to algorithm ID
+        int algorithmId = Argon2Parameters.ARGON2_i;
+        for (Map.Entry<Integer, String> entry: ALGORITHM_NAME_MAP.entrySet()) {
+            if (entry.getValue().equals(input.getAlgorithm())) {
+                algorithmId = entry.getKey();
+                break;
+            }
+        }
+        Argon2Parameters.Builder builder = new Argon2Parameters.Builder(algorithmId)
                 .withVersion(input.getVersion())
                 .withIterations(input.getIterations())
                 .withMemoryAsKB(input.getMemory() / 1024)
