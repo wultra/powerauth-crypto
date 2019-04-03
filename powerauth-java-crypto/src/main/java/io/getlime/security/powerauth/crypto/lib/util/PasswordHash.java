@@ -21,19 +21,30 @@ import io.getlime.security.powerauth.crypto.lib.model.Argon2Hash;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
- * Utility class that provides password hashing functionality using the Argon2i algorithm.
+ * Utility class that provides password hashing functionality using the Argon2 algorithm.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class PasswordHash {
 
-    private static final String ALGORITHM_NAME = "argon2i";
-    private static final int ALGORITHM_ID = org.bouncycastle.crypto.params.Argon2Parameters.ARGON2_i;
-    private static final int VERSION = org.bouncycastle.crypto.params.Argon2Parameters.ARGON2_VERSION_13;
+    // Default Argon2 password hashing algorithm configuration
+    private static final int ALGORITHM_ID = Argon2Parameters.ARGON2_i;
+    private static final int VERSION = Argon2Parameters.ARGON2_VERSION_13;
     private static final int ITERATIONS = 3;
     private static final int MEMORY_POW_2 = 15;
     private static final int PARALLELISM = 16;
+
+    // Conversion of algorithm ID to algorithm name for Argon2
+    private static final Map<Integer, String> ALGORITHM_NAME_MAP = new LinkedHashMap<>();
+    static {
+        ALGORITHM_NAME_MAP.put(Argon2Parameters.ARGON2_i, "argon2i");
+        ALGORITHM_NAME_MAP.put(Argon2Parameters.ARGON2_d, "argon2d");
+        ALGORITHM_NAME_MAP.put(Argon2Parameters.ARGON2_id, "argon2id");
+    }
 
     private static KeyGenerator keyGenerator = new KeyGenerator();
 
@@ -43,7 +54,17 @@ public class PasswordHash {
      * @return Hash String in Argon2 Modular Crypt Format.
      */
     public static String hash(byte[] password) {
-        Argon2Hash argon2Hash = hash(password, null);
+        // Generate random salt
+        byte[] salt = keyGenerator.generateRandomBytes(8);
+        // Set up the Argon2i algorithm with default parameters
+        Argon2Parameters.Builder builder = new Argon2Parameters.Builder(ALGORITHM_ID)
+                .withVersion(VERSION)
+                .withIterations(ITERATIONS)
+                .withMemoryPowOfTwo(MEMORY_POW_2)
+                .withParallelism(PARALLELISM)
+                .withSalt(salt);
+        Argon2Parameters parameters = builder.build();
+        Argon2Hash argon2Hash = hash(password, parameters);
         return argon2Hash.toString();
     }
 
@@ -54,51 +75,30 @@ public class PasswordHash {
      * @return Whether password verification succeeded.
      */
     public static boolean verify(byte[] password, String argon2Hash) {
-        Argon2Hash inputHash = Argon2Hash.parse(argon2Hash);
-        if (inputHash == null) {
+        Argon2Hash input = Argon2Hash.parse(argon2Hash);
+        if (input == null) {
             return false;
         }
-        // Verify algorithm name
-        if (!ALGORITHM_NAME.equals(inputHash.getAlgorithm())) {
-            return false;
-        }
-        // Verify algorithm version
-        if (inputHash.getVersion() != VERSION) {
-            return false;
-        }
-        // Verify iteration count
-        if (inputHash.getIterations() != ITERATIONS) {
-            return false;
-        }
-        // Extract salt from supplied hash
-        byte[] salt = inputHash.getSalt();
-        // Compute password digest
-        Argon2Hash expectedHash = hash(password, salt);
+        Argon2Parameters.Builder builder = new Argon2Parameters.Builder()
+                .withVersion(input.getVersion())
+                .withIterations(input.getIterations())
+                .withMemoryAsKB(input.getMemory() / 1024)
+                .withParallelism(input.getParallelism())
+                .withSalt(input.getSalt());
+        Argon2Parameters parameters = builder.build();
+        // Compute password hash using provided parameters
+        Argon2Hash expectedHash = hash(password, parameters);
         // Compare hash values
-        return inputHash.hashEquals(expectedHash);
+        return input.hashEquals(expectedHash);
     }
 
     /**
      * Generate password hash in Argon2 Modular Crypt Format for specified password and salt using Argon2i algorithm..
      * @param password Password bytes.
-     * @param salt Salt bytes, use null for random salt.
+     * @param parameters Argon2 parameters.
      * @return Argon2 password hash.
      */
-    private static Argon2Hash hash(byte[] password, byte[] salt) {
-        // In case salt is not specified, generate a random 8-byte salt
-        if (salt == null) {
-            salt = keyGenerator.generateRandomBytes(8);
-        }
-
-        // Set up the Argon2i algorithm
-        Argon2Parameters.Builder builder = new org.bouncycastle.crypto.params.Argon2Parameters.Builder(ALGORITHM_ID)
-                .withVersion(VERSION)
-                .withIterations(ITERATIONS)
-                .withMemoryPowOfTwo(MEMORY_POW_2)
-                .withParallelism(PARALLELISM)
-                .withSalt(salt);
-        Argon2Parameters parameters = builder.build();
-
+    private static Argon2Hash hash(byte[] password, Argon2Parameters parameters) {
         // Generate password digest
         Argon2BytesGenerator gen = new Argon2BytesGenerator();
         gen.init(parameters);
@@ -106,8 +106,13 @@ public class PasswordHash {
         gen.generateBytes(password, digest);
 
         // Convert algorithm parameters and digest to Argon2 Modular Crypt Format
-        Argon2Hash result = new Argon2Hash(ALGORITHM_NAME);
-        result.setParameters(parameters);
+        String algorithmName = ALGORITHM_NAME_MAP.get(parameters.getType());
+        Argon2Hash result = new Argon2Hash(algorithmName);
+        result.setVersion(parameters.getVersion());
+        result.setIterations(parameters.getIterations());
+        result.setParallelism(parameters.getLanes());
+        result.setMemory(parameters.getMemory());
+        result.setSalt(parameters.getSalt());
         result.setDigest(digest);
         return result;
     }

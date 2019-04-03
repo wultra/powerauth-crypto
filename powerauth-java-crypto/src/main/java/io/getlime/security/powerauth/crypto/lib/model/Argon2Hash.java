@@ -17,7 +17,6 @@
 package io.getlime.security.powerauth.crypto.lib.model;
 
 import com.google.common.io.BaseEncoding;
-import org.bouncycastle.crypto.params.Argon2Parameters;
 
 import java.util.*;
 
@@ -41,7 +40,7 @@ public class Argon2Hash {
     }
 
     /**
-     * Constructor with all parameters.
+     * Constructor with algorithm name.
      * @param algorithm Algorithm name.
      */
     public Argon2Hash(String algorithm) {
@@ -62,28 +61,16 @@ public class Argon2Hash {
         if (parts.length != 6) {
             return null;
         }
-        Argon2Hash mcf = new Argon2Hash();
+        Argon2Hash hash = new Argon2Hash();
         // First part is empty, mcfRef starts with the '$' character
-        mcf.setAlgorithm(parts[1]);
+        hash.setAlgorithm(parts[1]);
         // Version uses syntax "v=[version]"
-        mcf.setVersion(extractVersion(parts[2]));
+        hash.setVersion(extractVersion(parts[2]));
         // Parameters use syntax "m=[memoryInBytes],t=[iterations],p=[parallelism]"
-        mcf.setParameters(extractParameters(parts[3]));
-        mcf.setSalt(BaseEncoding.base64().decode(parts[4]));
-        mcf.setDigest(BaseEncoding.base64().decode(parts[5]));
-        return mcf;
-    }
-
-    /**
-     * Set Argon2 algorithm parameters.
-     * @param argon2Parameters Argon2 algorithm parameters.
-     */
-    public void setParameters(Argon2Parameters argon2Parameters) {
-        version = argon2Parameters.getVersion();
-        setIterations(argon2Parameters.getIterations());
-        setParallelism(argon2Parameters.getLanes());
-        setMemory(argon2Parameters.getMemory() * 1024);
-        setSalt(argon2Parameters.getSalt());
+        hash.setParameters(extractParameters(parts[3]));
+        hash.setSalt(BaseEncoding.base64().decode(parts[4]));
+        hash.setDigest(BaseEncoding.base64().decode(parts[5]));
+        return hash;
     }
 
     /**
@@ -229,7 +216,7 @@ public class Argon2Hash {
     /**
      * Extract version from version definition String.
      * @param versionDef Version definition String.
-     * @return Vesion.
+     * @return Version.
      */
     private static Integer extractVersion(String versionDef) {
         if (versionDef != null && versionDef.startsWith("v=") && versionDef.length() > 2) {
