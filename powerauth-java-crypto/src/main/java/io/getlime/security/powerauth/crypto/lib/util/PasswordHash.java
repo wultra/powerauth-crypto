@@ -90,7 +90,7 @@ public class PasswordHash {
         Argon2Parameters.Builder builder = new Argon2Parameters.Builder(algorithmId)
                 .withVersion(input.getVersion())
                 .withIterations(input.getIterations())
-                .withMemoryAsKB(input.getMemory() / 1024)
+                .withMemoryAsKB(input.getMemory())
                 .withParallelism(input.getParallelism())
                 .withSalt(input.getSalt());
         Argon2Parameters parameters = builder.build();
