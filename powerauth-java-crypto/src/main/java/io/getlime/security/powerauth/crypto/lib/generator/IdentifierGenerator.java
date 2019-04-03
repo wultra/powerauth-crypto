@@ -17,9 +17,19 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import com.google.common.io.BaseEncoding;
+import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
+import io.getlime.security.powerauth.crypto.lib.model.RecoveryInfo;
+import io.getlime.security.powerauth.crypto.lib.model.RecoverySeed;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.CRC16;
+import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
+import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -84,10 +94,36 @@ public class IdentifierGenerator {
      * @return Generated activation code.
      */
     public String generateActivationCode() {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(ACTIVATION_CODE_BYTES_LENGTH);
+        try {
+            // Generate 10 random bytes.
+            byte[] randomBytes = keyGenerator.generateRandomBytes(ACTIVATION_CODE_RANDOM_BYTES_LENGTH);
+            return generateActivationCode(randomBytes);
+        } catch (GenericCryptoException ex) {
+            // Exception cannot occur, the random code length is specified correctly
+            return null;
+        }
+    }
 
-        // Generate 10 random bytes.
-        byte[] randomBytes = keyGenerator.generateRandomBytes(ACTIVATION_CODE_RANDOM_BYTES_LENGTH);
+    /**
+     * Generate version 3.0 or higher activation code using provided random bytes. The format of activation code
+     * is "ABCDE-FGHIJ-KLMNO-PQRST".
+     * <p>
+     * Activation code construction:
+     * <ul>
+     * <li>Use provided 10 random bytes.</li>
+     * <li>Calculate CRC-16 from that 10 bytes.</li>
+     * <li>Append CRC-16 (2 bytes) in big endian order at the end of random bytes.</li>
+     * <li>Generate Base32 representation from these 12 bytes, without padding characters.</li>
+     * <li>Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.</li>
+     * </ul>
+     *
+     * @return Generated activation code.
+     */
+    public String generateActivationCode(byte[] randomBytes) throws GenericCryptoException {
+        if (randomBytes == null || randomBytes.length != ACTIVATION_CODE_RANDOM_BYTES_LENGTH) {
+            throw new GenericCryptoException("Invalid request in generateActivationCode");
+        }
+        ByteBuffer byteBuffer = ByteBuffer.allocate(ACTIVATION_CODE_BYTES_LENGTH);
         byteBuffer.put(randomBytes);
 
         // Calculate CRC-16 from that 10 bytes.
@@ -137,6 +173,169 @@ public class IdentifierGenerator {
 
         // Compare checksum values
         return expectedChecksum == actualChecksum;
+    }
+
+    /**
+     * Generate recovery code and PUK for given secret key.
+     * @return Recovery code and PUK.
+     * @throws GenericCryptoException In case of any cryptography error.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws InvalidKeyException In case key is invalid.
+     */
+    public RecoveryInfo generateRecoveryCode() throws GenericCryptoException, CryptoProviderException, InvalidKeyException {
+        final SecretKey secretKey = keyGenerator.generateRandomSecretKey();
+        return generateRecoveryCode(secretKey, 1, false);
+    }
+
+    /**
+     * Generate recovery code and PUKs for given secret key, return optional seed information.
+     * @param secretKey Secret key to use for derivation of recovery code and PUK.
+     * @param pukCount Number of PUKs to generate.
+     * @param exportSeed Whether to export seed information.
+     * @return Recovery code, PUKs and optional seed information.
+     * @throws GenericCryptoException In case of any cryptography error.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws InvalidKeyException In case key is invalid.
+     */
+    public RecoveryInfo generateRecoveryCode(SecretKey secretKey, int pukCount, boolean exportSeed) throws GenericCryptoException, CryptoProviderException, InvalidKeyException {
+        if (secretKey == null) {
+            throw new GenericCryptoException("Invalid key");
+        }
+        byte[] secretKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(secretKey);
+
+        // Generate random nonce
+        byte[] nonceBytes = keyGenerator.generateRandomBytes(32);
+
+        // Derive recovery key using KDF 9.63 using nonce as shared info, trim output to 26 bytes
+        byte[] derivedKeyBytes = KdfX9_63.derive(secretKeyBytes, nonceBytes, 26);
+
+        // Construct recovery code using derived recovery key (first 10 bytes)
+        final String recoveryCode = generateRecoveryCode(derivedKeyBytes);
+
+        // Generate PUK base key using derived recovery key (next 16 bytes)
+        final SecretKey recoveryPukBaseKey = generatePukBaseKey(derivedKeyBytes);
+
+        final Map<Integer, Long> pukDerivationIndexes = new LinkedHashMap<>();
+        final Map<Integer, String> puks = new LinkedHashMap<>();
+
+        for (int i = 1; i <= pukCount; i++) {
+            byte[] derivationIndexBytes;
+            Long derivationIndex;
+            do {
+                // Generate random derivation index which must be unique
+                derivationIndexBytes = keyGenerator.generateRandomBytes(8);
+                derivationIndex = ByteBuffer.wrap(derivationIndexBytes).getLong();
+            } while (pukDerivationIndexes.values().contains(derivationIndex));
+
+            // Generate recovery PUK and store it including derivation index
+            String pukDerived = generatePuk(recoveryPukBaseKey, derivationIndexBytes);
+            puks.put(i, pukDerived);
+            pukDerivationIndexes.put(i, derivationIndex);
+        }
+        if (exportSeed) {
+            RecoverySeed seed = new RecoverySeed(nonceBytes, pukDerivationIndexes);
+            return new RecoveryInfo(recoveryCode, puks, seed);
+        } else {
+            return new RecoveryInfo(recoveryCode, puks);
+        }
+    }
+
+    /**
+     * Derive recovery code and PUKs for given secret key and seed information.
+     * @param secretKey Secret key to use for derivation of recovery code and PUKs.
+     * @param seed Seed information containing nonce and puk derivation indexes.
+     * @return Derived recovery code and PUKs.
+     * @throws GenericCryptoException In case of any cryptography error.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws InvalidKeyException In case key is invalid.
+     */
+    public RecoveryInfo deriveRecoveryCode(SecretKey secretKey, RecoverySeed seed) throws GenericCryptoException, CryptoProviderException, InvalidKeyException {
+        if (secretKey == null || seed == null) {
+            throw new GenericCryptoException("Invalid input data");
+        }
+
+        byte[] secretKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(secretKey);
+
+        // Get nonce and derivation indexes
+        final byte[] nonceBytes = seed.getNonce();
+        final Map<Integer, Long> pukDerivationIndexes = seed.getPukDerivationIndexes();
+
+        if (nonceBytes == null || pukDerivationIndexes == null || pukDerivationIndexes.isEmpty()) {
+            throw new GenericCryptoException("Invalid input data");
+        }
+
+        // Derive recovery key using KDF 9.63 using nonce as shared info, trim output to 26 bytes
+        byte[] derivedKeyBytes = KdfX9_63.derive(secretKeyBytes, nonceBytes, 26);
+
+        // Construct recovery code using derived recovery key (first 10 bytes)
+        final String recoveryCode = generateRecoveryCode(derivedKeyBytes);
+
+        // Generate PUK base key using derived recovery key (next 16 bytes)
+        final SecretKey recoveryPukBaseKey = generatePukBaseKey(derivedKeyBytes);
+
+        // Derive PUKs using derivation indexes
+        final Map<Integer, String> puks = new LinkedHashMap<>();
+        for (int i = 1; i <= pukDerivationIndexes.size(); i++) {
+            Long index = pukDerivationIndexes.get(i);
+            byte[] indexBytes = ByteBuffer.allocate(8).putLong(index).array();
+            String pukDerived = generatePuk(recoveryPukBaseKey, indexBytes);
+            puks.put(i, pukDerived);
+        }
+
+        // Return result
+        RecoveryInfo result = new RecoveryInfo();
+        result.setRecoveryCode(recoveryCode);
+        result.setPuks(puks);
+        return result;
+    }
+
+    /**
+     * Generate recovery code using derived key.
+     * @param derivedKeyBytes Derived key bytes.
+     * @return Recovery code.
+     * @throws GenericCryptoException In case of any cryptography error.
+     */
+    private String generateRecoveryCode(byte[] derivedKeyBytes) throws GenericCryptoException {
+        // Extract first 10 bytes from derived key as recovery code key bytes
+        byte[] recoveryCodeBytes = new byte[10];
+        System.arraycopy(derivedKeyBytes, 0, recoveryCodeBytes, 0, 10);
+
+        // Construct recovery code using derived recovery code key
+        return generateActivationCode(recoveryCodeBytes);
+    }
+
+    /**
+     * Generate base key for generating PUKs using derived key.
+     * @param derivedKeyBytes Derived key bytes.
+     * @return PUK base key.
+     */
+    private SecretKey generatePukBaseKey(byte[] derivedKeyBytes) {
+        // Extract bytes 10-25 as recovery puk base key bytes
+        final byte[] recoveryPukBaseKeyBytes = new byte[16];
+        System.arraycopy(derivedKeyBytes, 10, recoveryPukBaseKeyBytes, 0, 16);
+        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(recoveryPukBaseKeyBytes);
+    }
+
+    /**
+     * Generate recovery PUK using recovery base key and index bytes.
+     * @param recoveryPukBaseKey Recovery base key.
+     * @param indexBytes PUK index bytes.
+     * @return Generated PUK.
+     * @throws GenericCryptoException In case of any cryptography error.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws InvalidKeyException In case key is invalid.
+     */
+    private String generatePuk(SecretKey recoveryPukBaseKey, byte[] indexBytes) throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
+        SecretKey pukKey = keyGenerator.deriveSecretKey(recoveryPukBaseKey, indexBytes);
+        byte[] pukKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(pukKey);
+
+        // Extract last 8 bytes from PUK key bytes
+        byte[] truncatedBytes = new byte[8];
+        System.arraycopy(pukKeyBytes, 8, truncatedBytes, 0, 8);
+
+        // Decimalize the PUK
+        long puk = (ByteBuffer.wrap(truncatedBytes).getLong() & 0xFFFFFFFFFFL) % (long) (Math.pow(10, 10));
+        return String.format("%010d", puk);
     }
 
     /**

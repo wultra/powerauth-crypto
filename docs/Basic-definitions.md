@@ -22,7 +22,7 @@ Following basic cryptography algorithms and parameters are used in the PowerAuth
   - `byte[] signature = ECDSA.sign(byte[] data, PrivateKey privateKey)` - compute signature of given data and private key.
   - `boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKey)` - verify the signature for given data using a given public key.
 
-- **ECDH** - An algorithm for elliptic curve with Diffie-Helman key exchange, uses P256r1 curve. We define single operation on ECDH, a symmetric key deduction between parties A and B:
+- **ECDH** - An algorithm for elliptic curve with Diffie-Hellman key exchange, uses P256r1 curve. We define single operation on ECDH, a symmetric key deduction between parties A and B:
   - `SecretKey secretKey = ECDH.phase(PrivateKey privateKeyA, PublicKey publicKeyB)`
 
 - **KDF** - A key derivation function used to derive a symmetric key with specific "index" from a given master key. Uses AES algorithm with zero initialization vector to derive the new key in following way: `index` is converted to bytes, XORed with a 16 byte long zero array (to get 16 byte long array with bytes from the index) and AES encrypted using provided symmetric key `masterKey`.
@@ -55,6 +55,10 @@ These functions are used in the pseudo-codes:
 - Hashing and MAC functions.
   - `byte[] signature = Mac.hmacSha256(SecretKey key, byte[] message)` - Compute HMAC-SHA256 signature for given message using provided symmetric key.
   - `byte[] hash = Hash.sha256(byte[] original)` - Compute SHA256 hash of a given input.
+  
+- Password hashing.
+  - `String hash = PasswordHash.hash(byte[] password)` - Compute Argon2 hash for given password. Hash is stored in Modular Crypt Format.
+  - `boolean matches = PasswordHash.verify(byte[] password, String hash)` - Verify password against Argon2 hash stored in Modular Crypt Format.
 
 - Utility functions.
   - `byte[] zeroBytes = ByteUtils.zeroBytes(int N)` - Generate buffer with N zero bytes.

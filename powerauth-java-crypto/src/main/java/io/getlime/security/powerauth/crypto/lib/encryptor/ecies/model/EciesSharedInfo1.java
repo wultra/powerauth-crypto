@@ -30,7 +30,7 @@ public enum EciesSharedInfo1 {
     UPGRADE("/pa/upgrade"),
     VAULT_UNLOCK("/pa/vault/unlock"),
     CREATE_TOKEN("/pa/token/create"),
-    RECOVERY_CODE_CONFIRM("/pa/recovery/confirm");
+    CONFIRM_RECOVERY_CODE("/pa/recovery/confirm");
 
     private byte[] value;
 
