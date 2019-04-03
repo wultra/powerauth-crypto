@@ -176,7 +176,7 @@ public class IdentifierGenerator {
     }
 
     /**
-     * Generate recovery code and PUK for given secret key.
+     * Generate recovery code and PUK.
      * @return Recovery code and PUK.
      * @throws GenericCryptoException In case of any cryptography error.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
