@@ -54,7 +54,7 @@ public class RecoveryInfo {
      */
     public RecoveryInfo(String recoveryCode, Map<Integer, String> puks, RecoverySeed seed) {
         this.recoveryCode = recoveryCode;
-        this.puks = puks;
+        this.puks = new LinkedHashMap<>(puks);
         this.seed = seed;
     }
 
@@ -79,7 +79,7 @@ public class RecoveryInfo {
      * @return Recovery PUKs.
      */
     public Map<Integer, String> getPuks() {
-        return puks;
+        return new LinkedHashMap<>(puks);
     }
 
     /**
@@ -87,7 +87,7 @@ public class RecoveryInfo {
      * @param puks Recovery PUKs.
      */
     public void setPuks(Map<Integer, String> puks) {
-        this.puks = puks;
+        this.puks = new LinkedHashMap<>(puks);
     }
 
     /**

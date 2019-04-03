@@ -66,7 +66,7 @@ public class RecoverySeed {
      * @return PUK derivation indexes.
      */
     public Map<Integer, Long> getPukDerivationIndexes() {
-        return pukDerivationIndexes;
+        return new LinkedHashMap<>(pukDerivationIndexes);
     }
 
     /**
