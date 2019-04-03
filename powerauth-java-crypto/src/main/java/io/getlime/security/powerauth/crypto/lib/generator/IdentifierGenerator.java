@@ -117,6 +117,7 @@ public class IdentifierGenerator {
      * <li>Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.</li>
      * </ul>
      *
+     * @param randomBytes Random bytes to use when generating the activation code.
      * @return Generated activation code.
      */
     public String generateActivationCode(byte[] randomBytes) throws GenericCryptoException {
