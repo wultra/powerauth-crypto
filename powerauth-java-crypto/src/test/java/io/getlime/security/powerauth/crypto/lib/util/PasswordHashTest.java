@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -26,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 public class PasswordHashTest {
 
     @Test
-    public void testArgon2Hashes() {
+    public void testArgon2Hashes() throws IOException {
         System.out.println("Testing Argon2 hash verification using various passwords.");
         PasswordHash.verify("".getBytes(StandardCharsets.UTF_8),
                 "$argon2i$v=19$m=32768,t=3,p=16$VFo3SnVYSnk$WZrqp36HmoSPeGhVCt5Ly3s9pU1OpnRnJMPjnlVcdy8");
@@ -43,7 +44,7 @@ public class PasswordHashTest {
     }
 
     @Test
-    public void testArgon2DifferentParameters() {
+    public void testArgon2DifferentParameters() throws IOException {
         System.out.println("Testing Argon2 hash verification using various algorithm parameters.");
         PasswordHash.verify("password".getBytes(StandardCharsets.UTF_8),
                 "$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
@@ -56,7 +57,7 @@ public class PasswordHashTest {
     }
 
     @Test
-    public void testArgon2id() {
+    public void testArgon2id() throws IOException {
         System.out.println("Testing Argon2 hash verification using Argon2id algorithm.");
         PasswordHash.verify("password".getBytes(StandardCharsets.UTF_8), "$argon2id$v=19$m=256,t=2,p=2$c29tZXNhbHQ$bQk8UB/VmZZF4Oo79iDXuL5/0ttZwg2f/5U52iv1cDc");
     }

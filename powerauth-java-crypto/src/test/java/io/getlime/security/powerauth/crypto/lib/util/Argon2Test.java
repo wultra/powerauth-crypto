@@ -20,6 +20,8 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.model.Argon2Hash;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
 /**
@@ -28,7 +30,7 @@ import static org.junit.Assert.*;
 public class Argon2Test {
 
     @Test
-    public void testArgon2HashParser() {
+    public void testArgon2HashParser() throws IOException {
         // Version 16 test
         Argon2Hash hash16 = Argon2Hash.parse("$argon2i$m=65536,t=2,p=1$c29tZXNhbHQ$9sTbSlTio3Biev89thdrlKKiCaYsjjYVJxGAL3swxpQ");
         assertEquals("argon2i", hash16.getAlgorithm());
@@ -49,23 +51,23 @@ public class Argon2Test {
         assertArrayEquals(BaseEncoding.base64().decode("wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA"), hash19.getDigest());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidHash1() {
+    @Test(expected = IOException.class)
+    public void testInvalidHash1() throws IOException {
         Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidHash2() {
+    @Test(expected = IOException.class)
+    public void testInvalidHash2() throws IOException {
         Argon2Hash.parse("$argon2i$v=19$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidHash3() {
+    @Test(expected = IOException.class)
+    public void testInvalidHash3() throws IOException {
         Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidHash4() {
+    @Test(expected = IOException.class)
+    public void testInvalidHash4() throws IOException {
         Argon2Hash.parse("$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$");
     }
 

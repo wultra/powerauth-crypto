@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.model;
 
 import com.google.common.io.BaseEncoding;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -49,16 +50,17 @@ public class Argon2Hash {
 
     /**
      * Construct Argon2 parameters from definition in Modular Crypt Format.
-     * @param mcfRef Definition in Modular Crypt Format.
+     * @param input Definition in Modular Crypt Format.
      * @return Argon2 parameters instance.
+     * @throws IOException In case parsing of hash fails.
      */
-    public static Argon2Hash parse(String mcfRef) {
-        if (mcfRef == null) {
-            return null;
+    public static Argon2Hash parse(String input) throws IOException {
+        if (input == null) {
+            throw new IOException("Missing input parameter");
         }
-        String[] parts = mcfRef.split("\\$");
+        String[] parts = input.split("\\$");
         Argon2Hash hash = new Argon2Hash();
-        if (mcfRef.matches("\\$argon2(?:i|d|id)]?\\$m=[0-9]+,t=[0-9]+,p=[0-9]+\\$[A-Za-z0-9+/]+\\$[A-Za-z0-9+/]+")) {
+        if (input.matches("\\$argon2(?:i|d|id)]?\\$m=[0-9]+,t=[0-9]+,p=[0-9]+\\$[A-Za-z0-9+/]+\\$[A-Za-z0-9+/]+")) {
             // Version 16 (hex 10) of MCF syntax for Argon2
             // First part is empty, mcfRef starts with the '$' character
             hash.setAlgorithm(parts[1]);
@@ -69,7 +71,7 @@ public class Argon2Hash {
             hash.setDigest(BaseEncoding.base64().decode(parts[4]));
             return hash;
         }
-        if (mcfRef.matches("\\$argon2(?:i|d|id)?\\$v=[0-9]+\\$m=[0-9]+,t=[0-9]+,p=[0-9]+\\$[A-Za-z0-9+/]+\\$[A-Za-z0-9+/]+")) {
+        if (input.matches("\\$argon2(?:i|d|id)?\\$v=[0-9]+\\$m=[0-9]+,t=[0-9]+,p=[0-9]+\\$[A-Za-z0-9+/]+\\$[A-Za-z0-9+/]+")) {
             // Version 19 (hex 13) of MCF syntax for Argon2
             // First part is empty, mcfRef starts with the '$' character
             hash.setAlgorithm(parts[1]);
@@ -81,7 +83,7 @@ public class Argon2Hash {
             hash.setDigest(BaseEncoding.base64().decode(parts[5]));
             return hash;
         }
-        throw new IllegalArgumentException("Invalid hash syntax");
+        throw new IOException("Invalid Argon2 hash syntax");
     }
 
     /**

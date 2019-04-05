@@ -21,6 +21,7 @@ import io.getlime.security.powerauth.crypto.lib.model.Argon2Hash;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -73,8 +74,9 @@ public class PasswordHash {
      * @param password Password bytes for verification.
      * @param argon2Hash Password hash in Argon2 Modular Crypt Format.
      * @return Whether password verification succeeded.
+     * @throws IOException In case parsing of hash fails.
      */
-    public static boolean verify(byte[] password, String argon2Hash) {
+    public static boolean verify(byte[] password, String argon2Hash) throws IOException {
         Argon2Hash input = Argon2Hash.parse(argon2Hash);
         if (input == null) {
             return false;
