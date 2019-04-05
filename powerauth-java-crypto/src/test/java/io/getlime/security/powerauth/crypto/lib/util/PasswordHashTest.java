@@ -21,24 +21,19 @@ import org.junit.Test;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Verify various passwords against Argon2i hashes generated using command line utility.
+ * Test verification of Argon2 hashes.
  */
 public class PasswordHashTest {
 
     @Test
     public void testArgon2Hashes() {
+        System.out.println("Testing Argon2 hash verification using various passwords.");
         PasswordHash.verify("".getBytes(StandardCharsets.UTF_8),
                 "$argon2i$v=19$m=32768,t=3,p=16$VFo3SnVYSnk$WZrqp36HmoSPeGhVCt5Ly3s9pU1OpnRnJMPjnlVcdy8");
         PasswordHash.verify("maC2kBxu".getBytes(StandardCharsets.UTF_8),
                 "$argon2i$v=19$m=32768,t=3,p=16$YndXNDhGV0o$E2cHqAeGlUyO26haRT/a7VPzcSeLbISimR98F7CAooI");
-        PasswordHash.verify("PFhd5jR6".getBytes(StandardCharsets.UTF_8),
-                "$argon2i$v=19$m=32768,t=3,p=16$VTdEWXFjNVQ$Ejgk/eNZnH6yEbGOUlo/T0fV578oX9B6f+EjeP6iE7I");
-        PasswordHash.verify("YYwgb7p8".getBytes(StandardCharsets.UTF_8),
-                "$argon2i$v=19$m=32768,t=3,p=16$SDdTczlSaFA$hEPOgZDyofKWcpnPEvoSzPVyeuydHFKiB6aK055FA34");
         PasswordHash.verify("EbyBt7U4djF6G84Y".getBytes(StandardCharsets.UTF_8),
                 "$argon2i$v=19$m=32768,t=3,p=16$UjN6elpVcGI$cRyh9e5nfu6ToXKR1pbPiFudEenRYYuvgea4hvsTB0Y");
-        PasswordHash.verify("XhYb2E93LwQeEm9E".getBytes(StandardCharsets.UTF_8),
-                "$argon2i$v=19$m=32768,t=3,p=16$bVVyNHc2U24$qEkfGgPJ5JzhozbgitvDMgK2Kl8vj7mYvUbjI76NgzE");
         PasswordHash.verify("The quick brown fox jumps over the lazy dog.".getBytes(StandardCharsets.UTF_8),
                 "$argon2i$v=19$m=32768,t=3,p=16$a3c5RzYzOXo$LLM1F2EBBKjuoUc3CRlPNsmGI3vc3mnvNmafao8askc");
         PasswordHash.verify("Příliš žluťoučký kůň úpěl ďábelské ódy.".getBytes(StandardCharsets.UTF_8),
@@ -47,4 +42,22 @@ public class PasswordHashTest {
                 "$argon2i$v=19$m=32768,t=3,p=16$eTZQV0NuVWU$Xi8HXgnunRNBRjH+U5mXEUC7b9uX1JnWVYZtHMzQYmg");
     }
 
+    @Test
+    public void testArgon2DifferentParameters() {
+        System.out.println("Testing Argon2 hash verification using various algorithm parameters.");
+        PasswordHash.verify("password".getBytes(StandardCharsets.UTF_8),
+                "$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
+        PasswordHash.verify("password".getBytes(StandardCharsets.UTF_8),
+                "$argon2i$v=19$m=256,t=2,p=1$c29tZXNhbHQ$iekCn0Y3spW+sCcFanM2xBT63UP2sghkUoHLIUpWRS8");
+        PasswordHash.verify("password".getBytes(StandardCharsets.UTF_8),
+                "$argon2i$v=19$m=256,t=2,p=2$c29tZXNhbHQ$T/XOJ2mh1/TIpJHfCdQan76Q5esCFVoT5MAeIM1Oq2E");
+        PasswordHash.verify("password".getBytes(StandardCharsets.UTF_8),
+                "$argon2i$v=19$m=65536,t=1,p=1$c29tZXNhbHQ$0WgHXE2YXhPr6uVgz4uUw7XYoWxRkWtvSsLaOsEbvs8");
+    }
+
+    @Test
+    public void testArgon2id() {
+        System.out.println("Testing Argon2 hash verification using Argon2id algorithm.");
+        PasswordHash.verify("password".getBytes(StandardCharsets.UTF_8), "$argon2id$v=19$m=256,t=2,p=2$c29tZXNhbHQ$bQk8UB/VmZZF4Oo79iDXuL5/0ttZwg2f/5U52iv1cDc");
+    }
 }

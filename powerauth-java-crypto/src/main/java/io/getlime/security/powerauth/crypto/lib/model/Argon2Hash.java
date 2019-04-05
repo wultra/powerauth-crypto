@@ -57,20 +57,31 @@ public class Argon2Hash {
             return null;
         }
         String[] parts = mcfRef.split("\\$");
-        // Version 10 of MCF syntax for Argon2 with fewer parts is not supported
-        if (parts.length != 6) {
-            return null;
-        }
         Argon2Hash hash = new Argon2Hash();
-        // First part is empty, mcfRef starts with the '$' character
-        hash.setAlgorithm(parts[1]);
-        // Version uses syntax "v=[version]"
-        hash.setVersion(extractVersion(parts[2]));
-        // Parameters use syntax "m=[memoryInBytes],t=[iterations],p=[parallelism]"
-        hash.setParameters(extractParameters(parts[3]));
-        hash.setSalt(BaseEncoding.base64().decode(parts[4]));
-        hash.setDigest(BaseEncoding.base64().decode(parts[5]));
-        return hash;
+        if (mcfRef.matches("\\$argon2(?:i|d|id)]?\\$m=[0-9]+,t=[0-9]+,p=[0-9]+\\$[A-Za-z0-9+/]+\\$[A-Za-z0-9+/]+")) {
+            // Version 16 (hex 10) of MCF syntax for Argon2
+            // First part is empty, mcfRef starts with the '$' character
+            hash.setAlgorithm(parts[1]);
+            // Version parameter is missing in version 16, use null value
+            // Parameters use syntax "m=[memoryInBytes],t=[iterations],p=[parallelism]"
+            hash.setParameters(extractParameters(parts[2]));
+            hash.setSalt(BaseEncoding.base64().decode(parts[3]));
+            hash.setDigest(BaseEncoding.base64().decode(parts[4]));
+            return hash;
+        }
+        if (mcfRef.matches("\\$argon2(?:i|d|id)?\\$v=[0-9]+\\$m=[0-9]+,t=[0-9]+,p=[0-9]+\\$[A-Za-z0-9+/]+\\$[A-Za-z0-9+/]+")) {
+            // Version 19 (hex 13) of MCF syntax for Argon2
+            // First part is empty, mcfRef starts with the '$' character
+            hash.setAlgorithm(parts[1]);
+            // Version uses syntax "v=[version]"
+            hash.setVersion(extractVersion(parts[2]));
+            // Parameters use syntax "m=[memoryInBytes],t=[iterations],p=[parallelism]"
+            hash.setParameters(extractParameters(parts[3]));
+            hash.setSalt(BaseEncoding.base64().decode(parts[4]));
+            hash.setDigest(BaseEncoding.base64().decode(parts[5]));
+            return hash;
+        }
+        throw new IllegalArgumentException("Invalid hash syntax");
     }
 
     /**
@@ -102,6 +113,10 @@ public class Argon2Hash {
      * @param version Algorithm version.
      */
     public void setVersion(Integer version) {
+        if (version == 16) {
+            // Do not set version for version 16 (hex 10)
+            return;
+        }
         this.version = version;
     }
 
@@ -296,9 +311,9 @@ public class Argon2Hash {
     @Override
     public String toString() {
         return "$" + algorithm
-                + "$" + versionToString()
+                + (version != null ? "$" + versionToString() : "")
                 + "$" + parametersToString()
-                + "$" + BaseEncoding.base64().encode(salt)
-                + "$" + BaseEncoding.base64().encode(digest);
+                + "$" + BaseEncoding.base64().omitPadding().encode(salt)
+                + "$" + BaseEncoding.base64().omitPadding().encode(digest);
     }
 }
