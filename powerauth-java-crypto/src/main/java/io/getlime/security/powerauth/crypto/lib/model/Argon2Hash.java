@@ -51,7 +51,7 @@ public class Argon2Hash {
     /**
      * Construct Argon2 parameters from definition in Modular Crypt Format.
      * @param input Definition in Modular Crypt Format.
-     * @return Argon2 parameters instance.
+     * @return Argon2 hash instance.
      * @throws IOException In case parsing of hash fails.
      */
     public static Argon2Hash parse(String input) throws IOException {
