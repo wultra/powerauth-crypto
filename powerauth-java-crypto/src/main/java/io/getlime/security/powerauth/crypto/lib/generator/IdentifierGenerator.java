@@ -207,7 +207,7 @@ public class IdentifierGenerator {
         // Generate random nonce
         byte[] nonceBytes = keyGenerator.generateRandomBytes(32);
 
-        // Derive recovery key using KDF 9.63 using nonce as shared info, trim output to 26 bytes
+        // Derive recovery key using KDF X9.63 using nonce as shared info, trim output to 26 bytes
         byte[] derivedKeyBytes = KdfX9_63.derive(secretKeyBytes, nonceBytes, 26);
 
         // Construct recovery code using derived recovery key (first 10 bytes)
@@ -265,7 +265,7 @@ public class IdentifierGenerator {
             throw new GenericCryptoException("Invalid input data");
         }
 
-        // Derive recovery key using KDF 9.63 using nonce as shared info, trim output to 26 bytes
+        // Derive recovery key using KDF X9.63 using nonce as shared info, trim output to 26 bytes
         byte[] derivedKeyBytes = KdfX9_63.derive(secretKeyBytes, nonceBytes, 26);
 
         // Construct recovery code using derived recovery key (first 10 bytes)
