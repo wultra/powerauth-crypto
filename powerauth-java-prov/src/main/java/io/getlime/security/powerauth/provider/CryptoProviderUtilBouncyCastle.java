@@ -68,7 +68,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             // BC library was loaded using same classloader as current classloader or its parent
             return ((ECPublicKey) publicKey).getQ().getEncoded(false);
         } else {
-            // BC library has it's own classloader, reflection needs to be used
+            // BC library has its own classloader, reflection needs to be used
             try {
                 Object q = publicKey.getClass().getMethod("getQ").invoke(publicKey);
                 return (byte[]) q.getClass().getMethod("getEncoded", boolean.class).invoke(q, false);
@@ -104,7 +104,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
                 ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
                 return kf.generatePublic(pubSpec);
             } else {
-                // BC library has it's own classloader, it needs to be used
+                // BC library has its own classloader, it needs to be used
                 Object ecSpecBc = getEcKeySpecBc(clBc, ecSpec);
                 Object pubSpec = getEcPubKeySpecBc(clBc, ecSpecBc, point);
                 return (PublicKey) kf.getClass().getMethod("generatePublic", clBc.loadClass(KeySpec.class.getName())).invoke(kf, pubSpec);
@@ -127,7 +127,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             // BC library was loaded using same classloader as current classloader or its parent
             return ((ECPrivateKey) privateKey).getD().toByteArray();
         } else {
-            // BC library has it's own classloader, reflection needs to be used
+            // BC library has its own classloader, reflection needs to be used
             try {
                 Object d = privateKey.getClass().getMethod("getD").invoke(privateKey);
                 return (byte[]) d.getClass().getMethod("toByteArray").invoke(d);
@@ -159,7 +159,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
                 ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);
                 return kf.generatePrivate(pubSpec);
             } else {
-                // BC library has it's own classloader, it needs to be used
+                // BC library has its own classloader, it needs to be used
                 Object ecSpecBc = getEcKeySpecBc(clBc, ecSpec);
                 Object pubSpec = getEcPrivKeySpecBc(clBc, ecSpecBc, keyInteger);
                 return (PrivateKey) kf.getClass().getMethod("generatePrivate", clBc.loadClass(KeySpec.class.getName())).invoke(kf, pubSpec);
