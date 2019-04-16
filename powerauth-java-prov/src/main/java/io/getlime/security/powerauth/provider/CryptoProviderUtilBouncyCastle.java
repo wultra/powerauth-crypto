@@ -64,10 +64,11 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      */
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) {
         ClassLoader clBc = Security.getProvider("BC").getClass().getClassLoader();
-        ClassLoader clCurrent = getClass().getClassLoader();
-        if (clBc.getClass().isAssignableFrom(clCurrent.getClass()) && clBc == clCurrent) {
+        if (clBc == getClass().getClassLoader() || clBc == getClass().getClassLoader().getParent()) {
+            // BC library was loaded using same classloader as current classloader or its parent
             return ((ECPublicKey) publicKey).getQ().getEncoded(false);
         } else {
+            // BC library has it's own classloader, reflection needs to be used
             try {
                 Object q = publicKey.getClass().getMethod("getQ").invoke(publicKey);
                 return (byte[]) q.getClass().getMethod("getEncoded", boolean.class).invoke(q, false);
@@ -98,9 +99,8 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
 
             ClassLoader clBc = Security.getProvider("BC").getClass().getClassLoader();
-            ClassLoader clCurrent = getClass().getClassLoader();
-            if (clBc.getClass().isAssignableFrom(clCurrent.getClass()) && clBc == clCurrent) {
-                // BC library was loaded using same classloader as current classloader
+            if (clBc == getClass().getClassLoader() || clBc == getClass().getClassLoader().getParent()) {
+                // BC library was loaded using same classloader as current classloader or its parent
                 ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
                 return kf.generatePublic(pubSpec);
             } else {
@@ -123,10 +123,11 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      */
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
         ClassLoader clBc = Security.getProvider("BC").getClass().getClassLoader();
-        ClassLoader clCurrent = getClass().getClassLoader();
-        if (clBc.getClass().isAssignableFrom(clCurrent.getClass()) && clBc == clCurrent) {
+        if (clBc == getClass().getClassLoader() || clBc == getClass().getClassLoader().getParent()) {
+            // BC library was loaded using same classloader as current classloader or its parent
             return ((ECPrivateKey) privateKey).getD().toByteArray();
         } else {
+            // BC library has it's own classloader, reflection needs to be used
             try {
                 Object d = privateKey.getClass().getMethod("getD").invoke(privateKey);
                 return (byte[]) d.getClass().getMethod("toByteArray").invoke(d);
@@ -153,9 +154,8 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
 
             ClassLoader clBc = Security.getProvider("BC").getClass().getClassLoader();
-            ClassLoader clCurrent = getClass().getClassLoader();
-            if (clBc.getClass().isAssignableFrom(clCurrent.getClass()) && clBc == clCurrent) {
-                // BC library was loaded using same classloader as current classloader
+            if (clBc == getClass().getClassLoader() || clBc == getClass().getClassLoader().getParent()) {
+                // BC library was loaded using same classloader as current classloader or its parent
                 ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);
                 return kf.generatePrivate(pubSpec);
             } else {
