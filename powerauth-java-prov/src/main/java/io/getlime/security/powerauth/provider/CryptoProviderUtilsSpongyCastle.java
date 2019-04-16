@@ -42,7 +42,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
     /**
      * Get the provider name, for example "BC" for Bouncy Castle.
      *
-     * @return Name of the provider, for example "BC" for Boucy Castle.
+     * @return Name of the provider, for example "BC" for Bouncy Castle.
      */
     @Override
     public String getProviderName() {
