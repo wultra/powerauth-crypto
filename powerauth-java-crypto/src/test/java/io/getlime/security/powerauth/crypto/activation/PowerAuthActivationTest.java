@@ -34,6 +34,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.security.interfaces.ECPublicKey;
 
 import static org.junit.Assert.*;
 
@@ -130,7 +131,7 @@ public class PowerAuthActivationTest {
                     activationOtp,
                     clientNonce
             );
-            assertEquals(devicePublicKey, decryptedDevicePublicKey);
+            assertEquals(((ECPublicKey)devicePublicKey).getW(), ((ECPublicKey)decryptedDevicePublicKey).getW());
 
             // SERVER: Encrypt and send encrypted server public and it's signature
             KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
@@ -145,7 +146,7 @@ public class PowerAuthActivationTest {
             assertTrue(serverPublicKeySignatureOK);
 
             PublicKey decryptedServerPublicKey = clientActivation.decryptServerPublicKey(c_serverPublicKey, devicePrivateKey, ephemeralPublicKey, activationOtp, activationIdShort, serverNonce);
-            assertEquals(serverPublicKey, decryptedServerPublicKey);
+            assertEquals(((ECPublicKey)serverPublicKey).getW(), ((ECPublicKey)decryptedServerPublicKey).getW());
 
             // CLIENT and SERVER: Compute device public key fingerprint
             String devicePublicKeyFingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey);

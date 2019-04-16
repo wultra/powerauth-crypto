@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
+import java.security.interfaces.ECPrivateKey;
 
 import static org.junit.Assert.assertEquals;
 
@@ -117,7 +118,7 @@ public class VaultTest {
             assertEquals(clientVaultEncryptionKey, vaultEncryptionKeyLocal);
 
             PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);
-            assertEquals(deviceKeyPair.getPrivate(), devicePrivateKeyLocal);
+            assertEquals(((ECPrivateKey)deviceKeyPair.getPrivate()).getS(), ((ECPrivateKey)devicePrivateKeyLocal).getS());
         }
 
     }
@@ -178,7 +179,7 @@ public class VaultTest {
         assertEquals(clientVaultEncryptionKey, vaultEncryptionKeyLocal);
 
         PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);
-        assertEquals(deviceKeyPair.getPrivate(), devicePrivateKeyLocal);
+        assertEquals(((ECPrivateKey)deviceKeyPair.getPrivate()).getS(), ((ECPrivateKey)devicePrivateKeyLocal).getS());
 
     }
 

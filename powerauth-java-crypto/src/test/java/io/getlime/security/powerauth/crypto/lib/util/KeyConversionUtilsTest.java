@@ -31,6 +31,7 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 
 import static org.junit.Assert.assertEquals;
 
@@ -80,14 +81,14 @@ public class KeyConversionUtilsTest {
 			String originalBase64 = BaseEncoding.base64().encode(originalBytes);
 			byte[] decodedBytes = BaseEncoding.base64().decode(originalBase64);
 			PublicKey decodedPublicKey = instance.convertBytesToPublicKey(decodedBytes);
-			assertEquals(publicKey, decodedPublicKey);
+			assertEquals(((ECPublicKey)publicKey).getW(), ((ECPublicKey)decodedPublicKey).getW());
 
 			PrivateKey privateKey = kp.getPrivate();
 			byte[] originalPrivateBytes = instance.convertPrivateKeyToBytes(privateKey);
 			String originalPrivateBase64 = BaseEncoding.base64().encode(originalPrivateBytes);
 			byte[] decodedPrivateBytes = BaseEncoding.base64().decode(originalPrivateBase64);
 			PrivateKey decodedPrivateKey = instance.convertBytesToPrivateKey(decodedPrivateBytes);
-			assertEquals(privateKey, decodedPrivateKey);
+			assertEquals(((ECPrivateKey) privateKey).getS(), ((ECPrivateKey) decodedPrivateKey).getS());
 
 			KeyFactory kf = KeyFactory.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
 			BigInteger keyInteger = new BigInteger("" + (12 * i));
@@ -98,7 +99,7 @@ public class KeyConversionUtilsTest {
 			originalPrivateBase64 = BaseEncoding.base64().encode(originalPrivateBytes);
 			decodedPrivateBytes = BaseEncoding.base64().decode(originalPrivateBase64);
 			PrivateKey decodedPrivateKey2 = instance.convertBytesToPrivateKey(decodedPrivateBytes);
-			assertEquals(privateKey2, decodedPrivateKey2);
+			assertEquals(privateKey2.getS(), ((ECPrivateKey) decodedPrivateKey2).getS());
 		}
 
 	}
