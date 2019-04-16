@@ -44,7 +44,7 @@ public interface CryptoProviderUtil {
      * @param publicKey An EC public key to be converted.
      * @return A byte array representation of the EC public key.
      */
-    byte[] convertPublicKeyToBytes(PublicKey publicKey);
+    byte[] convertPublicKeyToBytes(PublicKey publicKey) throws CryptoProviderException;
 
     /**
      * Converts byte array to an EC public key, by decoding the Q point
