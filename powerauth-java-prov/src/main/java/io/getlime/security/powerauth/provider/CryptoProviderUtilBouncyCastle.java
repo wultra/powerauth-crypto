@@ -88,12 +88,12 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             BigInteger y = point.getAffineYCoord().toBigInteger();
 
             // Generate public key using Java security API
-            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC");
+            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", getProviderName());
             parameters.init(new ECGenParameterSpec("secp256r1"));
             ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
             ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
-            return KeyFactory.getInstance("EC").generatePublic(ecPublicKeySpec);
-        } catch (NoSuchAlgorithmException | InvalidParameterSpecException ex) {
+            return KeyFactory.getInstance("EC", getProviderName()).generatePublic(ecPublicKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
@@ -120,13 +120,13 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      */
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
         try {
-            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC");
+            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", getProviderName());
             parameters.init(new ECGenParameterSpec("secp256r1"));
             ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
             // Private key is stored including the sign bit as regular Java BigInteger representation
             ECPrivateKeySpec ecPrivateKeySpec = new ECPrivateKeySpec(new BigInteger(keyBytes), ecParameterSpec);
-            return KeyFactory.getInstance("EC").generatePrivate(ecPrivateKeySpec);
-        } catch (NoSuchAlgorithmException | InvalidParameterSpecException ex) {
+            return KeyFactory.getInstance("EC", getProviderName()).generatePrivate(ecPrivateKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
