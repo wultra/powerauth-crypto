@@ -105,8 +105,8 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
                 return kf.generatePublic(pubSpec);
             } else {
                 // BC library has it's own classloader, it needs to be used
-                Object ecSpecBc = getEcKeySpecBc(ecSpec);
-                Object pubSpec = getEcPubKeySpecBc(ecSpecBc, point);
+                Object ecSpecBc = getEcKeySpecBc(clBc, ecSpec);
+                Object pubSpec = getEcPubKeySpecBc(clBc, ecSpecBc, point);
                 return (PublicKey) kf.getClass().getMethod("generatePublic", clBc.loadClass(KeySpec.class.getName())).invoke(kf, pubSpec);
             }
 
@@ -160,8 +160,8 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
                 return kf.generatePrivate(pubSpec);
             } else {
                 // BC library has it's own classloader, it needs to be used
-                Object ecSpecBc = getEcKeySpecBc(ecSpec);
-                Object pubSpec = getEcPrivKeySpecBc(ecSpecBc, keyInteger);
+                Object ecSpecBc = getEcKeySpecBc(clBc, ecSpec);
+                Object pubSpec = getEcPrivKeySpecBc(clBc, ecSpecBc, keyInteger);
                 return (PrivateKey) kf.getClass().getMethod("generatePrivate", clBc.loadClass(KeySpec.class.getName())).invoke(kf, pubSpec);
             }
 
@@ -195,6 +195,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
 
     /**
      * Get EC key spec loaded using Bouncy Castle provider classloader.
+     * @param cl BC classloader.
      * @param ecSpec EC parameter spec.
      * @return EC key spec object.
      * @throws ClassNotFoundException In case of class not found.
@@ -203,8 +204,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @throws InstantiationException In case of instantiation error.
      * @throws InvocationTargetException In case of invocation error.
      */
-    private Object getEcKeySpecBc(ECParameterSpec ecSpec) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
-        ClassLoader cl = Security.getProvider("BC").getClass().getClassLoader();
+    private Object getEcKeySpecBc(ClassLoader cl, ECParameterSpec ecSpec) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         Object x = cl.loadClass(SecP256R1FieldElement.class.getName()).getConstructor(BigInteger.class).newInstance(ecSpec.getG().getAffineXCoord().toBigInteger());
         Object y = cl.loadClass(SecP256R1FieldElement.class.getName()).getConstructor(BigInteger.class).newInstance(ecSpec.getG().getAffineYCoord().toBigInteger());
         Object curve = cl.loadClass(SecP256R1Curve.class.getName()).newInstance();
@@ -214,7 +214,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
 
     /**
      * Get EC public key spec loaded using Bouncy Castle provider classloader.
-     * @param ecSpec EC spec.
+     * @param cl BC classloader.
      * @param point Public key point.
      * @return EC public key spec object.
      * @throws ClassNotFoundException In case of class not found.
@@ -223,8 +223,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @throws InstantiationException In case of instantiation error.
      * @throws InvocationTargetException In case of invocation error.
      */
-    private Object getEcPubKeySpecBc(Object ecSpec, ECPoint point) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ClassLoader cl = Security.getProvider("BC").getClass().getClassLoader();
+    private Object getEcPubKeySpecBc(ClassLoader cl, Object ecSpec, ECPoint point) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Object curve = cl.loadClass(SecP256R1Curve.class.getName()).newInstance();
         Object xPub = cl.loadClass(SecP256R1FieldElement.class.getName()).getConstructor(BigInteger.class).newInstance(point.getAffineXCoord().toBigInteger());
         Object yPub = cl.loadClass(SecP256R1FieldElement.class.getName()).getConstructor(BigInteger.class).newInstance(point.getAffineYCoord().toBigInteger());
@@ -234,6 +233,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
 
     /**
      * Get EC private key spec loaded using Bouncy Castle provider classloader.
+     * @param cl BC classloader.
      * @param ecSpec EC spec.
      * @param keyInteger Public key point as BigInteger.
      * @return EC public key spec object.
@@ -243,8 +243,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @throws InstantiationException In case of instantiation error.
      * @throws InvocationTargetException In case of invocation error.
      */
-    private Object getEcPrivKeySpecBc(Object ecSpec, BigInteger keyInteger) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ClassLoader cl = Security.getProvider("BC").getClass().getClassLoader();
+    private Object getEcPrivKeySpecBc(ClassLoader cl, Object ecSpec, BigInteger keyInteger) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         return cl.loadClass(ECPrivateKeySpec.class.getName()).getConstructor(BigInteger.class, ecSpec.getClass()).newInstance(keyInteger, ecSpec);
     }
 
