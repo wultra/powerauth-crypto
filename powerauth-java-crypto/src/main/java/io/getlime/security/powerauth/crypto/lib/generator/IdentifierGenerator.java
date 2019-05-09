@@ -224,7 +224,7 @@ public class IdentifierGenerator {
             Long derivationIndex;
             String derivedPuk;
             do {
-                // Generate random derivation index which must be unique
+                // Generate random derivation index
                 derivationIndexBytes = keyGenerator.generateRandomBytes(8);
                 derivationIndex = ByteBuffer.wrap(derivationIndexBytes).getLong();
                 // Generate recovery PUK
