@@ -222,15 +222,18 @@ public class IdentifierGenerator {
         for (int i = 1; i <= pukCount; i++) {
             byte[] derivationIndexBytes;
             Long derivationIndex;
+            String derivedPuk;
             do {
                 // Generate random derivation index which must be unique
                 derivationIndexBytes = keyGenerator.generateRandomBytes(8);
                 derivationIndex = ByteBuffer.wrap(derivationIndexBytes).getLong();
-            } while (pukDerivationIndexes.values().contains(derivationIndex));
+                // Generate recovery PUK
+                derivedPuk = generatePuk(recoveryPukBaseKey, derivationIndexBytes);
+                // Make sure that generated PUK is unique
+            } while (puks.values().contains(derivedPuk));
 
-            // Generate recovery PUK and store it including derivation index
-            String pukDerived = generatePuk(recoveryPukBaseKey, derivationIndexBytes);
-            puks.put(i, pukDerived);
+            // Store generated PUK including its derivation index
+            puks.put(i, derivedPuk);
             pukDerivationIndexes.put(i, derivationIndex);
         }
         if (exportSeed) {
