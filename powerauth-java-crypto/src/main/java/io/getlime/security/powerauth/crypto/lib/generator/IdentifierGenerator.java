@@ -220,12 +220,11 @@ public class IdentifierGenerator {
         final Map<Integer, String> puks = new LinkedHashMap<>();
 
         for (int i = 1; i <= pukCount; i++) {
-            byte[] derivationIndexBytes;
             Long derivationIndex;
             String derivedPuk;
             do {
                 // Generate random derivation index
-                derivationIndexBytes = keyGenerator.generateRandomBytes(8);
+                byte[] derivationIndexBytes = keyGenerator.generateRandomBytes(8);
                 derivationIndex = ByteBuffer.wrap(derivationIndexBytes).getLong();
                 // Generate recovery PUK
                 derivedPuk = generatePuk(recoveryPukBaseKey, derivationIndexBytes);
