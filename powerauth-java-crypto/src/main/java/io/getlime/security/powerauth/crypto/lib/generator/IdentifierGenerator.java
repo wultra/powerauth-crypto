@@ -58,6 +58,11 @@ public class IdentifierGenerator {
      */
     private static final int ACTIVATION_CODE_RANDOM_BYTES_LENGTH = 10;
 
+    /**
+     * Maximum number of attempts for PUK derivation.
+     */
+    private static final int PUK_DERIVATION_MAX_ATTEMPTS = 20;
+
     private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
@@ -222,12 +227,18 @@ public class IdentifierGenerator {
         for (int i = 1; i <= pukCount; i++) {
             Long derivationIndex;
             String derivedPuk;
+            int derivationAttempt = 0;
             do {
                 // Generate random derivation index
                 byte[] derivationIndexBytes = keyGenerator.generateRandomBytes(8);
                 derivationIndex = ByteBuffer.wrap(derivationIndexBytes).getLong();
                 // Generate recovery PUK
                 derivedPuk = generatePuk(recoveryPukBaseKey, derivationIndexBytes);
+                // Prevent infinite loop
+                derivationAttempt++;
+                if (derivationAttempt == PUK_DERIVATION_MAX_ATTEMPTS) {
+                    throw new GenericCryptoException("PUK derivation failed due to exceeding maximum number of attempts for generating unique PUK");
+                }
                 // Make sure that generated PUK is unique
             } while (puks.values().contains(derivedPuk));
 
