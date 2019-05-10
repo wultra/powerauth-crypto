@@ -79,15 +79,16 @@ To describe the steps more precisely, the activation process is performed in fol
 1. Master Front-End Application requests a new activation for a given user.
 
 1. PowerAuth Server generates an `ACTIVATION_ID`, `ACTIVATION_CODE`, `CTR_DATA` - an initial value for hash based counter, and a key pair `(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC)`. Server also optionally computes a signature `ACTIVATION_SIGNATURE` of `ACTIVATION_CODE` using servers master private key `KEY_SERVER_MASTER_PRIVATE`.
-
-	- `String ACTIVATION_ID = Generator.randomUUID()`
-	- `String ACTIVATION_CODE = Generator.randomActivationCode()` (must be unique among records in CREATED and OTP_USED states)
-	- `byte[] CTR_DATA = Generator.randomBytes(16)`
-	- `KeyPair keyPair = KeyGenerator.randomKeyPair()`
-	- `PrivateKey KEY_SERVER_PRIVATE = keyPair.getPrivate()`
-	- `PublicKey KEY_SERVER_PUBLIC = keyPair.getPublic()`
-	- `byte[] DATA = ACTIVATION_CODE.getBytes("UTF-8")`
-	- `byte[] ACTIVATION_SIGNATURE = ECDSA.sign(DATA, KEY_SERVER_MASTER_PRIVATE)`
+   ```java
+   String ACTIVATION_ID = Generator.randomUUID()
+   String ACTIVATION_CODE = Generator.randomActivationCode()  // must be unique among records in CREATED and OTP_USED states
+   byte[] CTR_DATA = Generator.randomBytes(16)
+   KeyPair keyPair = KeyGenerator.randomKeyPair()
+   PrivateKey KEY_SERVER_PRIVATE = keyPair.getPrivate()
+   PublicKey KEY_SERVER_PUBLIC = keyPair.getPublic()
+   byte[] DATA = ACTIVATION_CODE.getBytes("UTF-8")
+   byte[] ACTIVATION_SIGNATURE = ECDSA.sign(DATA, KEY_SERVER_MASTER_PRIVATE)
+   ```
 
 1. Record associated with given `ACTIVATION_ID` is now in `CREATED` state.
 
@@ -96,15 +97,17 @@ To describe the steps more precisely, the activation process is performed in fol
 1. User enters `ACTIVATION_CODE`, and `ACTIVATION_SIGNATURE` (optional) in the PowerAuth Client, for example using manual entry or by scanning a QR code with activation data.
 
 1. (optional) PowerAuth Client verifies `ACTIVATION_SIGNATURE` against `ACTIVATION_CODE` using `KEY_SERVER_MASTER_PUBLIC` and if the signature matches, it proceeds.
-
-	- `byte[] DATA = ACTIVATION_CODE.getBytes("UTF-8")`
-	- `boolean isOK = ECDSA.verify(DATA, ACTIVATION_SIGNATURE, KEY_SERVER_MASTER_PUBLIC)`
+   ```java
+   byte[] DATA = ACTIVATION_CODE.getBytes("UTF-8")
+   boolean isOK = ECDSA.verify(DATA, ACTIVATION_SIGNATURE, KEY_SERVER_MASTER_PUBLIC)
+   ```
 
 1. PowerAuth Client generates its key pair `(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC)`.
-
-	- `KeyPair keyPair = KeyGenerator.randomKeyPair()`
-	- `PrivateKey KEY_DEVICE_PRIVATE = keyPair.getPrivate()`
-	- `PublicKey KEY_DEVICE_PUBLIC = keyPair.getPublic()`
+   ```java
+   KeyPair keyPair = KeyGenerator.randomKeyPair()
+   PrivateKey KEY_DEVICE_PRIVATE = keyPair.getPrivate()
+   PublicKey KEY_DEVICE_PUBLIC = keyPair.getPublic()
+   ```
 
 1. PowerAuth Client encrypts payload containing `KEY_DEVICE_PUBLIC` with an application scoped ECIES (level 2, `sh1="/pa/activation"`). Let's call the result of this step as `ACTIVATION_DATA`.
 
@@ -123,19 +126,23 @@ To describe the steps more precisely, the activation process is performed in fol
 1. PowerAuth Client decrypts the response with both levels of ECIES, in the right order and receives `ACTIVATION_ID`, `KEY_SERVER_PUBLIC`, `CTR_DATA` and stores all that values locally on the device.
 
 1. (optional) PowerAuth Client displays `H_K_DEVICE_PUBLIC`, so that a user can verify the device public key correctness by entering `H_K_DEVICE_PUBLIC` in the Master Front-End Application (Master Front-End Application sends `H_K_DEVICE_PUBLIC` for verification to PowerAuth Server via Intermediate Server Application).
-    - `byte[] activationIdBytes = ACTIVATION_ID.getBytes("UTF-8")`
-    - `byte[] fingerprintBytes = ByteUtils.concat(K_DEVICE_PUBLIC_BYTES, ByteUtils.concat(activationIdBytes, K_SERVER_PUBLIC_BYTES))`
-	- `byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(KeyConversion.getBytes(fingerprintBytes), 4)`
-	- `int H_K_DEVICE_PUBLIC = ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (10 ^ 8)`
-	- _Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack. (Displaying fingerprint of the server key is not necessary, since the server's public key is signed using server's private master key and encrypted with activation OTP and server public key)._
+   ```java
+   byte[] activationIdBytes = ACTIVATION_ID.getBytes("UTF-8")
+   byte[] fingerprintBytes = ByteUtils.concat(K_DEVICE_PUBLIC_BYTES, ByteUtils.concat(activationIdBytes, K_SERVER_PUBLIC_BYTES))
+   byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(KeyConversion.getBytes(fingerprintBytes), 4)
+   int H_K_DEVICE_PUBLIC = ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (10 ^ 8)
+   ```
+   _Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack. (Displaying fingerprint of the server key is not necessary, since the server's public key is signed using server's private master key and encrypted with activation OTP and server public key)._
 
 1. PowerAuth Client uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
-
-	- `KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)`
+   ```java
+   KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)
+   ```
 
 1. PowerAuth Server uses `KEY_DEVICE_PUBLIC` and `KEY_SERVER_PRIVATE` to deduce `KEY_MASTER_SECRET` using ECDH.
-
-	- `KEY_MASTER_SECRET = ECDH.phase(KEY_SERVER_PRIVATE, KEY_DEVICE_PUBLIC)`
+   ```java
+   KEY_MASTER_SECRET = ECDH.phase(KEY_SERVER_PRIVATE, KEY_DEVICE_PUBLIC)
+   ```
 
 1. Master Front-End Application allows completion of the activation - for example, it may ask user to enter a code delivered via an SMS message. Master Front-End Application technically commits the activation by calling PowerAuth Server (via Intermediate Server Application).
 

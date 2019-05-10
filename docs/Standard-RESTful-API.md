@@ -152,9 +152,14 @@ The `activationData` contains an encrypted level 2 response. So, the JSON respon
 {
     "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
     "serverPublicKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-    "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J=="
+    "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J==",
+    "activationRecovery": {
+        "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA",
+        "puk": "0123456789"
+    }
 }
 ```
+> Note that `"activationRecovery"` part of the response is optional and depends on whether the [Activation Recovery](Activation-Recovery.md) feature is enabled on the PowerAuth Server.
 
 ## Activation status
 

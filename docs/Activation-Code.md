@@ -9,7 +9,7 @@ The PowerAuth protocol 3, defines a new version of activation code, where OTP is
 ## Code Construction
 
 1. Generate 10 random bytes
-2. Calculate `CRC-16/ARC` from that 10 bytes. You can check a [reference implementation](https://introcs.cs.princeton.edu/java/61data/CRC16.java) in Java.
+2. Calculate `CRC-16/ARC` from that 10 bytes. You can check a [reference implementation](resources/snippets/CRC16.java) in Java.
 3. Append CRC-16 in big endian order at the end of random bytes.
 4. Generate BASE32 representation from that 12 bytes, without padding characters.
 5. Split BASE32 string into four groups, each one contains file characters. Use "-" as a separator.
@@ -31,6 +31,17 @@ The validation process is quite simple:
 You can use following simple values to test your application's validation logic:
 
 - `AAAAA-AAAAA-AAAAA-AAAAA`
+- `LLLLL-LLLLL-LLLLL-LQJTA`
+- `KKKKK-KKKKK-KKKKK-KDJNQ`
 - `MMMMM-MMMMM-MMMMM-MUTOA`
 - `VVVVV-VVVVV-VVVVV-VTFVA`
 - `55555-55555-55555-55YMA`
+
+Random values:
+
+- `W65WE-3T7VI-7FBS2-A4OYA`
+- `DD7P5-SY4RW-XHSNB-GO52A`
+- `X3TS3-TI35Z-JZDNT-TRPFA`
+- `HCPJX-U4QC4-7UISL-NJYMA`
+- `XHGSM-KYQDT-URE34-UZGWQ`
+- `45AWJ-BVACS-SBWHS-ABANA`
