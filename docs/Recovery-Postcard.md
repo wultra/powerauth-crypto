@@ -73,7 +73,7 @@ The purpose of this section is to describe how the postcard is securely exchange
        {
            long PUK_DERIVATION_INDEX = ByteUtils.getLong(Generator.randomBytes(8))
            byte[] PUK_KEY = KDF.derive(RECOVERY_PUK_BASE_KEY, PUK_DERIVATION_INDEX)
-           long PUK_VALUE = (ByteUtils.getLong(ByteUtils.truncate(PUK_KEY, 8)) & 0xFFFFFFFFFF) % Math.pow(10,10)
+           long PUK_VALUE = (ByteUtils.getLong(ByteUtils.truncate(PUK_KEY, 8)) & 0xFFFFFFFFFFL) % Math.pow(10,10)
            String PUK = String.format("%010d", PUK_VALUE)
            if  !PUK_ARRAY.contains(PUK) {
                PUK_DERIVATION_INDEX_ARRAY[i] = PUK_DERIVATION_INDEX
@@ -118,7 +118,7 @@ The purpose of this section is to describe how the postcard is securely exchange
       }
    }
    ```
-   _Note that information above is just an example and the actual payload may be slightly different._
+   _Note that the JSON structure above is just an example to illustrate how nonce and PUK derivation indexes may be passed with a permanent address of a recovery postcard recipient. The actual payload format may be slightly different for different business purposes._
 
 1. RPPS knows `RPPS_MASTER_SHARED_SECRET`, so it can reconstruct `RECOVERY_CODE` and `PUK` values from the received printing request:
    ```java
