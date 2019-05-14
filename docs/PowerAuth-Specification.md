@@ -14,6 +14,7 @@ Following chapters describe the cryptography that is used in PowerAuth.
 - [Checking Activation Status](./Activation-Status.md) - Explains how client can fetch information about given activation.
 - [Computing and Validating Signatures](./Computing-and-Validating-Signatures.md) - Shows how signatures are computed and validated.
 - [End-To-End Encryption](./End-To-End-Encryption.md) - Explains personalized and non-personalized encryption.
+- [Activation Recovery](Activation-Recovery.md) - Describes the activation recovery process.
 - [List of Used Keys](./List-of-used-keys.md) - Lists all keys that are used in the PowerAuth protocol.
 
 These additional chapters provide additional insight in the practical protocol implementation.
@@ -21,4 +22,4 @@ These additional chapters provide additional insight in the practical protocol i
 - [Standard RESTful API](./Standard-RESTful-API.md)
 - [Implementation Details](./Implementation-notes.md)
 
-For any questions related to the protocol, please write to hello@wultra.com.
+For any questions related to the protocol, please write to [hello@wultra.com](mailto:hello@wultra.com). If you believe you have identified a security vulnerability with PowerAuth, you should report it as soon as possible via email to [support@wultra.com](mailto:support@wultra.com). Please do not post it to a public issue tracker.

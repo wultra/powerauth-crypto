@@ -51,6 +51,7 @@ These functions are used in the pseudo-codes:
   - `String randomBase32 Generator.randomBase32String(int N)` - Generate string in Base32 encoding with N characters using a secure random generator.
   - `String uuid = Generator.randomUUID()` - Generate a new UUID level 4 and return it in string representation.
   - `String code = Generator.randomActivationCode()` - Generate a new `ACTIVATION_CODE`. See [Activation Code](./Activation-Code.md) for more details.
+  - `String code = Generator.buildActivationCode(byte[10] randomBytes)` - Function return an activation code from given random data. 
   
 - Hashing and MAC functions.
   - `byte[] signature = Mac.hmacSha256(SecretKey key, byte[] message)` - Compute HMAC-SHA256 signature for given message using provided symmetric key.
@@ -64,6 +65,7 @@ These functions are used in the pseudo-codes:
   - `byte[] zeroBytes = ByteUtils.zeroBytes(int N)` - Generate buffer with N zero bytes.
   - `byte[] truncatedBytes = ByteUtils.truncate(byte[] bytes, int N)` - Get last N bytes of given byte array.
   - `int integer = ByteUtils.getInt(byte[4] bytes)` - Get integer from 4 byte long byte array.
+  - `long value = ByteUtils.getLong(byte[8] bytes)` - Get long value from 8 byte long byte array.
   - `byte[] result = ByteUtils.concat(byte[] a, byte[] b)` - Concatenate two byte arrays - append `b` after `a`.
   - `byte[] result = ByteUtils.convert32Bto16B(byte[] bytes32, byte[] b)` - Converts 32b long byte array to 16b long array by xor-ing the first 16b with the second 16b, byte-by-byte.
   - `byte[] result = ByteUtils.subarray(byte[] bytes, int startIndex, int length)` - Obtain subarray of a byte array, starting with index `startIndex` with a given length.
