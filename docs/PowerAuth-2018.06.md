@@ -31,10 +31,10 @@ For updating to 2018.06, please follow these migration guides:
 
 | Platform | Package Name | Version | Description |
 |---|---|---|---|
-| iOS | `PowerAuth2` | 0.19.1 | A client library for iOS |
-| watchOS | `PowerAuth2ForWatch` | 0.19.1 | A limited library for watchOS |
-| iOS App Extensions | `PowerAuth2ForExtensions` | 0.19.1 | A limited library for iOS App Extensions |
-| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 0.19.2 | A client library for Android |
+| iOS | `PowerAuth2` | 0.20.1 | A client library for iOS |
+| watchOS | `PowerAuth2ForWatch` | 0.20.1 | A limited library for watchOS |
+| iOS App Extensions | `PowerAuth2ForExtensions` | 0.20.1 | A limited library for iOS App Extensions |
+| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 0.20.1 | A client library for Android |
 
 ### Back-End Integration Libraries
 
