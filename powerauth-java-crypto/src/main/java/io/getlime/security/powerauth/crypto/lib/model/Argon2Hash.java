@@ -76,7 +76,11 @@ public class Argon2Hash {
             // First part is empty, mcfRef starts with the '$' character
             hash.setAlgorithm(parts[1]);
             // Version uses syntax "v=[version]"
-            hash.setVersion(extractVersion(parts[2]));
+            Integer version = extractVersion(parts[2]);
+            // Avoid reported coverity scan issue for null pointer dereference
+            if (version != null) {
+                hash.setVersion(version);
+            }
             // Parameters use syntax "m=[memoryInBytes],t=[iterations],p=[parallelism]"
             hash.setParameters(extractParameters(parts[3]));
             hash.setSalt(BaseEncoding.base64().decode(parts[4]));
