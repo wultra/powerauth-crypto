@@ -1,6 +1,6 @@
 # Recovery Postcard
 
-The Recovery Postcard is a postcard delivered via OOB channel (typically via the courier service) which contains information needed for the PowerAuth Client's [activation recovery](Activation-Recovery.md). This document describes, in brief, the format of the postcard and the process required for its construction. 
+The Recovery Postcard is a postcard delivered via OOB channel (typically via the courier service) which contains information needed for the PowerAuth Client's [activation recovery](Activation-Recovery.md). This document describes, in brief, the format of the postcard and the process required for its construction.
 
 ## Information printed on the postcard
 
@@ -22,6 +22,8 @@ The purpose of this section is to describe how the postcard is securely exchange
 - **"PAS"** – stands for PowerAuth Server
 - **"RPPS"** – stands for "Recovery Postcard Printing Service". It's a service responsible for the postcard manufacturing.
 - **"RPOS"** – stands for "Recovery Postcard Ordering Service". It's a service that orchestrates a whole process, from postcard issue, to send order to RPPS
+
+![Recovery Postcard Construction - Architecture](resources/images/arch_cloud_printing_center.png)
 
 ### Introduction to the problem
 
@@ -47,8 +49,8 @@ The purpose of this section is to describe how the postcard is securely exchange
        // Mode useful for RC postcard creation
        SHARED_SECRET = RPPS_MASTER_SHARED_SECRET
    }
-   
-   repeat 
+
+   repeat
    {
        byte[] NONCE = Generator.randomBytes(32)
        byte[] SHARED_POSTCARD = KDF_X9_63_SHA256.derive(SHARED_SECRET, NONCE)
@@ -63,11 +65,11 @@ The purpose of this section is to describe how the postcard is securely exchange
 
    // Prepare array of PUK derivation indexes, set to 0
    long[] PUK_DERIVATION_INDEX_ARRAY[PUK_COUNT] = { 0 }
-   
+
    // Prepare array of PUK values
    String[] PUK_ARRAY[PUK_COUNT] = { null }
 
-   for I = 0; I < PUK_COUNT; i++ 
+   for I = 0; I < PUK_COUNT; i++
    {
        repeat
        {
@@ -83,7 +85,7 @@ The purpose of this section is to describe how the postcard is securely exchange
        }   
    }
    ```
-   
+
 1. PAS store following values to the database:
     - `RECOVERY_CODE`
     - For each value in `PUK_ARRAY` stores argon2 hashed value
@@ -91,7 +93,7 @@ The purpose of this section is to describe how the postcard is securely exchange
 1. PAS will return following values to RPOS
     - `NONCE`
     - `PUK_DERIVATION_INDEX_ARRAY`
-    
+
 1. RPOS will construct printing request for RPPS:
    ```json
    {
@@ -131,7 +133,7 @@ The purpose of this section is to describe how the postcard is securely exchange
    // Prepare array of PUK values
    String[] PUK_ARRAY[PUK_COUNT] = { null }
 
-   for I = 0; I < PUK_COUNT; i++ 
+   for I = 0; I < PUK_COUNT; i++
    {
        long PUK_DERIVATION_INDEX = PUK_DERIVATION_INDEX_ARRAY[I]   
        byte[] PUK_KEY = KDF.derive(RECOVERY_PUK_BASE_KEY, PUK_DERIVATION_INDEX)
