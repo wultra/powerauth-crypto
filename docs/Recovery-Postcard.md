@@ -56,7 +56,7 @@ The purpose of this section is to describe how the postcard is securely exchange
        byte[] SHARED_POSTCARD = KDF_X9_63_SHA256.derive(SHARED_SECRET, NONCE)
        byte[] RECOVERY_CODE_BYTES = ByteUtils.subarray(SHARED_POSTCARD, 0, 10)
        String RECOVERY_CODE = Generator.buildActivationCode(RECOVERY_CODE_BYTES)
-       if RECOVERY_CODE does_not exist in DB {
+       if RECOVERY_CODE does not exist in DB {
            break
        }
    }
