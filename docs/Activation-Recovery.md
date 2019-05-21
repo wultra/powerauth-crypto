@@ -106,6 +106,8 @@ From the user's perspective, the Activation Flow via Recovery Code and PUK is ve
 
 After this step, PowerAuth Client performs Key Exchange with the PowerAuth Server, and the activation continues as usual. The only difference is that the activation is immediately in the "ACTIVE" state, so no activation commit is required.
 
+![Recovery Codes](resources/images/ui_recovery_codes_activation.png)
+
 ### Key Exchange
 
 Following diagram shows how public keys are exchanged between PowerAuth Client and PowerAuth Server, and how master shared secret and PowerAuth Standard Keys are derived. The process is very similar to [Key Exchange](Activation.md#key-exchange) from a regular [Activation](Activation.md).
