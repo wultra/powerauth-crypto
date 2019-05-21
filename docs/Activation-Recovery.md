@@ -1,6 +1,6 @@
 # Activation Recovery
 
-The Activation via Recovery Code is a process allowing the user to self activate the PowerAuth powered application. Such recovery typically doesn't require support from Master Front-End Application (like internet banking) or doesn't need to be confirmed via another channel (like via SMS authorization code). This kind of activation is typically useful in case of emergency when the mobile device with an activated application is no longer in the user's possession. 
+The Activation via Recovery Code is a process allowing the user to self activate the PowerAuth powered application. Such recovery typically doesn't require support from Master Front-End Application (like internet banking) or doesn't need to be confirmed via another channel (like via SMS authorization code). This kind of activation is typically useful in case of emergency when the mobile device with an activated application is no longer in the user's possession.
 
 This chapter of the documentation describes how this process works and what you should consider before you allow this feature in your application.
 
@@ -27,7 +27,7 @@ The Recovery Code and PUK can be obtained in two basic ways:
    - This type of Recovery Code is associated to the activation and if it's used for the recovery, then the previous activation is removed.
    - This type of Recovery Code and PUK can be obtained via any type of the activation process.
    - See [Application provided Recovery Code and PUK](#application-provided-recovery-code-and-puk) chapter for more details.
-   
+
 1. Via the Recovery Postcard
    - Postcard typically contains one Recovery Code and multiple PUK values.
    - User has to use PUKs from postcard in the predefined order.
@@ -55,13 +55,17 @@ In the second scenario, the mobile application acts as a replacement for a typic
 For all cases, we recommend you to implement the following countermeasures:
 
 - Your application should receive a push notification once the activation is recovered on another device.
-- You should also notify the user via other digital channel, like SMS or e-mail. 
+- You should also notify the user via other digital channel, like SMS or e-mail.
 - You should adequately inform the user about how sensitive Recovery Code and PUK are.
 
 
 ### Application provided Recovery Code and PUK
 
-If the feature is enabled on the PowerAuth Server, then one pair of Recovery Code and PUK is generated during the activation process. Because of the sensitivity of those values, you should adequately instruct your user that:
+If the feature is enabled on the PowerAuth Server, then one pair of Recovery Code and PUK is generated during the activation process.
+
+![Recovery Codes](resources/images/ui_recovery_codes.png)
+
+Because of the sensitivity of those values, you should adequately instruct your user that:
 
 - Recovery Code and PUK are sensitive values, so the user should put both values on paper and keep it at a safe place.
 - Your application should proactively disable screenshots when Recovery Code and PUK are visible on the screen. Alternatively, you should warn the user in case that user took the screenshot.
@@ -128,7 +132,7 @@ To describe the steps more precisely, the recovery activation process is perform
 
 1. Intermediate Server Application decrypts ECIES envelope, with an application scoped ECIES (level 1, `sh1="/pa/generic/application"`) and asks PowerAuth Server to create an activation using recovery code. At this step, the `RECOVERY_CODE` can be used to identify the user.
 
-1. PowerAuth Server receives `RECOVERY_CODE`, `RECOVERY_PUK` and `ACTIVATION_DATA` from Intermediate Server Application. The `RECOVERY_CODE` identifies the record containing information about the user and the next valid Recovery PUK. The record also may optionally contain an information about an associated activation (let's call it "original activation"). 
+1. PowerAuth Server receives `RECOVERY_CODE`, `RECOVERY_PUK` and `ACTIVATION_DATA` from Intermediate Server Application. The `RECOVERY_CODE` identifies the record containing information about the user and the next valid Recovery PUK. The record also may optionally contain an information about an associated activation (let's call it "original activation").
 
 1. PowerAuth Server validates whether the value stored in the database match the received `RECOVERY_PUK`.
    - If the received `RECOVERY_PUK` doesn't match, then the counter of failed attempts for particular `RECOVERY_CODE` is increased. If the maximum number of failed attempts is reached, then the `RECOVERY_CODE` is blocked. See [Recovery Code states](#recovery-code-and-puk-states).
@@ -142,14 +146,14 @@ To describe the steps more precisely, the recovery activation process is perform
    PrivateKey KEY_SERVER_PRIVATE = keyPair.getPrivate()
    PublicKey KEY_SERVER_PUBLIC = keyPair.getPublic()
    ```
-	
+
 1. PowerAuth Server decrypts `ACTIVATION_DATA` with using an application scoped ECIES (level 2, `sh1="/pa/activation"`) and stores `KEY_DEVICE_PUBLIC` at given new activation record with a new `ACTIVATION_ID`.
 
 1. PowerAuth Server changes the record status of new activation to `ACTIVE`.
 
 1. (optional) If "original activation" is available, then PowerAuth Server changes its status to `REMOVED`.
 
-1. PowerAuth Server encrypts response, containing `ACTIVATION_ID`, `CTR_DATA`, `KEY_SERVER_PUBLIC` with the same key as was used for ECIES level 2 decryption. This data is once more time encrypted by Intermediate Server Application, with the same key from ECIES level 1, and the response is sent to the PowerAuth Client. 
+1. PowerAuth Server encrypts response, containing `ACTIVATION_ID`, `CTR_DATA`, `KEY_SERVER_PUBLIC` with the same key as was used for ECIES level 2 decryption. This data is once more time encrypted by Intermediate Server Application, with the same key from ECIES level 1, and the response is sent to the PowerAuth Client.
 
 1. PowerAuth Client decrypts the response with both levels of ECIES, in the right order and receives `ACTIVATION_ID`, `KEY_SERVER_PUBLIC`, `CTR_DATA` and stores all that values locally on the device.
 
@@ -178,9 +182,9 @@ Record associated with given Recovery Code transits between following states dur
 The **initial state** of the record depends on how the recovery code was created:
 
 - Recovery Code created as a part of application activation is in **ACTIVE** state.
-- Recovery Code created for the [Recovery Postcard](Recovery-Postcard.md) is in **CREATED** state and needs to be [confirmed](#recovery-code-confirmation) before use. 
+- Recovery Code created for the [Recovery Postcard](Recovery-Postcard.md) is in **CREATED** state and needs to be [confirmed](#recovery-code-confirmation) before use.
 
-The record also contains the following additional important information: 
+The record also contains the following additional important information:
 
 - **User Identifier** – links this record to one particular user in the system
 - **Number of failed attempts** – is a counter of failed attempts. The counter is increased when a wrong Recovery PUK is used and zeroed in case of correct one. If the counter reaches the maximum allowed numbers of failed attempts, then the record for given Recovery Code is **BLOCKED**
@@ -207,7 +211,7 @@ From the user's perspective, the confirmation process is quite simple:
 
 1. The user scans "Recovery QR Code" or enter the code manually. The PowerAuth Client application can detect whether the QR code contains valid Recovery Code (see [format](#format-of-recovery-code))
 
-1. The PowerAuth Client application sends an appropriate HTTP request to the Intermediate Server Application to confirm the code. 
+1. The PowerAuth Client application sends an appropriate HTTP request to the Intermediate Server Application to confirm the code.
 
 1. If the confirmation succeeded, the response from the server contains information, whether the Recovery Code was already confirmed before. The PowerAuth Client application can use this information to adjust the success screen presented to the user.
 
@@ -222,7 +226,7 @@ The format of the code is identical to [Activation Code](Activation-Code.md). Th
 
 ```
 R:45AWJ-BVACS-SBWHS-ABANA
-``` 
+```
 
 The capital `R`, followed with one colon character is a marker, that QR code contains the recovery code. The purpose of this minimalistic format is that the length of the encoded text is already at a threshold, where one more character leads to QR code with a higher density. We expect that a specialized, secure, [dot matrix printer](https://en.wikipedia.org/wiki/Dot_matrix_printing) prints the postcard. Such printers have a very low DPI, so the smaller QR code is better.
 
