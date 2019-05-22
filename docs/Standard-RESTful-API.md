@@ -17,6 +17,7 @@ Following endpoints are published in PowerAuth Standard RESTful API (protocol ve
 - [`/pa/v3/signature/validate`](#validate-signature) - Validate a signature (requires authentication).
 - [`/pa/v3/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires encryption).
 - [`/pa/v3/upgrade/commit`](#upgrade-commit) - Commits a protocol upgrade (requires authentication).
+- [`/pa/v3/recovery/confirm`](#confirm-recovery) - Confirm a recovery code (requires authentication and encryption).
 
 Before you continue, you can also read [End-To-End encryption](./End-To-End-Encryption.md) and [Computing and Validating Signatures](./Computing-and-Validating-Signatures.md) documents, describing encryption and authentication, used in the RESTful API.
 
@@ -68,7 +69,7 @@ PowerAuth Server decrypts both levels of encryption and returns following data:
     - `activationId` - Represents a long `ACTIVATION_ID` that uniquely identifies given activation records.
     - `serverPublicKey` - Public key `KEY_SERVER_PUBLIC` of the server.
     - `ctrData` - Initial value for hash-based counter.
-- Response values encrypted with ECIES level 2 
+- Response values encrypted with ECIES level 1 
     - `customAttributes` - Structure for application-specific data.
     
 After receiving the response, PowerAuth Client decrypts both layers of response data and continues with the activation process. You can check the documentation for an [Activation](./Activation.md) for more details.
@@ -100,7 +101,7 @@ JSON request object before ECIES level 1 encryption. The `activationData` field 
 {
     "activationType": "CODE",
     "identityAttributes": {
-        "code": "VVVVV-VVVVV-VVVVV-VTFVA",
+        "code": "VVVVV-VVVVV-VVVVV-VTFVA"
     },
     "activationData": {
         "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
@@ -151,9 +152,14 @@ The `activationData` contains an encrypted level 2 response. So, the JSON respon
 {
     "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
     "serverPublicKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-    "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J=="
+    "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J==",
+    "activationRecovery": {
+        "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA",
+        "puk": "0123456789"
+    }
 }
 ```
+> Note that `"activationRecovery"` part of the response is optional and depends on whether the [Activation Recovery](Activation-Recovery.md) feature is enabled on the PowerAuth Server.
 
 ## Activation status
 
@@ -366,6 +372,7 @@ You can provide following reasons for a vault unlocking:
 - `ADD_BIOMETRY` - call was used to enable biometric authentication.
 - `FETCH_ENCRYPTION_KEY` - call was used to fetch a generic data encryption key.
 - `SIGN_WITH_DEVICE_PRIVATE_KEY` - call was used to unlock device private key used for ECDSA signatures.
+- `RECOVERY_CODE` - call was used to unlock recovery code.
 
 Actual JSON request body, after the encryption:
 ```json
@@ -517,4 +524,59 @@ JSON request body (an empty JSON):
 JSON response body (an empty JSON):
 ```json
 {}
+```
+
+
+## Confirm Recovery
+
+Confirm a recovery code created for a recovery postcard. The recovery code is confirmed once user receives a postcard with recovery code and PUKs. 
+
+| Request parameter | Value                       |
+| ----------------- | --------------------------- |
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v3/recovery/confirm`   |
+| Signature uriId   | `/pa/recovery/confirm`      |
+| ECIES             | `activation, sh1="/pa/recovery/confirm"` |
+
+### Request
+
+- Headers
+    - `Content-Type: application/json`
+    - `X-PowerAuth-Authorization: PowerAuth ...`
+
+JSON request before ECIES encryption:
+```json
+{
+    "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA"
+}
+```
+
+Actual JSON request body after the encryption:
+```json
+{
+    "ephemeralPublicKey": "BPZvFnVgImV2LLIdxRoGPQvp8m0uG9cIwNhs11mXWT+sBcILDYgDuj0DagbS8yNbTju07PPscc/eE7zjQ/0sPSo=",
+    "encryptedData": "fuDZz3jqtJ40JjKHek/57gt3dL4XyLWVq9CYupEudCOnTvo6yq57oW9VWR1/e+Ih",
+    "mac":"dL9IGDMoOuyqScxWv9R5XpOj8B/wRNKoLEo5eL8GonA="
+}
+```
+
+### Response
+
+- Status Code: `200`
+- Headers:
+    - `Content-Type: application/json`
+    
+JSON response before ECIES decryption:
+```json
+{
+    "mac": "ct78kSghyrL+b7N/bpNNI5GRt595xU5Y2qlGEG+j+1U=",
+    "encryptedData": "7LK7qs+OK0cfQPZlkzl2G8z5/IZx0SHhI/BPYFhhxqE="
+}
+```
+
+JSON response after the decryption:
+```json
+{
+    "alreadyConfirmed" : false
+}
 ```

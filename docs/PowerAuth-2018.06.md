@@ -6,7 +6,7 @@ For updating to 2018.06, please follow these migration guides:
 
 - [PowerAuth Server - Migration from version 0.18.0 to version 0.19.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-0.19.0.md)
 - [PowerAuth Web Flow - Migration from version 0.19.0 to version 0.20.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-0.20.0.md)
-- [PowerAuth Mobile SDK - Release Notes - 0.19.0](https://github.com/wultra/powerauth-mobile-sdk/releases/tag/0.19.0)
+- [PowerAuth Mobile SDK - Release Notes - 0.20.0](https://github.com/wultra/powerauth-mobile-sdk/releases/tag/0.20.0)
 
 ## Components for version 2018.06
 
@@ -31,10 +31,10 @@ For updating to 2018.06, please follow these migration guides:
 
 | Platform | Package Name | Version | Description |
 |---|---|---|---|
-| iOS | `PowerAuth2` | 0.19.1 | A client library for iOS |
-| watchOS | `PowerAuth2ForWatch` | 0.19.1 | A limited library for watchOS |
-| iOS App Extensions | `PowerAuth2ForExtensions` | 0.19.1 | A limited library for iOS App Extensions |
-| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 0.19.2 | A client library for Android |
+| iOS | `PowerAuth2` | 0.20.1 | A client library for iOS |
+| watchOS | `PowerAuth2ForWatch` | 0.20.1 | A limited library for watchOS |
+| iOS App Extensions | `PowerAuth2ForExtensions` | 0.20.1 | A limited library for iOS App Extensions |
+| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 0.20.1 | A client library for Android |
 
 ### Back-End Integration Libraries
 

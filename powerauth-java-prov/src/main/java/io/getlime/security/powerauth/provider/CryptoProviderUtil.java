@@ -34,7 +34,7 @@ public interface CryptoProviderUtil {
     /**
      * Get the provider name, for example "BC" for Bouncy Castle.
      *
-     * @return Name of the provider, for example "BC" for Boucy Castle.
+     * @return Name of the provider, for example "BC" for Bouncy Castle.
      */
     String getProviderName();
 
