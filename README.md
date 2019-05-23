@@ -13,7 +13,7 @@ A typical use-case for PowerAuth protocol would be assuring the security of a mo
 
 ## Documentation
 
-For the most recent documentation and tutorials, please visit [PowerAuth Crypto Documentation](https://developers.wultra.com/docs/current/powerauth-crypto/).
+For the most recent documentation and tutorials, please visit [PowerAuth Crypto Documentation on GitHub](./docs/Readme.md) or visit [developers.wultra.com](https://developers.wultra.com/docs/develop/powerauth-crypto).
 
 # License
 
