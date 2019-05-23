@@ -124,6 +124,7 @@ public class IdentifierGenerator {
      *
      * @param randomBytes Random bytes to use when generating the activation code.
      * @return Generated activation code.
+     * @throws GenericCryptoException In case generating activation code fails.
      */
     public String generateActivationCode(byte[] randomBytes) throws GenericCryptoException {
         if (randomBytes == null || randomBytes.length != ACTIVATION_CODE_RANDOM_BYTES_LENGTH) {
