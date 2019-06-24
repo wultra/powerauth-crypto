@@ -138,7 +138,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      * @return An instance of the secret key by decoding from provided bytes.
      */
     public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) {
-        return new SecretKeySpec(bytesSecretKey, "AES/ECB/NoPadding");
+        return new SecretKeySpec(bytesSecretKey, "AES");
     }
 
 }
