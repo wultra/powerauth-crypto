@@ -215,7 +215,7 @@ public class KeyGenerator {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, 128);
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
-            return new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");
+            return new SecretKeySpec(keyBytes, "AES");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
