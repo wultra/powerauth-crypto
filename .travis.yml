@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
 env:
   global:
-  - secure: "ksk58FgFdLZG/MrpKRGOkAYlpkX30RzIZi58Oari7uW/sBx2rfZ9QqXCE0RZYOQT/cEWb1cKjpVu8FoG2SQvLNYG4/NkEXdfMknbv6prGZGDD//XJZWnM9W0tiFHaUMpdqNaoQbmEU6VGyIWEuPReRB3XVIdY0n6gBRWEjRaCr8xbfvxhR3PGLmGkXYkpf0eJjkEiRViouTN4vDADM9Bp3O1PKDtfRvbzQ5vP41joOpdeCUKukscezLi0qiWlZlWrnbhRQd91NHXoDZz1FgzFFjPqwQe7YXD6hDc65FfAQvUSmBT2L96n9fcnqyMLqy3VTBxddaDGJAMsJXAA8g7VGk9K+GkKNfeLHb/W87LuzVZI0p0QQVjClAMbKh+Und1L41zcdP6y96mp3IV6aSS2g/vvDLzIG7ZZpRYx3s51AKDjPzrsd2mKShjPOJoZppGShmA56faToL3COnpK6tyEAv+QkS7m+3yEEcDkmOYjxk+JZOsUsDiY2uG/fBsnndXJTNDAMr8jemr1mYfov1+AuIKXgWgZ+oYhzEDrGOTYN4wLWPivGOQr84UbxRHLKufvCSLJY9qtyif9F4dz8mkBPYg3NzdpOIaO3fMc1ZmciishmvptF4nywYV9kFeuUR17VrXRZLHheq5mRxDlUKK7M7OWZ6CmiwLvdkLVPBB5Go="
+    - secure: "efVGKEBmQtGngI8ul/1a+W+wu9xIhs3x//cpQssyIQZwsT//L8nYZUTThPnUaWNytNjRqM+0DmwNTaXbONO5699eMM4NHFcktXNieschx1galiTlJvn1jrFjItfyDwWFAOihuqExH6uw9PniFZpYOmaP0c8peImPRaCExHE8azm9i/rcxl5OOrcVKFnTDVkk1bm3bt8njPahD7SZQSkFbyOI3c7ILeYOJ1BQC8xno+y0muL4vAbOjzW4YzgLAhTZbFjv0SbMmYmt4oN7BYHf1+CWrRHM0FetTs+FeSlKd6N4GCZZ+Lc39txZgXBH4Wi5wju7ZhKMNWpYsRdS2XAbDosDXP1bzfgyKgvkBVLG2u1WVH4g9ghujajJ+ot0pgOfywOJgXhfNcKW19G4irkJJ5ybjC3CR+9c5OlQ7KmHBrehGOuuMEpwIsnTbdUbd3OHTtAWCxtR1xUIDhGoqKlX4zmWnIpX/yXCxeuxN8NWZNNHF/wLrX2bslztzdngvBrmWGSrb8YG2+rR5DIo1DvJj2wEI7KmlKPHAQvejF27YCeN7l1/G9DHOMqBURCmdSz0L2qJtyq5UzDRaFGGcZm6Z+T7B5iYBKDsp45KChT5K1h37DwdQsDOCtOHUuxL7jzTiFR20hToIGPjNlIkKmUOr464y2QEGgBH6SQ9NJF9Qgg="
 
 before_install:
   - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
@@ -11,9 +11,9 @@ before_install:
 addons:
   coverity_scan:
     project:
-      name: wultra/powerauth-crypto
+      name: "wultra/powerauth-crypto"
       description: Build submitted via Travis CI
-    notification_email: petr@wultra.com
-    build_command_prepend: mvn clean
-    build_command: mvn -DskipTests=true compile
-    branch_pattern: master
+    notification_email: roman.strobl@wultra.com
+    build_command_prepend: "mvn clean"
+    build_command: "mvn -DskipTests=true compile"
+    branch_pattern: coverity_scan
