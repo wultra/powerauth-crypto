@@ -32,10 +32,10 @@ For updating to 2019.05, please follow these migration guides:
 
 | Platform | Package Name | Version | Description |
 |---|---|---|---|
-| iOS | `PowerAuth2` | 0.20.1 / 1.1.0 | A client library for iOS. |
-| watchOS | `PowerAuth2ForWatch` | 0.20.1 / 1.1.0 | A limited library for watchOS. |
-| iOS App Extensions | `PowerAuth2ForExtensions` | 0.20.1 / 1.1.0 | A limited library for iOS App Extensions. |
-| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 0.20.1 / 1.1.0 | A client library for Android. |
+| iOS | `PowerAuth2` | 0.20.3 / 1.1.1 | A client library for iOS. |
+| watchOS | `PowerAuth2ForWatch` | 0.20.3 / 1.1.1 | A limited library for watchOS. |
+| iOS App Extensions | `PowerAuth2ForExtensions` | 0.20.3 / 1.1.1 | A limited library for iOS App Extensions. |
+| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 0.20.3 / 1.1.1 | A client library for Android. |
 
 _Note: Libraries with version `0.20.x` support PowerAuth protocol version `2`. Libraries with version `1.1.x` support PowerAuth protocol version `3`._ 
 
