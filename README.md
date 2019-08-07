@@ -1,6 +1,6 @@
 # PowerAuth
 
-[![Coverity Scan Build Status](https://img.shields.io/coverity/scan/16631.svg)](https://scan.coverity.com/projects/wultra-powerauth-crypto)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/16631/badge.svg)](https://scan.coverity.com/projects/wultra-powerauth-crypto)
 [![Build Status](https://travis-ci.org/wultra/powerauth-crypto.svg?branch=master)](https://travis-ci.org/wultra/powerauth-crypto)
 [![GitHub issues](https://img.shields.io/github/issues/wultra/powerauth-crypto.svg?maxAge=2592000)](https://github.com/wultra/powerauth-crypto/issues)
 [![Maven Central](https://img.shields.io/maven-central/v/io.getlime.security/powerauth-java-crypto.svg?maxAge=2592000)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.getlime.security%22)
