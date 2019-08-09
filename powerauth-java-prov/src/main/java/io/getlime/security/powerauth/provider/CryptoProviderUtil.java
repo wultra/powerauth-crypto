@@ -43,6 +43,7 @@ public interface CryptoProviderUtil {
      *
      * @param publicKey An EC public key to be converted.
      * @return A byte array representation of the EC public key.
+     * @throws CryptoProviderException In case crypto provider is not initialized correctly.
      */
     byte[] convertPublicKeyToBytes(PublicKey publicKey) throws CryptoProviderException;
 
