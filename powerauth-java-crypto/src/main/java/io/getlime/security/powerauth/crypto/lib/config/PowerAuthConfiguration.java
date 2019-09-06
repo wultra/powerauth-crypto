@@ -61,13 +61,27 @@ public enum PowerAuthConfiguration {
     public static final int PBKDF_ITERATIONS = 10000;
 
     /**
-     * Length of device public key fingerprint.
+     * Length of device public key fingerprint (number of decimal numbers representing fingerprint)
      */
     public static final int FINGERPRINT_LENGTH = 8;
 
     /**
-     * Signature length (number of decimal numbers representing signature)
+     * Length of signature factor in decimal formatted signature (number of decimal numbers representing signature)
      */
-    public static final int SIGNATURE_LENGTH = 8;
+    public static final int SIGNATURE_DECIMAL_LENGTH = 8;
 
+    /**
+     * Length of signature factor in Base64 formatted signature (number of bytes encoded to Base64)
+     */
+    public static final int SIGNATURE_BINARY_LENGTH = 16;
+
+    /**
+     * Number of bytes required for the signature counter data.
+     */
+    public static final int SIGNATURE_COUNTER_LENGTH = 16;
+
+    /**
+     * Maximum number of signature factors allowed in multi-factor signature
+     */
+    public static final int MAX_SIGNATURE_KEYS_COUNT = 3;
 }

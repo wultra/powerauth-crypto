@@ -90,7 +90,7 @@ public class ECPublicKeyFingerprint {
             }
             int index = hash.length - 4;
             int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
-            return String.format("%0" + PowerAuthConfiguration.SIGNATURE_LENGTH + "d", number);
+            return String.format("%0" + PowerAuthConfiguration.FINGERPRINT_LENGTH + "d", number);
         } catch (NoSuchAlgorithmException ex) {
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
