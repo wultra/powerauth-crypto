@@ -30,13 +30,14 @@ public class PowerAuthSignatureFormatTest {
 
     @Test
     public void testValidVersions() throws Exception {
-        assertEquals(PowerAuthSignatureFormat.getFormatForSignatureVersion("2.0"), PowerAuthSignatureFormat.DECIMAL);
-        assertEquals(PowerAuthSignatureFormat.getFormatForSignatureVersion("2.1"), PowerAuthSignatureFormat.DECIMAL);
-        assertEquals(PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0"), PowerAuthSignatureFormat.DECIMAL);
-        assertEquals(PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1"), PowerAuthSignatureFormat.BASE64);
-        assertEquals(PowerAuthSignatureFormat.getFormatForSignatureVersion("3.2"), PowerAuthSignatureFormat.BASE64);
-        assertEquals(PowerAuthSignatureFormat.getFormatForSignatureVersion("4.0"), PowerAuthSignatureFormat.BASE64);
+        assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("2.0"));
+        assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("2.1"));
+        assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0"));
+        assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1"));
+        assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.2"));
+        assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("4.0"));
     }
+
     @Test(expected = GenericCryptoException.class)
     public void testInvalidV2() throws Exception {
         PowerAuthSignatureFormat.getFormatForSignatureVersion("2.2");
@@ -55,5 +56,15 @@ public class PowerAuthSignatureFormatTest {
     @Test(expected = GenericCryptoException.class)
     public void testInvalidFormat2() throws Exception {
         PowerAuthSignatureFormat.getFormatForSignatureVersion("foo");
+    }
+
+    @Test(expected = GenericCryptoException.class)
+    public void testInvalidFormat3() throws Exception {
+        PowerAuthSignatureFormat.getFormatForSignatureVersion("");
+    }
+
+    @Test(expected = GenericCryptoException.class)
+    public void testInvalidFormat4() throws Exception {
+        PowerAuthSignatureFormat.getFormatForSignatureVersion(null);
     }
 }

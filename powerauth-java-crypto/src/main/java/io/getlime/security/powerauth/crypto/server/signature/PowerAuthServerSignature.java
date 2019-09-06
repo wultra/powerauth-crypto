@@ -43,7 +43,7 @@ public class PowerAuthServerSignature {
      * @param signature Signature for the data.
      * @param signatureKeys Keys used for signature.
      * @param ctrData Hash based counter / derived signing key index.
-     * @param signatureFormat Format of signature to produce.
+     * @param signatureFormat Format of signature to verify.
      * @return Returns "true" if the signature matches, "false" otherwise.
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.

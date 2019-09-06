@@ -75,4 +75,13 @@ public enum PowerAuthConfiguration {
      */
     public static final int SIGNATURE_BINARY_LENGTH = 16;
 
+    /**
+     * Number of bytes required for the signature counter data.
+     */
+    public static final int SIGNATURE_COUNTER_LENGTH = 16;
+
+    /**
+     * Maximum number of signature factors allowed in multi-factor signature
+     */
+    public static final int MAX_SIGNATURE_KEYS_COUNT = 3;
 }

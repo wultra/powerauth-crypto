@@ -96,7 +96,7 @@ public class PowerAuthSignatureTest {
         System.out.println("## Device Public Key:  " + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("2.1");
-        assertEquals(signatureFormat, PowerAuthSignatureFormat.DECIMAL);
+        assertEquals(PowerAuthSignatureFormat.DECIMAL, signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
         
@@ -229,7 +229,7 @@ public class PowerAuthSignatureTest {
         System.out.println("## Device Public Key:  " + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
-        assertEquals(signatureFormat, PowerAuthSignatureFormat.DECIMAL);
+        assertEquals(PowerAuthSignatureFormat.DECIMAL, signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
 
@@ -363,7 +363,7 @@ public class PowerAuthSignatureTest {
         System.out.println("## Device Public Key:  " + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
-        assertEquals(signatureFormat, PowerAuthSignatureFormat.BASE64);
+        assertEquals(PowerAuthSignatureFormat.BASE64, signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
 

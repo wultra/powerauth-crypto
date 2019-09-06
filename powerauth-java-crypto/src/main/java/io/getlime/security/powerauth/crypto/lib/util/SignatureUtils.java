@@ -27,6 +27,7 @@ import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.security.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -98,10 +99,10 @@ public class SignatureUtils {
         // Prepare holder for signature components
         final String[] signatureStringComponents = new String[signatureKeys.size()];
         // Compute signature components
-        final byte[][] signatureComponents = computePowerAuthSignatureComponents(data, signatureKeys, ctrData);
+        final List<byte[]> signatureComponents = computePowerAuthSignatureComponents(data, signatureKeys, ctrData);
         // Convert byte components into decimal signature
-        for (int i = 0; i < signatureComponents.length; i++) {
-            final byte[] signatureComponent = signatureComponents[i];
+        for (int i = 0; i < signatureComponents.size(); i++) {
+            final byte[] signatureComponent = signatureComponents.get(i);
             int index = signatureComponent.length - 4;
             int number = (ByteBuffer.wrap(signatureComponent).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.SIGNATURE_DECIMAL_LENGTH));
             signatureStringComponents[i] = String.format("%0" + PowerAuthConfiguration.SIGNATURE_DECIMAL_LENGTH + "d", number);
@@ -124,10 +125,10 @@ public class SignatureUtils {
         // Prepare array of bytes for a complete signature
         final byte[] signatureBytes = new byte[signatureKeys.size() * PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH];
         // Compute signature components
-        final byte[][] signatureComponents = computePowerAuthSignatureComponents(data, signatureKeys, ctrData);
+        final List<byte[]> signatureComponents = computePowerAuthSignatureComponents(data, signatureKeys, ctrData);
         // Convert signature components into one Base64 encoded signature string
-        for (int i = 0; i < signatureComponents.length; i++) {
-            final byte[] signatureComponent = signatureComponents[i];
+        for (int i = 0; i < signatureComponents.size(); i++) {
+            final byte[] signatureComponent = signatureComponents.get(i);
             final int sourceOffset = signatureComponent.length - PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH;
             final int destinationOffset = i * PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH;
             System.arraycopy(signatureComponent, sourceOffset, signatureBytes, destinationOffset, PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH);
@@ -138,22 +139,22 @@ public class SignatureUtils {
 
     /**
      * Compute PowerAuth signature for given data using a secret signature keys and counter byte array. The signature is returned
-     * in form of array of binary components, where each item in returned array contains an appropriate signature factor. The returned
+     * in form of list of binary components, where each item in returned array contains an appropriate signature factor. The returned
      * array must be then post-processed into the decimal, or Base64 format.
      *
      * @param data Data to be signed.
      * @param signatureKeys Keys for computing the signature.
      * @param ctrData Counter byte array / derived key index.
-     * @return Array with binary signature components.
+     * @return List with binary signature components.
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private byte[][] computePowerAuthSignatureComponents(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
+    private List<byte[]> computePowerAuthSignatureComponents(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         // Prepare a hash
         final HMACHashUtilities hmac = new HMACHashUtilities();
 
         // Prepare array for signature binary components.
-        final byte[][] signatureComponents = new byte[signatureKeys.size()][];
+        final ArrayList<byte[]> signatureComponents = new ArrayList<byte[]>();
 
         final CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
@@ -168,10 +169,11 @@ public class SignatureUtils {
             }
 
             final byte[] signatureBytes = hmac.hash(derivedKey, data);
+            // Test whether calculated signature has sufficient amount of bytes.
             if (signatureBytes.length < PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH) { // assert
                 throw new IndexOutOfBoundsException();
             }
-            signatureComponents[i] = signatureBytes;
+            signatureComponents.add(signatureBytes);
         }
 
         return signatureComponents;
@@ -189,6 +191,18 @@ public class SignatureUtils {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData, PowerAuthSignatureFormat format) throws GenericCryptoException, CryptoProviderException {
+        if (signatureKeys == null) {
+            throw new GenericCryptoException("Missing signatureKeys parameter");
+        }
+        if (ctrData == null) {
+            throw new GenericCryptoException("Missing ctrData parameter");
+        }
+        if (signatureKeys.isEmpty() || signatureKeys.size() > PowerAuthConfiguration.MAX_SIGNATURE_KEYS_COUNT) {
+            throw new GenericCryptoException("Wrong number of signature keys");
+        }
+        if (ctrData.length != PowerAuthConfiguration.SIGNATURE_COUNTER_LENGTH) {
+            throw new GenericCryptoException("Invalid length of signature counter");
+        }
         switch (format) {
             case BASE64:
                 return computePowerAuthBase64Signature(data, signatureKeys, ctrData);
