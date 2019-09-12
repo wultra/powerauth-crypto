@@ -19,6 +19,9 @@ package io.getlime.security.powerauth.crypto.lib.enums;
 
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Enum with signature format types.
  */
@@ -37,7 +40,7 @@ public enum PowerAuthSignatureFormat {
      *     <li>For all versions of offline signatures.</li>
      * </ul>
      */
-    DECIMAL,
+    DECIMAL("DECIMAL"),
     /**
      * Each signature's factor is represented by 16-bytes long binary data. If the signature is composed from more than
      * one factor, then the binary sequences are concatenated one after another. The whole signature is then represented
@@ -46,9 +49,40 @@ public enum PowerAuthSignatureFormat {
      *     <li>One factor: {@code MDEyMzQ1Njc4OWFiY2RlZg==}</li>
      *     <li>Two factors: {@code MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}</li>
      * </ul>
-     * This type of formatting is currently used for {@code 3.1} version of online signatures.
+     * This type of formatting is currently used for {@code 3.1} version of online signatures and newer.
      */
-    BASE64;
+    BASE64("BASE64");
+
+    /**
+     * String representation associated with the enumeration.
+     */
+    private String value;
+
+    PowerAuthSignatureFormat(final String value) {
+        this.value = value;
+    }
+
+    /**
+     * Map that translates string into {@link PowerAuthSignatureFormat} enumeration.
+     */
+    private final static Map<String, PowerAuthSignatureFormat> stringToEnumMap = new HashMap<>();
+
+    /**
+     * Map that translates version string into {@link PowerAuthSignatureFormat} enumeration.
+     */
+    private final static Map<String, PowerAuthSignatureFormat> versionToEnumMap = new HashMap<>();
+
+    static {
+        // Prepare string to enumeration mapping
+        for (PowerAuthSignatureFormat format : PowerAuthSignatureFormat.values()) {
+            stringToEnumMap.put(format.value, format);
+        }
+        // Prepare version to enumeration mapping
+        versionToEnumMap.put("2.0", DECIMAL);
+        versionToEnumMap.put("2.1", DECIMAL);
+        versionToEnumMap.put("3.0", DECIMAL);
+        versionToEnumMap.put("3.1", BASE64);
+    }
 
     /**
      * Get signature format for signature version.
@@ -59,11 +93,10 @@ public enum PowerAuthSignatureFormat {
      */
     public static PowerAuthSignatureFormat getFormatForSignatureVersion(String signatureVersion) throws GenericCryptoException {
         if (signatureVersion != null) {
-            if ("3.1".equals(signatureVersion)) {
-                return BASE64;
-            }
-            if ("3.0".equals(signatureVersion) || "2.1".equals(signatureVersion) || "2.0".equals(signatureVersion)) {
-                return DECIMAL;
+            // Try to translate known version into the format.
+            final PowerAuthSignatureFormat signatureFormat = versionToEnumMap.get(signatureVersion);
+            if (signatureFormat != null) {
+                return signatureFormat;
             }
             // Fallback in case that we increased the general protocol version, but not updated this function.
             // All versions above 3.1 should require Base64 formatting.
@@ -81,5 +114,38 @@ public enum PowerAuthSignatureFormat {
         }
         // Version is not specified.
         throw new GenericCryptoException("Unspecified signature version");
+    }
+
+    /**
+     * Converts string into {@link PowerAuthSignatureFormat} enumeration. Function returns {@code null} in case that
+     * such conversion is not possible.
+     * <p>
+     * You can use {@link #toString()} function as opposite, to convert enumeration into its string representation.
+     *
+     * @param value String representation of the enumeration.
+     * @return {@link PowerAuthSignatureFormat} enumeration or {@code null} if the conversion is not possible.
+     */
+    public static PowerAuthSignatureFormat getEnumFromString(String value) {
+        if (value != null) {
+            return stringToEnumMap.get(value.toUpperCase());
+        }
+        return null;
+    }
+
+    /**
+     * Converts enumeration into its string representation.
+     * @return String representation.
+     */
+    public String toString() {
+        return value;
+    }
+
+    /**
+     * Compare enumeration to another string.
+     * @param otherName Other string to compare
+     * @return {@code true} if other string is equal to this enumeration's string representation.
+     */
+    public boolean equalsName(String otherName) {
+        return value.equalsIgnoreCase(otherName);
     }
 }

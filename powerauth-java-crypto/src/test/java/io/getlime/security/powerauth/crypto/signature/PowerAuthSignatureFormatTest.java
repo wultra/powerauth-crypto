@@ -22,6 +22,7 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test that validates whether signature version to signature format works properly.
@@ -30,6 +31,7 @@ public class PowerAuthSignatureFormatTest {
 
     @Test
     public void testValidVersions() throws Exception {
+        // Transformation from version string.
         assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("2.0"));
         assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("2.1"));
         assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0"));
@@ -66,5 +68,21 @@ public class PowerAuthSignatureFormatTest {
     @Test(expected = GenericCryptoException.class)
     public void testInvalidFormat4() throws Exception {
         PowerAuthSignatureFormat.getFormatForSignatureVersion(null);
+    }
+
+    @Test
+    public void testEnumToStringConversion() {
+        // Regular formats
+        assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getEnumFromString("decimal"));
+        assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getEnumFromString("DECIMAL"));
+        assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getEnumFromString("BASE64"));
+        assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getEnumFromString("base64"));
+        // Invalid formats
+        assertNull(PowerAuthSignatureFormat.getEnumFromString(""));
+        assertNull(PowerAuthSignatureFormat.getEnumFromString("foo"));
+        assertNull(PowerAuthSignatureFormat.getEnumFromString(null));
+        // Enum to string conversion
+        assertEquals("DECIMAL", PowerAuthSignatureFormat.DECIMAL.toString());
+        assertEquals("BASE64", PowerAuthSignatureFormat.BASE64.toString());
     }
 }
