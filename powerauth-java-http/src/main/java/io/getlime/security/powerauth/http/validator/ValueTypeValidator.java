@@ -97,7 +97,26 @@ public class ValueTypeValidator {
      * @return True if signature candidate has correct format, false otherwise.
      */
     public static boolean isValidSignatureValue(String signature) {
-        return signature != null && signature.matches(signatureRegex);
+        if (signature != null) {
+            switch (signature.length()) {
+                case 8:
+                case 17:
+                case 26:
+                    // "2.0", "2.1", "3.0" signature version uses "DECIMAL" format
+                    return signature.matches(signatureRegex);
+                case 24:
+                case 44:
+                case 64:
+                    // "3.1" and later signatures uses "BASE64" format.
+                    // We don't need to validate an exact number of encoded bytes. This is due to fact,
+                    // that if input string length can only be 24, 44 or 64, then the encoded output length
+                    // must be 16, 32 or 48.
+                    return isValidBase64OfLengthRange(signature, 16, 48);
+                default:
+                    break;
+            }
+        }
+        return false;
     }
 
     /**
