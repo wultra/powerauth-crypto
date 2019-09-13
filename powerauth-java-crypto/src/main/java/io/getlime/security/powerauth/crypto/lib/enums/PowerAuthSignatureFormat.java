@@ -40,7 +40,7 @@ public enum PowerAuthSignatureFormat {
      *     <li>For all versions of offline signatures.</li>
      * </ul>
      */
-    DECIMAL("DECIMAL"),
+    DECIMAL,
     /**
      * Each signature's factor is represented by 16-bytes long binary data. If the signature is composed from more than
      * one factor, then the binary sequences are concatenated one after another. The whole signature is then represented
@@ -51,16 +51,7 @@ public enum PowerAuthSignatureFormat {
      * </ul>
      * This type of formatting is currently used for {@code 3.1} version of online signatures and newer.
      */
-    BASE64("BASE64");
-
-    /**
-     * String representation associated with the enumeration.
-     */
-    private String value;
-
-    PowerAuthSignatureFormat(final String value) {
-        this.value = value;
-    }
+    BASE64;
 
     /**
      * Map that translates string into {@link PowerAuthSignatureFormat} enumeration.
@@ -75,7 +66,7 @@ public enum PowerAuthSignatureFormat {
     static {
         // Prepare string to enumeration mapping
         for (PowerAuthSignatureFormat format : PowerAuthSignatureFormat.values()) {
-            stringToEnumMap.put(format.value, format);
+            stringToEnumMap.put(format.toString(), format);
         }
         // Prepare version to enumeration mapping
         versionToEnumMap.put("2.0", DECIMAL);
@@ -133,19 +124,11 @@ public enum PowerAuthSignatureFormat {
     }
 
     /**
-     * Converts enumeration into its string representation.
-     * @return String representation.
-     */
-    public String toString() {
-        return value;
-    }
-
-    /**
      * Compare enumeration to another string.
      * @param otherName Other string to compare
      * @return {@code true} if other string is equal to this enumeration's string representation.
      */
     public boolean equalsName(String otherName) {
-        return value.equalsIgnoreCase(otherName);
+        return toString().equalsIgnoreCase(otherName);
     }
 }
