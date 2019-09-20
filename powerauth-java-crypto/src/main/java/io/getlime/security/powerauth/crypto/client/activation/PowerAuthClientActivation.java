@@ -22,10 +22,7 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.crypto.lib.util.ECPublicKeyFingerprint;
-import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
+import io.getlime.security.powerauth.crypto.lib.util.*;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
@@ -258,21 +255,23 @@ public class PowerAuthClientActivation {
      * Returns an activation status from the encrypted activation blob as described in PowerAuth Specification.
      *
      * @param cStatusBlob Encrypted activation status blob.
+     * @param challenge Challenge for activation status blob encryption. If non-null, then also {@code nonce} parameter must be provided.
+     * @param nonce Nonce for activation status blob encryption. If non-null, then also {@code challenge} parameter must be provided.
      * @param transportKey A key used to protect the transport.
      * @return Status information from the status blob.
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case decryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, byte[] challenge, byte[] nonce, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         if (cStatusBlob.length != 32) {
             throw new GenericCryptoException("Invalid status blob size");
         }
 
         // Decrypt the status blob
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] zeroIv = new byte[16];
-        byte[] statusBlob = aes.decrypt(cStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
+        byte[] iv = new ProtocolUtils(new KeyGenerator()).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
 
         // Prepare objects to read status info into
         ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();

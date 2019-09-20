@@ -23,10 +23,7 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.crypto.lib.util.ECPublicKeyFingerprint;
-import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
+import io.getlime.security.powerauth.crypto.lib.util.*;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
@@ -237,36 +234,43 @@ public class PowerAuthServerActivation {
 
     /**
      * Returns an encrypted status blob as described in PowerAuth Specification.
-     * @param statusByte Byte determining the status of the activation.
-     * @param currentVersionByte Current crypto protocol version.
-     * @param upgradeVersionByte Crypto version for possible upgrade.
-     * @param failedAttempts Number of failed attempts at the moment.
-     * @param maxFailedAttempts Number of allowed failed attempts.
-     * @param ctrData Counter data.
+     * @param statusBlobInfo {@link ActivationStatusBlobInfo} object with activation status data to be encrypted.
+     * @param challenge Challenge for activation status blob encryption. If non-null, then also {@code nonce} parameter must be provided.
+     * @param nonce Nonce for activation status blob encryption. If non-null, then also {@code challenge} parameter must be provided.
      * @param transportKey A key used to protect the transport.
      * @return Encrypted status blob
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encryptedStatusBlob(byte statusByte, byte currentVersionByte, byte upgradeVersionByte, byte failedAttempts, byte maxFailedAttempts, byte[] ctrData, SecretKey transportKey)
+    public byte[] encryptedStatusBlob(ActivationStatusBlobInfo statusBlobInfo, byte[] challenge, byte[] nonce, SecretKey transportKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        byte[] zeroIv = new byte[16];
-        byte[] randomBytes = new KeyGenerator().generateRandomBytes(6);
-        byte[] reservedByte = new byte[1];
-        byte[] statusBlob = ByteBuffer.allocate(32)
+        // Validate inputs
+        if (statusBlobInfo == null) {
+            throw new GenericCryptoException("Required statusBlobInfo parameter is missing");
+        }
+        if (transportKey == null) {
+            throw new GenericCryptoException("Required transportKey parameter is missing");
+        }
+        if (statusBlobInfo.getCtrData() == null) {
+            throw new GenericCryptoException("Missing ctrData in statusBlobInfo object");
+        }
+        final KeyGenerator keyGenerator = new KeyGenerator();
+        final byte[] iv = new ProtocolUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        final byte[] randomBytes = keyGenerator.generateRandomBytes(6);
+        final byte[] reservedByte = new byte[1];
+        final byte[] statusBlob = ByteBuffer.allocate(32)
                 .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
-                .put(statusByte)         // 1 byte
-                .put(currentVersionByte) // 1 byte
-                .put(upgradeVersionByte) // 1 byte
-                .put(randomBytes)        // 6 bytes
-                .put(failedAttempts)     // 1 byte
-                .put(maxFailedAttempts)  // 1 byte
-                .put(reservedByte)       // 1 byte
-                .put(ctrData)            // 16 bytes
+                .put(statusBlobInfo.getActivationStatus())   // 1 byte
+                .put(statusBlobInfo.getCurrentVersion())     // 1 byte
+                .put(statusBlobInfo.getUpgradeVersion())     // 1 byte
+                .put(randomBytes)                            // 6 bytes
+                .put(statusBlobInfo.getFailedAttempts())     // 1 byte
+                .put(statusBlobInfo.getMaxFailedAttempts())  // 1 byte
+                .put(reservedByte)                           // 1 byte
+                .put(statusBlobInfo.getCtrData())            // 16 bytes
                 .array();
-        AESEncryptionUtils aes = new AESEncryptionUtils();
-        return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
+        return new AESEncryptionUtils().encrypt(statusBlob, iv, transportKey, "AES/CBC/NoPadding");
     }
 
     /**
