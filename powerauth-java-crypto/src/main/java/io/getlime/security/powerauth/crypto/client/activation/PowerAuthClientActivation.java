@@ -295,6 +295,9 @@ public class PowerAuthClientActivation {
         // fetch the max allowed failed attempt count
         statusInfo.setMaxFailedAttempts(buffer.get(14));
 
+        // fetch counter's look ahead window value
+        statusInfo.setCtrLookAhead(buffer.get(15));
+
         // extract counter data from second half of status blob
         byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, 32);
         statusInfo.setCtrData(ctrData);

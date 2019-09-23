@@ -256,7 +256,6 @@ public class PowerAuthServerActivation {
         }
         final byte[] iv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         final byte[] randomBytes = keyGenerator.generateRandomBytes(6);
-        final byte[] reservedByte = new byte[1];
         final byte[] statusBlob = ByteBuffer.allocate(32)
                 .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
                 .put(statusBlobInfo.getActivationStatus())   // 1 byte
@@ -265,7 +264,7 @@ public class PowerAuthServerActivation {
                 .put(randomBytes)                            // 6 bytes
                 .put(statusBlobInfo.getFailedAttempts())     // 1 byte
                 .put(statusBlobInfo.getMaxFailedAttempts())  // 1 byte
-                .put(reservedByte)                           // 1 byte
+                .put(statusBlobInfo.getCtrLookAhead())       // 1 byte
                 .put(statusBlobInfo.getCtrData())            // 16 bytes
                 .array();
         return new AESEncryptionUtils().encrypt(statusBlob, iv, transportKey, "AES/CBC/NoPadding");
