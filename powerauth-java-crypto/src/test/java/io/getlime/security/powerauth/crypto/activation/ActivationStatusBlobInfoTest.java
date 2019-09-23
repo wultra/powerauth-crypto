@@ -23,7 +23,7 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.crypto.lib.util.ProtocolUtils;
+import io.getlime.security.powerauth.crypto.lib.util.KeyDerivationUtils;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
@@ -83,7 +83,7 @@ public class ActivationStatusBlobInfoTest {
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, null, null, transportKey);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] zeroIv = new ProtocolUtils(keyGenerator).deriveIvForStatusBlobEncryption(null, null, transportKey);
+        byte[] zeroIv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(null, null, transportKey);
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         // Status blob bytes 0 ... 6 are deterministic, verify them
@@ -136,7 +136,7 @@ public class ActivationStatusBlobInfoTest {
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] zeroIv = new ProtocolUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        byte[] zeroIv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         // Status blob bytes 0 ... 6 are deterministic, verify them

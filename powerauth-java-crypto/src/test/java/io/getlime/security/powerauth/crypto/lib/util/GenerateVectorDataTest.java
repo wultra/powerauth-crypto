@@ -893,14 +893,14 @@ public class GenerateVectorDataTest {
         TestSet testSet = new TestSet("activation-status-blob-iv.json", "Initialization Vectors for activation status blob symmetric encryption.");
 
         KeyGenerator keyGenerator = new KeyGenerator();
-        ProtocolUtils protocolUtils = new ProtocolUtils(keyGenerator);
+        KeyDerivationUtils keyDerivationUtils = new KeyDerivationUtils(keyGenerator);
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         for (int i = 0; i < 100; i++) {
             byte[] transportKey = keyGenerator.generateRandomBytes(16);
             byte[] challenge = keyGenerator.generateRandomBytes(16);
             byte[] nonce = keyGenerator.generateRandomBytes(16);
-            byte[] iv = protocolUtils.deriveIvForStatusBlobEncryption(challenge, nonce, keyConvertor.convertBytesToSharedSecretKey(transportKey));
+            byte[] iv = keyDerivationUtils.deriveIvForStatusBlobEncryption(challenge, nonce, keyConvertor.convertBytesToSharedSecretKey(transportKey));
             Map<String, String> input = new LinkedHashMap<>();
             input.put("transportKey", BaseEncoding.base64().encode(transportKey));
             input.put("challenge", BaseEncoding.base64().encode(challenge));

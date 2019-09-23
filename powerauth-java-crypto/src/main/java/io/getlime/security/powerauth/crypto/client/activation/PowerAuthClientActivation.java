@@ -46,6 +46,7 @@ import java.util.Arrays;
 public class PowerAuthClientActivation {
 
     private final SignatureUtils signatureUtils = new SignatureUtils();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Verify the signature of activation code using Master Public Key.
@@ -70,7 +71,7 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public KeyPair generateDeviceKeyPair() throws CryptoProviderException {
-        return new KeyGenerator().generateKeyPair();
+        return keyGenerator.generateKeyPair();
     }
 
     /**
@@ -79,7 +80,7 @@ public class PowerAuthClientActivation {
      * @return A new activation nonce.
      */
     public byte[] generateActivationNonce() {
-        return new KeyGenerator().generateRandomBytes(16);
+        return keyGenerator.generateRandomBytes(16);
     }
 
     /**
@@ -132,7 +133,6 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] encryptDevicePublicKey(PublicKey devicePublicKey, PrivateKey clientEphemeralPrivateKey, PublicKey masterPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        KeyGenerator keyGenerator = new KeyGenerator();
         byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
         SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
         byte[] devicePubKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(devicePublicKey);
@@ -186,7 +186,6 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public PublicKey decryptServerPublicKey(byte[] C_serverPublicKey, PrivateKey devicePrivateKey, PublicKey ephemeralPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException, InvalidKeySpecException, GenericCryptoException, CryptoProviderException {
-        KeyGenerator keyGenerator = new KeyGenerator();
         SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(devicePrivateKey, ephemeralPublicKey);
 
         byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
@@ -270,7 +269,7 @@ public class PowerAuthClientActivation {
 
         // Decrypt the status blob
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] iv = new ProtocolUtils(new KeyGenerator()).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        byte[] iv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
 
         // Prepare objects to read status info into

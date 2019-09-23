@@ -48,6 +48,7 @@ public class PowerAuthServerActivation {
 
     private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Generate a pseudo-unique activation ID. Technically, this is UUID level 4
@@ -76,7 +77,7 @@ public class PowerAuthServerActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public KeyPair generateServerKeyPair() throws CryptoProviderException {
-        return new KeyGenerator().generateKeyPair();
+        return keyGenerator.generateKeyPair();
     }
 
     /**
@@ -103,7 +104,7 @@ public class PowerAuthServerActivation {
      * @return A new server activation nonce.
      */
     public byte[] generateActivationNonce() {
-        return new KeyGenerator().generateRandomBytes(16);
+        return keyGenerator.generateRandomBytes(16);
     }
 
     /**
@@ -161,12 +162,11 @@ public class PowerAuthServerActivation {
         try {
             // Derive longer key from short activation ID and activation OTP
             byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
-            SecretKey otpBasedSymmetricKey = new KeyGenerator().deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
+            SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
 
             if (ephemeralPublicKey != null) { // is an extra ephemeral key encryption included?
 
                 // Compute ephemeral secret key
-                KeyGenerator keyGenerator = new KeyGenerator();
                 SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(masterPrivateKey, ephemeralPublicKey);
 
                 // Decrypt device public key
@@ -219,7 +219,6 @@ public class PowerAuthServerActivation {
         byte[] serverPublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(serverPublicKey);
 
         // Generate symmetric keys
-        KeyGenerator keyGenerator = new KeyGenerator();
         SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, devicePublicKey);
 
         byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
@@ -255,8 +254,7 @@ public class PowerAuthServerActivation {
         if (statusBlobInfo.getCtrData() == null) {
             throw new GenericCryptoException("Missing ctrData in statusBlobInfo object");
         }
-        final KeyGenerator keyGenerator = new KeyGenerator();
-        final byte[] iv = new ProtocolUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        final byte[] iv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         final byte[] randomBytes = keyGenerator.generateRandomBytes(6);
         final byte[] reservedByte = new byte[1];
         final byte[] statusBlob = ByteBuffer.allocate(32)

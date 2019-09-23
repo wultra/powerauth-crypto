@@ -26,16 +26,16 @@ import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 
 /**
- * The {@code ProtocolUtils} class provides various additional functionality defined for PowerAuth protocol.
+ * The {@code KeyDerivationUtils} class provides additional key derivation functionality defined for PowerAuth protocol.
  */
-public class ProtocolUtils {
+public class KeyDerivationUtils {
 
     private final KeyGenerator keyGenerator;
 
     /**
      * @param keyGenerator {@link KeyGenerator} instance to be used in the class.
      */
-    public ProtocolUtils(KeyGenerator keyGenerator) {
+    public KeyDerivationUtils(KeyGenerator keyGenerator) {
         this.keyGenerator = keyGenerator;
     }
 
