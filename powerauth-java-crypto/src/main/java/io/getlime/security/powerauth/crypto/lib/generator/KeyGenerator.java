@@ -188,6 +188,32 @@ public class KeyGenerator {
     }
 
     /**
+     * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
+     * based on following KDF:
+     * <pre>
+     *    BYTES = index, total 16 bytes
+     *    KEY_SHARED[BYTES] = 32B_TO_16B(HMAC-SHA256(BYTES, KEY_MASTER))
+     * </pre>
+     *
+     * This function is similar to {@link #deriveSecretKeyHmac(SecretKey, byte[])}, but calculates the derivation in
+     * the correct way and as it's specified in our documentation (look for pseudo function {@code KDF_INTERNAL.derive()}).
+     *
+     * @param secret A master shared key.
+     * @param index A byte array index of the key.
+     * @return A new derived key from a master key with given index.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public SecretKey deriveSecretKeyHmacInternal(SecretKey secret, byte[] index) throws GenericCryptoException, CryptoProviderException {
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
+        HMACHashUtilities hmac = new HMACHashUtilities();
+        byte[] derivedKey32 = hmac.hash(secretKeyBytes, index);
+        byte[] newKeyBytes = convert32Bto16B(derivedKey32);
+        return keyConvertor.convertBytesToSharedSecretKey(newKeyBytes);
+    }
+
+    /**
      * Derive a long AES suitable key from a password and salt. Uses PBKDF with
      * 10 000 iterations.
      *

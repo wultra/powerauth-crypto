@@ -878,6 +878,41 @@ public class GenerateVectorDataTest {
     }
 
     /**
+     * Generate test data for IV derivation for activation status blob symmetric encryption.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.1</li>
+     * </ul>
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testDeriveIvForActivationStatusEncryption() throws Exception {
+
+        TestSet testSet = new TestSet("activation-status-blob-iv.json", "Initialization Vectors for activation status blob symmetric encryption.");
+
+        KeyGenerator keyGenerator = new KeyGenerator();
+        KeyDerivationUtils keyDerivationUtils = new KeyDerivationUtils(keyGenerator);
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        for (int i = 0; i < 100; i++) {
+            byte[] transportKey = keyGenerator.generateRandomBytes(16);
+            byte[] challenge = keyGenerator.generateRandomBytes(16);
+            byte[] nonce = keyGenerator.generateRandomBytes(16);
+            byte[] iv = keyDerivationUtils.deriveIvForStatusBlobEncryption(challenge, nonce, keyConvertor.convertBytesToSharedSecretKey(transportKey));
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("transportKey", BaseEncoding.base64().encode(transportKey));
+            input.put("challenge", BaseEncoding.base64().encode(challenge));
+            input.put("nonce", BaseEncoding.base64().encode(nonce));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("iv", BaseEncoding.base64().encode(iv));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
      * Convert EC public key to byte array.
      *
      * @param publicKey EC public key.
