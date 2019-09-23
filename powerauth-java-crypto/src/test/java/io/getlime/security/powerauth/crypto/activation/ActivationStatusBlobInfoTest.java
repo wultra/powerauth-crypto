@@ -79,6 +79,7 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setUpgradeVersion((byte)3);
         serverStatusBlob.setFailedAttempts((byte)1);
         serverStatusBlob.setMaxFailedAttempts((byte)5);
+        serverStatusBlob.setCtrLookAhead((byte)20);
         serverStatusBlob.setCtrData(ctrData);
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, null, null, transportKey);
         // Decrypt status blob with transport key
@@ -94,6 +95,8 @@ public class ActivationStatusBlobInfoTest {
         // Status blob bytes 13 ... 14 contain version, verify them
         assertEquals((byte) 1, buffer.get(13));
         assertEquals((byte) 5, buffer.get(14));
+        // Look ahead window
+        assertEquals((byte) 20, buffer.get(15));
         // Status blob bytes 16 ... 31 contain ctrData, verify them
         byte[] ctrDataFromStatus = Arrays.copyOfRange(statusBlob, 16, 32);
         assertArrayEquals(ctrData, ctrDataFromStatus);
@@ -105,6 +108,7 @@ public class ActivationStatusBlobInfoTest {
         assertEquals(3, statusBlobDecoded.getUpgradeVersion());
         assertEquals(1, statusBlobDecoded.getFailedAttempts());
         assertEquals(5, statusBlobDecoded.getMaxFailedAttempts());
+        assertEquals(20, statusBlobDecoded.getCtrLookAhead());
         assertArrayEquals(ctrData, statusBlobDecoded.getCtrData());
         assertTrue(statusBlobDecoded.isValid());
     }
@@ -132,6 +136,7 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setUpgradeVersion((byte)3);
         serverStatusBlob.setFailedAttempts((byte)1);
         serverStatusBlob.setMaxFailedAttempts((byte)5);
+        serverStatusBlob.setCtrLookAhead((byte)20);
         serverStatusBlob.setCtrData(ctrData);
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey);
         // Decrypt status blob with transport key
@@ -147,6 +152,8 @@ public class ActivationStatusBlobInfoTest {
         // Status blob bytes 13 ... 14 contain version, verify them
         assertEquals((byte) 1, buffer.get(13));
         assertEquals((byte) 5, buffer.get(14));
+        // Look ahead window
+        assertEquals((byte) 20, buffer.get(15));
         // Status blob bytes 16 ... 31 contain ctrData, verify them
         byte[] ctrDataFromStatus = Arrays.copyOfRange(statusBlob, 16, 32);
         assertArrayEquals(ctrData, ctrDataFromStatus);
@@ -158,6 +165,7 @@ public class ActivationStatusBlobInfoTest {
         assertEquals(3, statusBlobDecoded.getUpgradeVersion());
         assertEquals(1, statusBlobDecoded.getFailedAttempts());
         assertEquals(5, statusBlobDecoded.getMaxFailedAttempts());
+        assertEquals(20, statusBlobDecoded.getCtrLookAhead());
         assertArrayEquals(ctrData, statusBlobDecoded.getCtrData());
         assertTrue(statusBlobDecoded.isValid());
     }
