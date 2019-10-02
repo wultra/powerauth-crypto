@@ -80,6 +80,7 @@ public class NonPersonalizedEncryptor {
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
+    @SuppressWarnings("deprecation")
     public NonPersonalizedEncryptedMessage encrypt(byte[] originalData) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         byte[] adHocIndex = generator.generateRandomBytes(16);
         byte[] macIndex = generator.generateRandomBytes(16);
@@ -98,8 +99,8 @@ public class NonPersonalizedEncryptor {
         byte[] nonce = generator.generateRandomBytes(16);
 
         SecretKey sessionKey = keyConversion.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
-        SecretKey encryptionKey = generator.deriveSecretKeyHmac(sessionKey, adHocIndex);
-        SecretKey macKey = generator.deriveSecretKeyHmac(sessionKey, macIndex);
+        SecretKey encryptionKey = generator.deriveSecretKeyHmacLegacy(sessionKey, adHocIndex);
+        SecretKey macKey = generator.deriveSecretKeyHmacLegacy(sessionKey, macIndex);
 
         byte[] encryptedData = aes.encrypt(originalData, nonce, encryptionKey);
         byte[] mac = hmac.hash(macKey, encryptedData);
@@ -125,21 +126,31 @@ public class NonPersonalizedEncryptor {
      * @throws GenericCryptoException In case decryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
+    @SuppressWarnings("deprecation")
     public byte[] decrypt(NonPersonalizedEncryptedMessage message) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
         byte[] adHocIndex = message.getAdHocIndex();
         byte[] macIndex = message.getMacIndex();
+        byte[] nonce = message.getNonce();
 
+        // Validate inputs
+        if (adHocIndex == null || macIndex == null || nonce == null) {
+            throw new GenericCryptoException("Invalid message");
+        }
+        if (adHocIndex.length != 16 || macIndex.length != 16) {
+            throw new GenericCryptoException("Invalid index");
+        }
+        if (nonce.length != 16) {
+            throw new GenericCryptoException("Invalid nonce");
+        }
         // make sure the indexes are different
         if (Arrays.equals(adHocIndex, macIndex)) {
             throw new GenericCryptoException("Invalid index");
         }
 
-        byte[] nonce = message.getNonce();
-
         SecretKey sessionKey = keyConversion.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
-        SecretKey encryptionKey = generator.deriveSecretKeyHmac(sessionKey, adHocIndex);
-        SecretKey macKey = generator.deriveSecretKeyHmac(sessionKey, macIndex);
+        SecretKey encryptionKey = generator.deriveSecretKeyHmacLegacy(sessionKey, adHocIndex);
+        SecretKey macKey = generator.deriveSecretKeyHmacLegacy(sessionKey, macIndex);
 
         byte[] encryptedData = message.getEncryptedData();
 
