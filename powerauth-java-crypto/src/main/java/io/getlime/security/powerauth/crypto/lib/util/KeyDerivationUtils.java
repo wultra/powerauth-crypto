@@ -92,7 +92,7 @@ public class KeyDerivationUtils {
                 .array();
         final SecretKey transportIv = keyGenerator.deriveSecretKey(transportKey, derivationIndex);
         // Derive STATUS_CHALLENGE_KEY from KEY_TRANSPORT_IV and CHALLENGE
-        final SecretKey statusChallengeKey = keyGenerator.deriveSecretKeyHmacInternal(transportIv, challenge);
+        final SecretKey statusChallengeKey = keyGenerator.deriveSecretKeyHmac(transportIv, challenge);
         // Calculate final IV = STATUS_CHALLENGE_KEY xor NONCE
         final byte[] iv = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(statusChallengeKey);
         for (int i = 0; i < iv.length; i++) {

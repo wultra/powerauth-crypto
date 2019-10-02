@@ -40,13 +40,14 @@ public class ClientNonPersonalizedEncryptor {
      * @throws GenericCryptoException In case of any other cryptography error.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
+    @SuppressWarnings("deprecation")
     public ClientNonPersonalizedEncryptor(byte[] appKey, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
         final KeyGenerator generator = new KeyGenerator();
         byte[] sessionIndex = generator.generateRandomBytes(16);
         KeyPair ephemeralKeyPair = generator.generateKeyPair();
         final SecretKey ephemeralSecretKey = generator.computeSharedKey(ephemeralKeyPair.getPrivate(), masterPublicKey);
-        final SecretKey sessionRelatedSecretKey = generator.deriveSecretKeyHmac(ephemeralSecretKey, sessionIndex);
+        final SecretKey sessionRelatedSecretKey = generator.deriveSecretKeyHmacLegacy(ephemeralSecretKey, sessionIndex);
 
         final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         final byte[] sessionRelatedSecretKeyBytes = keyConversion.convertSharedSecretKeyToBytes(sessionRelatedSecretKey);
