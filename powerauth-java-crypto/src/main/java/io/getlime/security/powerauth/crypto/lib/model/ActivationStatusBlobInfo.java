@@ -33,6 +33,7 @@ public class ActivationStatusBlobInfo {
     private byte upgradeVersion;
     private byte failedAttempts;
     private byte maxFailedAttempts;
+    private byte ctrLookAhead;
     private byte[] ctrData;
 
     /**
@@ -130,6 +131,22 @@ public class ActivationStatusBlobInfo {
      */
     public void setMaxFailedAttempts(byte maxFailedAttempts) {
         this.maxFailedAttempts = maxFailedAttempts;
+    }
+
+    /**
+     * Get value for counter's look ahead window.
+     * @return Counter's look ahead window value.
+     */
+    public byte getCtrLookAhead() {
+        return ctrLookAhead;
+    }
+
+    /**
+     * Set counter's look ahead window.
+     * @param ctrLookAhead Look ahead window.
+     */
+    public void setCtrLookAhead(byte ctrLookAhead) {
+        this.ctrLookAhead = ctrLookAhead;
     }
 
     /**
