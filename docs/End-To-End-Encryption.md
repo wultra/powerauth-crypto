@@ -140,7 +140,7 @@ ECIES in application scope has following configuration of parameters:
 
 HTTP header example:
 ```
-X-PowerAuth-Encryption: PowerAuth version="3.0", application_key="UNfS0VZX3JhbmRvbQ=="
+X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ=="
 ```
 
 ### Activation scope
@@ -158,7 +158,7 @@ ECIES in activation scope has following configuration of parameters:
 
 HTTP header example:
 ```
-X-PowerAuth-Encryption: PowerAuth version="3.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
 ```
 Note, that the header must not be added to the request, when ECIES encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
   

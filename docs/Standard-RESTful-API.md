@@ -85,7 +85,7 @@ After receiving the response, PowerAuth Client decrypts both layers of response 
 
 - Headers:
     - `Content-Type: application/json`
-    - `X-PowerAuth-Encryption: PowerAuth version="3.0", application_key="UNfS0VZX3JhbmRvbQ=="`
+    - `X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ=="`
 
 JSON request object before ECIES level 2 encryption:
 ```json
@@ -180,7 +180,8 @@ This endpoint also returns a `customObject` object with custom application speci
 ```json
 {
     "requestObject": {
-        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+        "challenge": "MDEyMzQ1Njc4OWFiY2RlZg=="
     }
 }
 ```
@@ -197,6 +198,7 @@ This endpoint also returns a `customObject` object with custom application speci
     "responseObject": {
         "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
         "encryptedStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
+        "nonce": "MDEyMzQ1Njc4OWFiY2RlZg==",
         "customObject": {
             "_comment": "Any object data, such as timestamp, service status info, etc."
         }

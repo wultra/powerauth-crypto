@@ -18,41 +18,67 @@ PowerAuth signature is in principle multi-factor - it uses all keys as defined i
 - **3FA** - all three factors are used
 	- `possession_knowledge_biometry` - Signature uses three keys: a possession related key `KEY_SIGNATURE_POSSESSION`, then knowledge related key `KEY_SIGNATURE_KNOWLEDGE`, and finally biometry related key `KEY_SIGNATURE_BIOMETRY`.
 
-When using more than one factor / key, the keys are added additively in the signature algorithm, so that the factors can be validated individually. The resulting PowerAuth signature is a sequence of one to three numeric strings with 8 digits (each sequence is separated by "-" character) that is obtained in following manner:
+When using more than one factor / key, the keys are added additively in the signature algorithm, so that the factors can be validated individually. The resulting PowerAuth signature can be then represented in two different formats:
+
+1. For online validation, PowerAuth signature is one Base64 string, which length depends on the number of factors involved in the calculation (16, 32 or 48 bytes encoded in Base64) 
+1. For offline validation purposes, PowerAuth signature is a sequence of one to three numeric strings with 8 digits (each sequence is separated by “-“ character)
+
+Both formats share the same core algorithm to calculate the signature components:
 
 ```java
 /**
- * Compute the signature for given data using provided keys and current counter.
+ * Compute the signature components for given data using provided keys and current counter.
  * @param data - data to be signed
  * @param signatureKey - array of symmetric keys used for signature
  * @param CTR_DATA - hash based counter
  */
-public String computeSignature(byte[] data, List<SecretKey> signatureKeys, byte[] CTR_DATA) {
+List<byte[]> computeSignatureComponents(byte[] data, List<SecretKey> signatureKeys, byte[] CTR_DATA) {
+    // ... compute signature components
+    List<byte[]> signatureComponents = new ArrayList<byte[]>();
+    for (int i = 0; i < signatureKeys.size(); i++) {
+        byte[] KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(0));
+        byte[] KEY_DERIVED = Mac.hmacSha256(KEY_SIGNATURE, CTR_DATA);
 
-	// ... compute signature components
-	String[] signatureComponents = new String[signatureKeys.size()];
-	for (int i = 0; i < signatureKeys.size(); i++) {
-		byte[] KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(0));
-		byte[] KEY_DERIVED = Mac.hmacSha256(KEY_SIGNATURE, CTR_DATA);
+        // ... compute signature key using more than one keys, at most 2 extra keys
+        // ... this skips the key with index 0 when i == 0
+        for (int j = 0; j < i; j++) {
+            KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(j + 1));
+            KEY_DERIVED_CURRENT = Mac.hmacSha256(KEY_SIGNATURE, CTR_DATA);
+            KEY_DERIVED = Mac.hmacSha256(KEY_DERIVED_CURRENT, KEY_DERIVED);
+        }
+        // ... sign the data
+        byte[] SIGNATURE_COMPONENT = Mac.hmacSha256(KEY_DERIVED, DATA);
+        // ... keep it in the list
+        signatureComponents.add(SIGNATURE_COMPONENT);
+    }
+    return signatureComponents;
+}
+```
 
-		// ... compute signature key using more than one keys, at most 2 extra keys
-		// ... this skips the key with index 0 when i == 0
-		for (int j = 0; j < i; j++) {
-			KEY_SIGNATURE = KeyConversion.secretKeyFromBytes(signatureKey.get(j + 1));
-			KEY_DERIVED_CURRENT = Mac.hmacSha256(KEY_SIGNATURE, CTR_DATA);
-			KEY_DERIVED = Mac.hmacSha256(KEY_DERIVED_CURRENT, KEY_DERIVED);
-		}
+### Signing HTTP requests
 
-		// ... sign the data
-		byte[] SIGNATURE_LONG = Mac.hmacSha256(KEY_DERIVED, DATA);
+PowerAuth signature for online purposes can be obtained in following manner:
 
-		// ... decimalize the signature component
-		int signComponent = (TRUNCATE(SIGNATURE_LONG, 4) & 0x7FFFFFFF) % Math.pow(10,8);
-		signatureComponents[i] = String.valueOf(signComponent);
-	}
-
-	// ... join the signature component using "-" character.
-	return String.join("-", signatureComponents);
+```java
+/**
+ * Compute the signature for HTTP request purposes for given data using provided keys and current counter.
+ * @param data - data to be signed
+ * @param signatureKey - array of symmetric keys used for signature
+ * @param CTR_DATA - hash based counter
+ */
+String computeOnlineSignature(byte[] data, List<SecretKey> signatureKeys, byte[] CTR_DATA) {
+    // ... at first, calculate signature components
+    List<byte[]> signatureBinaryComponents = computeSignatureComponents(data, signatureKeys, CTR_DATA);  
+      
+    // ... now convert components into one Base64 string
+    byte[] signatureBytes = new byte[signatureKeys.size() * 16];
+    for (int i = 0; i < signatureComponents.size(); i++) {
+        byte[] SIGNATURE_COMPONENT = signatureBinaryComponents.get(i);
+        // ... append last 16 bytes from SIGNATURE_COMPONENT to signature bytes        
+        ByteUtils.copy(SIGNATURE_COMPONENT, 16, signatureBytes, i * 16, 16);
+    }
+    // ... final conversion to Base64
+	return Base64.encode(signatureBytes);
 }
 ```
 
@@ -63,10 +89,41 @@ X-PowerAuth-Authorization: PowerAuth
 	pa_activation_id="7a24c6e9-48e9-43c2-ab4a-aed6270e924d",
 	pa_application_key="Z19gyYaW5kb521fYWN0aXZ==",
 	pa_nonce="kYjzVBB8Y0ZFabxSWbWovY==",
-	pa_signature_type="possession_knowledge_biometry"
-	pa_signature="12345678-12345678-12345678",
-	pa_version="3.0"
+	pa_signature_type="possession_knowledge"
+	pa_signature="MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=",
+	pa_version="3.1"
 ```
+
+### Offline signature
+
+The computation of offline signature is similar, but the final string is more human readable and can be easily manually retyped: 
+
+```java
+/**
+ * Compute the offline signature for given data using provided keys and current counter.
+ * @param data - data to be signed
+ * @param signatureKey - array of symmetric keys used for signature
+ * @param CTR_DATA - hash based counter
+ */
+String computeOfflineSignature(byte[] data, List<SecretKey> signatureKeys, byte[] CTR_DATA) {
+    // ... at first, calculate signature components
+    List<byte[]> signatureBinaryComponents = computeSignatureComponents(data, signatureKeys, CTR_DATA);
+	
+	// ... compute signature components
+	String[] signatureComponents = new String[signatureKeys.size()];
+    for (int i = 0; i < signatureComponents.size(); i++) {
+        byte[] SIGNATURE_COMPONENT = signatureBinaryComponents.get(i);
+        // ... decimalize the signature component
+        int decimalized = (ByteUtils.getInt(ByteUtils.truncate(SIGNATURE_COMPONENT, 4)) & 0x7FFFFFFF) % Math.pow(10,8);
+        signatureStrings[i] = String.valueOf(decimalized);
+	}
+    // ... join the signature component using "-" character.
+    return String.join("-", signatureComponents);
+}
+```
+
+PowerAuth Client displays the signature on the screen and then the user has to manually retype that string into another PowerAuth powered application (e.g. typically to web application, connected to PowerAuth Server).
+
 ## Normalized Data for HTTP Requests
 
 Normalized data to be signed are built using the following procedure:
@@ -109,10 +166,10 @@ PowerAuth Server can validate the signature using the following mechanism:
 1. Compute the expected signature for obtained data and check if the expected signature matches the one sent with the client. Since the PowerAuth Client may be ahead with counter from PowerAuth Server, server should try couple extra indexes ahead:
 
 ```java
-// input: CTR, CTR_DATA, TOLERANCE, data and signatureKeys
+// input: CTR, CTR_DATA, CTR_LOOK_AHEAD, data and signatureKeys
 boolean VERIFIED = false
 byte[] CTR_DATA_ITER = CTR_DATA
-for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER < CRT + TOLERANCE) {
+for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER < CRT + CTR_LOOK_AHEAD) {
     //... compute signature for given CTR_DATA_ITER, data and signature keys (see the algorithm above)
     String SIGNATURE = computeSignature(data, signatureKeys, CTR_DATA_ITER);
     if (SIGNATURE.equals(SIGNATURE_PROVIDED) && !VERIFIED) {
