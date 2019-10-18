@@ -154,6 +154,35 @@ _Note: Note that the `APPLICATION_SECRET` is technically outside the request dat
 
 ## Validating the Signature
 
+### Constants and variables
+
+Following constants and variables are involved in the signature validation:
+
+- `CTR`, signature counter
+  - Is a representation of logical time. Each parts in the scheme (client and server) increments the counter independently.
+  - In protocol version `2` was involved in the signature calculation.
+  - In protocol version `3` has only informational value and is no longer involved in the signature calculation.
+
+- `CTR_DATA`, hash based signature counter
+  - Introduced in the protocol version 3, now is involved in the signature calculation.
+  - It's randomly initialized and exchanged during the activation, or in the protocol upgrade process.
+  - In protocol version `3.1` client can synchronize its counter with the server. 
+
+- `CTR_LOOK_AHEAD`, tolerance set on server to overcome ahead clients
+  - Default value is `20`
+  - Server is trying to calculate and validate the signature ahead in time, in half-closed interval defined by this tolerance: `[CTR, CTR + CTR_LOOK_AHEAD)`.
+
+- `FAILED_ATTEMPTS`, how many attempts failed before in row
+   - Initial value is 0.
+   - If value reaches value defined in `MAX_FAILED_ATTEMPTS`, then activation is set to `BLOCKED` state.
+   - Value is increased in case that signature validation fails (see description below)
+
+- `MAX_FAILED_ATTEMPTS`, how is maximum failed attempts in row that ends in blocked activation. 
+   - If `FAILED_ATTEMPTS` reaches this value, then activation is set to `BLOCKED` state.
+
+
+### Algorithm
+
 PowerAuth Server can validate the signature using the following mechanism:
 
 1. Find the activation record using activation ID
@@ -169,7 +198,7 @@ PowerAuth Server can validate the signature using the following mechanism:
 // input: CTR, CTR_DATA, CTR_LOOK_AHEAD, data and signatureKeys
 boolean VERIFIED = false
 byte[] CTR_DATA_ITER = CTR_DATA
-for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER < CRT + CTR_LOOK_AHEAD) {
+for (CTR_ITER = CTR; CTR_ITER++; CTR_ITER < CRT + CTR_LOOK_AHEAD) {
     //... compute signature for given CTR_DATA_ITER, data and signature keys (see the algorithm above)
     String SIGNATURE = computeSignature(data, signatureKeys, CTR_DATA_ITER);
     if (SIGNATURE.equals(SIGNATURE_PROVIDED) && !VERIFIED) {
@@ -183,4 +212,20 @@ for (CRT_ITER = CTR; CTR_ITER++; CRT_ITER < CRT + CTR_LOOK_AHEAD) {
 return VERIFIED;
 ```
 
-Additionally, server may implement partial signature validation - basically evaluate each signature component separately. This may be used to determine if a failed attempt counter should be incremented or not (since this allows distinguishing attacker who has a physical access to the PowerAuth Client from attacker who randomly guesses signature).
+#### Success
+
+In case that signature is verified, then:
+
+- Set `FAILED_ATTEMPTS` to `0`, but only if the signature factor is not `possession`. 
+- In case that signature with `possession` factor only is validated, then do not reset `FAILED_ATTEMPTS`.
+- Move signature counter in database forward. That means that:
+  - Set `CTR` to `CTR_ITER`
+  - Set `CTR_DATA` to `CTR_DATA_ITER`
+
+#### Failure
+
+In case of failure:
+
+- Increase `FAILED_ATTEMPTS` by `1`, but only if the signature factor is not `possession`.
+- In case that signature with `possession` factory only is validated, then do not increase `FAILED_ATTEMPTS`.
+- If `FAILED_ATTEMPTS` is equal or greater than `MAX_FAILED_ATTEMPTS`, then set activation state to `BLOCKED`
