@@ -162,21 +162,17 @@ Following constants and variables are involved in the signature validation:
   - Is a representation of logical time. Each parts in the scheme (client and server) increments the counter independently.
   - In protocol version `2` was involved in the signature calculation.
   - In protocol version `3` has only informational value and is no longer involved in the signature calculation.
-
 - `CTR_DATA`, hash based signature counter
   - Introduced in the protocol version 3, now is involved in the signature calculation.
   - It's randomly initialized and exchanged during the activation, or in the protocol upgrade process.
   - In protocol version `3.1` client can synchronize its counter with the server. 
-
 - `CTR_LOOK_AHEAD`, tolerance set on server to overcome ahead clients
-  - Default value is `20`
   - Server is trying to calculate and validate the signature ahead in time, in half-closed interval defined by this tolerance: `[CTR, CTR + CTR_LOOK_AHEAD)`.
-
+  - Default value is `20`
 - `FAILED_ATTEMPTS`, how many attempts failed before in row
    - Initial value is 0.
    - If value reaches value defined in `MAX_FAILED_ATTEMPTS`, then activation is set to `BLOCKED` state.
    - Value is increased in case that signature validation fails (see description below)
-
 - `MAX_FAILED_ATTEMPTS`, how is maximum failed attempts in row that ends in blocked activation. 
    - If `FAILED_ATTEMPTS` reaches this value, then activation is set to `BLOCKED` state.
 
@@ -218,9 +214,7 @@ In case that signature is verified, then:
 
 - Set `FAILED_ATTEMPTS` to `0`, but only if the signature factor is not `possession`. 
 - In case that signature with `possession` factor only is validated, then do not reset `FAILED_ATTEMPTS`.
-- Move signature counter in database forward. That means that:
-  - Set `CTR` to `CTR_ITER`
-  - Set `CTR_DATA` to `CTR_DATA_ITER`
+- Move signature counter in database forward. That means that set `CTR` to `CTR_ITER` and `CTR_DATA` to `CTR_DATA_ITER`.
 
 #### Failure
 
@@ -228,4 +222,4 @@ In case of failure:
 
 - Increase `FAILED_ATTEMPTS` by `1`, but only if the signature factor is not `possession`.
 - In case that signature with `possession` factory only is validated, then do not increase `FAILED_ATTEMPTS`.
-- If `FAILED_ATTEMPTS` is equal or greater than `MAX_FAILED_ATTEMPTS`, then set activation state to `BLOCKED`
+- If `FAILED_ATTEMPTS` is equal or greater than `MAX_FAILED_ATTEMPTS`, then set activation state to `BLOCKED`.
