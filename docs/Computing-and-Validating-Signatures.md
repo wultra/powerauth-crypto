@@ -173,7 +173,7 @@ Following constants and variables are involved in the signature validation:
    - Initial value is 0.
    - If value reaches value defined in `MAX_FAILED_ATTEMPTS`, then activation is set to `BLOCKED` state.
    - Value is increased in case that signature validation fails (see description below)
-- `MAX_FAILED_ATTEMPTS`, how is maximum failed attempts in row that ends in blocked activation. 
+- `MAX_FAILED_ATTEMPTS`, how many maximum failed attempts in a row result in blocked activation. 
    - If `FAILED_ATTEMPTS` reaches this value, then activation is set to `BLOCKED` state.
 
 
@@ -210,7 +210,7 @@ return VERIFIED;
 
 #### Success
 
-In case that signature is verified, then:
+In case that signature is successfully verified, then:
 
 - Set `FAILED_ATTEMPTS` to `0`, but only if the signature factor is not `possession`. 
 - In case that signature with `possession` factor only is validated, then do not reset `FAILED_ATTEMPTS`.
