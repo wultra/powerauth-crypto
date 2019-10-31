@@ -78,7 +78,7 @@ String computeOnlineSignature(byte[] data, List<SecretKey> signatureKeys, byte[]
         ByteUtils.copy(SIGNATURE_COMPONENT, 16, signatureBytes, i * 16, 16);
     }
     // ... final conversion to Base64
-	return Base64.encode(signatureBytes);
+    return Base64.encode(signatureBytes);
 }
 ```
 
@@ -160,17 +160,17 @@ Following constants and variables are involved in the signature validation:
 
 - `CTR`, signature counter
   - Is a representation of logical time. Each parts in the scheme (client and server) increments the counter independently.
-  - In protocol version `2` was involved in the signature calculation.
-  - In protocol version `3` has only informational value and is no longer involved in the signature calculation.
+  - In protocol version `2`, the counter was involved in the signature calculation.
+  - In protocol version `3`, the counter has only informational value and is no longer involved in the signature calculation.
 - `CTR_DATA`, hash based signature counter
-  - Introduced in the protocol version 3, now is involved in the signature calculation.
+  - Introduced in the protocol version `3`, now is involved in the signature calculation.
   - It's randomly initialized and exchanged during the activation, or in the protocol upgrade process.
-  - In protocol version `3.1` client can synchronize its counter with the server. 
+  - In protocol version `3.1`, the client can synchronize its counter with the server. 
 - `CTR_LOOK_AHEAD`, tolerance set on server to overcome ahead clients
   - Server is trying to calculate and validate the signature ahead in time, in half-closed interval defined by this tolerance: `[CTR, CTR + CTR_LOOK_AHEAD)`.
   - Default value is `20`
 - `FAILED_ATTEMPTS`, how many attempts failed before in row
-   - Initial value is 0.
+   - Initial value is `0`.
    - If value reaches value defined in `MAX_FAILED_ATTEMPTS`, then activation is set to `BLOCKED` state.
    - Value is increased in case that signature validation fails (see description below)
 - `MAX_FAILED_ATTEMPTS`, how many maximum failed attempts in a row result in blocked activation. 
