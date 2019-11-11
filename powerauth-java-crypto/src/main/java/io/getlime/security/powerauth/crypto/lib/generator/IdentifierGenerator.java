@@ -24,6 +24,8 @@ import io.getlime.security.powerauth.crypto.lib.model.RecoverySeed;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.CRC16;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -40,6 +42,8 @@ import java.util.UUID;
  *
  */
 public class IdentifierGenerator {
+
+    private static final Logger logger = LoggerFactory.getLogger(IdentifierGenerator.class);
 
     /**
      * Default length of Activation ID Short and Activation OTP.
@@ -104,6 +108,7 @@ public class IdentifierGenerator {
             byte[] randomBytes = keyGenerator.generateRandomBytes(ACTIVATION_CODE_RANDOM_BYTES_LENGTH);
             return generateActivationCode(randomBytes);
         } catch (GenericCryptoException ex) {
+            logger.warn(ex.getMessage(), ex);
             // Exception cannot occur, the random code length is specified correctly
             return null;
         }

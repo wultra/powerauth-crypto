@@ -23,6 +23,8 @@ import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -37,6 +39,8 @@ import java.util.List;
  *
  */
 public class SignatureUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(SignatureUtils.class);
 
     /**
      * Compute ECDSA signature of given bytes with a private key.
@@ -55,8 +59,10 @@ public class SignatureUtils {
             ecdsa.update(bytes);
             return ecdsa.sign();
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (SignatureException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -79,8 +85,10 @@ public class SignatureUtils {
             ecdsa.update(signedBytes);
             return ecdsa.verify(signature);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (SignatureException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
