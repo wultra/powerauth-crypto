@@ -25,6 +25,8 @@ import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.*;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -45,6 +47,8 @@ import java.util.Arrays;
  *
  */
 public class PowerAuthServerActivation {
+
+    private static final Logger logger = LoggerFactory.getLogger(PowerAuthServerActivation.class);
 
     private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
@@ -185,6 +189,7 @@ public class PowerAuthServerActivation {
             }
 
         } catch (InvalidKeySpecException | InvalidKeyException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }

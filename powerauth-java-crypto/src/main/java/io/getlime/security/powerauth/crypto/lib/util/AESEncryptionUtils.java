@@ -19,6 +19,8 @@ package io.getlime.security.powerauth.crypto.lib.util;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -34,6 +36,8 @@ import java.security.NoSuchProviderException;
  *
  */
 public class AESEncryptionUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(AESEncryptionUtils.class);
 
     /**
      * Encrypt given data using given padding with given initialization
@@ -54,8 +58,10 @@ public class AESEncryptionUtils {
             cipherForCryptoResponse.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -95,8 +101,10 @@ public class AESEncryptionUtils {
             cipherForCryptoResponse.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }

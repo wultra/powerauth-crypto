@@ -16,6 +16,9 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -31,6 +34,8 @@ import java.security.NoSuchAlgorithmException;
  * @author Petr Dvorak, petr@wultra.com
  */
 public class Hash {
+
+    private static final Logger logger = LoggerFactory.getLogger(Hash.class);
 
     /**
      * Compute hash digest for given data using SHA-256.
@@ -51,7 +56,8 @@ public class Hash {
     public static byte[] sha256(byte[] originalBytes) {
         try {
             return hash(originalBytes);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException ex) {
+            logger.warn(ex.getMessage(), ex);
             return null;
         }
     }

@@ -20,6 +20,8 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +33,8 @@ import java.util.List;
  * @author Petr Dvorak, petr@wultra.com
  */
 public class DataDigest {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataDigest.class);
 
     /**
      * Data digest result.
@@ -82,6 +86,7 @@ public class DataDigest {
             String digest = String.format(digitFormat, otp);
             return new Result(digest, randomKey);
         } catch (GenericCryptoException | CryptoProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             return null;
         }
     }
