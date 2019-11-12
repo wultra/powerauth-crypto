@@ -6,7 +6,7 @@ For updating to 2019.05, please follow these migration guides:
 
 - [PowerAuth Server - Migration from version 0.21.0 to version 0.22.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-0.22.0.md)
 - [PowerAuth Push Server - Migration from version 0.21.0 to version 0.22.0](https://github.com/wultra/powerauth-push-server/blob/develop/docs/PowerAuth-Push-Server-0.22.0.md)
-- [PowerAuth Web Flow - Migration from version 0.20.0 to version 0.21.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-0.22.0.md)
+- [PowerAuth Web Flow - Migration from version 0.21.0 to version 0.22.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-0.22.0.md)
 - [PowerAuth Mobile SDK - Migration from version 1.0.0 to version 1.1.0](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/Migration-from-1.0-to-1.1.md)
 
 ## Components for version 2019.05
