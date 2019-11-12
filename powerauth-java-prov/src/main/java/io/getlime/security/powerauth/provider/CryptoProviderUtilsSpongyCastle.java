@@ -17,6 +17,8 @@
 package io.getlime.security.powerauth.provider;
 
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.jce.ECNamedCurveTable;
 import org.spongycastle.jce.interfaces.ECPrivateKey;
 import org.spongycastle.jce.interfaces.ECPublicKey;
@@ -38,6 +40,8 @@ import java.security.spec.InvalidKeySpecException;
  * @author Petr Dvorak
  */
 public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(CryptoProviderUtilsSpongyCastle.class);
 
     /**
      * Get the provider name, for example "BC" for Bouncy Castle.
@@ -84,6 +88,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
 
             return kf.generatePublic(pubSpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
@@ -118,6 +123,7 @@ public class CryptoProviderUtilsSpongyCastle implements CryptoProviderUtil {
             ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);
             return kf.generatePrivate(pubSpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }

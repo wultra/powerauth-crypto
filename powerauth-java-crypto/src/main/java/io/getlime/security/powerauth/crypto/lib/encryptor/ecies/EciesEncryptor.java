@@ -25,6 +25,8 @@ import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -39,6 +41,8 @@ import java.util.Arrays;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class EciesEncryptor {
+
+    private static final Logger logger = LoggerFactory.getLogger(EciesEncryptor.class);
 
     // Underlying implementation classes.
     private final AESEncryptionUtils aes = new AESEncryptionUtils();
@@ -193,6 +197,7 @@ public class EciesEncryptor {
             // Return encrypted payload
             return new EciesCryptogram(envelopeKey.getEphemeralKeyPublic(), mac, encryptedData);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new EciesException("Request encryption failed", ex);
         }
     }
@@ -224,6 +229,7 @@ public class EciesEncryptor {
 
             return aes.decrypt(cryptogram.getEncryptedData(), iv, encKey);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new EciesException("Response decryption failed", ex);
         }
     }

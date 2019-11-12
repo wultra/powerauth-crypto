@@ -24,6 +24,8 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -42,6 +44,8 @@ import java.security.spec.InvalidKeySpecException;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class EciesEnvelopeKey {
+
+    private static final Logger logger = LoggerFactory.getLogger(EciesEnvelopeKey.class);
 
     private static final int ENVELOPE_KEY_SIZE = 32;
 
@@ -92,6 +96,7 @@ public class EciesEnvelopeKey {
             // Return envelope key with derived secret key and ephemeral public key bytes
             return new EciesEnvelopeKey(secretKey, ephemeralPublicKeyBytes);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new EciesException("Key derivation failed", ex);
         }
     }
@@ -122,6 +127,7 @@ public class EciesEnvelopeKey {
             // Return envelope key with derived secret key and ephemeral public key bytes
             return new EciesEnvelopeKey(secretKey, ephemeralPublicKeyBytes);
         } catch (InvalidKeyException | InvalidKeySpecException | GenericCryptoException | CryptoProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new EciesException("Key derivation failed", ex);
         }
     }

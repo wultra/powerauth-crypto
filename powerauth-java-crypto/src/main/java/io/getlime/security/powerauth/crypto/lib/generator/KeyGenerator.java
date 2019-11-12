@@ -22,6 +22,8 @@ import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
@@ -43,6 +45,8 @@ import java.util.Arrays;
  */
 public class KeyGenerator {
 
+    private static final Logger logger = LoggerFactory.getLogger(KeyGenerator.class);
+
     private final SecureRandom random = new SecureRandom();
 
     /**
@@ -58,6 +62,7 @@ public class KeyGenerator {
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
@@ -87,6 +92,7 @@ public class KeyGenerator {
             }
             return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(resultSecret);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
@@ -243,6 +249,7 @@ public class KeyGenerator {
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
             return new SecretKeySpec(keyBytes, "AES");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }

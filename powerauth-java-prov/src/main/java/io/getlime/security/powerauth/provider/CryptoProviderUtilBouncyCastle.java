@@ -19,6 +19,8 @@ package io.getlime.security.powerauth.provider;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -35,6 +37,8 @@ import java.security.spec.*;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(CryptoProviderUtilBouncyCastle.class);
 
     /**
      * Get the provider name, for example "BC" for Bouncy Castle.
@@ -94,6 +98,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
             return KeyFactory.getInstance("EC", getProviderName()).generatePublic(ecPublicKeySpec);
         } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
@@ -127,6 +132,7 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             ECPrivateKeySpec ecPrivateKeySpec = new ECPrivateKeySpec(new BigInteger(keyBytes), ecParameterSpec);
             return KeyFactory.getInstance("EC", getProviderName()).generatePrivate(ecPrivateKeySpec);
         } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
