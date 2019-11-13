@@ -69,5 +69,4 @@ These functions are used in the pseudo-codes:
   - `byte[] result = ByteUtils.concat(byte[] a, byte[] b)` - Concatenate two byte arrays - append `b` after `a`.
   - `byte[] result = ByteUtils.convert32Bto16B(byte[] bytes32, byte[] b)` - Converts 32b long byte array to 16b long array by xor-ing the first 16b with the second 16b, byte-by-byte.
   - `byte[] result = ByteUtils.subarray(byte[] bytes, int startIndex, int length)` - Obtain subarray of a byte array, starting with index `startIndex` with a given length.
-  - `byte[] result = ByteUtils.xor(byte[] A, byte[] B)` - Return `A` xor `B`, where `A` and `B` must have equal length.
   - `ByteUtils.copy(byte[] source, int sourcePosition, byte[] destination, int destinationPosition, int length)` - Copies `length` of bytes from the specified source array of bytes, beginning at the specified position, to the specified position of the destination array.

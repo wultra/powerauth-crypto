@@ -896,7 +896,7 @@ public class GenerateVectorDataTest {
         KeyDerivationUtils keyDerivationUtils = new KeyDerivationUtils(keyGenerator);
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 32; i++) {
             byte[] transportKey = keyGenerator.generateRandomBytes(16);
             byte[] challenge = keyGenerator.generateRandomBytes(16);
             byte[] nonce = keyGenerator.generateRandomBytes(16);
