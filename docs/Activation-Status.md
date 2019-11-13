@@ -16,12 +16,15 @@ Following sequence diagram shows the activation status check in more detail.
     ```java
     SecretKey KEY_TRANSPORT_IV = KDF.derive(KEY_TRANSPORT, 3000)
     ```
-1. Client choose random 16 bytes long `STATUS_CHALLENGE` and send that value to the server.
+1. Client choose random 16 bytes long `STATUS_CHALLENGE` and send that value to the server:
+   ```java
+   byte[] STATUS_CHALLENGE = Generator.randomBytes(16)
+   ```
 1. Server choose random 16 bytes long `STATUS_NONCE` and calculates `STATUS_IV` as:
    ```java
    byte[] STATUS_NONCE = Generator.randomBytes(16)
-   SecretKey STATUS_CHALLENGE_KEY = KDF_INTERNAL.derive(KEY_TRANSPORT_IV, STATUS_CHALLENGE)
-   byte[] STATUS_IV = ByteUtils.xor(STATUS_NONCE, KeyConversion.getBytes(STATUS_CHALLENGE_KEY))
+   byte[] STATUS_IV_DATA = ByteUtils.concat(STATUS_CHALLENGE, STATUS_NONCE)
+   byte[] STATUS_IV = KeyConversion.getBytes(KDF_INTERNAL.derive(KEY_TRANSPORT_IV, STATUS_IV_DATA))
    ```
 1. Server uses `KEY_TRANSPORT` as key and `STATUS_IV` as IV to encrypt the status blob:
    ```java
@@ -30,8 +33,8 @@ Following sequence diagram shows the activation status check in more detail.
 1. Server sends `encryptedStatusBlob` and `STATUS_NONCE` as response to the client.   
 1. Client receives `encryptedStatusBlob` and `STATUS_NONCE` and calculates the same `STATUS_IV` and then decrypts the status data:
    ```java
-   SecretKey STATUS_CHALLENGE_KEY = KDF_INTERNAL.derive(KEY_TRANSPORT_IV, STATUS_CHALLENGE)
-   byte[] STATUS_IV = ByteUtils.xor(STATUS_NONCE, KeyConversion.getBytes(STATUS_CHALLENGE_KEY))
+   byte[] STATUS_IV_DATA = ByteUtils.concat(STATUS_CHALLENGE, STATUS_NONCE)
+   byte[] STATUS_IV = KeyConversion.getBytes(KDF_INTERNAL.derive(KEY_TRANSPORT_IV, STATUS_IV_DATA))
    byte[] statusBlob = AES.decrypt(encryptedStatusBlob, STATUS_IV, KEY_TRANSPORT, "AES/CBC/NoPadding")
    ```
    
