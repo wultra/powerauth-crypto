@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
+import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -65,7 +66,7 @@ public class KeyDerivationUtils {
      *
      * @param challenge Cryptographic challenge received from the client, or generated in the client.
      * @param nonce Cryptographic nonce received from the server, or generated in the server.
-     * @param transportKey Transport key
+     * @param transportKey Transport key.
      * @return Initialization vector, or zero filled IV when both, {@code challenge} and {@code nonce} parameters are {@code null}.
      * @throws GenericCryptoException In case that key derivation fails or you provided invalid challenge or nonce.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
@@ -91,13 +92,10 @@ public class KeyDerivationUtils {
                 .putLong(STATUS_BLOB_TRANSPORT_IV_INDEX)
                 .array();
         final SecretKey transportIv = keyGenerator.deriveSecretKey(transportKey, derivationIndex);
-        // Derive STATUS_CHALLENGE_KEY from KEY_TRANSPORT_IV and CHALLENGE
-        final SecretKey statusChallengeKey = keyGenerator.deriveSecretKeyHmac(transportIv, challenge);
-        // Calculate final IV = STATUS_CHALLENGE_KEY xor NONCE
-        final byte[] iv = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(statusChallengeKey);
-        for (int i = 0; i < iv.length; i++) {
-            iv[i] ^= nonce[i];
-        }
-        return iv;
+        // Prepare STATUS_IV_DATA as CHALLENGE || NONCE
+        final byte[] ivData = Bytes.concat(challenge, nonce);
+        // Derive IV from KEY_TRANSPORT_IV, CHALLENGE and NONCE
+        final SecretKey ivKey = keyGenerator.deriveSecretKeyHmac(transportIv, ivData);
+        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(ivKey);
     }
 }
