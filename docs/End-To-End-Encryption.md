@@ -2,7 +2,7 @@
 
 ## Standard ECIES Based End-to-End Encryption
 
-PowerAuth supports a standard ECIES encryption (integrated encryption scheme that uses elliptic curve cryptography) with the standard X9.63 (SHA256) KDF function (that produces 32b long keys).
+PowerAuth supports a standard ECIES encryption (integrated encryption scheme that uses elliptic curve cryptography) with the P256r1 curve and standard X9.63 (SHA256) KDF function (that produces 32B long keys).
 
 ### ECIES Encryption
 
@@ -122,7 +122,7 @@ The JSON response is similar, but without "ephemeralPublicKey" field:
 
 PowerAuth protocol defines two basic usage scopes for ECIES encryption:
 
-- In "application scope", ECIES encryption is available for a whole PowerAuth Client lifetime. In other words, your application can use this mode anytime in its lifetime. 
+- In "application scope", ECIES encryption is available for a whole PowerAuth Client lifetime. In other words, your application can use this mode anytime in its lifetime.
 - In "activation scope", ECIES encryption is available once the PowerAuth Client has a valid activation. In this mode, the encryptor is cryptographically bound to keys exchanged during the activation process.
 
 ### Application scope
@@ -130,7 +130,7 @@ PowerAuth protocol defines two basic usage scopes for ECIES encryption:
 ECIES in application scope has following configuration of parameters:
 
 - `KEY_ENC_PUB` is `KEY_SERVER_MASTER_PUBLIC`
-- `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants)) 
+- `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
 - `SHARED_INFO_2` is calculated from `APPLICATION_SECRET`:
   ```java
   byte[] SHARED_INFO_2 = Hash.sha256(APPLICATION_SECRET);
@@ -148,12 +148,12 @@ X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmR
 ECIES in activation scope has following configuration of parameters:
 
 - `KEY_ENC_PUB` is `KEY_SERVER_PUBLIC` (e.g. key which is unique for each activation)
-- `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants)) 
+- `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
 - `SHARED_INFO_2` is calculated from `APPLICATION_SECRET` and `KEY_TRANSPORT`:
   ```java
   byte[] SHARED_INFO_2 = Mac.hmacSha256(KEY_TRANSPORT, APPLICATION_SECRET);
   ```
-  
+
 *Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.*
 
 HTTP header example:
@@ -161,13 +161,13 @@ HTTP header example:
 X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
 ```
 Note, that the header must not be added to the request, when ECIES encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
-  
+
 ### Pre-shared constants
 
 PowerAuth protocol defines following `SHARED_INFO_1` (also called as `sh1` or `sharedInfo1`) constants for its own internal purposes:
 
-| RESTful endpoint                      | ECIES scope  | `SHARED_INFO_1` value | 
-| ------------------------------------- | ------------ | --------------------- | 
+| RESTful endpoint                      | ECIES scope  | `SHARED_INFO_1` value |
+| ------------------------------------- | ------------ | --------------------- |
 | `/pa/v3/activation/create` (level 1)  | application  | `/pa/generic/application` |
 | `/pa/v3/activation/create` (level 2)  | application  | `/pa/activation` |
 | `/pa/v3/upgrade`                      | activation   | `/pa/upgrade` |
@@ -177,8 +177,7 @@ PowerAuth protocol defines following `SHARED_INFO_1` (also called as `sh1` or `s
 
 On top of that, following constants can be used for application-specific purposes:
 
-| Purpose                                  | ECIES scope  | `SHARED_INFO_1` value | 
-| ---------------------------------------- | ------------ | --------------------- | 
+| Purpose                                  | ECIES scope  | `SHARED_INFO_1` value |
+| ---------------------------------------- | ------------ | --------------------- |
 | Generic encryptor for application scope  | application  | `/pa/generic/application` |
 | Generic encryptor for activation scope   | activation   | `/pa/generic/activation` |
-

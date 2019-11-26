@@ -18,7 +18,7 @@ Following basic cryptography algorithms and parameters are used in the PowerAuth
 - **X9.63 (with SHA256)** - A standard KDF function based on X9.63, with SHA256 as an internal hash function. It uses iterations of SHA256 hash function to derive a key of expected length of 32B.
   - `byte[] bytes = KDF_X9_63_SHA256.derive(byte[] secret, byte[] info)`
 
-- **ECDSA** - An algorithm for elliptic curve based signatures, uses SHA256 hash algorithm. It defines two operations:
+- **ECDSA** - An algorithm for elliptic curve based signatures, uses SHA256 hash algorithm and P256r1 EC curve. It defines two operations:
   - `byte[] signature = ECDSA.sign(byte[] data, PrivateKey privateKey)` - compute signature of given data and private key.
   - `boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKey)` - verify the signature for given data using a given public key.
 
@@ -51,12 +51,12 @@ These functions are used in the pseudo-codes:
   - `String randomBase32 Generator.randomBase32String(int N)` - Generate string in Base32 encoding with N characters using a secure random generator.
   - `String uuid = Generator.randomUUID()` - Generate a new UUID level 4 and return it in string representation.
   - `String code = Generator.randomActivationCode()` - Generate a new `ACTIVATION_CODE`. See [Activation Code](./Activation-Code.md) for more details.
-  - `String code = Generator.buildActivationCode(byte[10] randomBytes)` - Function return an activation code from given random data. 
-  
+  - `String code = Generator.buildActivationCode(byte[10] randomBytes)` - Function return an activation code from given random data.
+
 - Hashing and MAC functions.
   - `byte[] signature = Mac.hmacSha256(SecretKey key, byte[] message)` - Compute HMAC-SHA256 signature for given message using provided symmetric key.
   - `byte[] hash = Hash.sha256(byte[] original)` - Compute SHA256 hash of a given input.
-  
+
 - Password hashing.
   - `String hash = PasswordHash.hash(byte[] password)` - Compute Argon2 hash for given password. Hash is stored in Modular Crypt Format.
   - `boolean matches = PasswordHash.verify(byte[] password, String hash)` - Verify password against Argon2 hash stored in Modular Crypt Format.
