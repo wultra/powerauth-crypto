@@ -12,56 +12,62 @@ Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and 
     ```java
     EPH_KEYPAIR = (KEY_EPH_PRIV, KEY_EPH_PUB).
     ```
-2. Derive base secret key (in this step, we do not trim the key to 16b only, we keep all 32b).
+1. Derive base secret key (in this step, we do not trim the key to 16b only, we keep all 32b).
     ```java
     SecretKey KEY_BASE = ECDH.phase(KEY_EPH_PRIV, KEY_ENC_PUB)
     ```
-3. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `SHARED_INFO_1` together with `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
+1. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `SHARED_INFO_1` together with `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
     ```java
     byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
-    SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO)
+    SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO, 48)
     ```
-4. Split the 32 bytes long `KEY_SECRET` to two 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`.
+1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final `KEY_IV` is a key for IV derivation.
     ```java
     byte[] KEY_SECRET_BYTES = KeyConversion.getBytes(KEY_SECRET);
     SecretKey KEY_ENC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET, 0, 16));
     SecretKey KEY_MAC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET, 16, 16));
+    SecretKey KEY_IV = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET, 32, 16));
     ```
-5. Compute the encrypted data using AES, with zero `iv` value.
+1. Generate random `NONCE` and derive `IV` for encryption.
     ```java
-    byte[] iv = ByteUtils.zeroBytes(16);
-    byte[] DATA_ENCRYPTED = AES.encrypt(DATA_ORIG, iv, KEY_ENC)
+    byte[] NONCE = Generator.randomBytes(16);
+    byte[] IV = KDF_INTERNAL.derive(KEY_IV, NONCE);
     ```
-6. Compute the MAC of encrypted data, include `SHARED_INFO_2`.
+1. Compute the encrypted data using AES, with `iv` value.
+    ```java
+    byte[] DATA_ENCRYPTED = AES.encrypt(DATA_ORIG, IV, KEY_ENC)
+    ```
+1. Compute the MAC of encrypted data, include `SHARED_INFO_2`.
     ```java
     byte[] DATA = Bytes.concat(DATA_ENCRYPTED, SHARED_INFO_2);
     byte[] MAC = Mac.hmacSha256(KEY_MAC, DATA)
     ```
-7. Prepare ECIES payload.
+1. Prepare ECIES payload.
     ```java
-    EciesPayload payload = (DATA_ENCRYPTED, MAC, KEY_EPH_PUB)
+    EciesPayload payload = (DATA_ENCRYPTED, MAC, KEY_EPH_PUB, NONCE)
     ```
 
 ### ECIES Decryption
 
-Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of the ECIES payload `(DATA_ENCRYPTED, MAC, KEY_EPH_PUB)` and a `SHARED_INFO_1` and `SHARED_INFO_2` constants (`byte[]`) as decryption parameters. ECIES decryption works in a following way:
+Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of the ECIES payload `(DATA_ENCRYPTED, MAC, KEY_EPH_PUB, NONCE)` and a `SHARED_INFO_1` and `SHARED_INFO_2` constants (`byte[]`) as decryption parameters. ECIES decryption works in a following way:
 
 1. Derive base secret key from the private key and ephemeral public key from the ECIES payload (in this step, we do not trim the key to 16b only, we keep all 32b).
     ```java
     SecretKey KEY_BASE = ECDH.phase(KEY_ENC_PRIV, KEY_EPH_PUB)
     ```
-2. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
+1. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
     ```java
     byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
-    SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO)
+    SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO, 48)
     ```
-3. Split the 32 bytes long `KEY_SECRET` to two 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`.
+1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final `KEY_IV` is a key for IV derivation.
     ```java
     byte[] KEY_SECRET_BYTES = KeyConversion.getBytes(KEY_SECRET);
     SecretKey KEY_ENC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET_BYTES, 0, 16));
     SecretKey KEY_MAC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET_BYTES, 16, 16));
+    SecretKey KEY_IV = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET_BYTES, 32, 16));
     ```
-4. Validate the MAC value in payload against expected MAC value. Include `SHARED_INFO_2`. If the MAC values are different, terminate the decryption.
+1. Validate the MAC value in payload against expected MAC value. Include `SHARED_INFO_2`. If the MAC values are different, terminate the decryption.
     ```java
     byte[] DATA = Bytes.concat(DATA_ENCRYPTED, SHARED_INFO_2);
     byte[] MAC_EXPECTED = Mac.hmacSha256(KEY_MAC, DATA);
@@ -69,10 +75,10 @@ Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of th
         throw EciesException("Invalid MAC"); // terminate the validation with an error
     }
     ```
-5. Decrypt the data using AES, with zero `iv` value.
+1. Decrypt the data using AES, with `IV` value derived from `NONCE`.
     ```java
-    byte[] iv = ByteUtils.zeroBytes(16);
-    byte[] DATA_ORIG = AES.decrypt(DATA_ENCRYPTED, iv, KEY_ENC)
+    byte[] IV = KDF_INTERNAL.derive(KEY_IV, NONCE);
+    byte[] DATA_ORIG = AES.decrypt(DATA_ENCRYPTED, IV, KEY_ENC)
     ```
 
 ### Client-Server Implementation
@@ -96,6 +102,7 @@ public class EciesPayload {
     private byte[] encryptedData;
     private byte[] mac;
     private byte[] ephemeralPublicKey;
+    private byte[] nonce;
 }
 ```
 
@@ -103,9 +110,10 @@ The typical JSON encoded request is following:
 
 ```json
 {
-    "ephemeralPublicKey" : "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
-    "encryptedData" : "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
-    "mac" : "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 
@@ -113,8 +121,8 @@ The JSON response is similar, but without "ephemeralPublicKey" field:
 
 ```json
 {
-    "encryptedData" : "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
-    "mac" : "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+    "encryptedData" : "Q/7Pu29LRw5ymqkqVx+6IQ==",
+    "mac" : "oBPnpQ1r6YU4VtMB8sKEX4uXqdGGNzCnyLSCQrg659E="
 }
 ```
 
