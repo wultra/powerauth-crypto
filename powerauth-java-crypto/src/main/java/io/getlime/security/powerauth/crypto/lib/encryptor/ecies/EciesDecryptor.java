@@ -102,23 +102,22 @@ public class EciesDecryptor {
     }
 
     /**
-     * Initialize envelope key for decryptor using provided ephemeral public key. This method is used either when there
-     * is no incoming encrypted request to decrypt which would initialize the envelope key or the decryptor parameters
-     * are transported over network and the decryptor is reconstructed on another server using envelope key
-     * and sharedInfo2 parameter.
+     * Initialize envelope key for decryptor using provided ephemeral public key. This method is used either for
+     * the compatibility reasons, when there is no incoming encrypted request to decrypt which would initialize
+     * the envelope key or the decryptor parameters are transported over network and the decryptor is reconstructed
+     * on another server using envelope key and sharedInfo2 parameter.
      *
      * @param ephemeralPublicKeyBytes Ephemeral public key for ECIES.
-     * @param nonce Nonce required for the future response encryption. The parameter may be {@code null} for a legacy V2 ECIES encryption,
-     *              or if the only purpose of the initialization is to generate parameters, for the remote decryptor.
      * @throws EciesException In case envelope key initialization fails.
      */
-    public void initEnvelopeKey(byte[] ephemeralPublicKeyBytes, byte[] nonce) throws EciesException {
+    public void initEnvelopeKey(byte[] ephemeralPublicKeyBytes) throws EciesException {
         envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
         // Invalidate this decryptor for decryption
         canDecryptData = false;
         canEncryptData = true;
-        // Derive IV for future encryption.
-        ivForEncryption = nonce != null ? envelopeKey.deriveIvForNonce(nonce) : new byte[16];
+        // Zero IV for the future encryption. We assume that the only data encrypted with this configuration is
+        // a response for "/pa/token/create" method for legacy V2 protocol.
+        ivForEncryption = new byte[16];
     }
 
     /**
@@ -270,7 +269,7 @@ public class EciesDecryptor {
             ivForEncryption = null;
 
             // Return encrypted payload
-            return new EciesCryptogram(envelopeKey.getEphemeralKeyPublic(), mac, body, null);
+            return new EciesCryptogram(mac, body);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new EciesException("Response encryption failed", ex);

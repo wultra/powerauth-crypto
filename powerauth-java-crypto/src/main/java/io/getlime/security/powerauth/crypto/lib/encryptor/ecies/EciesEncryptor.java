@@ -194,7 +194,7 @@ public class EciesEncryptor {
                 nonce = keyGenerator.generateRandomBytes(16);
                 iv = envelopeKey.deriveIvForNonce(nonce);
             } else {
-                // V3.0, use zero IV
+                // V2.x, V3.0, use zero IV
                 nonce = null;
                 iv = new byte[16];
             }

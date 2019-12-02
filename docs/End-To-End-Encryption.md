@@ -21,7 +21,7 @@ Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and 
     byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
     SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO, 48)
     ```
-1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final `KEY_IV` is a key for IV derivation.
+1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final part is a key for IV derivation `KEY_IV`.
     ```java
     byte[] KEY_SECRET_BYTES = KeyConversion.getBytes(KEY_SECRET);
     SecretKey KEY_ENC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET, 0, 16));
@@ -60,7 +60,7 @@ Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of th
     byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
     SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO, 48)
     ```
-1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final `KEY_IV` is a key for IV derivation.
+1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final part is a key for IV derivation `KEY_IV`.
     ```java
     byte[] KEY_SECRET_BYTES = KeyConversion.getBytes(KEY_SECRET);
     SecretKey KEY_ENC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET_BYTES, 0, 16));

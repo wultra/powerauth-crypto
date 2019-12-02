@@ -104,7 +104,6 @@ public class EciesEncryptorTest {
             System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadResponse.getMac()));
-            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadResponse.getEphemeralPublicKey()));
             System.out.println();
 
 
@@ -162,7 +161,6 @@ public class EciesEncryptorTest {
             System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getEncryptedData()));
             System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadResponse.getMac()));
-            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadResponse.getEphemeralPublicKey()));
             System.out.println();
 
             byte[] macBrokenResponse = keyGenerator.generateRandomBytes(16);
@@ -400,10 +398,7 @@ public class EciesEncryptorTest {
 
             assertArrayEquals(expectedResponsePayload.getEncryptedData(), responsePayload.getEncryptedData());
             assertArrayEquals(expectedResponsePayload.getMac(), responsePayload.getMac());
-            assertEquals(expectedResponsePayload.getEphemeralPublicKey(), responsePayload.getEphemeralPublicKey());
-
         }
-
     }
 
     /**
