@@ -70,8 +70,6 @@ public class ActivationStatusBlobInfoTest {
         final SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(keyPairServer.getPrivate(), keyPairDevice.getPublic());
         // Derive transport key
         final SecretKey transportKey = powerAuthServerKeyFactory.generateServerTransportKey(masterSecretKey);
-        // Generate hash based counter
-        byte[] ctrData = new HashBasedCounter().init();
         // Encrypt status blob with transport key
         ActivationStatusBlobInfo serverStatusBlob = new ActivationStatusBlobInfo();
         serverStatusBlob.setActivationStatus((byte)3);
@@ -80,7 +78,6 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setFailedAttempts((byte)1);
         serverStatusBlob.setMaxFailedAttempts((byte)5);
         serverStatusBlob.setCtrLookAhead((byte)20);
-        serverStatusBlob.setCtrData(ctrData);
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, null, null, transportKey);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
@@ -95,11 +92,6 @@ public class ActivationStatusBlobInfoTest {
         // Status blob bytes 13 ... 14 contain version, verify them
         assertEquals((byte) 1, buffer.get(13));
         assertEquals((byte) 5, buffer.get(14));
-        // Look ahead window
-        assertEquals((byte) 20, buffer.get(15));
-        // Status blob bytes 16 ... 31 contain ctrData, verify them
-        byte[] ctrDataFromStatus = Arrays.copyOfRange(statusBlob, 16, 32);
-        assertArrayEquals(ctrData, ctrDataFromStatus);
 
         // Verify decoded status blob used in client activation
         final ActivationStatusBlobInfo statusBlobDecoded = clientActivation.getStatusFromEncryptedBlob(encryptedStatusBlob, null, null, transportKey);
@@ -108,8 +100,6 @@ public class ActivationStatusBlobInfoTest {
         assertEquals(3, statusBlobDecoded.getUpgradeVersion());
         assertEquals(1, statusBlobDecoded.getFailedAttempts());
         assertEquals(5, statusBlobDecoded.getMaxFailedAttempts());
-        assertEquals(20, statusBlobDecoded.getCtrLookAhead());
-        assertArrayEquals(ctrData, statusBlobDecoded.getCtrData());
         assertTrue(statusBlobDecoded.isValid());
     }
 
@@ -128,7 +118,7 @@ public class ActivationStatusBlobInfoTest {
         // Derive transport key
         final SecretKey transportKey = powerAuthServerKeyFactory.generateServerTransportKey(masterSecretKey);
         // Generate hash based counter
-        byte[] ctrData = new HashBasedCounter().init();
+        byte[] ctrDataHash = keyGenerator.generateRandomBytes(16);
         // Encrypt status blob with transport key
         ActivationStatusBlobInfo serverStatusBlob = new ActivationStatusBlobInfo();
         serverStatusBlob.setActivationStatus((byte)3);
@@ -137,7 +127,7 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setFailedAttempts((byte)1);
         serverStatusBlob.setMaxFailedAttempts((byte)5);
         serverStatusBlob.setCtrLookAhead((byte)20);
-        serverStatusBlob.setCtrData(ctrData);
+        serverStatusBlob.setCtrDataHash(ctrDataHash);
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
@@ -156,7 +146,7 @@ public class ActivationStatusBlobInfoTest {
         assertEquals((byte) 20, buffer.get(15));
         // Status blob bytes 16 ... 31 contain ctrData, verify them
         byte[] ctrDataFromStatus = Arrays.copyOfRange(statusBlob, 16, 32);
-        assertArrayEquals(ctrData, ctrDataFromStatus);
+        assertArrayEquals(ctrDataHash, ctrDataFromStatus);
 
         // Verify decoded status blob used in client activation
         final ActivationStatusBlobInfo statusBlobDecoded = clientActivation.getStatusFromEncryptedBlob(encryptedStatusBlob, challenge, nonce, transportKey);
@@ -166,7 +156,7 @@ public class ActivationStatusBlobInfoTest {
         assertEquals(1, statusBlobDecoded.getFailedAttempts());
         assertEquals(5, statusBlobDecoded.getMaxFailedAttempts());
         assertEquals(20, statusBlobDecoded.getCtrLookAhead());
-        assertArrayEquals(ctrData, statusBlobDecoded.getCtrData());
+        assertArrayEquals(ctrDataHash, statusBlobDecoded.getCtrDataHash());
         assertTrue(statusBlobDecoded.isValid());
     }
 }

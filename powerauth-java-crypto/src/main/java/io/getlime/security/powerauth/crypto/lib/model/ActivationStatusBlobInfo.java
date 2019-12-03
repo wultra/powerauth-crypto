@@ -34,7 +34,8 @@ public class ActivationStatusBlobInfo {
     private byte failedAttempts;
     private byte maxFailedAttempts;
     private byte ctrLookAhead;
-    private byte[] ctrData;
+    private byte ctrInfo;
+    private byte[] ctrDataHash;
 
     /**
      * Return true in case the parsed data was valid (correctly decrypted using transport key), false otherwise.
@@ -150,18 +151,34 @@ public class ActivationStatusBlobInfo {
     }
 
     /**
-     * Get counter data.
-     * @return Counter data.
+     * Get least significant byte from the counter.
+     * @return Least significant byte from the counter.
      */
-    public byte[] getCtrData() {
-        return ctrData;
+    public byte getCtrInfo() {
+        return ctrInfo;
     }
 
     /**
-     * Set counter data.
-     * @param ctrData Counter data.
+     * Set least significant byte from the counter.
+     * @param ctrInfo Least significant byte from the counter.
      */
-    public void setCtrData(byte[] ctrData) {
-        this.ctrData = ctrData;
+    public void setCtrInfo(byte ctrInfo) {
+        this.ctrInfo = ctrInfo;
+    }
+
+    /**
+     * Get counter data hash.
+     * @return Counter data hash.
+     */
+    public byte[] getCtrDataHash() {
+        return ctrDataHash;
+    }
+
+    /**
+     * Set counter data hash.
+     * @param ctrDataHash Counter data.
+     */
+    public void setCtrDataHash(byte[] ctrDataHash) {
+        this.ctrDataHash = ctrDataHash;
     }
 }
