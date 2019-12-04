@@ -127,6 +127,7 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setFailedAttempts((byte)1);
         serverStatusBlob.setMaxFailedAttempts((byte)5);
         serverStatusBlob.setCtrLookAhead((byte)20);
+        serverStatusBlob.setCtrByte((byte)33);
         serverStatusBlob.setCtrDataHash(ctrDataHash);
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey);
         // Decrypt status blob with transport key
@@ -139,6 +140,8 @@ public class ActivationStatusBlobInfoTest {
         assertEquals((byte) 3, buffer.get(4));
         assertEquals((byte) 2, buffer.get(5));
         assertEquals((byte) 3, buffer.get(6));
+        // ctr byte is at position 12
+        assertEquals((byte)33, buffer.get(12));
         // Status blob bytes 13 ... 14 contain version, verify them
         assertEquals((byte) 1, buffer.get(13));
         assertEquals((byte) 5, buffer.get(14));
@@ -156,6 +159,7 @@ public class ActivationStatusBlobInfoTest {
         assertEquals(1, statusBlobDecoded.getFailedAttempts());
         assertEquals(5, statusBlobDecoded.getMaxFailedAttempts());
         assertEquals(20, statusBlobDecoded.getCtrLookAhead());
+        assertEquals(33, statusBlobDecoded.getCtrByte());
         assertArrayEquals(ctrDataHash, statusBlobDecoded.getCtrDataHash());
         assertTrue(statusBlobDecoded.isValid());
     }

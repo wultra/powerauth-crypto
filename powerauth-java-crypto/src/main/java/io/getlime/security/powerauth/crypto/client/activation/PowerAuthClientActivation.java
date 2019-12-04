@@ -289,6 +289,9 @@ public class PowerAuthClientActivation {
         // fetch the upgrade version status byte
         statusInfo.setUpgradeVersion(buffer.get(6));
 
+        // fetch ctr byte value
+        statusInfo.setCtrByte(buffer.get(12));
+
         // fetch the failed attempt count
         statusInfo.setFailedAttempts(buffer.get(13));
 
