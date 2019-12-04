@@ -53,7 +53,10 @@ public class HashBasedCounter implements Counter {
      */
     public byte[] next(byte[] ctrData) {
         byte[] nextCtrData = Hash.sha256(ctrData);
-        return keyGenerator.convert32Bto16B(nextCtrData);
+        if (nextCtrData != null) {
+            return keyGenerator.convert32Bto16B(nextCtrData);
+        }
+        return null;
     }
 
 }
