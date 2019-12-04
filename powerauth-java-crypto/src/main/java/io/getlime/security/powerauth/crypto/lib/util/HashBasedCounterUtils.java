@@ -90,7 +90,7 @@ public class HashBasedCounterUtils {
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyHashForHasBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
+    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
         if (expectedCtrData == null || expectedCtrData.length != CTR_DATA_LENGTH) {
             throw new GenericCryptoException("Invalid expected counter data");

@@ -28,11 +28,11 @@ import org.junit.Test;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.Security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test verification of hash calculated from the hash based counter.
@@ -70,7 +70,7 @@ public class HashBasedCounterUtilsTest {
             final byte[] ctrDataHashExpected = calculateCtrDataHash(ctrData, transportKey);
             final byte[] ctrDataHashCalculated = hashBasedCounterUtils.calculateHashFromHashBasedCounter(ctrData, transportKey);
             assertArrayEquals(ctrDataHashExpected, ctrDataHashCalculated);
-            final boolean ctrDataHashVerified = hashBasedCounterUtils.verifyHashForHasBasedCounter(ctrDataHashCalculated, ctrData, transportKey);
+            final boolean ctrDataHashVerified = hashBasedCounterUtils.verifyHashForHashBasedCounter(ctrDataHashCalculated, ctrData, transportKey);
             assertTrue(ctrDataHashVerified);
         }
     }

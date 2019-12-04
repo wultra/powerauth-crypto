@@ -321,8 +321,8 @@ public class PowerAuthClientActivation {
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyHashForHasBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
+    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        return new HashBasedCounterUtils().verifyHashForHasBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
+        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
     }
 }
