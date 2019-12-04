@@ -61,7 +61,7 @@ public class HashBasedCounterUtilsTest {
     @Test
     public void testCounterHashCalculationAndVerification()
             throws IOException, CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        final HashBasedCounterUtils hashBasedCounterUtils = new HashBasedCounterUtils(keyGenerator);
+        final HashBasedCounterUtils hashBasedCounterUtils = new HashBasedCounterUtils();
         for (int i = 0; i < 100; i++) {
             // Generate random transport key
             final SecretKey transportKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(keyGenerator.generateRandomBytes(16));

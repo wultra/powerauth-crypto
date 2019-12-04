@@ -893,7 +893,7 @@ public class GenerateVectorDataTest {
         TestSet testSet = new TestSet("activation-status-blob-iv.json", "Initialization Vectors for activation status blob symmetric encryption.");
 
         KeyGenerator keyGenerator = new KeyGenerator();
-        KeyDerivationUtils keyDerivationUtils = new KeyDerivationUtils(keyGenerator);
+        KeyDerivationUtils keyDerivationUtils = new KeyDerivationUtils();
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         for (int i = 0; i < 32; i++) {

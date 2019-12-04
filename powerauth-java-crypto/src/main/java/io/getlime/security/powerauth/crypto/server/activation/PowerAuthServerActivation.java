@@ -238,7 +238,7 @@ public class PowerAuthServerActivation {
 
     /**
      * Returns an encrypted status blob as described in PowerAuth Specification.
-     * 
+     *
      * @param statusBlobInfo {@link ActivationStatusBlobInfo} object with activation status data to be encrypted.
      * @param challenge Challenge for activation status blob encryption. If non-null, then also {@code nonce} parameter must be provided.
      * @param nonce Nonce for activation status blob encryption. If non-null, then also {@code challenge} parameter must be provided.
@@ -260,7 +260,7 @@ public class PowerAuthServerActivation {
         // Prepare variables that has different meaning, depended on the protocol version.
         final byte[] reserved;
         final byte[] ctrDataHash;
-        final byte ctrInfo;
+        final byte ctrByte;
         final byte ctrLookAhead;
         if (challenge != null) {
             // Protocol V3.1+, use values provided in the status blob info object.
@@ -269,7 +269,7 @@ public class PowerAuthServerActivation {
             }
             reserved = keyGenerator.generateRandomBytes(5);
             ctrDataHash = statusBlobInfo.getCtrDataHash();
-            ctrInfo = statusBlobInfo.getCtrInfo();
+            ctrByte = statusBlobInfo.getCtrByte();
             ctrLookAhead = statusBlobInfo.getCtrLookAhead();
         } else {
             // Legacy protocol versions (2.x, 3.0)
@@ -281,7 +281,7 @@ public class PowerAuthServerActivation {
             final byte[] randomBytes = keyGenerator.generateRandomBytes(5 + 2 + 16);
             reserved = Arrays.copyOf(randomBytes, 5);
             ctrDataHash = Arrays.copyOfRange(randomBytes, 5 + 2, 5 + 2 + 16);
-            ctrInfo = randomBytes[5];
+            ctrByte = randomBytes[5];
             ctrLookAhead = randomBytes[6];
         }
         // Prepare status blob data.
@@ -291,14 +291,14 @@ public class PowerAuthServerActivation {
                 .put(statusBlobInfo.getCurrentVersion())     // 1 byte
                 .put(statusBlobInfo.getUpgradeVersion())     // 1 byte
                 .put(reserved)                               // 5 bytes
-                .put(ctrInfo)                                // 1 byte
+                .put(ctrByte)                                // 1 byte
                 .put(statusBlobInfo.getFailedAttempts())     // 1 byte
                 .put(statusBlobInfo.getMaxFailedAttempts())  // 1 byte
                 .put(ctrLookAhead)                           // 1 byte
                 .put(ctrDataHash)                            // 16 bytes
                 .array();
         // Derive IV and encrypt status blob data.
-        final byte[] iv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        final byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         return new AESEncryptionUtils().encrypt(statusBlob, iv, transportKey, "AES/CBC/NoPadding");
     }
 
@@ -315,7 +315,7 @@ public class PowerAuthServerActivation {
      */
     public byte[] calculateHashFromHashBasedCounter(byte[] ctrData, SecretKey transportKey)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        return new HashBasedCounterUtils(keyGenerator).calculateHashFromHashBasedCounter(ctrData, transportKey);
+        return new HashBasedCounterUtils().calculateHashFromHashBasedCounter(ctrData, transportKey);
     }
 
     /**

@@ -269,7 +269,7 @@ public class PowerAuthClientActivation {
 
         // Decrypt the status blob
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] iv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
 
         // Prepare objects to read status info into
@@ -320,6 +320,6 @@ public class PowerAuthClientActivation {
      */
     public boolean verifyHashForHasBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        return new HashBasedCounterUtils(keyGenerator).verifyHashForHasBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
+        return new HashBasedCounterUtils().verifyHashForHasBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
     }
 }

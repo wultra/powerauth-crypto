@@ -81,7 +81,7 @@ public class ActivationStatusBlobInfoTest {
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, null, null, transportKey);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] zeroIv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(null, null, transportKey);
+        byte[] zeroIv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(null, null, transportKey);
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         // Status blob bytes 0 ... 6 are deterministic, verify them
@@ -131,7 +131,7 @@ public class ActivationStatusBlobInfoTest {
         byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] zeroIv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        byte[] zeroIv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         // Status blob bytes 0 ... 6 are deterministic, verify them

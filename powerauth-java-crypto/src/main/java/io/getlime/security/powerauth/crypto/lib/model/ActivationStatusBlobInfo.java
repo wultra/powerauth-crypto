@@ -34,7 +34,7 @@ public class ActivationStatusBlobInfo {
     private byte failedAttempts;
     private byte maxFailedAttempts;
     private byte ctrLookAhead;
-    private byte ctrInfo;
+    private byte ctrByte;
     private byte[] ctrDataHash;
 
     /**
@@ -154,16 +154,16 @@ public class ActivationStatusBlobInfo {
      * Get least significant byte from the counter.
      * @return Least significant byte from the counter.
      */
-    public byte getCtrInfo() {
-        return ctrInfo;
+    public byte getCtrByte() {
+        return ctrByte;
     }
 
     /**
      * Set least significant byte from the counter.
-     * @param ctrInfo Least significant byte from the counter.
+     * @param ctrByte Least significant byte from the counter.
      */
-    public void setCtrInfo(byte ctrInfo) {
-        this.ctrInfo = ctrInfo;
+    public void setCtrByte(byte ctrByte) {
+        this.ctrByte = ctrByte;
     }
 
     /**

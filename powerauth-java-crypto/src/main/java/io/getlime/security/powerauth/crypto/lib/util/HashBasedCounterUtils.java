@@ -32,14 +32,7 @@ import java.util.Arrays;
  */
 public class HashBasedCounterUtils {
 
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * @param keyGenerator {@link KeyGenerator} instance to be used in the class.
-     */
-    public HashBasedCounterUtils(KeyGenerator keyGenerator) {
-        this.keyGenerator = keyGenerator;
-    }
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Derivation index used to derive KEY_TRANSPORT_CTR from KEY_TRANSPORT
@@ -69,6 +62,9 @@ public class HashBasedCounterUtils {
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
         if (ctrData == null || ctrData.length != CTR_DATA_LENGTH) {
             throw new GenericCryptoException("Invalid ctrData provided");
+        }
+        if (transportKey == null) {
+            throw new GenericCryptoException("Invalid transport key");
         }
         // Derive KEY_TRANSPORT_CTR from KEY_TRANSPORT
         final byte[] derivationIndex = ByteBuffer.allocate(STATUS_BLOB_TRANSPORT_CTR_LENGTH)
@@ -101,6 +97,9 @@ public class HashBasedCounterUtils {
         }
         if (receivedCtrDataHash == null || receivedCtrDataHash.length != CTR_DATA_LENGTH) {
             throw new GenericCryptoException("Invalid received counter data hash");
+        }
+        if (transportKey == null) {
+            throw new GenericCryptoException("Invalid transport key");
         }
         // Calculate hash from current hash based counter
         final byte[] expectedCtrDataHash = calculateHashFromHashBasedCounter(expectedCtrData, transportKey);
