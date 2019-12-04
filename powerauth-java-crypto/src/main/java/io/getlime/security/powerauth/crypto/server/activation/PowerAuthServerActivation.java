@@ -232,8 +232,8 @@ public class PowerAuthServerActivation {
 
         // Encrypt the data
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] encryptedTMP = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
-        return aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
+        byte[] encryptedTmp = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
+        return aes.encrypt(encryptedTmp, activationNonce, ephemeralSymmetricKey);
     }
 
     /**

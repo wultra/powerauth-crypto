@@ -117,7 +117,7 @@ The typical JSON encoded request is following:
 }
 ```
 
-The JSON response is similar, but without "ephemeralPublicKey" field:
+The JSON response is similar, but without `ephemeralPublicKey` and `nonce` fields:
 
 ```json
 {
