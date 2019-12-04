@@ -43,7 +43,7 @@ Following sequence diagram shows the activation status check in more detail.
 When obtaining the activation status, application receives the binary status blob. Structure of the 32B long status blob is following:
 
 ```
-0xDEC0DED1 1B:${STATUS} 1B:${CURRENT_VERSION} 1B:${UPGRADE_VERSION} 6B:${RESERVED} 1B:${FAIL_COUNT} 1B:${MAX_FAIL_COUNT} 1B:${CTR_LOOK_AHEAD} 16B:${CTR_DATA}
+0xDEC0DED1 1B:${STATUS} 1B:${CURRENT_VERSION} 1B:${UPGRADE_VERSION} 5B:${RESERVED} 1B:${CTR_BYTE} 1B:${FAIL_COUNT} 1B:${MAX_FAIL_COUNT} 1B:${CTR_LOOK_AHEAD} 16B:${CTR_DATA}
 ```
 
 where:
@@ -60,9 +60,17 @@ where:
     - `0x02` - PowerAuth protocol version `2.x`
     - `0x03` - PowerAuth protocol version `3.x`
 - `${UPGRADE_VERSION}` - 1 byte representing maximum protocol version supported by the PowerAuth Server. The set of possible values is identical to `${CURRENT_VERSION}`
-- `${RESERVED}` - 6 bytes reserved for the future use.
+- `${RESERVED}` - 5 bytes reserved for the future use.
+- `${CTR_BYTE}` - 1 byte representing least significant byte from current value of counter, calculated as:
+    ```java
+    byte CTR_BYTE = (byte)(CTR & 0xFF);
+    ```
 - `${FAIL_COUNT}` - 1 byte representing information about the number of failed attempts at the moment.
 - `${MAX_FAIL_COUNT}` - 1 byte representing information about the maximum allowed number of failed attempts.
 - `${CTR_LOOK_AHEAD}` - 1 byte representing constant for a look ahead window, used on the server to validate the signature.
-- `${CTR_DATA}` - 16 bytes containing current value of hash-based counter.
+- `${CTR_DATA_HASH}` - 16 bytes containing hash from current value of hash-based counter:
+    ```java
+    SecretKey KEY_TRANSPORT_CTR = KDF.derive(KEY_TRANSPORT, 4000);
+    byte[] CTR_DATA_HASH = KeyConversion.getBytes(KDF_INTERNAL.derive(KEY_TRANSPORT_CTR, CTR_DATA));
+    ```
 
