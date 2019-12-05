@@ -43,7 +43,7 @@ Following sequence diagram shows the activation status check in more detail.
 When obtaining the activation status, application receives the binary status blob. Structure of the 32B long status blob is following:
 
 ```
-0xDEC0DED1 1B:${STATUS} 1B:${CURRENT_VERSION} 1B:${UPGRADE_VERSION} 5B:${RESERVED} 1B:${CTR_BYTE} 1B:${FAIL_COUNT} 1B:${MAX_FAIL_COUNT} 1B:${CTR_LOOK_AHEAD} 16B:${CTR_DATA}
+0xDEC0DED1 1B:${STATUS} 1B:${CURRENT_VERSION} 1B:${UPGRADE_VERSION} 5B:${RESERVED} 1B:${CTR_BYTE} 1B:${FAIL_COUNT} 1B:${MAX_FAIL_COUNT} 1B:${CTR_LOOK_AHEAD} 16B:${CTR_DATA_HASH}
 ```
 
 where:
