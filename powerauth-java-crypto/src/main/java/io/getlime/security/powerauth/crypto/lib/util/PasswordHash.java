@@ -78,9 +78,6 @@ public class PasswordHash {
      */
     public static boolean verify(byte[] password, String argon2Hash) throws IOException {
         Argon2Hash input = Argon2Hash.parse(argon2Hash);
-        if (input == null) {
-            return false;
-        }
         // Convert algorithm name to algorithm ID
         int algorithmId = Argon2Parameters.ARGON2_i;
         for (Map.Entry<Integer, String> entry: ALGORITHM_NAME_MAP.entrySet()) {

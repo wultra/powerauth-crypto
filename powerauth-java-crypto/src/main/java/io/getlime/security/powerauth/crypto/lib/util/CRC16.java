@@ -97,7 +97,7 @@ public class CRC16 implements Checksum {
     @Override
     public void update(byte[] bytes, int offset, int length) {
         for (int i = offset; i < offset + length; i++) {
-            update((int) bytes[i]);
+            update(bytes[i]);
         }
     }
 

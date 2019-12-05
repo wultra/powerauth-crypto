@@ -85,7 +85,7 @@ After receiving the response, PowerAuth Client decrypts both layers of response 
 
 - Headers:
     - `Content-Type: application/json`
-    - `X-PowerAuth-Encryption: PowerAuth version="3.0", application_key="UNfS0VZX3JhbmRvbQ=="`
+    - `X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ=="`
 
 JSON request object before ECIES level 2 encryption:
 ```json
@@ -104,9 +104,10 @@ JSON request object before ECIES level 1 encryption. The `activationData` field 
         "code": "VVVVV-VVVVV-VVVVV-VTFVA"
     },
     "activationData": {
-        "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
-        "encryptedData": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
-        "mac": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+        "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+        "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+        "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+        "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
     }
 }
 ```
@@ -116,7 +117,8 @@ The actual request payload then looks like:
 {
     "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
     "encryptedData": "19gyYaW5ZhdGlvblkb521fYWN0ASKDHsakdhksajhdkjashdkhKSDJhAKSDHKSADHkahdskahdakhdKADHakjhdadsaX9JRaAhbG9duZ==",
-    "mac": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 
@@ -130,7 +132,7 @@ JSON response (before any decryption):
 ```json
 {
     "encryptedData": "19gyYaW5ZhdGlvblkb521fYWNSDKJHSDkhadkhSDKJHASDKHSADkjhasdkhSADKHASKDHASKDJHASDKHJ0aX9JRaAhbG9duZ==",
-    "mac": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+    "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI="
 }
 ```
 
@@ -142,7 +144,7 @@ JSON response after ECIES level 1 decryption:
     },
     "activationData": {
         "encryptedData": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
-        "mac": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+        "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI="
     }
 }
 ```
@@ -180,7 +182,8 @@ This endpoint also returns a `customObject` object with custom application speci
 ```json
 {
     "requestObject": {
-        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+        "challenge": "MDEyMzQ1Njc4OWFiY2RlZg=="
     }
 }
 ```
@@ -197,6 +200,7 @@ This endpoint also returns a `customObject` object with custom application speci
     "responseObject": {
         "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
         "encryptedStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
+        "nonce": "MDEyMzQ1Njc4OWFiY2RlZg==",
         "customObject": {
             "_comment": "Any object data, such as timestamp, service status info, etc."
         }
@@ -262,9 +266,10 @@ JSON request object, before ECIES encryption (is actually an empty JSON object):
 Actual JSON request body, after the encryption:
 ```json
 {
-    "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
-    "encryptedData": "19gyYaW5ZhdGlvblkb521fYWNSDKJHSDkhadkhSDKJHASDKHSADkjhasdkhSADKHASKDHASKDJHASDKHJ0aX9JRaAhbG9duZ==",
-    "mac": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 
@@ -279,7 +284,7 @@ Actual JSON request body, after the encryption:
 JSON response before the decryption:
 ```json
 {
-    "mac": "xvJ1Zq0mOtgvVqbspLhWMt2NJaTDZ5GkPBbcDxXRB9M=",
+    "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
     "encryptedData": "6YkPoxWXQDIHdT5OIQrxMe4+qH+pNec5HlzBacZPAy3fB3fCc25OJAoXIaBOTatVbAcsuToseNanIX3+ZNcyxIEVj16OoawPhm1w=="
 }
 ```
@@ -377,9 +382,10 @@ You can provide following reasons for a vault unlocking:
 Actual JSON request body, after the encryption:
 ```json
 {
-    "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
-    "encryptedData": "19gyYaW5ZhdGlvblkb521fYWNSDKJHSDkhadkhSDKJHASDKHSADkjhasdkhSADKHASKDHASKDJHASDKHJ0aX9JRaAhbG9duZ==",
-    "mac": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 *Note that PowerAuth Signature must be calculated from the final, encrypted data (e.g. it's "encrypt-then-sign" mode).*
@@ -554,9 +560,10 @@ JSON request before ECIES encryption:
 Actual JSON request body after the encryption:
 ```json
 {
-    "ephemeralPublicKey": "BPZvFnVgImV2LLIdxRoGPQvp8m0uG9cIwNhs11mXWT+sBcILDYgDuj0DagbS8yNbTju07PPscc/eE7zjQ/0sPSo=",
-    "encryptedData": "fuDZz3jqtJ40JjKHek/57gt3dL4XyLWVq9CYupEudCOnTvo6yq57oW9VWR1/e+Ih",
-    "mac":"dL9IGDMoOuyqScxWv9R5XpOj8B/wRNKoLEo5eL8GonA="
+    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 
@@ -569,7 +576,7 @@ Actual JSON request body after the encryption:
 JSON response before ECIES decryption:
 ```json
 {
-    "mac": "ct78kSghyrL+b7N/bpNNI5GRt595xU5Y2qlGEG+j+1U=",
+    "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
     "encryptedData": "7LK7qs+OK0cfQPZlkzl2G8z5/IZx0SHhI/BPYFhhxqE="
 }
 ```

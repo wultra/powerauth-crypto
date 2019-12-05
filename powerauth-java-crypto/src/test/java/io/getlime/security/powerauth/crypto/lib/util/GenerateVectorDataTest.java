@@ -23,9 +23,11 @@ import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientAct
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.util.model.TestSet;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
@@ -475,6 +477,7 @@ public class GenerateVectorDataTest {
             KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
+            final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("2.0");
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
@@ -492,7 +495,7 @@ public class GenerateVectorDataTest {
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
                     byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData);
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureFormat);
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -513,7 +516,7 @@ public class GenerateVectorDataTest {
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
                     byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureFormat);
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -534,7 +537,7 @@ public class GenerateVectorDataTest {
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
                     byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureFormat);
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -584,6 +587,7 @@ public class GenerateVectorDataTest {
             KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
+            final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
@@ -604,7 +608,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData);
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureFormat);
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -626,7 +630,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureFormat);
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -648,7 +652,124 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureFormat);
+                    String signatureType = "possession_knowledge_biometry";
+
+                    Map<String, String> input = new LinkedHashMap<>();
+                    input.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signatureType", signatureType);
+                    input.put("counterData", BaseEncoding.base64().encode(ctrData));
+                    input.put("data", BaseEncoding.base64().encode(data));
+                    Map<String, String> output = new LinkedHashMap<>();
+                    output.put("signature", signature);
+                    testSet.addData(input, output);
+
+                    ctrData = hashBasedCounter.next(ctrData);
+                }
+            }
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for signature validation.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.1</li>
+     * </ul>
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testSignatureValidationV31() throws Exception {
+
+        TestSet testSet = new TestSet("signatures-v31.json", "Client must be able to compute PowerAuth signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
+
+        int max = 5;
+        int keyMax = 2;
+        int signatureCount = 10;
+        int dataMax = 256;
+        for (int j = 0; j < max; j++) {
+
+            // Prepare data
+            KeyGenerator keyGenerator = new KeyGenerator();
+            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            PublicKey serverPublicKey = serverKeyPair.getPublic();
+
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
+
+            final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
+            PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
+            PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
+
+            HashBasedCounter hashBasedCounter = new HashBasedCounter();
+
+            for (int i = 0; i < keyMax; i++) {
+
+                // compute data signature
+                SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
+                SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
+                SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
+
+                byte[] ctrData = hashBasedCounter.init();
+
+                for (int k = 0; k < signatureCount; k++) {
+
+                    // generate random data
+                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
+
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureFormat);
+                    String signatureType = "possession";
+
+                    Map<String, String> input = new LinkedHashMap<>();
+                    input.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signatureType", signatureType);
+                    input.put("counterData", BaseEncoding.base64().encode(ctrData));
+                    input.put("data", BaseEncoding.base64().encode(data));
+                    Map<String, String> output = new LinkedHashMap<>();
+                    output.put("signature", signature);
+                    testSet.addData(input, output);
+
+                    ctrData = hashBasedCounter.next(ctrData);
+                }
+
+                for (int k = 0; k < signatureCount; k++) {
+
+                    // generate random data
+                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
+
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureFormat);
+                    String signatureType = "possession_knowledge";
+
+                    Map<String, String> input = new LinkedHashMap<>();
+                    input.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signatureType", signatureType);
+                    input.put("counterData", BaseEncoding.base64().encode(ctrData));
+                    input.put("data", BaseEncoding.base64().encode(data));
+                    Map<String, String> output = new LinkedHashMap<>();
+                    output.put("signature", signature);
+                    testSet.addData(input, output);
+
+                    ctrData = hashBasedCounter.next(ctrData);
+                }
+
+                for (int k = 0; k < signatureCount; k++) {
+
+                    // generate random data
+                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
+
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureFormat);
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -755,6 +876,204 @@ public class GenerateVectorDataTest {
             testSet.addData(input, output);
         }
         writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for IV derivation for activation status blob symmetric encryption.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.1</li>
+     * </ul>
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testDeriveIvForActivationStatusEncryption() throws Exception {
+
+        TestSet testSet = new TestSet("activation-status-blob-iv.json", "Initialization Vectors for activation status blob symmetric encryption.");
+
+        KeyGenerator keyGenerator = new KeyGenerator();
+        KeyDerivationUtils keyDerivationUtils = new KeyDerivationUtils();
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+
+        for (int i = 0; i < 32; i++) {
+            byte[] transportKey = keyGenerator.generateRandomBytes(16);
+            byte[] challenge = keyGenerator.generateRandomBytes(16);
+            byte[] nonce = keyGenerator.generateRandomBytes(16);
+            byte[] iv = keyDerivationUtils.deriveIvForStatusBlobEncryption(challenge, nonce, keyConvertor.convertBytesToSharedSecretKey(transportKey));
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("transportKey", BaseEncoding.base64().encode(transportKey));
+            input.put("challenge", BaseEncoding.base64().encode(challenge));
+            input.put("nonce", BaseEncoding.base64().encode(nonce));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("iv", BaseEncoding.base64().encode(iv));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for status blob encryption.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.1</li>
+     * </ul>
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testActivationStatusBlobEncoding() throws Exception {
+        TestSet testSet = new TestSet("activation-status-blob-data.json", "Status blob test data.");
+
+        final KeyGenerator keyGenerator = new KeyGenerator();
+        final CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        final PowerAuthServerActivation activation = new PowerAuthServerActivation();
+        final BaseEncoding b64 = BaseEncoding.base64();
+
+        final ActivationStatusBlobInfoBuilder[] testData = {
+                new ActivationStatusBlobInfoBuilder().ctrByte(1)  .status(2).currentVersion(2),
+                new ActivationStatusBlobInfoBuilder().ctrByte(13) .status(3).ctrLookAhead(33).counterDistance(30),
+                new ActivationStatusBlobInfoBuilder().ctrByte(133).status(4).failedAttempts(1),
+                new ActivationStatusBlobInfoBuilder().ctrByte(63) .status(5).maxFailedAttempts(10),
+                new ActivationStatusBlobInfoBuilder().ctrByte(127).status(3).failedAttempts(5).maxFailedAttempts(10),
+                new ActivationStatusBlobInfoBuilder().ctrByte(253).status(3).failedAttempts(6).maxFailedAttempts(6),
+                new ActivationStatusBlobInfoBuilder().ctrByte(128).status(4).counterDistance(4),
+                new ActivationStatusBlobInfoBuilder().ctrByte(77) .status(5).counterDistance(1)
+        };
+
+        for (final ActivationStatusBlobInfoBuilder builder : testData) {
+
+            final SecretKey transportKey = keyGenerator.generateRandomSecretKey();
+            final byte[] transportKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(transportKey);
+            final byte[] ctrData = keyGenerator.generateRandomBytes(16);
+            final byte[] challenge = keyGenerator.generateRandomBytes(16);
+            final byte[] nonce = keyGenerator.generateRandomBytes(16);
+
+            // Move hash based counter forward for required counter distance times.
+            byte[] ctrDataMoved = ctrData;
+            for (int i = 0; i < builder.counterDistance; i++) {
+                ctrDataMoved = keyGenerator.convert32Bto16B(Hash.sha256(ctrDataMoved));
+            }
+            final byte[] ctrDataHash = activation.calculateHashFromHashBasedCounter(ctrDataMoved, transportKey);
+
+            final ActivationStatusBlobInfo info = builder.ctrDataHash(ctrDataHash).build();
+            final byte[] encryptedStatusBlob = activation.encryptedStatusBlob(info, challenge, nonce, transportKey);
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("transportKey", b64.encode(transportKeyBytes));
+            input.put("challenge", b64.encode(challenge));
+            input.put("nonce", b64.encode(nonce));
+            input.put("ctrData", b64.encode(ctrData));
+            input.put("encryptedStatusBlob", BaseEncoding.base64().encode(encryptedStatusBlob));
+
+            Map<String, String> output = builder.toMap();
+            testSet.addData(input, output);
+        }
+
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Helper class that helps with ActivationStatusBlobInfo object construction.
+     */
+    private static class ActivationStatusBlobInfoBuilder {
+
+        final ActivationStatusBlobInfo info;
+        int counterDistance;
+
+        ActivationStatusBlobInfoBuilder() {
+            info = new ActivationStatusBlobInfo();
+            info.setActivationStatus((byte)3);
+            info.setCurrentVersion((byte)3);
+            info.setUpgradeVersion((byte)3);
+            info.setFailedAttempts((byte)0);
+            info.setMaxFailedAttempts((byte)5);
+            info.setCtrLookAhead((byte)20);
+            info.setCtrDataHash(new byte[16]);
+            counterDistance = 0;
+        }
+
+        ActivationStatusBlobInfoBuilder status(int status) {
+            info.setActivationStatus((byte)status);
+            return this;
+        }
+
+        ActivationStatusBlobInfoBuilder currentVersion(int value) {
+            info.setCurrentVersion((byte)value);
+            return this;
+        }
+
+        ActivationStatusBlobInfoBuilder upgradeVersion(int value) {
+            info.setCurrentVersion((byte)value);
+            return this;
+        }
+
+        ActivationStatusBlobInfoBuilder failedAttempts(int value) {
+            info.setFailedAttempts((byte)value);
+            return this;
+        }
+
+        ActivationStatusBlobInfoBuilder maxFailedAttempts(int value) {
+            info.setMaxFailedAttempts((byte)value);
+            return this;
+        }
+
+        ActivationStatusBlobInfoBuilder ctrLookAhead(int value) {
+            info.setCtrLookAhead((byte)value);
+            return this;
+        }
+
+        ActivationStatusBlobInfoBuilder ctrByte(int value) {
+            info.setCtrByte((byte)value);
+            return this;
+        }
+
+        ActivationStatusBlobInfoBuilder ctrDataHash(byte[] value) {
+            info.setCtrDataHash(value);
+            return this;
+        }
+
+        ActivationStatusBlobInfoBuilder counterDistance(int distance) {
+            counterDistance = distance;
+            return this;
+        }
+
+        /**
+         * @return ActivationStatusBlobInfo object constructed from values set to builder.
+         */
+        ActivationStatusBlobInfo build() {
+            return info;
+        }
+
+        /**
+         * @return Map with values stored in ActivationStatusBlobInfo
+         */
+        Map<String, String> toMap() {
+            final Map<String, String> map = new LinkedHashMap<>();
+            map.put("activationStatus", toUnsignedByteString(info.getActivationStatus()));
+            map.put("currentVersion", toUnsignedByteString(info.getCurrentVersion()));
+            map.put("upgradeVersion", toUnsignedByteString(info.getUpgradeVersion()));
+            map.put("failedAttempts", toUnsignedByteString(info.getFailedAttempts()));
+            map.put("maxFailedAttempts", toUnsignedByteString(info.getMaxFailedAttempts()));
+            map.put("ctrLookAhead", toUnsignedByteString(info.getCtrLookAhead()));
+            map.put("ctrByte", toUnsignedByteString(info.getCtrByte()));
+            map.put("ctrDataHash", BaseEncoding.base64().encode(info.getCtrDataHash()));
+            map.put("counterDistance", String.valueOf(counterDistance));
+            return map;
+        }
+
+        /**
+         * Helper function that converts byte to its unsigned string representation. For example, {@code -1} should be
+         * converted to {@code "255"}.
+         * @param value Byte to convert.
+         * @return String with unsigned value of byte.
+         */
+        private String toUnsignedByteString(byte value) {
+            int intValue = value & 0xFF;
+            return String.valueOf(intValue);
+        }
     }
 
     /**

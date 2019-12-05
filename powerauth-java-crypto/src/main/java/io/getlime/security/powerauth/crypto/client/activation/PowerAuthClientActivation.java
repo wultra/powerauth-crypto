@@ -22,10 +22,7 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.crypto.lib.util.ECPublicKeyFingerprint;
-import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
+import io.getlime.security.powerauth.crypto.lib.util.*;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
@@ -49,6 +46,7 @@ import java.util.Arrays;
 public class PowerAuthClientActivation {
 
     private final SignatureUtils signatureUtils = new SignatureUtils();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Verify the signature of activation code using Master Public Key.
@@ -73,7 +71,7 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public KeyPair generateDeviceKeyPair() throws CryptoProviderException {
-        return new KeyGenerator().generateKeyPair();
+        return keyGenerator.generateKeyPair();
     }
 
     /**
@@ -82,7 +80,7 @@ public class PowerAuthClientActivation {
      * @return A new activation nonce.
      */
     public byte[] generateActivationNonce() {
-        return new KeyGenerator().generateRandomBytes(16);
+        return keyGenerator.generateRandomBytes(16);
     }
 
     /**
@@ -135,7 +133,6 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] encryptDevicePublicKey(PublicKey devicePublicKey, PrivateKey clientEphemeralPrivateKey, PublicKey masterPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        KeyGenerator keyGenerator = new KeyGenerator();
         byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
         SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
         byte[] devicePubKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(devicePublicKey);
@@ -189,7 +186,6 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public PublicKey decryptServerPublicKey(byte[] C_serverPublicKey, PrivateKey devicePrivateKey, PublicKey ephemeralPublicKey, String activationOTP, String activationIdShort, byte[] activationNonce) throws InvalidKeyException, InvalidKeySpecException, GenericCryptoException, CryptoProviderException {
-        KeyGenerator keyGenerator = new KeyGenerator();
         SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(devicePrivateKey, ephemeralPublicKey);
 
         byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
@@ -258,21 +254,23 @@ public class PowerAuthClientActivation {
      * Returns an activation status from the encrypted activation blob as described in PowerAuth Specification.
      *
      * @param cStatusBlob Encrypted activation status blob.
+     * @param challenge Challenge for activation status blob encryption. If non-null, then also {@code nonce} parameter must be provided.
+     * @param nonce Nonce for activation status blob encryption. If non-null, then also {@code challenge} parameter must be provided.
      * @param transportKey A key used to protect the transport.
      * @return Status information from the status blob.
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case decryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, byte[] challenge, byte[] nonce, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         if (cStatusBlob.length != 32) {
             throw new GenericCryptoException("Invalid status blob size");
         }
 
         // Decrypt the status blob
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] zeroIv = new byte[16];
-        byte[] statusBlob = aes.decrypt(cStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
+        byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
 
         // Prepare objects to read status info into
         ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
@@ -291,17 +289,40 @@ public class PowerAuthClientActivation {
         // fetch the upgrade version status byte
         statusInfo.setUpgradeVersion(buffer.get(6));
 
+        // fetch ctr byte value
+        statusInfo.setCtrByte(buffer.get(12));
+
         // fetch the failed attempt count
         statusInfo.setFailedAttempts(buffer.get(13));
 
         // fetch the max allowed failed attempt count
         statusInfo.setMaxFailedAttempts(buffer.get(14));
 
+        // fetch counter's look ahead window value
+        statusInfo.setCtrLookAhead(buffer.get(15));
+
         // extract counter data from second half of status blob
         byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, 32);
-        statusInfo.setCtrData(ctrData);
+        statusInfo.setCtrDataHash(ctrData);
 
         return statusInfo;
     }
 
+    /**
+     * Verify whether client's value of hash based counter is equal to the value received from the server. The value
+     * received from the server is already hashed, so the function has to calculate hash from the client's counter
+     * and then compare both values.
+     *
+     * @param receivedCtrDataHash Value received from the server, containing hash, calculated from hash based counter.
+     * @param expectedCtrData Expected hash based counter.
+     * @param transportKey Transport key.
+     * @return {@code true} in case that received hash equals to hash calculated from counter data.
+     * @throws InvalidKeyException When invalid key is provided.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
+            throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
+        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
+    }
 }

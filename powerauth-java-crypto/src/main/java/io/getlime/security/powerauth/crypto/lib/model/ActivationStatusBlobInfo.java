@@ -33,7 +33,9 @@ public class ActivationStatusBlobInfo {
     private byte upgradeVersion;
     private byte failedAttempts;
     private byte maxFailedAttempts;
-    private byte[] ctrData;
+    private byte ctrLookAhead;
+    private byte ctrByte;
+    private byte[] ctrDataHash;
 
     /**
      * Return true in case the parsed data was valid (correctly decrypted using transport key), false otherwise.
@@ -133,18 +135,50 @@ public class ActivationStatusBlobInfo {
     }
 
     /**
-     * Get counter data.
-     * @return Counter data.
+     * Get value for counter's look ahead window.
+     * @return Counter's look ahead window value.
      */
-    public byte[] getCtrData() {
-        return ctrData;
+    public byte getCtrLookAhead() {
+        return ctrLookAhead;
     }
 
     /**
-     * Set counter data.
-     * @param ctrData Counter data.
+     * Set counter's look ahead window.
+     * @param ctrLookAhead Look ahead window.
      */
-    public void setCtrData(byte[] ctrData) {
-        this.ctrData = ctrData;
+    public void setCtrLookAhead(byte ctrLookAhead) {
+        this.ctrLookAhead = ctrLookAhead;
+    }
+
+    /**
+     * Get least significant byte from the counter.
+     * @return Least significant byte from the counter.
+     */
+    public byte getCtrByte() {
+        return ctrByte;
+    }
+
+    /**
+     * Set least significant byte from the counter.
+     * @param ctrByte Least significant byte from the counter.
+     */
+    public void setCtrByte(byte ctrByte) {
+        this.ctrByte = ctrByte;
+    }
+
+    /**
+     * Get counter data hash.
+     * @return Counter data hash.
+     */
+    public byte[] getCtrDataHash() {
+        return ctrDataHash;
+    }
+
+    /**
+     * Set counter data hash.
+     * @param ctrDataHash Counter data.
+     */
+    public void setCtrDataHash(byte[] ctrDataHash) {
+        this.ctrDataHash = ctrDataHash;
     }
 }

@@ -22,6 +22,8 @@ import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
@@ -43,6 +45,8 @@ import java.util.Arrays;
  */
 public class KeyGenerator {
 
+    private static final Logger logger = LoggerFactory.getLogger(KeyGenerator.class);
+
     private final SecureRandom random = new SecureRandom();
 
     /**
@@ -58,6 +62,7 @@ public class KeyGenerator {
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
@@ -87,6 +92,7 @@ public class KeyGenerator {
             }
             return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(resultSecret);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }
@@ -147,10 +153,10 @@ public class KeyGenerator {
     /**
      * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
      * based on following KDF:
-     *
+     * <pre>
      * BYTES = index, total 16 bytes
      * KEY_SHARED[BYTES] = AES(BYTES, KEY_MASTER)
-     *
+     * </pre>
      * @param secret A master shared key.
      * @param index A byte array index of the key.
      * @return A new derived key from a master key with given index.
@@ -168,9 +174,35 @@ public class KeyGenerator {
     /**
      * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
      * based on following KDF:
+     * <pre>
+     * BYTES = index, total 16 bytes
+     * KEY_SHARED[BYTES] = 32B_TO_16B(HMAC-SHA256(KEY_MASTER, BYTES))
+     * </pre>
+     * Note that this function is deprecated and should not be used for a new functionality.
      *
+     * @param secret A master shared key.
+     * @param index A byte array index of the key.
+     * @return A new derived key from a master key with given index.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    @Deprecated
+    public SecretKey deriveSecretKeyHmacLegacy(SecretKey secret, byte[] index) throws GenericCryptoException, CryptoProviderException {
+        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
+        HMACHashUtilities hmac = new HMACHashUtilities();
+        byte[] derivedKey32 = hmac.hash(index, secretKeyBytes);
+        byte[] newKeyBytes = convert32Bto16B(derivedKey32);
+        return keyConvertor.convertBytesToSharedSecretKey(newKeyBytes);
+    }
+
+    /**
+     * Derive a new secret key KEY_SHARED from a master secret key KEY_MASTER
+     * based on following KDF:
+     * <pre>
      * BYTES = index, total 16 bytes
      * KEY_SHARED[BYTES] = 32B_TO_16B(HMAC-SHA256(BYTES, KEY_MASTER))
+     * </pre>
      *
      * @param secret A master shared key.
      * @param index A byte array index of the key.
@@ -182,7 +214,7 @@ public class KeyGenerator {
         CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
         HMACHashUtilities hmac = new HMACHashUtilities();
-        byte[] derivedKey32 = hmac.hash(index, secretKeyBytes);
+        byte[] derivedKey32 = hmac.hash(secretKeyBytes, index);
         byte[] newKeyBytes = convert32Bto16B(derivedKey32);
         return keyConvertor.convertBytesToSharedSecretKey(newKeyBytes);
     }
@@ -215,8 +247,9 @@ public class KeyGenerator {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, 128);
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
-            return new SecretKeySpec(keyBytes, "AES/ECB/NoPadding");
+            return new SecretKeySpec(keyBytes, "AES");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }

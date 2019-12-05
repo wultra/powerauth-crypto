@@ -6,7 +6,7 @@ For updating to 2019.05, please follow these migration guides:
 
 - [PowerAuth Server - Migration from version 0.21.0 to version 0.22.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-0.22.0.md)
 - [PowerAuth Push Server - Migration from version 0.21.0 to version 0.22.0](https://github.com/wultra/powerauth-push-server/blob/develop/docs/PowerAuth-Push-Server-0.22.0.md)
-- [PowerAuth Web Flow - Migration from version 0.20.0 to version 0.21.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-0.22.0.md)
+- [PowerAuth Web Flow - Migration from version 0.21.0 to version 0.22.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-0.22.0.md)
 - [PowerAuth Mobile SDK - Migration from version 1.0.0 to version 1.1.0](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/Migration-from-1.0-to-1.1.md)
 
 ## Components for version 2019.05
@@ -18,8 +18,8 @@ For updating to 2019.05, please follow these migration guides:
 | PowerAuth Server | `powerauth-java-server.war` | 0.22.0 | Core back-end component for PowerAuth stack. |
 | PowerAuth Admin | `powerauth-admin.war` | 0.22.0 | Administration console for PowerAuth Server. |
 | PowerAuth Push Server | `powerauth-push-server.war` | 0.22.0 | Simple to deploy push server for APNS and FCM. |
-| PowerAuth Web Flow | `powerauth-webflow.war` | 0.22.0 | Central web authentication page. |
-| PowerAuth Next Step | `powerauth-next-step.war` | 0.22.0 | Simple authorization server used for PowerAuth Web Flow component. |
+| PowerAuth Web Flow | `powerauth-webflow.war` | 0.22.1 | Central web authentication page. |
+| PowerAuth Next Step | `powerauth-next-step.war` | 0.22.1 | Simple authorization server used for PowerAuth Web Flow component. |
 | PowerAuth Data Adapter | `powerauth-data-adapter.war` | 0.22.0 | Customization component for PowerAuth Web Flow. |
 
 ### Utilities
@@ -32,10 +32,10 @@ For updating to 2019.05, please follow these migration guides:
 
 | Platform | Package Name | Version | Description |
 |---|---|---|---|
-| iOS | `PowerAuth2` | 0.20.1 / 1.1.0 | A client library for iOS. |
-| watchOS | `PowerAuth2ForWatch` | 0.20.1 / 1.1.0 | A limited library for watchOS. |
-| iOS App Extensions | `PowerAuth2ForExtensions` | 0.20.1 / 1.1.0 | A limited library for iOS App Extensions. |
-| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 0.20.1 / 1.1.0 | A client library for Android. |
+| iOS | `PowerAuth2` | 0.20.3 / 1.1.1 | A client library for iOS. |
+| watchOS | `PowerAuth2ForWatch` | 0.20.3 / 1.1.1 | A limited library for watchOS. |
+| iOS App Extensions | `PowerAuth2ForExtensions` | 0.20.3 / 1.1.1 | A limited library for iOS App Extensions. |
+| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 0.20.3 / 1.1.1 | A client library for Android. |
 
 _Note: Libraries with version `0.20.x` support PowerAuth protocol version `2`. Libraries with version `1.1.x` support PowerAuth protocol version `3`._ 
 
@@ -50,11 +50,11 @@ _Note: Libraries with version `0.20.x` support PowerAuth protocol version `2`. L
 | PowerAuth SOAP Client for Axis2 | `powerauth-java-client-axis.jar` | 0.22.0 | SOAP service client for PowerAuth Server service, built using Axis2. |
 | PowerAuth Push Server RESTful Model | `powerauth-push-model.jar` | 0.22.0 | Model classes for request and response objects used in PowerAuth Push Server. |
 | PowerAuth Push Server RESTful Client | `powerauth-push-client.jar` | 0.22.0 | Client implementation that simplifies integration with PowerAuth Push Server service. |
-| PowerAuth Data Adapter RESTful Model | `powerauth-data-adapter-model.jar` | 0.22.0 | Model classes for request and response objects used in PowerAuth Data Adapter component. |
-| PowerAuth Data Adapter Client | `powerauth-data-adapter-client.jar` | 0.22.0 | Client implementation that simplifies integration with PowerAuth Data Adapter custom component. |
-| PowerAuth Next Step RESTful Model | `powerauth-nextstep-model.jar` | 0.22.0 | Model classes for request and response objects used in PowerAuth Next Step service. |
-| PowerAuth Next Step Client | `powerauth-nextstep-client.jar` | 0.22.0 | Client implementation that simplifies integration with PowerAuth Next Step service. |
-| PowerAuth Mobile Token Model | `powerauth-mtoken-model.jar` | 0.22.0 | Model classes for request and response objects used in PowerAuth Mobile Token. |
+| PowerAuth Data Adapter RESTful Model | `powerauth-data-adapter-model.jar` | 0.22.1 | Model classes for request and response objects used in PowerAuth Data Adapter component. |
+| PowerAuth Data Adapter Client | `powerauth-data-adapter-client.jar` | 0.22.1 | Client implementation that simplifies integration with PowerAuth Data Adapter custom component. |
+| PowerAuth Next Step RESTful Model | `powerauth-nextstep-model.jar` | 0.22.1 | Model classes for request and response objects used in PowerAuth Next Step service. |
+| PowerAuth Next Step Client | `powerauth-nextstep-client.jar` | 0.22.1 | Client implementation that simplifies integration with PowerAuth Next Step service. |
+| PowerAuth Mobile Token Model | `powerauth-mtoken-model.jar` | 0.22.1 | Model classes for request and response objects used in PowerAuth Mobile Token. |
 
 ### Technical Dependencies
 

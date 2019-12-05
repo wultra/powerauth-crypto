@@ -20,6 +20,8 @@ import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +37,8 @@ import java.util.Arrays;
  * @author Petr Dvorak, petr@wultra.com
  */
 public class ECPublicKeyFingerprint {
+
+    private static final Logger logger = LoggerFactory.getLogger(ECPublicKeyFingerprint.class);
 
     /**
      * Compute activation fingerprint.
@@ -90,8 +94,9 @@ public class ECPublicKeyFingerprint {
             }
             int index = hash.length - 4;
             int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
-            return String.format("%0" + PowerAuthConfiguration.SIGNATURE_LENGTH + "d", number);
+            return String.format("%0" + PowerAuthConfiguration.FINGERPRINT_LENGTH + "d", number);
         } catch (NoSuchAlgorithmException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
     }

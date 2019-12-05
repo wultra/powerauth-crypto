@@ -22,8 +22,11 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesE
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.provider.CryptoProviderUtil;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -43,10 +46,21 @@ import java.security.spec.InvalidKeySpecException;
  */
 public class EciesEnvelopeKey {
 
-    private static final int ENVELOPE_KEY_SIZE = 32;
+    private static final Logger logger = LoggerFactory.getLogger(EciesEnvelopeKey.class);
+
+    private static final int ENC_KEY_OFFSET = 0;
+    private static final int ENC_KEY_SIZE = 16;
+    private static final int MAC_KEY_OFFSET = ENC_KEY_OFFSET + ENC_KEY_SIZE;
+    private static final int MAC_KEY_SIZE = ENC_KEY_SIZE;
+    private static final int IV_KEY_OFFSET = MAC_KEY_OFFSET + ENC_KEY_SIZE;
+    private static final int IV_KEY_SIZE = ENC_KEY_SIZE;
+    private static final int NONCE_SIZE = 16;
+
+    private static final int ENVELOPE_KEY_SIZE = ENC_KEY_SIZE + MAC_KEY_SIZE + IV_KEY_SIZE;
 
     private static final CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
     private static final KeyGenerator keyGenerator = new KeyGenerator();
+    private static final HMACHashUtilities hmac = new HMACHashUtilities();
 
     private final byte[] secretKey;
     private final byte[] ephemeralKeyPublic;
@@ -92,6 +106,7 @@ public class EciesEnvelopeKey {
             // Return envelope key with derived secret key and ephemeral public key bytes
             return new EciesEnvelopeKey(secretKey, ephemeralPublicKeyBytes);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new EciesException("Key derivation failed", ex);
         }
     }
@@ -122,6 +137,7 @@ public class EciesEnvelopeKey {
             // Return envelope key with derived secret key and ephemeral public key bytes
             return new EciesEnvelopeKey(secretKey, ephemeralPublicKeyBytes);
         } catch (InvalidKeyException | InvalidKeySpecException | GenericCryptoException | CryptoProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new EciesException("Key derivation failed", ex);
         }
     }
@@ -136,8 +152,8 @@ public class EciesEnvelopeKey {
         if (!isValid()) {
             throw new EciesException("Encryption key is not valid");
         }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(ENVELOPE_KEY_SIZE / 2);
-        byteBuffer.put(secretKey, 0, ENVELOPE_KEY_SIZE / 2);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(ENC_KEY_SIZE);
+        byteBuffer.put(secretKey, ENC_KEY_OFFSET, ENC_KEY_SIZE);
         return byteBuffer.array();
     }
 
@@ -151,9 +167,46 @@ public class EciesEnvelopeKey {
         if (!isValid()) {
             throw new EciesException("MAC key is not valid");
         }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(ENVELOPE_KEY_SIZE / 2);
-        byteBuffer.put(secretKey, ENVELOPE_KEY_SIZE / 2, ENVELOPE_KEY_SIZE / 2);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(MAC_KEY_SIZE);
+        byteBuffer.put(secretKey, MAC_KEY_OFFSET, MAC_KEY_SIZE);
         return byteBuffer.array();
+    }
+
+    /**
+     * Get key for AES-CBC IV derivation.
+     *
+     * @return Key for AES-CBC IV derivation.
+     * @throws EciesException In case IV key is not valid.
+     */
+    public byte[] getIvKey() throws EciesException {
+        if (!isValid()) {
+            throw new EciesException("IV key is not valid");
+        }
+        ByteBuffer byteBuffer = ByteBuffer.allocate(IV_KEY_SIZE);
+        byteBuffer.put(secretKey, IV_KEY_OFFSET, IV_KEY_SIZE);
+        return byteBuffer.array();
+    }
+
+    /**
+     * Derive initialization vector from IV key and provided nonce.
+     *
+     * @param nonce Nonce to be used in IV derivation.
+     * @return Derived initialization vector.
+     * @throws EciesException In case that nonce is not valid, or HMAC calculation failed.
+     */
+    public byte[] deriveIvForNonce(byte[] nonce) throws EciesException {
+        if (nonce == null) {
+            throw new EciesException("Nonce for IV derivation is missing");
+        }
+        if (nonce.length != NONCE_SIZE) {
+            throw new EciesException("Nonce for IV derivation is not valid");
+        }
+        try {
+            return keyGenerator.convert32Bto16B(hmac.hash(getIvKey(), nonce));
+        } catch (GenericCryptoException | CryptoProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new EciesException("IV derivation failed", ex);
+        }
     }
 
     /**

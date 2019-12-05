@@ -19,6 +19,8 @@ package io.getlime.security.powerauth.crypto.lib.util;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -33,6 +35,8 @@ import java.security.NoSuchProviderException;
  *
  */
 public class HMACHashUtilities {
+
+    private static final Logger logger = LoggerFactory.getLogger(HMACHashUtilities.class);
 
     /**
      * Compute a HMAC-SHA256 of given data with provided key bytes
@@ -49,8 +53,10 @@ public class HMACHashUtilities {
             hmacSha256.init(hmacKey);
             return hmacSha256.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (InvalidKeyException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -69,8 +75,10 @@ public class HMACHashUtilities {
             hmacSha256.init(hmacKey);
             return hmacSha256.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (InvalidKeyException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }

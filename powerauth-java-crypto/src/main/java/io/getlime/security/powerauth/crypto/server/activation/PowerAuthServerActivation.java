@@ -23,11 +23,10 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.crypto.lib.util.ECPublicKeyFingerprint;
-import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
+import io.getlime.security.powerauth.crypto.lib.util.*;
 import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -49,8 +48,11 @@ import java.util.Arrays;
  */
 public class PowerAuthServerActivation {
 
+    private static final Logger logger = LoggerFactory.getLogger(PowerAuthServerActivation.class);
+
     private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Generate a pseudo-unique activation ID. Technically, this is UUID level 4
@@ -79,7 +81,7 @@ public class PowerAuthServerActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public KeyPair generateServerKeyPair() throws CryptoProviderException {
-        return new KeyGenerator().generateKeyPair();
+        return keyGenerator.generateKeyPair();
     }
 
     /**
@@ -106,7 +108,7 @@ public class PowerAuthServerActivation {
      * @return A new server activation nonce.
      */
     public byte[] generateActivationNonce() {
-        return new KeyGenerator().generateRandomBytes(16);
+        return keyGenerator.generateRandomBytes(16);
     }
 
     /**
@@ -164,12 +166,11 @@ public class PowerAuthServerActivation {
         try {
             // Derive longer key from short activation ID and activation OTP
             byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
-            SecretKey otpBasedSymmetricKey = new KeyGenerator().deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
+            SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
 
             if (ephemeralPublicKey != null) { // is an extra ephemeral key encryption included?
 
                 // Compute ephemeral secret key
-                KeyGenerator keyGenerator = new KeyGenerator();
                 SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(masterPrivateKey, ephemeralPublicKey);
 
                 // Decrypt device public key
@@ -188,6 +189,7 @@ public class PowerAuthServerActivation {
             }
 
         } catch (InvalidKeySpecException | InvalidKeyException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -222,7 +224,6 @@ public class PowerAuthServerActivation {
         byte[] serverPublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(serverPublicKey);
 
         // Generate symmetric keys
-        KeyGenerator keyGenerator = new KeyGenerator();
         SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, devicePublicKey);
 
         byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
@@ -231,42 +232,90 @@ public class PowerAuthServerActivation {
 
         // Encrypt the data
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] encryptedTMP = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
-        return aes.encrypt(encryptedTMP, activationNonce, ephemeralSymmetricKey);
+        byte[] encryptedTmp = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
+        return aes.encrypt(encryptedTmp, activationNonce, ephemeralSymmetricKey);
     }
 
     /**
      * Returns an encrypted status blob as described in PowerAuth Specification.
-     * @param statusByte Byte determining the status of the activation.
-     * @param currentVersionByte Current crypto protocol version.
-     * @param upgradeVersionByte Crypto version for possible upgrade.
-     * @param failedAttempts Number of failed attempts at the moment.
-     * @param maxFailedAttempts Number of allowed failed attempts.
-     * @param ctrData Counter data.
+     *
+     * @param statusBlobInfo {@link ActivationStatusBlobInfo} object with activation status data to be encrypted.
+     * @param challenge Challenge for activation status blob encryption. If non-null, then also {@code nonce} parameter must be provided.
+     * @param nonce Nonce for activation status blob encryption. If non-null, then also {@code challenge} parameter must be provided.
      * @param transportKey A key used to protect the transport.
      * @return Encrypted status blob
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encryptedStatusBlob(byte statusByte, byte currentVersionByte, byte upgradeVersionByte, byte failedAttempts, byte maxFailedAttempts, byte[] ctrData, SecretKey transportKey)
+    public byte[] encryptedStatusBlob(ActivationStatusBlobInfo statusBlobInfo, byte[] challenge, byte[] nonce, SecretKey transportKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        byte[] zeroIv = new byte[16];
-        byte[] randomBytes = new KeyGenerator().generateRandomBytes(6);
-        byte[] reservedByte = new byte[1];
-        byte[] statusBlob = ByteBuffer.allocate(32)
+        // Validate inputs
+        if (statusBlobInfo == null) {
+            throw new GenericCryptoException("Required statusBlobInfo parameter is missing");
+        }
+        if (transportKey == null) {
+            throw new GenericCryptoException("Required transportKey parameter is missing");
+        }
+        // Prepare variables that has different meaning, depended on the protocol version.
+        final byte[] reserved;
+        final byte[] ctrDataHash;
+        final byte ctrByte;
+        final byte ctrLookAhead;
+        if (challenge != null) {
+            // Protocol V3.1+, use values provided in the status blob info object.
+            if (statusBlobInfo.getCtrDataHash() == null) {
+                throw new GenericCryptoException("Missing ctrDataHash in statusBlobInfo object");
+            }
+            reserved = keyGenerator.generateRandomBytes(5);
+            ctrDataHash = statusBlobInfo.getCtrDataHash();
+            ctrByte = statusBlobInfo.getCtrByte();
+            ctrLookAhead = statusBlobInfo.getCtrLookAhead();
+        } else {
+            // Legacy protocol versions (2.x, 3.0)
+            //
+            // In this case, ctrDataHash, ctrInfo, ctrLookAhead should be completely random values, because
+            // mobile clients don't use them. The older protocols also use zero-IV for the encryption, so the first
+            // block encrypted by AES should have as much entropy as possible.
+            //
+            final byte[] randomBytes = keyGenerator.generateRandomBytes(5 + 2 + 16);
+            reserved = Arrays.copyOf(randomBytes, 5);
+            ctrDataHash = Arrays.copyOfRange(randomBytes, 5 + 2, 5 + 2 + 16);
+            ctrByte = randomBytes[5];
+            ctrLookAhead = randomBytes[6];
+        }
+        // Prepare status blob data.
+        final byte[] statusBlob = ByteBuffer.allocate(32)
                 .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
-                .put(statusByte)         // 1 byte
-                .put(currentVersionByte) // 1 byte
-                .put(upgradeVersionByte) // 1 byte
-                .put(randomBytes)        // 6 bytes
-                .put(failedAttempts)     // 1 byte
-                .put(maxFailedAttempts)  // 1 byte
-                .put(reservedByte)       // 1 byte
-                .put(ctrData)            // 16 bytes
+                .put(statusBlobInfo.getActivationStatus())   // 1 byte
+                .put(statusBlobInfo.getCurrentVersion())     // 1 byte
+                .put(statusBlobInfo.getUpgradeVersion())     // 1 byte
+                .put(reserved)                               // 5 bytes
+                .put(ctrByte)                                // 1 byte
+                .put(statusBlobInfo.getFailedAttempts())     // 1 byte
+                .put(statusBlobInfo.getMaxFailedAttempts())  // 1 byte
+                .put(ctrLookAhead)                           // 1 byte
+                .put(ctrDataHash)                            // 16 bytes
                 .array();
-        AESEncryptionUtils aes = new AESEncryptionUtils();
-        return aes.encrypt(statusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
+        // Derive IV and encrypt status blob data.
+        final byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        return new AESEncryptionUtils().encrypt(statusBlob, iv, transportKey, "AES/CBC/NoPadding");
+    }
+
+    /**
+     * Calculate hash from value representing the hash based counter. HMAC-SHA256 is currently used as a hashing
+     * function.
+     *
+     * @param ctrData Hash-based counter.
+     * @param transportKey Transport key.
+     * @return Hash calculated from provided hash-based counter.
+     * @throws GenericCryptoException In case that key derivation fails or you provided invalid ctrData.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws InvalidKeyException In case that transport key is not valid.
+     */
+    public byte[] calculateHashFromHashBasedCounter(byte[] ctrData, SecretKey transportKey)
+            throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
+        return new HashBasedCounterUtils().calculateHashFromHashBasedCounter(ctrData, transportKey);
     }
 
     /**

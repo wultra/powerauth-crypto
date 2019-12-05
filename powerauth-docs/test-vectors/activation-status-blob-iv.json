@@ -1,0 +1,292 @@
+{
+  "description" : "Initialization Vectors for activation status blob symmetric encryption.",
+  "data" : [ {
+    "input" : {
+      "transportKey" : "hnEr8gFpj9CF8YaHe/5PhA==",
+      "challenge" : "RguD3kMdOQXG+ulWz7wzrg==",
+      "nonce" : "Lmp0bj6NW/lyHOCne9uTtw=="
+    },
+    "output" : {
+      "iv" : "bvXkc9ey2jppzemu0jHdgw=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "Zzlye7y0g2xISna5A95RAw==",
+      "challenge" : "9PbGBP1BjXY5gJL/I8h6Rg==",
+      "nonce" : "khCCFgDp7Q6+1QwEMwBzyw=="
+    },
+    "output" : {
+      "iv" : "cd01obeJrJU7wjh4McXyuQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "TX5M0KbmGQhK5oLclv7ATA==",
+      "challenge" : "JxGpJVKObfxovUO9wdeVEw==",
+      "nonce" : "GHi9SNy3wMPx31hWHjToUg=="
+    },
+    "output" : {
+      "iv" : "EaBT0Q9hrAsyhIi0UkRvVQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "iuqUL6g722hv+06FUpt2hA==",
+      "challenge" : "76f1nDw8zOVN/zBQ5l97rw==",
+      "nonce" : "8UhzUaNKbk6vvf2f8GzMPw=="
+    },
+    "output" : {
+      "iv" : "CH66YTeVqySkWSe++EBQYw=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "sgG/lH8Q8sCyiI3cMnumBQ==",
+      "challenge" : "Ls3dCfnJcUmOHNuoEDOn3g==",
+      "nonce" : "+4F/SN2XKHsIuUDw/F6Upw=="
+    },
+    "output" : {
+      "iv" : "pPC0DEfajJFmspPsczf4Yg=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "KnCoLIHxa/79cLgEXgz+6A==",
+      "challenge" : "lvh4vkPBdrd7kw7fYFOvEA==",
+      "nonce" : "iIoBotk9I1a59/d7LiryCQ=="
+    },
+    "output" : {
+      "iv" : "ean0ulB1cdZ83wIiqcKnlw=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "7j9W6OgQZ+tb6EoRDMsAyw==",
+      "challenge" : "AljhJUNzUbrDCbsLmmMvtQ==",
+      "nonce" : "Kwfwi9XJqxW36MBSMx2RbQ=="
+    },
+    "output" : {
+      "iv" : "0t1td3cyWSoj55McPAFFfw=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "F2V9Zs94w7FY6SzCRGFMaw==",
+      "challenge" : "6BJfYP3uyVmeVrs2EikDmA==",
+      "nonce" : "uLySmgXHm5cyFqpWOBN45w=="
+    },
+    "output" : {
+      "iv" : "hK9OMeYKmc6dWRheXX/BhQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "lGTM5ScQFbbiJPqVS8ZUKQ==",
+      "challenge" : "aYghmh+YqHSY9vZUJX6ncg==",
+      "nonce" : "4ivQinmDE45Bn/4N/A1pWg=="
+    },
+    "output" : {
+      "iv" : "1c/PuqxgQ7HVdHRHBTnfDA=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "4fLKsLhxM3RIOM7SueLH4Q==",
+      "challenge" : "Iv6oBttCKqODNy2DPoYCDQ==",
+      "nonce" : "2WoMG8SO8uXZELI31jzx/w=="
+    },
+    "output" : {
+      "iv" : "5Ut/nmD3ZnP4NFD+ByKHcg=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "oIAcZ2Jk7f0+00XflSYBxg==",
+      "challenge" : "I21BxJw1mgsBnJ6cxxyPGg==",
+      "nonce" : "+IMN6agb03am1nEpjUvHcA=="
+    },
+    "output" : {
+      "iv" : "yhDfcma1+pSeqZk4uJfcCQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "YHJgkwTHr35MWRhp2+xWrQ==",
+      "challenge" : "Hi94v9TuaKaUjunmxRGGtQ==",
+      "nonce" : "4X6CHN793AoQggk2QdP2QQ=="
+    },
+    "output" : {
+      "iv" : "WrGkAQC3y2zqz2G+Xfrasg=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "LlzrQH/PCKG7gLs18swf4w==",
+      "challenge" : "FK5t6YMmM1z+LDEdWCwbcg==",
+      "nonce" : "X8GKy1U2KbVZanByAyp6CA=="
+    },
+    "output" : {
+      "iv" : "f97ALNdB9FSYBS/ROoK+gQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "gDNDBESjLNm2WbmL7+R+dg==",
+      "challenge" : "/z618ZpNhfZOOdMSR21zYw==",
+      "nonce" : "ePeLCKssa/m1cZ9u+aKw6A=="
+    },
+    "output" : {
+      "iv" : "aYoswax10S5KBzxdHyczrQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "VHTXG9AU7PQsFF6dqUrX5w==",
+      "challenge" : "p26xMJyzPiRA5o9KtN6jGA==",
+      "nonce" : "84a5694AO+136UJsw/MUXg=="
+    },
+    "output" : {
+      "iv" : "frprOgy6BfyHHQVMgR2yXQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "Uf5hTmE7x4g9u+Pg87mDeA==",
+      "challenge" : "vewCb8A9pln61YhLHYxn8g==",
+      "nonce" : "yj7dIAHQ0ZefcnSlUswPMQ=="
+    },
+    "output" : {
+      "iv" : "Z2kNI6nJQ8nw3eD6EDE90g=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "4v1Nm7CL33//l+z+KRjsKQ==",
+      "challenge" : "/EBXIQIAn143cH6Ue7kLsw==",
+      "nonce" : "PU6GiLLq2CG3jPxyATXqKw=="
+    },
+    "output" : {
+      "iv" : "UT/zCnxr2ib0Vaf3CIUQfw=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "obTXxGu6rCtMk30ALP64aQ==",
+      "challenge" : "LeIaqhEFQWBhyNf7YJfrYA==",
+      "nonce" : "NSJ2KfCpzI6+48FqvMqBkw=="
+    },
+    "output" : {
+      "iv" : "O/8YhRKUsqTOte7JA/tLLA=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "gbS2cS/74s40PVeHwGZHqw==",
+      "challenge" : "uASM+8940F8HQs9MpyCMGw==",
+      "nonce" : "sfH4EhNu/nB5ojhL+dXC3Q=="
+    },
+    "output" : {
+      "iv" : "CcXtQ6bIclEXmpKVsnpqGQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "JGTLHKanmWA1K+uVa+4dAQ==",
+      "challenge" : "RqaINaGZEFgo4OvhMEFb8g==",
+      "nonce" : "8UjAxwZVRnhAYaC3zVAdpw=="
+    },
+    "output" : {
+      "iv" : "rMMa8d9pEX5t4axadh7TaQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "vWPHmO3lmG278U5AyPF3/A==",
+      "challenge" : "qrrxVHb5F9j/8GRxbqJn+w==",
+      "nonce" : "Fo3ta4lfNI7F21N6WbaS5A=="
+    },
+    "output" : {
+      "iv" : "U72l9H7nFfqDTG0dFkXnCQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "1kHx11ZIqgZSaSiOwsHP1w==",
+      "challenge" : "TOxwPP2A0Zdfc/bp96n5xw==",
+      "nonce" : "WREsPqHfOt07KFg2Exa0rQ=="
+    },
+    "output" : {
+      "iv" : "FfeYeRAjK6Eq3JOa3IaYKQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "vRjDixqM74e6ZynyGOc4rw==",
+      "challenge" : "iIT7kbvSoqh5kOzVDcsMkg==",
+      "nonce" : "lhOvlK+02zsevYQLTSCftw=="
+    },
+    "output" : {
+      "iv" : "Vwg5X1dstsdsS+uB83JtDw=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "nE4J4D6OdFCgdH0AN8YRjA==",
+      "challenge" : "vAj4/52dXUdNg/O3mKDSyg==",
+      "nonce" : "qKcDYzUytGJeQ8yVU+gNGg=="
+    },
+    "output" : {
+      "iv" : "b6xvffwj90CYOCGgWc8qIQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "1ex6OmaTItWhuyqrLiFfJQ==",
+      "challenge" : "atd/uSdnhKYSvyo7YNaq+w==",
+      "nonce" : "YRpUbK+a8hn5JRpTaVWFnQ=="
+    },
+    "output" : {
+      "iv" : "ZGoE/8pH7wu7FglrvtHxuA=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "O8x+Ma08o8QFM3zPaWn89g==",
+      "challenge" : "lyvkhQwj5hdJJmh6V9ya4g==",
+      "nonce" : "qNQL3K/FTl7YQMy1nrlL6Q=="
+    },
+    "output" : {
+      "iv" : "LOwmpwEF4ZdbWS6KvAut6A=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "gGvjD8Wz3/Mu39xSkTsSBg==",
+      "challenge" : "gZM9n+EyEoYImQeiN5YcQQ==",
+      "nonce" : "MB4FRlxJdUckQkBtHT9b7Q=="
+    },
+    "output" : {
+      "iv" : "oMrmH1uhSvXR1N4NwLkk1g=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "CSKKYCDrRDclpc/fbMp/bg==",
+      "challenge" : "kFErvV9tqbL2P2qqGw9i0A==",
+      "nonce" : "cHPEYJZlrF2ICLNsKeMfxA=="
+    },
+    "output" : {
+      "iv" : "dIU1Ms3tGxXpZYzOtbs0TQ=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "p/EMj9MJeyISidWQH9tGQg==",
+      "challenge" : "vGOc4QKnmN88vWgcWT36UQ==",
+      "nonce" : "0ymzSvXPi2wP62UnkCrUig=="
+    },
+    "output" : {
+      "iv" : "ioIQNSeyLSXQhoj/7pwx1w=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "VTBTrIWKyxkKmsvkE3VppA==",
+      "challenge" : "kwu/zfQwldc9PI2Pllv8cQ==",
+      "nonce" : "dmxnEoA1/jsXFw4RZwrWHw=="
+    },
+    "output" : {
+      "iv" : "nVH2Ep5t2SO1qewskgLkag=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "IyfCmcIXFdmPalZs/d26Zg==",
+      "challenge" : "sigcwxsejG7uzcsT96/EjQ==",
+      "nonce" : "XZ04weFT1BW+N2+nOxwBmA=="
+    },
+    "output" : {
+      "iv" : "wpJX7Wk/vR1pW5CIiAaDMw=="
+    }
+  }, {
+    "input" : {
+      "transportKey" : "0SdwXT3PtR88sLyaztMcXw==",
+      "challenge" : "BB7w+S0kdo/nieLsBvt9cQ==",
+      "nonce" : "xlkfF4+DKgJnrjBVWRrYWw=="
+    },
+    "output" : {
+      "iv" : "ERWDjft4fAUQIj/XM8OwMg=="
+    }
+  } ]
+}
