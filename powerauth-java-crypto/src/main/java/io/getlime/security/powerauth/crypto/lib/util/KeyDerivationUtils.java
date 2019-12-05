@@ -31,14 +31,7 @@ import java.security.InvalidKeyException;
  */
 public class KeyDerivationUtils {
 
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * @param keyGenerator {@link KeyGenerator} instance to be used in the class.
-     */
-    public KeyDerivationUtils(KeyGenerator keyGenerator) {
-        this.keyGenerator = keyGenerator;
-    }
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Derivation index used to derive KEY_TRANSPORT_IV from KEY_TRANSPORT

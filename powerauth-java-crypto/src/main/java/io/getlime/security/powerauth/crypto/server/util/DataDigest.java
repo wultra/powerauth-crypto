@@ -39,7 +39,7 @@ public class DataDigest {
     /**
      * Data digest result.
      */
-    public class Result {
+    public static class Result {
 
         private final String digest;
         private final byte[] salt;

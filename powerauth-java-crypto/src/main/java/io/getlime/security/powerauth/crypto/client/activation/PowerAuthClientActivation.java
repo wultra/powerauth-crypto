@@ -269,7 +269,7 @@ public class PowerAuthClientActivation {
 
         // Decrypt the status blob
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] iv = new KeyDerivationUtils(keyGenerator).deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
 
         // Prepare objects to read status info into
@@ -289,6 +289,9 @@ public class PowerAuthClientActivation {
         // fetch the upgrade version status byte
         statusInfo.setUpgradeVersion(buffer.get(6));
 
+        // fetch ctr byte value
+        statusInfo.setCtrByte(buffer.get(12));
+
         // fetch the failed attempt count
         statusInfo.setFailedAttempts(buffer.get(13));
 
@@ -300,9 +303,26 @@ public class PowerAuthClientActivation {
 
         // extract counter data from second half of status blob
         byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, 32);
-        statusInfo.setCtrData(ctrData);
+        statusInfo.setCtrDataHash(ctrData);
 
         return statusInfo;
     }
 
+    /**
+     * Verify whether client's value of hash based counter is equal to the value received from the server. The value
+     * received from the server is already hashed, so the function has to calculate hash from the client's counter
+     * and then compare both values.
+     *
+     * @param receivedCtrDataHash Value received from the server, containing hash, calculated from hash based counter.
+     * @param expectedCtrData Expected hash based counter.
+     * @param transportKey Transport key.
+     * @return {@code true} in case that received hash equals to hash calculated from counter data.
+     * @throws InvalidKeyException When invalid key is provided.
+     * @throws GenericCryptoException In case key derivation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
+            throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
+        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
+    }
 }
