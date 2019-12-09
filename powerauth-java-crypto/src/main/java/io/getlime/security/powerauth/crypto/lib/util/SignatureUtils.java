@@ -162,7 +162,7 @@ public class SignatureUtils {
         final HMACHashUtilities hmac = new HMACHashUtilities();
 
         // Prepare array for signature binary components.
-        final List<byte[]> signatureComponents = new ArrayList<byte[]>();
+        final List<byte[]> signatureComponents = new ArrayList<>();
 
         final CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 

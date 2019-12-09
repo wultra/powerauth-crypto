@@ -15,10 +15,10 @@ Following basic cryptography algorithms and parameters are used in the PowerAuth
 - **PBKDF2** - An algorithm for key stretching, converts a short password into long key by performing repeated hash iteration on the original data, HMAC-SHA1 algorithm is used for a pseudo-random function. Implementations must make sure resulting key is converted in format usable by AES algorithm. One method is defined for this algorithm:
   - `SecretKey expandedKey = PBKDF2.expand(char[] password, byte[] salt, long iterations, long lengthInBits)` - stretch the password using given number of iterations to achieve key of given length in bits, use given salt.
 
-- **X9.63 (with SHA256)** - A standard KDF function based on X9.63, with SHA256 as an internal hash function. It uses iterations of SHA256 hash function to derive a key of expected length of 32B.
-  - `byte[] bytes = KDF_X9_63_SHA256.derive(byte[] secret, byte[] info)`
+- **X9.63 (with SHA256)** - A standard KDF function based on X9.63, with SHA256 as an internal hash function. It uses iterations of SHA256 hash function to derive a key of expected `length` of bytes.
+  - `byte[] bytes = KDF_X9_63_SHA256.derive(byte[] secret, byte[] info, int length)`
 
-- **ECDSA** - An algorithm for elliptic curve based signatures, uses SHA256 hash algorithm. It defines two operations:
+- **ECDSA** - An algorithm for elliptic curve based signatures, uses SHA256 hash algorithm and P256r1 EC curve. It defines two operations:
   - `byte[] signature = ECDSA.sign(byte[] data, PrivateKey privateKey)` - compute signature of given data and private key.
   - `boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKey)` - verify the signature for given data using a given public key.
 
@@ -51,12 +51,12 @@ These functions are used in the pseudo-codes:
   - `String randomBase32 Generator.randomBase32String(int N)` - Generate string in Base32 encoding with N characters using a secure random generator.
   - `String uuid = Generator.randomUUID()` - Generate a new UUID level 4 and return it in string representation.
   - `String code = Generator.randomActivationCode()` - Generate a new `ACTIVATION_CODE`. See [Activation Code](./Activation-Code.md) for more details.
-  - `String code = Generator.buildActivationCode(byte[10] randomBytes)` - Function return an activation code from given random data. 
-  
+  - `String code = Generator.buildActivationCode(byte[10] randomBytes)` - Function return an activation code from given random data.
+
 - Hashing and MAC functions.
   - `byte[] signature = Mac.hmacSha256(SecretKey key, byte[] message)` - Compute HMAC-SHA256 signature for given message using provided symmetric key.
   - `byte[] hash = Hash.sha256(byte[] original)` - Compute SHA256 hash of a given input.
-  
+
 - Password hashing.
   - `String hash = PasswordHash.hash(byte[] password)` - Compute Argon2 hash for given password. Hash is stored in Modular Crypt Format.
   - `boolean matches = PasswordHash.verify(byte[] password, String hash)` - Verify password against Argon2 hash stored in Modular Crypt Format.
@@ -67,6 +67,6 @@ These functions are used in the pseudo-codes:
   - `int integer = ByteUtils.getInt(byte[4] bytes)` - Get integer from 4 byte long byte array.
   - `long value = ByteUtils.getLong(byte[8] bytes)` - Get long value from 8 byte long byte array.
   - `byte[] result = ByteUtils.concat(byte[] a, byte[] b)` - Concatenate two byte arrays - append `b` after `a`.
-  - `byte[] result = ByteUtils.convert32Bto16B(byte[] bytes32, byte[] b)` - Converts 32b long byte array to 16b long array by xor-ing the first 16b with the second 16b, byte-by-byte.
+  - `byte[] result = ByteUtils.convert32Bto16B(byte[] bytes32)` - Converts 32b long byte array to 16b long array by xor-ing the first 16b with the second 16b, byte-by-byte.
   - `byte[] result = ByteUtils.subarray(byte[] bytes, int startIndex, int length)` - Obtain subarray of a byte array, starting with index `startIndex` with a given length.
   - `ByteUtils.copy(byte[] source, int sourcePosition, byte[] destination, int destinationPosition, int length)` - Copies `length` of bytes from the specified source array of bytes, beginning at the specified position, to the specified position of the destination array.

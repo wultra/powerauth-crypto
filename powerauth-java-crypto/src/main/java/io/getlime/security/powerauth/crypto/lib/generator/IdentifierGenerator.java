@@ -246,7 +246,7 @@ public class IdentifierGenerator {
                     throw new GenericCryptoException("PUK derivation failed due to exceeding maximum number of attempts for generating unique PUK");
                 }
                 // Make sure that generated PUK is unique
-            } while (puks.values().contains(derivedPuk));
+            } while (puks.containsValue(derivedPuk));
 
             // Store generated PUK including its derivation index
             puks.put(i, derivedPuk);
