@@ -59,9 +59,35 @@ public class DataDigest {
 
     }
 
+    private static final int AUTHORIZATION_CODE_LENGTH_MIN = 4;
+    private static final int AUTHORIZATION_CODE_LENGTH_MAX = 9;
     private static final int AUTHORIZATION_CODE_LENGTH = 8;
 
     private final HMACHashUtilities hmac = new HMACHashUtilities();
+
+    private final int authorizationCodeLength;
+
+    /**
+     * Initializes the data digest instance that produces digest of length 8.
+     */
+    public DataDigest() {
+        this.authorizationCodeLength = AUTHORIZATION_CODE_LENGTH;
+    }
+
+    /**
+     * Initializes the data digest instance that produces digest of specified length. The length must be between 4 and 9.
+     * The digest cannot be shorter than 4 due to lack of entropy in shorter codes. The digest cannot be longer than 9 digits
+     * since the internal implementation uses <code>int</code>, with a 64 bit range.
+     *
+     * @param length Length of the resulting digest.
+     * @throws GenericCryptoException In case the length is not in the allowed range - between 4 and 9 digits.
+     */
+    public DataDigest(int length) throws GenericCryptoException {
+        if (length < AUTHORIZATION_CODE_LENGTH_MIN || length > AUTHORIZATION_CODE_LENGTH_MAX) {
+            throw new GenericCryptoException("Invalid length of the data digest: " + length);
+        }
+        this.authorizationCodeLength = length;
+    }
 
     /**
      * Data digest of the list with string elements. Data is first normalized (items concatenated
@@ -81,8 +107,8 @@ public class DataDigest {
         byte[] randomKey = new KeyGenerator().generateRandomBytes(16);
         try {
             byte[] otpHash = hmac.hash(randomKey, operationData);
-            BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(AUTHORIZATION_CODE_LENGTH));
-            String digitFormat = "%" + String.format("%02d", AUTHORIZATION_CODE_LENGTH) + "d";
+            BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(authorizationCodeLength));
+            String digitFormat = "%" + String.format("%02d", authorizationCodeLength) + "d";
             String digest = String.format(digitFormat, otp);
             return new Result(digest, randomKey);
         } catch (GenericCryptoException | CryptoProviderException ex) {
