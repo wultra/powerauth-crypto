@@ -96,7 +96,7 @@ X-PowerAuth-Authorization: PowerAuth
 
 ### Offline signature
 
-The computation of offline signature is similar, but the final string is more human readable and can be easily manually retyped: 
+Offline signatures are used in case when the mobile device is not connected to the internet. The computation of such signature is similar to signing HTTP requests, but the final string is more human readable and can be easily manually retyped: 
 
 ```java
 /**
@@ -122,7 +122,7 @@ String computeOfflineSignature(byte[] data, List<SecretKey> signatureKeys, byte[
 }
 ```
 
-PowerAuth Client displays the signature on the screen and then the user has to manually retype that string into another PowerAuth powered application (e.g. typically to web application, connected to PowerAuth Server).
+PowerAuth Client displays the signature on the screen and then the user has to manually retype that string into another PowerAuth powered application (e.g. typically to web application, connected to PowerAuth Server). You can read more about the offline signatures in PowerAuth Server's [Offline Signatures](https://github.com/wultra/powerauth-server/blob/develop/docs/Offline-Signatures.md) documentation.
 
 ## Normalized Data for HTTP Requests
 
@@ -151,6 +151,11 @@ _Note: Note that the `APPLICATION_SECRET` is technically outside the request dat
 		1. _Note: The GET request normalization is inspired by the OAuth 1.0a request normalization._
 	- In case of request with body (such as POST and PUT requests), data from the resource body (bytes) are encoded using Base64 with UTF-8 encoding and appended:
 		- `REQUEST_DATA = BASE64.encode(ByteUtils.getBytes(HTTP['body']))`
+
+In case of data for offline signature is being normalized, then the following exceptions are in place:
+
+- `${REQUEST_METHOD}` is always set to `POST`.
+- `${APPLICATION_SECRET}` is always set to the string constant `offline`.
 
 ## Validating the Signature
 
