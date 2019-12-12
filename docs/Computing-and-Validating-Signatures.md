@@ -152,7 +152,7 @@ _Note: Note that the `APPLICATION_SECRET` is technically outside the request dat
 	- In case of request with body (such as POST and PUT requests), data from the resource body (bytes) are encoded using Base64 with UTF-8 encoding and appended:
 		- `REQUEST_DATA = BASE64.encode(ByteUtils.getBytes(HTTP['body']))`
 
-In case of data for offline signature is being normalized, then the following exceptions are in place:
+In case the data for offline signature is being normalized, then the following rules are applied:
 
 - `${REQUEST_METHOD}` is always set to `POST`.
 - `${APPLICATION_SECRET}` is always set to the string constant `offline`.
