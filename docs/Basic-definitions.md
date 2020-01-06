@@ -7,10 +7,10 @@ The goal of this chapter is to define used functions related to cryptography and
 Following basic cryptography algorithms and parameters are used in the PowerAuth cryptography description:
 
 - **AES** - A symmetric key encryption algorithm, uses CBC mode of operation. It defines four methods:
-  - `byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key)` - encrypt bytes using symmetric key with given initialization vector and PKCS7 padding.
-  - `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key)` - decrypt bytes using symmetric key with given initialization vector and PKCS7 padding.
-  - `byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key, String padding)` - encrypt bytes using symmetric key with given initialization vector and given padding.
-  - `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key, String padding)` - decrypt bytes using symmetric key with given initialization vector and given padding.
+  - `byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key)` - encrypt bytes using symmetric key with given initialization vector and `AES/CBC/PKCS7Padding` transformation.
+  - `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key)` - decrypt bytes using symmetric key with given initialization vector and `AES/CBC/PKCS7Padding` transformation.
+  - `byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key, String transformation)` - encrypt bytes using symmetric key with given initialization vector and given cipher transformation.
+  - `byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key, String transformation)` - decrypt bytes using symmetric key with given initialization vector and given cipher transformation.
 
 - **PBKDF2** - An algorithm for key stretching, converts a short password into long key by performing repeated hash iteration on the original data, HMAC-SHA1 algorithm is used for a pseudo-random function. Implementations must make sure resulting key is converted in format usable by AES algorithm. One method is defined for this algorithm:
   - `SecretKey expandedKey = PBKDF2.expand(char[] password, byte[] salt, long iterations, long lengthInBits)` - stretch the password using given number of iterations to achieve key of given length in bits, use given salt.

@@ -40,21 +40,21 @@ public class AESEncryptionUtils {
     private static final Logger logger = LoggerFactory.getLogger(AESEncryptionUtils.class);
 
     /**
-     * Encrypt given data using given padding with given initialization
+     * Encrypt given data using given transformation with given initialization
      * vector and secret key.
      *
      * @param bytes Bytes to be encrypted.
      * @param iv Initialization vector.
      * @param secret Secret signature key.
-     * @param padding Padding to be used, for example "AES/CBC/PKCS7Padding".
+     * @param transformation Cipher transformation to be used, for example "AES/CBC/PKCS7Padding".
      * @return Encrypted bytes.
      * @throws InvalidKeyException In case an invalid key is provided.
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret, String transformation) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            Cipher cipherForCryptoResponse = Cipher.getInstance(padding, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            Cipher cipherForCryptoResponse = Cipher.getInstance(transformation, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             cipherForCryptoResponse.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
@@ -83,21 +83,21 @@ public class AESEncryptionUtils {
     }
 
     /**
-     * Decrypt given data using give padding with given initialization
+     * Decrypt given data using given transformation with given initialization
      * vector and secret key.
      *
      * @param bytes Encrypted bytes to be decrypted.
      * @param iv Initialization vector.
      * @param secret Secret signature key.
-     * @param padding Padding to be used, for example "AES/CBC/PKCS7Padding".
+     * @param transformation Cipher transformation to be used, for example "AES/CBC/PKCS7Padding".
      * @return Original decrypted bytes.
      * @throws InvalidKeyException In case an invalid key is provided.
      * @throws GenericCryptoException In case decryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret, String padding) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret, String transformation) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            Cipher cipherForCryptoResponse = Cipher.getInstance(padding, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            Cipher cipherForCryptoResponse = Cipher.getInstance(transformation, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
             cipherForCryptoResponse.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
