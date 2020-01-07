@@ -17,14 +17,13 @@
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
 import com.google.common.primitives.Bytes;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCryptogram;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ public class EciesDecryptor {
     // Underlying implementation classes
     private final AESEncryptionUtils aes = new AESEncryptionUtils();
     private final HMACHashUtilities hmac = new HMACHashUtilities();
-    private final CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     // Encryptor working data storage
     private final PrivateKey privateKey;
@@ -229,7 +228,7 @@ public class EciesDecryptor {
 
             // Decrypt the data with AES
             final byte[] encKeyBytes = envelopeKey.getEncKey();
-            final SecretKey encKey = keyConverter.convertBytesToSharedSecretKey(encKeyBytes);
+            final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
             final byte[] iv = requireIv ? envelopeKey.deriveIvForNonce(cryptogram.getNonce()) : new byte[16];
 
             // Invalidate this decryptor for decryption
@@ -256,7 +255,7 @@ public class EciesDecryptor {
         try {
             // Encrypt the data with AES using zero IV
             final byte[] encKeyBytes = envelopeKey.getEncKey();
-            final SecretKey encKey = keyConverter.convertBytesToSharedSecretKey(encKeyBytes);
+            final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
             final byte[] iv = ivForEncryption;
             final byte[] body = aes.encrypt(data, iv, encKey);
 

@@ -17,13 +17,13 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import com.google.common.io.BaseEncoding;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.model.RecoveryInfo;
 import io.getlime.security.powerauth.crypto.lib.model.RecoverySeed;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.CRC16;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +68,7 @@ public class IdentifierGenerator {
     private static final int PUK_DERIVATION_MAX_ATTEMPTS = 20;
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Generate a new random activation ID - a UUID level 4 instance.
@@ -213,7 +214,7 @@ public class IdentifierGenerator {
         if (secretKey == null) {
             throw new GenericCryptoException("Invalid key");
         }
-        byte[] secretKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(secretKey);
+        byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secretKey);
 
         // Generate random nonce
         byte[] nonceBytes = keyGenerator.generateRandomBytes(32);
@@ -274,7 +275,7 @@ public class IdentifierGenerator {
             throw new GenericCryptoException("Invalid input data");
         }
 
-        byte[] secretKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(secretKey);
+        byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secretKey);
 
         // Get nonce and derivation indexes
         final byte[] nonceBytes = seed.getNonce();
@@ -333,7 +334,7 @@ public class IdentifierGenerator {
         // Extract bytes 10-25 as recovery puk base key bytes
         final byte[] recoveryPukBaseKeyBytes = new byte[16];
         System.arraycopy(derivedKeyBytes, 10, recoveryPukBaseKeyBytes, 0, 16);
-        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(recoveryPukBaseKeyBytes);
+        return keyConvertor.convertBytesToSharedSecretKey(recoveryPukBaseKeyBytes);
     }
 
     /**
@@ -347,7 +348,7 @@ public class IdentifierGenerator {
      */
     private String generatePuk(SecretKey recoveryPukBaseKey, byte[] indexBytes) throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
         SecretKey pukKey = keyGenerator.deriveSecretKey(recoveryPukBaseKey, indexBytes);
-        byte[] pukKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(pukKey);
+        byte[] pukKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(pukKey);
 
         // Extract last 8 bytes from PUK key bytes
         byte[] truncatedBytes = new byte[8];

@@ -1,12 +1,11 @@
 package io.getlime.security.powerauth.crypto.client.encryptor;
 
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.NonPersonalizedEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.NonPersonalizedEncryptedMessage;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -30,6 +29,8 @@ public class ClientNonPersonalizedEncryptor {
 
     private NonPersonalizedEncryptor encryptor;
 
+    private final KeyConvertor keyConvertor = new KeyConvertor();
+
     /**
      * Create a new client side non-personalized encryptor using provided app key (for reference in encrypted object)
      * and master public key.
@@ -49,9 +50,8 @@ public class ClientNonPersonalizedEncryptor {
         final SecretKey ephemeralSecretKey = generator.computeSharedKey(ephemeralKeyPair.getPrivate(), masterPublicKey);
         final SecretKey sessionRelatedSecretKey = generator.deriveSecretKeyHmacLegacy(ephemeralSecretKey, sessionIndex);
 
-        final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-        final byte[] sessionRelatedSecretKeyBytes = keyConversion.convertSharedSecretKeyToBytes(sessionRelatedSecretKey);
-        final byte[] ephemeralPublicKeyBytes = keyConversion.convertPublicKeyToBytes(ephemeralKeyPair.getPublic());
+        final byte[] sessionRelatedSecretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(sessionRelatedSecretKey);
+        final byte[] ephemeralPublicKeyBytes = keyConvertor.convertPublicKeyToBytes(ephemeralKeyPair.getPublic());
 
         this.encryptor = new NonPersonalizedEncryptor(appKey, sessionRelatedSecretKeyBytes, sessionIndex, ephemeralPublicKeyBytes);
     }

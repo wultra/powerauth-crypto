@@ -17,10 +17,9 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.primitives.Bytes;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -32,6 +31,7 @@ import java.security.InvalidKeyException;
 public class KeyDerivationUtils {
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Derivation index used to derive KEY_TRANSPORT_IV from KEY_TRANSPORT
@@ -89,6 +89,6 @@ public class KeyDerivationUtils {
         final byte[] ivData = Bytes.concat(challenge, nonce);
         // Derive IV from KEY_TRANSPORT_IV, CHALLENGE and NONCE
         final SecretKey ivKey = keyGenerator.deriveSecretKeyHmac(transportIv, ivData);
-        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(ivKey);
+        return keyConvertor.convertSharedSecretKeyToBytes(ivKey);
     }
 }

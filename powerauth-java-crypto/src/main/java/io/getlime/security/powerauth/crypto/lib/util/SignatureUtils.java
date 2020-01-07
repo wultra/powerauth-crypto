@@ -20,9 +20,8 @@ import com.google.common.base.Joiner;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,7 @@ public class SignatureUtils {
      */
     public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             ecdsa.initSign(masterPrivateKey);
             ecdsa.update(bytes);
             return ecdsa.sign();
@@ -80,7 +79,7 @@ public class SignatureUtils {
      */
     public boolean validateECDSASignature(byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             ecdsa.initVerify(masterPublicKey);
             ecdsa.update(signedBytes);
             return ecdsa.verify(signature);
@@ -164,14 +163,14 @@ public class SignatureUtils {
         // Prepare array for signature binary components.
         final List<byte[]> signatureComponents = new ArrayList<>();
 
-        final CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+        final KeyConvertor keyConvertor = new KeyConvertor();
 
         for (int i = 0; i < signatureKeys.size(); i++) {
-            final byte[] signatureKey = keyConverter.convertSharedSecretKeyToBytes(signatureKeys.get(i));
+            final byte[] signatureKey = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(i));
             byte[] derivedKey = hmac.hash(signatureKey, ctrData);
 
             for (int j = 0; j < i; j++) {
-                byte[] signatureKeyInner = keyConverter.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
+                byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
                 byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctrData);
                 derivedKey = hmac.hash(derivedKeyInner, derivedKey);
             }

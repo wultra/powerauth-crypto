@@ -16,10 +16,9 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -33,6 +32,7 @@ import java.util.Arrays;
 public class HashBasedCounterUtils {
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Derivation index used to derive KEY_TRANSPORT_CTR from KEY_TRANSPORT
@@ -74,7 +74,7 @@ public class HashBasedCounterUtils {
         final SecretKey transportCtr = keyGenerator.deriveSecretKey(transportKey, derivationIndex);
         // Derive CTR_DATA_HASH from KEY_TRANSPORT_CTR and CTR_DATA
         final SecretKey ctrDataHashKey = keyGenerator.deriveSecretKeyHmac(transportCtr, ctrData);
-        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(ctrDataHashKey);
+        return keyConvertor.convertSharedSecretKeyToBytes(ctrDataHashKey);
     }
 
     /**

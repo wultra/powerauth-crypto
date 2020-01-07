@@ -16,14 +16,13 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor;
 
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.NonPersonalizedEncryptedMessage;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -56,7 +55,7 @@ public class NonPersonalizedEncryptor {
     private final AESEncryptionUtils aes = new AESEncryptionUtils();
     private final KeyGenerator generator = new KeyGenerator();
     private final HMACHashUtilities hmac = new HMACHashUtilities();
-    private final CryptoProviderUtil keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Create a new encryptor using provided applicationKey, application master server public key and session index.
@@ -98,7 +97,7 @@ public class NonPersonalizedEncryptor {
 
         byte[] nonce = generator.generateRandomBytes(16);
 
-        SecretKey sessionKey = keyConversion.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
+        SecretKey sessionKey = keyConvertor.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
         SecretKey encryptionKey = generator.deriveSecretKeyHmacLegacy(sessionKey, adHocIndex);
         SecretKey macKey = generator.deriveSecretKeyHmacLegacy(sessionKey, macIndex);
 
@@ -148,7 +147,7 @@ public class NonPersonalizedEncryptor {
             throw new GenericCryptoException("Invalid index");
         }
 
-        SecretKey sessionKey = keyConversion.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
+        SecretKey sessionKey = keyConvertor.convertBytesToSharedSecretKey(this.sessionRelatedSecretKey);
         SecretKey encryptionKey = generator.deriveSecretKeyHmacLegacy(sessionKey, adHocIndex);
         SecretKey macKey = generator.deriveSecretKeyHmacLegacy(sessionKey, macIndex);
 

@@ -17,8 +17,8 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class HMACHashUtilities {
      */
     public byte[] hash(byte[] key, byte[] data) throws GenericCryptoException, CryptoProviderException {
         try {
-            Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA256");
             hmacSha256.init(hmacKey);
             return hmacSha256.doFinal(data);
@@ -71,7 +71,7 @@ public class HMACHashUtilities {
      */
     public byte[] hash(SecretKey hmacKey, byte[] data) throws GenericCryptoException, CryptoProviderException {
         try {
-            Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             hmacSha256.init(hmacKey);
             return hmacSha256.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {

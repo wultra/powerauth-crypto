@@ -17,8 +17,8 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class AESEncryptionUtils {
      */
     public byte[] encrypt(byte[] bytes, byte[] iv, SecretKey secret, String transformation) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            Cipher cipherForCryptoResponse = Cipher.getInstance(transformation, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            Cipher cipherForCryptoResponse = Cipher.getInstance(transformation, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             cipherForCryptoResponse.init(Cipher.ENCRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
@@ -97,7 +97,7 @@ public class AESEncryptionUtils {
      */
     public byte[] decrypt(byte[] bytes, byte[] iv, SecretKey secret, String transformation) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            Cipher cipherForCryptoResponse = Cipher.getInstance(transformation, PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            Cipher cipherForCryptoResponse = Cipher.getInstance(transformation, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             cipherForCryptoResponse.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
             return cipherForCryptoResponse.doFinal(bytes);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
