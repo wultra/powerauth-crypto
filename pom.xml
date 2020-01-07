@@ -65,7 +65,6 @@
     </issueManagement>
 
     <modules>
-        <module>powerauth-java-prov</module>
         <module>powerauth-java-crypto</module>
         <module>powerauth-java-http</module>
     </modules>

@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.powerauth.provider;
+package io.getlime.security.powerauth.crypto.lib.util;
 
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.slf4j.Logger;
@@ -31,24 +32,14 @@ import java.security.interfaces.ECPublicKey;
 import java.security.spec.*;
 
 /**
- * Crypto provider based on BouncyCastle crypto provider.
+ * Key convertor for conversion of symmetric and asymmetric keys.
  *
  * @author Petr Dvorak, petr@wultra.com
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
+public class KeyConvertor {
 
-    private static final Logger logger = LoggerFactory.getLogger(CryptoProviderUtilBouncyCastle.class);
-
-    /**
-     * Get the provider name, for example "BC" for Bouncy Castle.
-     *
-     * @return Name of the provider, for example "BC" for Bouncy Castle.
-     */
-    @Override
-    public String getProviderName() {
-        return "BC";
-    }
+    private static final Logger logger = LoggerFactory.getLogger(KeyConvertor.class);
 
     /**
      * Converts an EC public key to a byte array by encoding Q point parameter (W in Java Security).
@@ -92,11 +83,11 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
             BigInteger y = point.getAffineYCoord().toBigInteger();
 
             // Generate public key using Java security API
-            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", getProviderName());
+            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             parameters.init(new ECGenParameterSpec("secp256r1"));
             ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
             ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
-            return KeyFactory.getInstance("EC", getProviderName()).generatePublic(ecPublicKeySpec);
+            return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(ecPublicKeySpec);
         } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
@@ -125,12 +116,12 @@ public class CryptoProviderUtilBouncyCastle implements CryptoProviderUtil {
      */
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
         try {
-            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", getProviderName());
+            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             parameters.init(new ECGenParameterSpec("secp256r1"));
             ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
             // Private key is stored including the sign bit as regular Java BigInteger representation
             ECPrivateKeySpec ecPrivateKeySpec = new ECPrivateKeySpec(new BigInteger(keyBytes), ecParameterSpec);
-            return KeyFactory.getInstance("EC", getProviderName()).generatePrivate(ecPrivateKeySpec);
+            return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePrivate(ecPrivateKeySpec);
         } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);

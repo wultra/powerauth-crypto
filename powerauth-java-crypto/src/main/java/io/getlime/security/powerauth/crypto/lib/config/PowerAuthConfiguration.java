@@ -16,44 +16,18 @@
  */
 package io.getlime.security.powerauth.crypto.lib.config;
 
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-
 /**
  * PowerAuth cryptography configuration class.
  *
  * @author Petr Dvorak
  *
  */
-public enum PowerAuthConfiguration {
+public class PowerAuthConfiguration {
 
     /**
-     * Singleton instance
+     * Name of cryptography provider used by PowerAuth.
      */
-    INSTANCE;
-
-    /**
-     * Instance of the KeyConvertor, a class used to convert keys to bytes and vice versa.
-     */
-    private CryptoProviderUtil keyConvertor;
-
-    /**
-     * Set key convertor instance.
-     * @param keyConvertor Key convertor instance
-     */
-    public void setKeyConvertor(CryptoProviderUtil keyConvertor) {
-        this.keyConvertor = keyConvertor;
-    }
-
-    /**
-     * Get key convertor instance.
-     * @return Key convertor instance
-     */
-    public CryptoProviderUtil getKeyConvertor() {
-        if (keyConvertor == null) {
-            throw new NullPointerException("Convertor mustn't be null! Set convertor by calling PowerAuthConfiguration.INSTANCE.setKeyConvertor().");
-        }
-        return keyConvertor;
-    }
+    public static final String CRYPTO_PROVIDER_NAME = "BC";
 
     /**
      * How many iterations should be used for PBKDF2 key derivation.

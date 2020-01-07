@@ -18,8 +18,8 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;

@@ -18,7 +18,6 @@ package io.getlime.security.powerauth.crypto.encryption;
 
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Bytes;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesDecryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
@@ -27,8 +26,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCrypt
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Before;
@@ -44,7 +42,8 @@ import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Test to validate functionality of {@link EciesEncryptor}
@@ -55,7 +54,7 @@ import static org.junit.Assert.*;
 public class EciesEncryptorTest {
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
-    private CryptoProviderUtil keyConversion;
+    private KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Add crypto providers.
@@ -64,8 +63,6 @@ public class EciesEncryptorTest {
     public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
-        keyConversion = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
     }
 
     /**
@@ -190,7 +187,7 @@ public class EciesEncryptorTest {
 
         for (int i = 0 ; i < 100 ; i++) {
             final SecretKey secretKey = keyGenerator.generateRandomSecretKey();
-            final byte[] secretKeyToBytes = keyConversion.convertSharedSecretKeyToBytes(secretKey);
+            final byte[] secretKeyToBytes = keyConvertor.convertSharedSecretKeyToBytes(secretKey);
 
             // Implement reference KDF implementation
             final byte[] kdfRef  = KdfX9_63.derive(secretKeyToBytes, null, 32);
@@ -260,8 +257,8 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConversion.convertBytesToPrivateKey(Bytes.concat(signByte, BaseEncoding.base64().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
-        final PublicKey publicKey = keyConversion.convertBytesToPublicKey(BaseEncoding.base64().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(Bytes.concat(signByte, BaseEncoding.base64().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
+        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
 
         byte[][] request = {
                 BaseEncoding.base64().decode("aGVsbG8gd29ybGQh"),
@@ -414,8 +411,8 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConversion.convertBytesToPrivateKey(Bytes.concat(signByte, b64.decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
-        final PublicKey publicKey = keyConversion.convertBytesToPublicKey(b64.decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(Bytes.concat(signByte, b64.decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
+        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(b64.decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
 
         byte[][] request = {
                 b64.decode("aGVsbG8gd29ybGQh"),
