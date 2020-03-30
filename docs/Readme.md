@@ -14,6 +14,7 @@ A typical use-case for PowerAuth protocol would be assuring the security of a mo
 - [MAC Token Based Authentication](./MAC-Token-Based-Authentication.md)
 - [End-To-End Encryption](./End-To-End-Encryption.md)
 - [Activation Recovery](Activation-Recovery.md)
+- [Additional Activation OTP](Additional-Activation-OTP.md)
 - [Standard RESTful API](./Standard-RESTful-API.md)
 - [Implementation Details](./Implementation-notes.md)
     - [Activation Code](./Activation-Code.md)
