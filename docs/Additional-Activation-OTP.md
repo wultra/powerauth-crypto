@@ -29,7 +29,7 @@ In this common scenario, it's expected that the PowerAuth activation is not yet 
    1. Master Front-End Application generates random activation OTP.
    1. Master Front-End Application then asks PowerAuth server to create an activation, with using this OTP ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-initactivation) method, OTP validation set to ON_KEYS_EXCHANGE).
    1. Master Front-End Application then displays QR code, containing an activation code.
-   1. At the same time, Master Front-End Application initiates the delivery of activation OTP. It's recommended to deliver such code via the dedicated out-of-band channel, for example, via SMS.
+   1. At the same time, Master Front-End Application initiates the delivery of activation OTP. It's recommended to deliver such code via a dedicated out-of-band channel, for example, via SMS.
    
 1. In the mobile application: 
 
@@ -51,23 +51,23 @@ In this common scenario, it's expected that the PowerAuth activation is not yet 
 
 There are multiple ways how to implement custom activation with an additional authentication OTP so that we will discuss only one particular case. What they have all common and what you need to know is that OTP is, in this case, not verified by PowerAuth Server. It's more practical to validate it before the actual activation creation.
 
-1. Let's say that the user is authenticated in Master Front-End Application (with login and password) and initiates the activation creation process:
+1. Let's say that the user is authenticated in Master Front-End Application (with username and password) and initiates the activation creation process:
 
    1. Master Front-End Application generates random activation OTP and keeps it temporarily in the database.
-   1. At the same time, Master Front-End Application initiates the delivery of activation OTP. It's recommended to deliver such code via the dedicated out-of-band channel, for example, via SMS.
-   1. Master Front-End Application instructs the user to start the mobile application and type the login, password, and OTP to the mobile app.
+   1. At the same time, Master Front-End Application initiates the delivery of activation OTP. It's recommended to deliver such code via a dedicated out-of-band channel, for example, via SMS.
+   1. Master Front-End Application instructs the user to start the mobile application and type the username, password, and OTP to the mobile app.
    
 1. In the mobile application:
 
-   1. The user enters login and password
+   1. The user enters username and password.
    1. The user waits for OTP delivery via the out-of-band channel.
    1. The user retypes OTP.
-   1. Mobile application then initializes the custom activation with provided login, password, and OTP.
+   1. Mobile application then initializes the custom activation with provided username, password, and OTP.
 
-1. Intermediate Server Application receives a custom activation request, with login, password, and OTP:
+1. Intermediate Server Application receives a custom activation request, with username, password, and OTP:
 
-   1. The login, password, and OTP is verified by the Intermediate Server Application
-   1. If everything's right, then Intermediate Server Application creates activation by calling [`createACtivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-createactivation). The activation state can be set to ACTIVE.
+   1. The username, password, and OTP is verified by the Intermediate Server Application.
+   1. If everything's right, then Intermediate Server Application creates activation by calling [`createActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-createactivation). The activation state can be set to ACTIVE.
 
 1. The mobile application receives the response from the server and completes the activation on the mobile side.
 
@@ -94,7 +94,7 @@ In this common scenario, an additional activation OTP helps with the final activ
    
    1. The activation code is verified by the PowerAuth server in the [`prepareActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-prepareactivation) method. 
    1. If everything is right, the activation is set to the OTP_USED state.
-   1. At the same time, Intermediate Server Application initiates the delivery of activation OTP. It's recommended to deliver such code via the dedicated out-of-band channel, for example, via SMS.
+   1. At the same time, Intermediate Server Application initiates the delivery of activation OTP. It's recommended to deliver such code via a dedicated out-of-band channel, for example, via SMS.
 
 1. The mobile application receives the response from the server and completes the keys-exchange on the mobile side.
    
@@ -114,29 +114,29 @@ There are multiple ways how to implement custom activation and confirm it with a
 
 1. In the mobile application:
    
-   1. The user enters login and password
-   1. Mobile application then initializes the custom activation with provided login and password.
+   1. The user enters username and password.
+   1. Mobile application then initializes the custom activation with provided username and password.
 
-1. Intermediate Server Application receives a custom activation request, with login and password:
+1. Intermediate Server Application receives a custom activation request, with username and password:
 
-   1. The login and password is verified by the Intermediate Server Application
-   1. If everything's right, then Intermediate Server Application creates activation by calling [`createACtivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-createactivation). The activation must be set to the OTP_USED state.
+   1. The username and password is verified by the Intermediate Server Application.
+   1. If everything's right, then Intermediate Server Application creates activation by calling [`createActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-createactivation). The activation must be set to the OTP_USED state.
    1. Intermediate Server Application generates random activation OTP and update the activation record, by calling [`updateActivationOtp`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-updateactivationotp) method.
    1. At the same time, Intermediate Server Application initiates the delivery of activation OTP.
    
 1. Back in the mobile application:
 
-   1. The mobile application receives the response from the server and completes the keys-exchange on the mobile side.
+   1. The mobile application receives the response from the server and completes the key exchange on the mobile side.
    1. The user waits for OTP delivery via the out-of-band channel.
    1. The user retypes OTP.
    1. Mobile application then commits the activation with OTP, by calling a custom RESTful endpoint, protected with our [ECIES encryption](End-To-End-Encryption.md) scheme.
 
-1. Intermediate Server Application then receives the commit request
+1. Intermediate Server Application then receives the commit request:
 
    1. Decrypts OTP from the request
    1. Commits the activation by calling PowerAuth Server's [`commitActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-commitactivation) method.
 
-After the response from the commit is received on the mobile side, the application can check the  whether the activation's state is ACTIVE.
+After the response from the commit is received on the mobile side, the application can check whether the activation's state is ACTIVE.
 
 ### Confirm activation recovery with OTP
 
@@ -144,12 +144,12 @@ The confirmation of activation recovery is very similar to custom activation con
 
 1. In the mobile application:
    
-   1. The user enters recopvery code and PUK
+   1. The user enters recovery code and PUK.
    1. Mobile application then initializes the recovery activation with provided code and PUK.
 
 1. Intermediate Server Application receives a recovery activation request:
 
-   1. The login and password is verified by the PowerAuth Server, by calling [`recoveryCodeActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-recoverycodeactivation).
+   1. The recovery code and PUK is verified by the PowerAuth Server, by calling [`recoveryCodeActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-recoverycodeactivation).
    1. Intermediate Server Application generates random activation OTP and update the activation record, by calling [`updateActivationOtp`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-updateactivationotp) method.
    1. At the same time, Intermediate Server Application initiates the delivery of activation OTP.
    
@@ -160,9 +160,9 @@ The confirmation of activation recovery is very similar to custom activation con
    1. The user retypes OTP.
    1. Mobile application then commits the activation with OTP, by calling a custom RESTful endpoint, protected with our [ECIES encryption](End-To-End-Encryption.md) scheme.
 
-1. Intermediate Server Application then receives the commit request
+1. Intermediate Server Application then receives the commit request:
 
-   1. Decrypts OTP from the request
+   1. Decrypts OTP from the request.
    1. Commits the activation by calling PowerAuth Server's [`commitActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-commitactivation) method.
 
-After the response from the commit is received on the mobile side, the application can check the  whether the activation's state is ACTIVE.
+After the response from the commit is received on the mobile side, the application can check whether the activation's state is ACTIVE.
