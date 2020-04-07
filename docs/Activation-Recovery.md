@@ -46,7 +46,7 @@ The Activation via Recovery Code is by default **disabled** on PowerAuth Server.
 If application is activated via the Recovery Code and PUK, then it goes immediately to **ACTIVE** state (see [Activation States](Activation.md#activation-states)). There's no intermediate state when the user can confirm that activation in the additional digital channel (like internet banking). This fact limits this feature mostly to only limited application scenarios:
 
 1. Only for the application that doesn't provide active operations
-2. The application itself acts as a confirmation device (like our [Mobile Token](https://www.wultra.com/mobile-token) does)
+2. The application itself acts as a confirmation device as our [Mobile Token](https://www.wultra.com/mobile-token) does.
 
 For the first case, we don't recommend to allow this feature for PowerAuth powered applications, that provide "active" operations. That's typically a mobile banking app that can withdraw money from user's account. The reason for that is that if the Recovery Code and PUK are compromised, then the attacker can easily harm the user.
 

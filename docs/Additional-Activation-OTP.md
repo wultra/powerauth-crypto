@@ -41,7 +41,7 @@ In this common scenario, it's expected that the PowerAuth activation is not yet 
 1. Intermediate Server Application receives activation with activation code and OTP:
  
    1. The activation code and OTP are verified by the PowerAuth server in the [`prepareActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-prepareactivation) method. 
-   1. If everything is right, the activation is set to the ACTIVE state. There's no need to wait for the confirmation.
+   1. If the method call succeeds, the activation is set to the ACTIVE state. There's no need to wait for the confirmation.
    1. In case of failure, the activation is set to REMOVED state, and the whole process must start from the beginning. This is due to the fact that the PowerAuth server doesn't reveal details about the failure.
 
 1. The mobile application receives the response from the server and completes the activation on the mobile side.
@@ -93,7 +93,7 @@ In this common scenario, an additional activation OTP helps with the final activ
 1. Intermediate Server Application receives a regular activation request, with activation code:
    
    1. The activation code is verified by the PowerAuth server in the [`prepareActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-prepareactivation) method. 
-   1. If everything is right, the activation is set to the OTP_USED state.
+   1. If the method call succeeds, the activation is set to the OTP_USED state.
    1. At the same time, Intermediate Server Application initiates the delivery of activation OTP. It's recommended to deliver such code via a dedicated out-of-band channel, for example, via SMS.
 
 1. The mobile application receives the response from the server and completes the keys-exchange on the mobile side.
