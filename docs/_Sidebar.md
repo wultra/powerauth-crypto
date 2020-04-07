@@ -9,6 +9,7 @@
 - [MAC Token Based Authentication](./MAC-Token-Based-Authentication.md)
 - [End-To-End Encryption](./End-To-End-Encryption.md)
 - [Activation Recovery](Activation-Recovery.md)
+- [Additional Activation OTP](Additional-Activation-OTP.md)
 - [Standard REST API](./Standard-RESTful-API.md)
 - [Implementation Details](./Implementation-notes.md)
 - [List of Used Keys](./List-of-used-keys.md)

@@ -149,3 +149,9 @@ To describe the steps more precisely, the activation process is performed in fol
 1. Record associated with given `ACTIVATION_ID` is now in `ACTIVE` state.
 
 After completing the activation, client must store derived keys and throw away unencrypted device private key and key master secret. Only the derived keys should be stored on the device according to the description in "PowerAuth Key Derivation" chapter.
+
+## Related topics
+
+- [Activation Code Format](Activation-Code.md)
+- [Activation Recovery](Activation-Recovery.md)
+- [Additional Activation OTP](Additional-Activation-OTP.md)
