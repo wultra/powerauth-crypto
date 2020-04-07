@@ -17,15 +17,14 @@
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
 import com.google.common.primitives.Bytes;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCryptogram;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,7 @@ public class EciesEncryptor {
     // Underlying implementation classes.
     private final AESEncryptionUtils aes = new AESEncryptionUtils();
     private final HMACHashUtilities hmac = new HMACHashUtilities();
-    private final CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
     private final KeyGenerator keyGenerator = new KeyGenerator();
 
     // Working data storage
@@ -200,7 +199,7 @@ public class EciesEncryptor {
             }
             // Encrypt the data with
             byte[] encKeyBytes = envelopeKey.getEncKey();
-            final SecretKey encKey = keyConverter.convertBytesToSharedSecretKey(encKeyBytes);
+            final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
             final byte[] encryptedData = aes.encrypt(data, iv, encKey);
 
             // Compute MAC of the data
@@ -239,7 +238,7 @@ public class EciesEncryptor {
 
             // Decrypt the data with AES using zero IV
             final byte[] encKeyBytes = envelopeKey.getEncKey();
-            final SecretKey encKey = keyConverter.convertBytesToSharedSecretKey(encKeyBytes);
+            final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
             final byte[] iv = ivForDecryption;
 
             // Invalidate the encryptor

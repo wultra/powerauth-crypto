@@ -17,14 +17,13 @@
 package io.getlime.security.powerauth.crypto.server.activation;
 
 import com.google.common.io.BaseEncoding;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.*;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,7 @@ public class PowerAuthServerActivation {
     private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
     private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Generate a pseudo-unique activation ID. Technically, this is UUID level 4
@@ -177,14 +177,14 @@ public class PowerAuthServerActivation {
                 AESEncryptionUtils aes = new AESEncryptionUtils();
                 byte[] decryptedTMP = aes.decrypt(C_devicePublicKey, activationNonce, ephemeralSymmetricKey);
                 byte[] decryptedPublicKeyBytes = aes.decrypt(decryptedTMP, activationNonce, otpBasedSymmetricKey);
-                return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
+                return keyConvertor.convertBytesToPublicKey(decryptedPublicKeyBytes);
 
             } else { // extra encryption is not present, only OTP based key is used
 
                 // Decrypt device public key
                 AESEncryptionUtils aes = new AESEncryptionUtils();
                 byte[] decryptedPublicKeyBytes = aes.decrypt(C_devicePublicKey, activationNonce, otpBasedSymmetricKey);
-                return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(decryptedPublicKeyBytes);
+                return keyConvertor.convertBytesToPublicKey(decryptedPublicKeyBytes);
 
             }
 
@@ -221,7 +221,7 @@ public class PowerAuthServerActivation {
                                          PrivateKey ephemeralPrivateKey, String activationOTP, String activationIdShort, byte[] activationNonce)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         // Convert public key to bytes
-        byte[] serverPublicKeyBytes = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertPublicKeyToBytes(serverPublicKey);
+        byte[] serverPublicKeyBytes = keyConvertor.convertPublicKeyToBytes(serverPublicKey);
 
         // Generate symmetric keys
         SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, devicePublicKey);

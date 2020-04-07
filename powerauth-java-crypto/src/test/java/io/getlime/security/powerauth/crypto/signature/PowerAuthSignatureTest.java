@@ -19,14 +19,12 @@ package io.getlime.security.powerauth.crypto.signature;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.crypto.server.signature.PowerAuthServerSignature;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +49,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class PowerAuthSignatureTest {
 
+    private final KeyConvertor keyConvertor = new KeyConvertor();
+
 	/**
 	 * Register crypto providers. 
 	 */
@@ -58,7 +58,6 @@ public class PowerAuthSignatureTest {
     public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
     }
 
     /**
@@ -79,7 +78,6 @@ public class PowerAuthSignatureTest {
 
         // Prepare data
         KeyGenerator keyGenerator = new KeyGenerator();
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         KeyPair serverKeyPair = keyGenerator.generateKeyPair();
         PrivateKey serverPrivateKey = serverKeyPair.getPrivate();
@@ -212,7 +210,6 @@ public class PowerAuthSignatureTest {
 
         // Prepare data
         KeyGenerator keyGenerator = new KeyGenerator();
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         KeyPair serverKeyPair = keyGenerator.generateKeyPair();
         PrivateKey serverPrivateKey = serverKeyPair.getPrivate();
@@ -346,7 +343,6 @@ public class PowerAuthSignatureTest {
 
         // Prepare data
         KeyGenerator keyGenerator = new KeyGenerator();
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         KeyPair serverKeyPair = keyGenerator.generateKeyPair();
         PrivateKey serverPrivateKey = serverKeyPair.getPrivate();

@@ -19,8 +19,6 @@ package io.getlime.security.powerauth.crypto.lib.util;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
@@ -55,7 +53,6 @@ public class KeyConversionUtilsTest {
 	public void setUp() {
 		// Add Bouncy Castle Security Provider
 		Security.addProvider(new BouncyCastleProvider());
-		PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
 	}
 
 	/**
@@ -68,7 +65,7 @@ public class KeyConversionUtilsTest {
 	public void testConvertPublicKey() throws Exception {
 		System.out.println("convertPublicKeyToBytes");
 		KeyGenerator keyGenerator = new KeyGenerator();
-		CryptoProviderUtil instance = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+		KeyConvertor instance = new KeyConvertor();
 
 		PublicKey key = instance.convertBytesToPublicKey(BaseEncoding.base64().decode("AsUaehWpuZseHUprd9immCELf62TTtHUGlTIXyCxY7h2"));
 
@@ -89,7 +86,7 @@ public class KeyConversionUtilsTest {
 			PrivateKey decodedPrivateKey = instance.convertBytesToPrivateKey(decodedPrivateBytes);
 			assertEquals(privateKey, decodedPrivateKey);
 
-			KeyFactory kf = KeyFactory.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+			KeyFactory kf = KeyFactory.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
 			BigInteger keyInteger = new BigInteger("" + (12 * i));
 			ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
 			ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);

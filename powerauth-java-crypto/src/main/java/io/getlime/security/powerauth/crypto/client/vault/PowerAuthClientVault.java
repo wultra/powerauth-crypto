@@ -16,12 +16,11 @@
  */
 package io.getlime.security.powerauth.crypto.client.vault;
 
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -35,6 +34,8 @@ import java.security.spec.InvalidKeySpecException;
  *
  */
 public class PowerAuthClientVault {
+
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using a transport key
@@ -57,7 +58,6 @@ public class PowerAuthClientVault {
      */
     public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey masterTransportKey, byte[] ctr) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         KeyGenerator keyGen = new KeyGenerator();
         SecretKey vaultEncryptionTransportKey = keyGen.deriveSecretKey(masterTransportKey, ctr);
         byte[] zeroBytes = new byte[16];
@@ -82,7 +82,6 @@ public class PowerAuthClientVault {
      */
     public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] zeroBytes = new byte[16];
         byte[] keyBytes = aes.decrypt(cVaultEncryptionKey, zeroBytes, transportKey);
         return keyConvertor.convertBytesToSharedSecretKey(keyBytes);
@@ -100,7 +99,6 @@ public class PowerAuthClientVault {
      */
     public byte[] encryptDevicePrivateKey(PrivateKey devicePrivateKey, SecretKey vaultEncryptionKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] devicePrivateKeyBytes = keyConvertor.convertPrivateKeyToBytes(devicePrivateKey);
         byte[] zeroBytes = new byte[16];
         return aes.encrypt(devicePrivateKeyBytes, zeroBytes, vaultEncryptionKey);
@@ -119,7 +117,6 @@ public class PowerAuthClientVault {
      */
     public PrivateKey decryptDevicePrivateKey(byte[] cDevicePrivateKey, SecretKey vaultEncryptionKey) throws InvalidKeyException, InvalidKeySpecException, GenericCryptoException, CryptoProviderException {
         AESEncryptionUtils aes = new AESEncryptionUtils();
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] zeroBytes = new byte[16];
         byte[] keyBytes = aes.decrypt(cDevicePrivateKey, zeroBytes, vaultEncryptionKey);
         return keyConvertor.convertBytesToPrivateKey(keyBytes);

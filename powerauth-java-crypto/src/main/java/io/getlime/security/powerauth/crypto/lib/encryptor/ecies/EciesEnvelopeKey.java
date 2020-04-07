@@ -17,14 +17,13 @@
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
 import com.google.common.primitives.Bytes;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +57,7 @@ public class EciesEnvelopeKey {
 
     private static final int ENVELOPE_KEY_SIZE = ENC_KEY_SIZE + MAC_KEY_SIZE + IV_KEY_SIZE;
 
-    private static final CryptoProviderUtil keyConverter = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
+    private static final KeyConvertor keyConvertor = new KeyConvertor();
     private static final KeyGenerator keyGenerator = new KeyGenerator();
     private static final HMACHashUtilities hmac = new HMACHashUtilities();
 
@@ -92,7 +91,7 @@ public class EciesEnvelopeKey {
             final PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
 
             // Convert ephemeral key to bytes
-            final byte[] ephemeralPublicKeyBytes = keyConverter.convertPublicKeyToBytes(ephemeralPublicKey);
+            final byte[] ephemeralPublicKeyBytes = keyConvertor.convertPublicKeyToBytes(ephemeralPublicKey);
 
             // Compute ephemeral secret key using ECDH key agreement
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, publicKey, true);
@@ -101,7 +100,7 @@ public class EciesEnvelopeKey {
             byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : Bytes.concat(sharedInfo1, ephemeralPublicKeyBytes);
 
             // Derive secret key using KDF function
-            byte[] secretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(ephemeralSecretKey), info1Data, ENVELOPE_KEY_SIZE);
+            byte[] secretKey = KdfX9_63.derive(keyConvertor.convertSharedSecretKeyToBytes(ephemeralSecretKey), info1Data, ENVELOPE_KEY_SIZE);
 
             // Return envelope key with derived secret key and ephemeral public key bytes
             return new EciesEnvelopeKey(secretKey, ephemeralPublicKeyBytes);
@@ -123,7 +122,7 @@ public class EciesEnvelopeKey {
     static EciesEnvelopeKey fromPrivateKey(PrivateKey ephemeralKeyPrivate, byte[] ephemeralPublicKeyBytes, byte[] sharedInfo1) throws EciesException {
         try {
             // Convert public key bytes to public key
-            final PublicKey ephemeralPublicKey = keyConverter.convertBytesToPublicKey(ephemeralPublicKeyBytes);
+            final PublicKey ephemeralPublicKey = keyConvertor.convertBytesToPublicKey(ephemeralPublicKeyBytes);
 
             // Compute ephemeral secret key using ECDH key agreement
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, ephemeralPublicKey, true);
@@ -132,7 +131,7 @@ public class EciesEnvelopeKey {
             byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : Bytes.concat(sharedInfo1, ephemeralPublicKeyBytes);
 
             // Derive secret key using KDF function
-            byte[] secretKey = KdfX9_63.derive(keyConverter.convertSharedSecretKeyToBytes(ephemeralSecretKey), info1Data, ENVELOPE_KEY_SIZE);
+            byte[] secretKey = KdfX9_63.derive(keyConvertor.convertSharedSecretKeyToBytes(ephemeralSecretKey), info1Data, ENVELOPE_KEY_SIZE);
 
             // Return envelope key with derived secret key and ephemeral public key bytes
             return new EciesEnvelopeKey(secretKey, ephemeralPublicKeyBytes);

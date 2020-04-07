@@ -19,8 +19,8 @@ package io.getlime.security.powerauth.crypto.server.keyfactory;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;

@@ -17,11 +17,11 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +48,7 @@ public class KeyGenerator {
     private static final Logger logger = LoggerFactory.getLogger(KeyGenerator.class);
 
     private final SecureRandom random = new SecureRandom();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Generate a new ECDH key pair using P256r1 curve.
@@ -58,7 +59,7 @@ public class KeyGenerator {
     public KeyPair generateKeyPair() throws CryptoProviderException {
         try {
             // we assume BouncyCastle provider
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
@@ -80,7 +81,7 @@ public class KeyGenerator {
      */
     public SecretKey computeSharedKey(PrivateKey privateKey, PublicKey publicKey, boolean keep32b) throws InvalidKeyException, CryptoProviderException {
         try {
-            KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             keyAgreement.init(privateKey);
             keyAgreement.doPhase(publicKey, true);
             final byte[] sharedSecret = keyAgreement.generateSecret();
@@ -90,7 +91,7 @@ public class KeyGenerator {
             } else {
                 resultSecret = this.convert32Bto16B(sharedSecret);
             }
-            return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(resultSecret);
+            return keyConvertor.convertBytesToSharedSecretKey(resultSecret);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
@@ -147,7 +148,7 @@ public class KeyGenerator {
      * @return A new instance of a symmetric key.
      */
     public SecretKey generateRandomSecretKey() {
-        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(generateRandomBytes(16));
+        return keyConvertor.convertBytesToSharedSecretKey(generateRandomBytes(16));
     }
 
     /**
@@ -168,7 +169,7 @@ public class KeyGenerator {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] iv = new byte[16];
         byte[] encryptedBytes = aes.encrypt(index, iv, secret);
-        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
+        return keyConvertor.convertBytesToSharedSecretKey(Arrays.copyOf(encryptedBytes, 16));
     }
 
     /**
@@ -188,7 +189,6 @@ public class KeyGenerator {
      */
     @Deprecated
     public SecretKey deriveSecretKeyHmacLegacy(SecretKey secret, byte[] index) throws GenericCryptoException, CryptoProviderException {
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
         HMACHashUtilities hmac = new HMACHashUtilities();
         byte[] derivedKey32 = hmac.hash(index, secretKeyBytes);
@@ -211,7 +211,6 @@ public class KeyGenerator {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public SecretKey deriveSecretKeyHmac(SecretKey secret, byte[] index) throws GenericCryptoException, CryptoProviderException {
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         byte[] secretKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(secret);
         HMACHashUtilities hmac = new HMACHashUtilities();
         byte[] derivedKey32 = hmac.hash(secretKeyBytes, index);
@@ -245,7 +244,7 @@ public class KeyGenerator {
     public SecretKey deriveSecretKeyFromPassword(String password, byte[] salt, int iterations) throws CryptoProviderException {
         try {
             PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, 128);
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1", PowerAuthConfiguration.INSTANCE.getKeyConvertor().getProviderName());
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             byte[] keyBytes = skf.generateSecret(spec).getEncoded();
             return new SecretKeySpec(keyBytes, "AES");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException ex) {

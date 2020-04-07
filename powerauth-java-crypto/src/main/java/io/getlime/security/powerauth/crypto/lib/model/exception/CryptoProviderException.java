@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.powerauth.provider.exception;
+package io.getlime.security.powerauth.crypto.lib.model.exception;
 
 /**
  * Exception used for handling case when cryptography provider is incorrectly initialized.
