@@ -1,6 +1,6 @@
 # Additional activation OTP
 
-The purpose of additional activation OTP is to help with the user authentication, or with the activation confirmation. The additional OTP can be used either in the early stages of the activation or later when the activation is created and waits for the confirmation in the OTP_USED<sup>1</sup> state.
+The purpose of additional activation OTP is to help with the user authentication, or with the activation confirmation. The additional OTP can be used either in the early stages of the activation or later when the activation is created and waits for the confirmation in the PENDING_COMMIT state.
 
 We will describe each situation in detail in the separate chapters:
 
@@ -14,9 +14,7 @@ We will describe each situation in detail in the separate chapters:
 
 
 > Notes:
-> 1. Be aware that additional activation OTP is not related to OTP_USED state. The naming of OTP_USED state was introduced in PowerAuth Protocol V2, so we keep it due to the technical and historical reasons. The actual meaning of OTP_USED state is that the activation is awaiting the commit.
->
-> 2. This part of the documentation describes in detail how usage of additional activation OTP changes the activation process. So, before you start, you should be familiar with actors and processes defined for the [regular activation](Activation.md).
+> 1. This part of the documentation describes in detail how usage of additional activation OTP changes the activation process. So, before you start, you should be familiar with actors and processes defined for the [regular activation](Activation.md).
 
 ## Additional user authentication
 
@@ -93,7 +91,7 @@ In this common scenario, an additional activation OTP helps with the final activ
 1. Intermediate Server Application receives a regular activation request, with activation code:
    
    1. The activation code is verified by the PowerAuth server in the [`prepareActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-prepareactivation) method. 
-   1. If the method call succeeds, the activation is set to the OTP_USED state.
+   1. If the method call succeeds, the activation is set to the PENDING_COMMIT state.
    1. At the same time, Intermediate Server Application initiates the delivery of activation OTP. It's recommended to deliver such code via a dedicated out-of-band channel, for example, via SMS.
 
 1. The mobile application receives the response from the server and completes the keys-exchange on the mobile side.
@@ -120,7 +118,7 @@ There are multiple ways how to implement custom activation and confirm it with a
 1. Intermediate Server Application receives a custom activation request, with username and password:
 
    1. The username and password is verified by the Intermediate Server Application.
-   1. If everything's right, then Intermediate Server Application creates activation by calling [`createActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-createactivation). The activation must be set to the OTP_USED state.
+   1. If everything's right, then Intermediate Server Application creates activation by calling [`createActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-createactivation). The activation must be set to the PENDING_COMMIT state.
    1. Intermediate Server Application generates random activation OTP and update the activation record, by calling [`updateActivationOtp`](https://github.com/wultra/powerauth-server/blob/develop/docs/SOAP-Service-Methods.md#method-updateactivationotp) method.
    1. At the same time, Intermediate Server Application initiates the delivery of activation OTP.
    

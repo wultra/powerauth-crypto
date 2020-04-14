@@ -52,7 +52,7 @@ where:
     - Note that the last byte of this constant also represents the version of the status blob format. If we decide to change the status blob significantly, then the value will be changed to `0xD2`, `0xD3`, etc... 
 - `${STATUS}` - A status of the activation record, it can be one of following values:
     - `0x01 - CREATED`
-    - `0x02 - OTP_USED`
+    - `0x02 - PENDING_COMMIT`
     - `0x03 - ACTIVE`
     - `0x04 - BLOCKED`
     - `0x05 - REMOVED`
