@@ -15,11 +15,11 @@ For updating to 2019.05, please follow these migration guides:
 
 | Component | Application Name | Version | Description |
 |---|---|---|---|
-| PowerAuth Server | `powerauth-java-server.war` | 0.22.0 | Core back-end component for PowerAuth stack. |
+\| PowerAuth Server | `powerauth-java-server.war` | 0.22.2 | Core back-end component for PowerAuth stack. |
 | PowerAuth Admin | `powerauth-admin.war` | 0.22.0 | Administration console for PowerAuth Server. |
 | PowerAuth Push Server | `powerauth-push-server.war` | 0.22.0 | Simple to deploy push server for APNS and FCM. |
-| PowerAuth Web Flow | `powerauth-webflow.war` | 0.22.1 | Central web authentication page. |
-| PowerAuth Next Step | `powerauth-next-step.war` | 0.22.1 | Simple authorization server used for PowerAuth Web Flow component. |
+| PowerAuth Web Flow | `powerauth-webflow.war` | 0.22.2 | Central web authentication page. |
+| PowerAuth Next Step | `powerauth-next-step.war` | 0.22.2 | Simple authorization server used for PowerAuth Web Flow component. |
 | PowerAuth Data Adapter | `powerauth-data-adapter.war` | 0.22.0 | Customization component for PowerAuth Web Flow. |
 
 ### Utilities
@@ -43,18 +43,18 @@ _Note: Libraries with version `0.20.x` support PowerAuth protocol version `2`. L
 
 | Component | Library Name |  Version | Description |
 |---|---|---|---|
-| PowerAuth RESTful Model | `powerauth-restful-model.jar` | 0.22.0 | Model classes for request and response objects used in PowerAuth Standard RESTful API. |
-| PowerAuth RESTful API Security for Spring | `powerauth-restful-security-spring.jar` | 0.22.0 | High-level integration libraries for RESTful API security, build for Spring MVC. |
-| PowerAuth RESTful API Security for JAX-RS | `powerauth-restful-security-javaee.jar` | 0.22.0 | High-level integration libraries for RESTful API security, build for Java EE (JAX-RS). |
-| PowerAuth SOAP Client for Spring WS | `powerauth-java-client-spring.jar` | 0.22.0 | SOAP service client for PowerAuth Server service, built using Spring WS. |
-| PowerAuth SOAP Client for Axis2 | `powerauth-java-client-axis.jar` | 0.22.0 | SOAP service client for PowerAuth Server service, built using Axis2. |
+| PowerAuth RESTful Model | `powerauth-restful-model.jar` | 0.22.4 | Model classes for request and response objects used in PowerAuth Standard RESTful API. |
+| PowerAuth RESTful API Security for Spring | `powerauth-restful-security-spring.jar` | 0.22.4 | High-level integration libraries for RESTful API security, build for Spring MVC. |
+| PowerAuth RESTful API Security for JAX-RS | `powerauth-restful-security-javaee.jar` | 0.22.4 | High-level integration libraries for RESTful API security, build for Java EE (JAX-RS). |
+| PowerAuth SOAP Client for Spring WS | `powerauth-java-client-spring.jar` | 0.22.2 | SOAP service client for PowerAuth Server service, built using Spring WS. |
+| PowerAuth SOAP Client for Axis2 | `powerauth-java-client-axis.jar` | 0.22.2 | SOAP service client for PowerAuth Server service, built using Axis2. |
 | PowerAuth Push Server RESTful Model | `powerauth-push-model.jar` | 0.22.0 | Model classes for request and response objects used in PowerAuth Push Server. |
 | PowerAuth Push Server RESTful Client | `powerauth-push-client.jar` | 0.22.0 | Client implementation that simplifies integration with PowerAuth Push Server service. |
-| PowerAuth Data Adapter RESTful Model | `powerauth-data-adapter-model.jar` | 0.22.1 | Model classes for request and response objects used in PowerAuth Data Adapter component. |
-| PowerAuth Data Adapter Client | `powerauth-data-adapter-client.jar` | 0.22.1 | Client implementation that simplifies integration with PowerAuth Data Adapter custom component. |
-| PowerAuth Next Step RESTful Model | `powerauth-nextstep-model.jar` | 0.22.1 | Model classes for request and response objects used in PowerAuth Next Step service. |
-| PowerAuth Next Step Client | `powerauth-nextstep-client.jar` | 0.22.1 | Client implementation that simplifies integration with PowerAuth Next Step service. |
-| PowerAuth Mobile Token Model | `powerauth-mtoken-model.jar` | 0.22.1 | Model classes for request and response objects used in PowerAuth Mobile Token. |
+| PowerAuth Data Adapter RESTful Model | `powerauth-data-adapter-model.jar` | 0.22.2 | Model classes for request and response objects used in PowerAuth Data Adapter component. |
+| PowerAuth Data Adapter Client | `powerauth-data-adapter-client.jar` | 0.22.2 | Client implementation that simplifies integration with PowerAuth Data Adapter custom component. |
+| PowerAuth Next Step RESTful Model | `powerauth-nextstep-model.jar` | 0.22.2 | Model classes for request and response objects used in PowerAuth Next Step service. |
+| PowerAuth Next Step Client | `powerauth-nextstep-client.jar` | 0.22.2 | Client implementation that simplifies integration with PowerAuth Next Step service. |
+| PowerAuth Mobile Token Model | `powerauth-mtoken-model.jar` | 0.22.2 | Model classes for request and response objects used in PowerAuth Mobile Token. |
 
 ### Technical Dependencies
 
@@ -64,7 +64,7 @@ _Note: Libraries with version `0.20.x` support PowerAuth protocol version `2`. L
 | PowerAuth HTTP Utilities | `powerauth-java-http.jar` | 0.22.0 | Utilities used for binding PowerAuth cryptography to HTTP technology. |
 | PowerAuth Cryptography Provider | `powerauth-java-prov.jar` | 0.22.0 | Abstraction on top of cryptography providers, so that Bouncy Castle can be switched to other implementation more easily. |
 | PowerAuth Command-Line Tool Library | `powerauth-java-cmd-lib.jar` | 0.22.0 | Library used for implementation of the PowerAuth Command-Line Tool app, useful for unit testing. |
-| PowerAuth RESTful Security Base Support | `powerauth-restful-security-base.jar` | 0.22.0 | Base classes for RESTful API security, shared between JAX-RS and Spring implementations. |
+| PowerAuth RESTful Security Base Support | `powerauth-restful-security-base.jar` | 0.22.4 | Base classes for RESTful API security, shared between JAX-RS and Spring implementations. |
 | Wultra Java Networking Objects | `rest-model-base.jar` | 1.1.0 | Base classes for RESTful API networking, shared across all Wultra back-end projects. |
 
 ## Known Issues When Updating From Older Versions
