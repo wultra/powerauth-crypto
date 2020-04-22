@@ -15,7 +15,7 @@ For updating to 2019.05, please follow these migration guides:
 
 | Component | Application Name | Version | Description |
 |---|---|---|---|
-\| PowerAuth Server | `powerauth-java-server.war` | 0.22.2 | Core back-end component for PowerAuth stack. |
+| PowerAuth Server | `powerauth-java-server.war` | 0.22.2 | Core back-end component for PowerAuth stack. |
 | PowerAuth Admin | `powerauth-admin.war` | 0.22.0 | Administration console for PowerAuth Server. |
 | PowerAuth Push Server | `powerauth-push-server.war` | 0.22.0 | Simple to deploy push server for APNS and FCM. |
 | PowerAuth Web Flow | `powerauth-webflow.war` | 0.22.2 | Central web authentication page. |
