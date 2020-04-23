@@ -7,8 +7,6 @@ For updating to 2020.05, please follow these migration guides:
 - [PowerAuth Server - Migration from version 0.23.0 to version 0.24.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-0.24.0.md)
 - [PowerAuth Push Server - Migration from version 0.23.0 to version 0.24.0](https://github.com/wultra/powerauth-push-server/blob/develop/docs/PowerAuth-Push-Server-0.24.0.md)
 - [PowerAuth Web Flow - Migration from version 0.23.0 to version 0.24.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-0.24.0.md)
-- [PowerAuth Mobile SDK - Migration from version 1.1.0 to version 1.2.0](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/Migration-from-1.1-to-1.2.md)
-- [PowerAuth Mobile SDK - Migration from version 1.2.0 to version 1.3.0](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/Migration-from-1.2-to-1.3.md)
 - [PowerAuth Mobile SDK - Migration from version 1.3.0 to version 1.4.0](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/Migration-from-1.3-to-1.4.md)
 
 ## Components for version 2020.05
@@ -34,12 +32,10 @@ For updating to 2020.05, please follow these migration guides:
 
 | Platform | Package Name | Version | Description |
 |---|---|---|---|
-| iOS | `PowerAuth2` | 1.2.2 / 1.4.0 | A client library for iOS. |
-| watchOS | `PowerAuth2ForWatch` | 1.2.2 / 1.4.0 | A limited library for watchOS. |
-| iOS App Extensions | `PowerAuth2ForExtensions` | 1.2.2 / 1.4.0 | A limited library for iOS App Extensions. |
-| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 1.2.2 / 1.4.0 | A client library for Android. |
-
-_Note: Libraries with version `1.2.x` support PowerAuth protocol version `3`. Libraries with version `1.4.y` support PowerAuth protocol version `3.1`._
+| iOS | `PowerAuth2` | 1.4.0 | A client library for iOS. |
+| watchOS | `PowerAuth2ForWatch` | 1.4.0 | A limited library for watchOS. |
+| iOS App Extensions | `PowerAuth2ForExtensions` | 1.4.0 | A limited library for iOS App Extensions. |
+| Android | `io.getlime.security.powerauth:powerauth-android-sdk` |1.4.0 | A client library for Android. |
 
 ### Back-End Integration Libraries
 
