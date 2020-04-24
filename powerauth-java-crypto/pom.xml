@@ -21,13 +21,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>powerauth-java-crypto</artifactId>
-	<version>0.23.0</version>
+	<version>0.24.0</version>
 	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-crypto-parent</artifactId>
-		<version>0.23.0</version>
+		<version>0.24.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -35,35 +35,30 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>28.1-jre</version>
-		</dependency>
-		<dependency>
-			<groupId>io.getlime.security</groupId>
-			<artifactId>powerauth-java-prov</artifactId>
-			<version>0.23.0</version>
+			<version>28.2-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.29</version>
+			<version>1.7.30</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>4.13</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.10.1</version>
+			<version>2.10.3</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.64</version>
+			<version>1.65</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

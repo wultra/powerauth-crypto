@@ -16,11 +16,9 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,14 +37,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class HashBasedCounterUtilsTest {
 
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * Default constructor
-     */
-    public HashBasedCounterUtilsTest() {
-        this.keyGenerator = new KeyGenerator();
-    }
+    private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Set up crypto providers
@@ -55,7 +47,6 @@ public class HashBasedCounterUtilsTest {
     public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
     }
 
     @Test
@@ -64,7 +55,7 @@ public class HashBasedCounterUtilsTest {
         final HashBasedCounterUtils hashBasedCounterUtils = new HashBasedCounterUtils();
         for (int i = 0; i < 100; i++) {
             // Generate random transport key
-            final SecretKey transportKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToSharedSecretKey(keyGenerator.generateRandomBytes(16));
+            final SecretKey transportKey = keyConvertor.convertBytesToSharedSecretKey(keyGenerator.generateRandomBytes(16));
             // Generate random CTR_DATA
             final byte[] ctrData = keyGenerator.generateRandomBytes(16);
             final byte[] ctrDataHashExpected = calculateCtrDataHash(ctrData, transportKey);
@@ -90,7 +81,7 @@ public class HashBasedCounterUtilsTest {
         final byte[] index = ByteBuffer.allocate(16).putLong(0L).putLong(4000).array();
         final SecretKey ctrInfoKey = keyGenerator.deriveSecretKey(transportKey, index);
         final SecretKey ctrDataHash = keyGenerator.deriveSecretKeyHmac(ctrInfoKey, ctrData);
-        return PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertSharedSecretKeyToBytes(ctrDataHash);
+        return keyConvertor.convertSharedSecretKeyToBytes(ctrDataHash);
     }
 
 }

@@ -25,7 +25,7 @@
 
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-crypto-parent</artifactId>
-    <version>0.23.0</version>
+    <version>0.24.0</version>
     <packaging>pom</packaging>
 
     <inceptionYear>2016</inceptionYear>
@@ -65,7 +65,6 @@
     </issueManagement>
 
     <modules>
-        <module>powerauth-java-prov</module>
         <module>powerauth-java-crypto</module>
         <module>powerauth-java-http</module>
     </modules>

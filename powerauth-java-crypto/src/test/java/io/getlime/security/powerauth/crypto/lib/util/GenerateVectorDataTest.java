@@ -22,7 +22,6 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
@@ -31,8 +30,6 @@ import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.util.model.TestSet;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -65,6 +62,8 @@ public class GenerateVectorDataTest {
     private static File testVectorFolder;
     private static ObjectMapper objectMapper;
 
+    private final KeyConvertor keyConvertor = new KeyConvertor();
+
     /**
      * Register crypto providers
      */
@@ -72,7 +71,6 @@ public class GenerateVectorDataTest {
     public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
 
         // Create folder for test vectors
         testVectorFolder = new File("target/test-vectors");
@@ -109,8 +107,6 @@ public class GenerateVectorDataTest {
         PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 
         TestSet testSet = new TestSet("verify-activation-data-signature-v2.json", "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted activation data (version 2 of PowerAuth protocol: short activation ID, activation OTP) using the server master public key, for example when it's stored in the QR code.");
-
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         int max = 20;
         for (int i = 0; i < max; i++) {
@@ -149,7 +145,6 @@ public class GenerateVectorDataTest {
 
         TestSet testSet = new TestSet("verify-activation-data-signature-v3.json", "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted activation data (for version 3 of PowerAuth protocol: activation code) using the server master public key, for example when it's stored in the QR code.");
 
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         IdentifierGenerator identifierGenerator = new IdentifierGenerator();
 
         int max = 20;
@@ -187,8 +182,6 @@ public class GenerateVectorDataTest {
     @Test
     public void testEncryptDevicePublicKeyV2() throws Exception {
         PowerAuthClientActivation activation = new PowerAuthClientActivation();
-
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         TestSet testSet = new TestSet("encrypt-device-public-key-v2.json", "For \"/pa/activation/prepare\", client needs to be able to encrypt the public key using activation OTP, activation short ID and activation nonce. (activationIdShort, activationOtp, activationNonce, publicDeviceKey) => cPublicDeviceKey");
 
@@ -244,8 +237,6 @@ public class GenerateVectorDataTest {
         PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
         PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
         TestSet testSet = new TestSet("compute-master-secret-key.json", "For \"/pa/activation/prepare\", client needs to be able to compute the master shared secret key from its private key and server's public key (devicePrivateKey, serverPublicKey) => masterSecretKey <= (serverPrivateKey, devicePublicKey).");
 
         int max = 20;
@@ -283,8 +274,6 @@ public class GenerateVectorDataTest {
 
         PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
         PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         TestSet testSet = new TestSet("compute-derived-keys.json", "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth keys from master shared secret key (masterSecretKey) => (signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey, transportKey, vaultEncryptionKey).");
 
@@ -361,7 +350,6 @@ public class GenerateVectorDataTest {
             ephemeralPublicKey = kp.getPublic();
 
             cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOtp, activationIdShort, activationNonce);
-            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationIdShort", activationIdShort);
@@ -431,8 +419,6 @@ public class GenerateVectorDataTest {
             cServerPublicKey = activationServer.encryptServerPublicKey(serverPublicKey, devicePublicKey, ephemeralPrivateKey, activationOtp, activationIdShort, activationNonce);
             byte[] cServerPublicKeySignature = activationServer.computeServerDataSignature(activationId, cServerPublicKey, masterPrivateKey);
 
-            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationId", activationId);
             input.put("encryptedServerPublicKey", BaseEncoding.base64().encode(cServerPublicKey));
@@ -469,7 +455,6 @@ public class GenerateVectorDataTest {
 
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
-            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
             KeyPair serverKeyPair = keyGenerator.generateKeyPair();
             PublicKey serverPublicKey = serverKeyPair.getPublic();
@@ -579,7 +564,6 @@ public class GenerateVectorDataTest {
 
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
-            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
             KeyPair serverKeyPair = keyGenerator.generateKeyPair();
             PublicKey serverPublicKey = serverKeyPair.getPublic();
@@ -696,7 +680,6 @@ public class GenerateVectorDataTest {
 
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
-            CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
             KeyPair serverKeyPair = keyGenerator.generateKeyPair();
             PublicKey serverPublicKey = serverKeyPair.getPublic();
@@ -808,8 +791,6 @@ public class GenerateVectorDataTest {
 
         TestSet testSet = new TestSet("public-key-fingerprint-v2.json", "Fingerprint values for provided public keys, used for visual verification of the successful and untampered public key exchange.");
 
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
-
         int max = 100;
         for (int i = 0; i < max; i++) {
             KeyPair kpDevice = activationClient.generateDeviceKeyPair();
@@ -848,8 +829,6 @@ public class GenerateVectorDataTest {
         IdentifierGenerator generator = new IdentifierGenerator();
 
         TestSet testSet = new TestSet("public-key-fingerprint-v3.json", "Fingerprint values for provided public keys, used for visual verification of the successful and untampered public key exchange.");
-
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         int max = 100;
         for (int i = 0; i < max; i++) {
@@ -895,7 +874,6 @@ public class GenerateVectorDataTest {
 
         KeyGenerator keyGenerator = new KeyGenerator();
         KeyDerivationUtils keyDerivationUtils = new KeyDerivationUtils();
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
 
         for (int i = 0; i < 32; i++) {
             byte[] transportKey = keyGenerator.generateRandomBytes(16);
@@ -928,7 +906,6 @@ public class GenerateVectorDataTest {
         TestSet testSet = new TestSet("activation-status-blob-data.json", "Status blob test data.");
 
         final KeyGenerator keyGenerator = new KeyGenerator();
-        final CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         final PowerAuthServerActivation activation = new PowerAuthServerActivation();
         final BaseEncoding b64 = BaseEncoding.base64();
 

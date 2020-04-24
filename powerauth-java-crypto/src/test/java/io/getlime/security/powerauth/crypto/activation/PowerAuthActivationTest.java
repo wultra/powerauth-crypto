@@ -18,13 +18,11 @@ package io.getlime.security.powerauth.crypto.activation;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
-import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
-import io.getlime.security.powerauth.provider.CryptoProviderUtil;
-import io.getlime.security.powerauth.provider.CryptoProviderUtilFactory;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +40,8 @@ import static org.junit.Assert.*;
  */
 public class PowerAuthActivationTest {
 
+    private final KeyConvertor keyConvertor = new KeyConvertor();
+
     /**
      * Add crypto providers.
      */
@@ -49,7 +49,6 @@ public class PowerAuthActivationTest {
     public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        PowerAuthConfiguration.INSTANCE.setKeyConvertor(CryptoProviderUtilFactory.getCryptoProviderUtils());
     }
 
     /**
@@ -57,7 +56,6 @@ public class PowerAuthActivationTest {
      */
     @Test
     public void testGenerateKeys() throws CryptoProviderException {
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         KeyGenerator keyGenerator = new KeyGenerator();
         KeyPair kp = keyGenerator.generateKeyPair();
         System.out.println("Private Key: " + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
@@ -232,11 +230,10 @@ public class PowerAuthActivationTest {
         byte[] ephemeralPrivateKeyBytes = BaseEncoding.base64().decode("AKeMTtivK/XRiQPhfJYxAw1L62ah4lGTQ4JKqRrr0fnC");
         byte[] masterPublicKey = BaseEncoding.base64().decode("BFOqvpLNi15eHDt8fkFxFe034Buw/i8gR3ax4fKiIQynt5K858oBBYhqLVH8FhNmMnlysnRd2UsPJSQxzoPhEn8=");
 
-        CryptoProviderUtil keyConvertor = PowerAuthConfiguration.INSTANCE.getKeyConvertor();
         PrivateKey eph = keyConvertor.convertBytesToPrivateKey(ephemeralPrivateKeyBytes);
         PublicKey mpk = keyConvertor.convertBytesToPublicKey(masterPublicKey);
 
-        PublicKey publicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(publicKeyBytes);
+        PublicKey publicKey = keyConvertor.convertBytesToPublicKey(publicKeyBytes);
         PowerAuthClientActivation activation = new PowerAuthClientActivation();
 
         byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, eph, mpk, activationOTP, activationIdShort, activationNonce);
@@ -273,7 +270,7 @@ public class PowerAuthActivationTest {
 
         for (int i = 0; i < publicKeyFingerprint.length; i++) {
             byte[] publicKeyBytes = BaseEncoding.base64().decode(publicKeysBase64[i]);
-            PublicKey publicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(publicKeyBytes);
+            PublicKey publicKey = keyConvertor.convertBytesToPublicKey(publicKeyBytes);
             final String fingerprintClient = clientActivation.computeActivationFingerprint(publicKey);
             final String fingerprintServer = serverActivation.computeActivationFingerprint(publicKey);
             assertEquals(publicKeyFingerprint[i], fingerprintClient);
@@ -322,8 +319,8 @@ public class PowerAuthActivationTest {
             byte[] devicePublicKeyBytes = BaseEncoding.base64().decode(devicePublicKeysBase64[i]);
             byte[] serverPublicKeyBytes = BaseEncoding.base64().decode(serverPublicKeysBase64[i]);
             String activation1 = activationId[i];
-            PublicKey devicePublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(devicePublicKeyBytes);
-            PublicKey serverPublicKey = PowerAuthConfiguration.INSTANCE.getKeyConvertor().convertBytesToPublicKey(serverPublicKeyBytes);
+            PublicKey devicePublicKey = keyConvertor.convertBytesToPublicKey(devicePublicKeyBytes);
+            PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(serverPublicKeyBytes);
             final String fingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             final String fingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             assertEquals(publicKeyFingerprint[i], fingerprintClient);

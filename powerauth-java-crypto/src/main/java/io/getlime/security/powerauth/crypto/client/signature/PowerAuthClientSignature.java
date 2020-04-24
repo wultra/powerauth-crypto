@@ -17,9 +17,9 @@
 package io.getlime.security.powerauth.crypto.client.signature;
 
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.SignatureUtils;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 import javax.crypto.SecretKey;
 import java.util.List;

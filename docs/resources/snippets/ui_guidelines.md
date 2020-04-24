@@ -9,7 +9,7 @@ The first screen that interacts with the activation status is the screen that is
 1) Check if there is any activation stored on the device.
 2) In case there is an activation, obtain the activation status (call `/pa/v3/activation/status` endpoint), decrypt and decode it.
 3) Look at the activation state property:
-    - `CREATED`, `OTP_USED`, `REMOVED` - Generally, these are states that you can safely interpret as "There is no activation in current progress." Display a UI that enables a [new device activation](../../Activation.md).
+    - `CREATED`, `PENDING_COMMIT`, `REMOVED` - Generally, these are states that you can safely interpret as "There is no activation in current progress." Display a UI that enables a [new device activation](../../Activation.md).
     - `BLOCKED` - In case you provide a mechanism to unblock the activation, for example via the Internet banking, show a wizard that explains how to unblock the device. In case you have no such mechanism, interpret this state just as if the activation was in `REMOVED` state and show UI for a [new device activation](../../Activation.md).
     - `ACTIVE` - Display a UI that enables user login.
 

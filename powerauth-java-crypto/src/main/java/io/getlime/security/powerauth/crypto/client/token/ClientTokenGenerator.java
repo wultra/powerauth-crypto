@@ -16,9 +16,9 @@
  */
 package io.getlime.security.powerauth.crypto.client.token;
 
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
-import io.getlime.security.powerauth.provider.exception.CryptoProviderException;
 
 
 /**
