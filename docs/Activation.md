@@ -132,7 +132,7 @@ To describe the steps more precisely, the activation process is performed in fol
    byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(KeyConversion.getBytes(fingerprintBytes), 4)
    int H_K_DEVICE_PUBLIC = ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (10 ^ 8)
    ```
-   _Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack. (Displaying fingerprint of the server key is not necessary, since the server's public key is signed using server's private master key and encrypted with activation OTP and server public key)._
+   _Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack._
 
 1. PowerAuth Client uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
    ```java
