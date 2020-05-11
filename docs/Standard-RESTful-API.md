@@ -56,6 +56,9 @@ PowerAuth Client sends following data on the server:
 - Request values encrypted with ECIES level 2 encryption:
     - `activationName` - Visual representation of the device, for example "Johnny's iPhone" or "Samsung Galaxy S".
     - `devicePublicKey` - Represents a public key `KEY_DEVICE_PUBLIC`
+    - `activationOtp` - Optional authentication OTP used for additional user authentication.
+    - `platform` - User device platform, e.g. `ios`, `android`, `hw` and `unknown`.
+    - `deviceInfo` - Information about user device, e.g. `iPhone12,3`.
     - `extras` - Any client side attributes associated with this activation, like a more detailed information about the client, etc.
 - Request encrypted with ECIES level 1 encryption:
     - `activationType` - Assume that standard activation is using "CODE" constant as an activation type.
@@ -92,6 +95,9 @@ JSON request object before ECIES level 2 encryption:
 {
     "devicePublicKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
     "activationName": "My iPhone",
+    "activationOtp": "12345678",
+    "platform": "ios",
+    "deviceInfo": "iPhone12,3",
     "extras": "Any data in string format"
 }
 ```
