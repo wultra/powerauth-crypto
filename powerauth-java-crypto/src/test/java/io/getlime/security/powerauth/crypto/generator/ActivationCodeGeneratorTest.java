@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.generator;
 
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertTrue;
@@ -26,13 +27,12 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class ActivationCodeGeneratorTest {
 
-    private IdentifierGenerator identifierGenerator = new IdentifierGenerator();
-
     /**
      * Test generator of activation codes and validate CRC-16 checksum.
      */
     @Test
-    public void testActivationCodeGenerator()  {
+    public void testActivationCodeGenerator() throws CryptoProviderException {
+        IdentifierGenerator identifierGenerator = new IdentifierGenerator();
         int testRounds = 10000;
         for (int i = 0; i < testRounds; i++) {
             String activationCode = identifierGenerator.generateActivationCode();

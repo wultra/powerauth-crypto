@@ -24,6 +24,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesE
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCryptogram;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
@@ -53,16 +54,17 @@ import static org.junit.Assert.fail;
  */
 public class EciesEncryptorTest {
 
-    private final KeyGenerator keyGenerator = new KeyGenerator();
-    private KeyConvertor keyConvertor = new KeyConvertor();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
+    private KeyGenerator keyGenerator;
 
     /**
      * Add crypto providers.
      */
     @Before
-    public void setUp() {
+    public void setUp() throws CryptoProviderException {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
+        keyGenerator = new KeyGenerator();
     }
 
     /**

@@ -67,8 +67,16 @@ public class IdentifierGenerator {
      */
     private static final int PUK_DERIVATION_MAX_ATTEMPTS = 20;
 
-    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
+    private final KeyGenerator keyGenerator;
+
+    /**
+     * Identifier generator constructor.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     */
+    public IdentifierGenerator() throws CryptoProviderException {
+        keyGenerator = new KeyGenerator();
+    }
 
     /**
      * Generate a new random activation ID - a UUID level 4 instance.

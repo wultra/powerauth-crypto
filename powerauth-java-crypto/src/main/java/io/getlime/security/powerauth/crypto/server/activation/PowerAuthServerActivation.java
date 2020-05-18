@@ -49,10 +49,19 @@ public class PowerAuthServerActivation {
 
     private static final Logger logger = LoggerFactory.getLogger(PowerAuthServerActivation.class);
 
-    private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
-    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
+    private final IdentifierGenerator identifierGenerator;
+    private final KeyGenerator keyGenerator;
+
+    /**
+     * PowerAuth server activation constructor.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     */
+    public PowerAuthServerActivation() throws CryptoProviderException {
+        identifierGenerator = new IdentifierGenerator();
+        keyGenerator = new KeyGenerator();
+    }
 
     /**
      * Generate a pseudo-unique activation ID. Technically, this is UUID level 4

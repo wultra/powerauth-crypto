@@ -47,8 +47,24 @@ public class KeyGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(KeyGenerator.class);
 
-    private final SecureRandom random = new SecureRandom();
+    private static final String SECURE_RANDOM_ALGORITHM_NAME = "DEFAULT";
+
     private final KeyConvertor keyConvertor = new KeyConvertor();
+
+    private SecureRandom random;
+
+    /**
+     * Key generator constructor.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     */
+    public KeyGenerator() throws CryptoProviderException {
+        try {
+            random = SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM_NAME, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            // The Bouncy Castle provider needs to be initialized before creating the KeyGenerator instance
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        }
+    }
 
     /**
      * Generate a new ECDH key pair using P256r1 curve.

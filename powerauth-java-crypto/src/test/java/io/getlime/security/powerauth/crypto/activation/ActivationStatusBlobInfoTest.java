@@ -43,15 +43,16 @@ import static org.junit.Assert.*;
  */
 public class ActivationStatusBlobInfoTest {
 
-    private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
+    private PowerAuthServerKeyFactory powerAuthServerKeyFactory;
 
     /**
      * Add crypto providers.
      */
     @Before
-    public void setUp() {
+    public void setUp() throws CryptoProviderException {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
+        powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
     }
 
     @Test

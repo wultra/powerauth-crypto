@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.Security;
@@ -37,21 +36,22 @@ import static org.junit.Assert.assertTrue;
  */
 public class HashBasedCounterUtilsTest {
 
-    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
+    private KeyGenerator keyGenerator;
 
     /**
      * Set up crypto providers
      */
     @Before
-    public void setUp() {
+    public void setUp() throws CryptoProviderException {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
+        keyGenerator = new KeyGenerator();
     }
 
     @Test
     public void testCounterHashCalculationAndVerification()
-            throws IOException, CryptoProviderException, InvalidKeyException, GenericCryptoException {
+            throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
         final HashBasedCounterUtils hashBasedCounterUtils = new HashBasedCounterUtils();
         for (int i = 0; i < 100; i++) {
             // Generate random transport key

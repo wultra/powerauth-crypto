@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import io.getlime.security.powerauth.crypto.lib.api.Counter;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 
 /**
@@ -35,7 +36,15 @@ public class HashBasedCounter implements Counter {
     /**
      * Key generator is used for operations with bytes.
      */
-    private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyGenerator keyGenerator;
+
+    /**
+     * Hash based counter constructor.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     */
+    public HashBasedCounter() throws CryptoProviderException {
+        keyGenerator = new KeyGenerator();
+    }
 
     /**
      * Generate initial counter data.

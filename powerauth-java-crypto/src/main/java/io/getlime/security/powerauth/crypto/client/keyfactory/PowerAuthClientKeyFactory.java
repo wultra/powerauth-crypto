@@ -37,7 +37,15 @@ import java.util.List;
  */
 public class PowerAuthClientKeyFactory {
 
-    private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyGenerator keyGenerator;
+
+    /**
+     * PowerAuth client key factory constructor.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public PowerAuthClientKeyFactory() throws CryptoProviderException {
+        keyGenerator = new KeyGenerator();
+    }
 
     /**
      * Return a correct list of keys for given signature type.

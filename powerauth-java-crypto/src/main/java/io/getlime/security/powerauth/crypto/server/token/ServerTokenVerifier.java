@@ -27,7 +27,15 @@ import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
  */
 public class ServerTokenVerifier {
 
-    private final TokenUtils tokenUtils = new TokenUtils();
+    private final TokenUtils tokenUtils;
+
+    /**
+     * Server token verifier constructor.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     */
+    public ServerTokenVerifier() throws CryptoProviderException {
+        tokenUtils = new TokenUtils();
+    }
 
     /**
      * Helper method to convert provided timestamp into bytes (from string representation), for the

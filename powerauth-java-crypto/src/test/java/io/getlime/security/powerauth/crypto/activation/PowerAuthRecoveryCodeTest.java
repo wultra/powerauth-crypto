@@ -38,15 +38,16 @@ import static org.junit.Assert.*;
  */
 public class PowerAuthRecoveryCodeTest {
 
-    private IdentifierGenerator identifierGenerator = new IdentifierGenerator();
+    private IdentifierGenerator identifierGenerator;
 
     /**
      * Add crypto providers.
      */
     @Before
-    public void setUp() {
+    public void setUp() throws CryptoProviderException {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
+        identifierGenerator = new IdentifierGenerator();
     }
 
     @Test

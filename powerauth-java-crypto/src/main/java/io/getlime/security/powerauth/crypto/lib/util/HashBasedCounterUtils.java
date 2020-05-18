@@ -31,8 +31,16 @@ import java.util.Arrays;
  */
 public class HashBasedCounterUtils {
 
-    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
+    private final KeyGenerator keyGenerator;
+
+    /**
+     * Hash based counter utils constructor.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public HashBasedCounterUtils() throws CryptoProviderException {
+        keyGenerator = new KeyGenerator();
+    }
 
     /**
      * Derivation index used to derive KEY_TRANSPORT_CTR from KEY_TRANSPORT
