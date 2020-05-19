@@ -36,22 +36,15 @@ public class HashBasedCounter implements Counter {
     /**
      * Key generator is used for operations with bytes.
      */
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * Hash based counter constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public HashBasedCounter() throws CryptoProviderException {
-        keyGenerator = new KeyGenerator();
-    }
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Generate initial counter data.
      * @return Initial counter data.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
     @Override
-    public byte[] init() {
+    public byte[] init() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(HASH_COUNTER_RANDOM_BYTES_LENGTH);
     }
 

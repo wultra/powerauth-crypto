@@ -49,19 +49,10 @@ public class PowerAuthServerActivation {
 
     private static final Logger logger = LoggerFactory.getLogger(PowerAuthServerActivation.class);
 
+    private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
     private final SignatureUtils signatureUtils = new SignatureUtils();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private final IdentifierGenerator identifierGenerator;
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * PowerAuth server activation constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public PowerAuthServerActivation() throws CryptoProviderException {
-        identifierGenerator = new IdentifierGenerator();
-        keyGenerator = new KeyGenerator();
-    }
 
     /**
      * Generate a pseudo-unique activation ID. Technically, this is UUID level 4
@@ -78,8 +69,9 @@ public class PowerAuthServerActivation {
      * Generate a pseudo-unique activation code. The format of activation code is "ABCDE-FGHIJ-KLMNO-PQRST".
      *
      * @return A new activation code.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public String generateActivationCode() {
+    public String generateActivationCode() throws CryptoProviderException {
         return identifierGenerator.generateActivationCode();
     }
 
@@ -115,8 +107,9 @@ public class PowerAuthServerActivation {
      * Generate a new server activation nonce.
      *
      * @return A new server activation nonce.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateActivationNonce() {
+    public byte[] generateActivationNonce() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(16);
     }
 

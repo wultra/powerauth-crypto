@@ -48,19 +48,16 @@ public class PasswordHash {
         ALGORITHM_NAME_MAP.put(Argon2Parameters.ARGON2_id, "argon2id");
     }
 
-    private static KeyGenerator keyGenerator;
+    private static KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Generate hash in Argon2 Modular Crypt Format for specified password using Argon2i algorithm.
      * @param password Password bytes.
      * @return Hash String in Argon2 Modular Crypt Format.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
     public static String hash(byte[] password) throws CryptoProviderException {
         // Generate random salt
-        if (keyGenerator == null) {
-            keyGenerator = new KeyGenerator();
-        }
         byte[] salt = keyGenerator.generateRandomBytes(8);
         // Set up the Argon2i algorithm with default parameters
         Argon2Parameters.Builder builder = new Argon2Parameters.Builder(ALGORITHM_ID)

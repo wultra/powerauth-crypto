@@ -53,9 +53,9 @@ public class NonPersonalizedEncryptor {
 
     // Create new working objects
     private final AESEncryptionUtils aes = new AESEncryptionUtils();
+    private final KeyGenerator generator = new KeyGenerator();
     private final HMACHashUtilities hmac = new HMACHashUtilities();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private KeyGenerator generator;
 
     /**
      * Create a new encryptor using provided applicationKey, application master server public key and session index.
@@ -63,14 +63,12 @@ public class NonPersonalizedEncryptor {
      * @param sessionRelatedSecretKey Session related derived key.
      * @param sessionIndex Session index used for key derivation.
      * @param ephemeralPublicKeyString Ephemeral public key
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public NonPersonalizedEncryptor(byte[] applicationKey, byte[] sessionRelatedSecretKey, byte[] sessionIndex, byte[] ephemeralPublicKeyString) throws CryptoProviderException {
+    public NonPersonalizedEncryptor(byte[] applicationKey, byte[] sessionRelatedSecretKey, byte[] sessionIndex, byte[] ephemeralPublicKeyString) {
         this.applicationKey = applicationKey;
         this.sessionIndex = sessionIndex;
         this.sessionRelatedSecretKey = sessionRelatedSecretKey;
         this.ephemeralPublicKey = ephemeralPublicKeyString;
-        this.generator = new KeyGenerator();
     }
 
     /**

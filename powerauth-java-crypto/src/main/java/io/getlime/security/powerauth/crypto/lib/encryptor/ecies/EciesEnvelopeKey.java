@@ -58,9 +58,8 @@ public class EciesEnvelopeKey {
     private static final int ENVELOPE_KEY_SIZE = ENC_KEY_SIZE + MAC_KEY_SIZE + IV_KEY_SIZE;
 
     private static final KeyConvertor keyConvertor = new KeyConvertor();
+    private static final KeyGenerator keyGenerator = new KeyGenerator();
     private static final HMACHashUtilities hmac = new HMACHashUtilities();
-
-    private static KeyGenerator keyGenerator;
 
     private final byte[] secretKey;
     private final byte[] ephemeralKeyPublic;
@@ -86,9 +85,6 @@ public class EciesEnvelopeKey {
      */
     static EciesEnvelopeKey fromPublicKey(PublicKey publicKey, byte[] sharedInfo1) throws EciesException {
         try {
-            if (keyGenerator == null) {
-                keyGenerator = new KeyGenerator();
-            }
             // Generate ephemeral key pair
             final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
             final PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
@@ -125,9 +121,6 @@ public class EciesEnvelopeKey {
      */
     static EciesEnvelopeKey fromPrivateKey(PrivateKey ephemeralKeyPrivate, byte[] ephemeralPublicKeyBytes, byte[] sharedInfo1) throws EciesException {
         try {
-            if (keyGenerator == null) {
-                keyGenerator = new KeyGenerator();
-            }
             // Convert public key bytes to public key
             final PublicKey ephemeralPublicKey = keyConvertor.convertBytesToPublicKey(ephemeralPublicKeyBytes);
 
@@ -208,9 +201,6 @@ public class EciesEnvelopeKey {
             throw new EciesException("Nonce for IV derivation is not valid");
         }
         try {
-            if (keyGenerator == null) {
-                keyGenerator = new KeyGenerator();
-            }
             return keyGenerator.convert32Bto16B(hmac.hash(getIvKey(), nonce));
         } catch (GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);

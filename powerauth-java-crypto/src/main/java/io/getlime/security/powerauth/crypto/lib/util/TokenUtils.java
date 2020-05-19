@@ -32,16 +32,8 @@ import java.util.UUID;
  */
 public class TokenUtils {
 
-    private final KeyGenerator keyGenerator;
+    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final HMACHashUtilities hmac = new HMACHashUtilities();
-
-    /**
-     * Token utils constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public TokenUtils() throws CryptoProviderException {
-        keyGenerator = new KeyGenerator();
-    }
 
     /**
      * Generate random token ID. Use UUID format.
@@ -56,8 +48,9 @@ public class TokenUtils {
      * Generate random token secret, 16 random bytes.
      *
      * @return Random token secret.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenSecret() {
+    public byte[] generateTokenSecret() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(16);
     }
 
@@ -65,8 +58,9 @@ public class TokenUtils {
      * Generate random token nonce, 16 random bytes.
      *
      * @return Random token nonce.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenNonce() {
+    public byte[] generateTokenNonce() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(16);
     }
 

@@ -26,15 +26,7 @@ import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
  */
 public class ServerTokenGenerator {
 
-    private final TokenUtils tokenUtils;
-
-    /**
-     * Server token generator constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public ServerTokenGenerator() throws CryptoProviderException {
-        tokenUtils = new TokenUtils();
-    }
+    private final TokenUtils tokenUtils = new TokenUtils();
 
     /**
      * Generate random token ID. Use UUID format.
@@ -47,8 +39,9 @@ public class ServerTokenGenerator {
     /**
      * Generate random token secret, 16 random bytes.
      * @return Random token secret.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenSecret() {
+    public byte[] generateTokenSecret() throws CryptoProviderException {
         return tokenUtils.generateTokenSecret();
     }
 

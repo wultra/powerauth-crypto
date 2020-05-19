@@ -36,16 +36,8 @@ import java.security.PublicKey;
  */
 public class PowerAuthServerVault {
 
+    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * PowerAuth server vault constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public PowerAuthServerVault() throws CryptoProviderException {
-        keyGenerator = new KeyGenerator();
-    }
 
     /**
      * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using

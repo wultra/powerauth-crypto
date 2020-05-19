@@ -36,17 +36,16 @@ import static org.junit.Assert.assertTrue;
  */
 public class HashBasedCounterUtilsTest {
 
+    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private KeyGenerator keyGenerator;
 
     /**
      * Set up crypto providers
      */
     @Before
-    public void setUp() throws CryptoProviderException {
+    public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        keyGenerator = new KeyGenerator();
     }
 
     @Test

@@ -54,17 +54,16 @@ import static org.junit.Assert.fail;
  */
 public class EciesEncryptorTest {
 
-    private final KeyConvertor keyConvertor = new KeyConvertor();
-    private KeyGenerator keyGenerator;
+    private final KeyGenerator keyGenerator = new KeyGenerator();
+    private KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Add crypto providers.
      */
     @Before
-    public void setUp() throws CryptoProviderException {
+    public void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-        keyGenerator = new KeyGenerator();
     }
 
     /**
@@ -185,7 +184,7 @@ public class EciesEncryptorTest {
      * Test KDF implementation (X9.63 with SHA 256).
      */
     @Test
-    public void testKdf() throws GenericCryptoException {
+    public void testKdf() throws GenericCryptoException, CryptoProviderException {
 
         for (int i = 0 ; i < 100 ; i++) {
             final SecretKey secretKey = keyGenerator.generateRandomSecretKey();

@@ -67,16 +67,8 @@ public class IdentifierGenerator {
      */
     private static final int PUK_DERIVATION_MAX_ATTEMPTS = 20;
 
+    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * Identifier generator constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public IdentifierGenerator() throws CryptoProviderException {
-        keyGenerator = new KeyGenerator();
-    }
 
     /**
      * Generate a new random activation ID - a UUID level 4 instance.
@@ -91,8 +83,9 @@ public class IdentifierGenerator {
      * Generate a new string of a default length (5) with characters from Base32 encoding.
      *
      * @return New string with Base32 characters of a given length.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    private String generateBase32Token() {
+    private String generateBase32Token() throws CryptoProviderException {
         byte[] randomBytes = keyGenerator.generateRandomBytes(BASE32_KEY_LENGTH);
         return BaseEncoding.base32().omitPadding().encode(randomBytes).substring(0, BASE32_KEY_LENGTH);
     }
@@ -110,8 +103,9 @@ public class IdentifierGenerator {
      * </ul>
      *
      * @return Generated activation code.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public String generateActivationCode() {
+    public String generateActivationCode() throws CryptoProviderException {
         try {
             // Generate 10 random bytes.
             byte[] randomBytes = keyGenerator.generateRandomBytes(ACTIVATION_CODE_RANDOM_BYTES_LENGTH);

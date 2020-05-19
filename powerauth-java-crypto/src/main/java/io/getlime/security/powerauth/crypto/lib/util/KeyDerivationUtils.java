@@ -30,16 +30,8 @@ import java.security.InvalidKeyException;
  */
 public class KeyDerivationUtils {
 
+    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * Key derivation utils constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public KeyDerivationUtils() throws CryptoProviderException {
-        keyGenerator = new KeyGenerator();
-    }
 
     /**
      * Derivation index used to derive KEY_TRANSPORT_IV from KEY_TRANSPORT

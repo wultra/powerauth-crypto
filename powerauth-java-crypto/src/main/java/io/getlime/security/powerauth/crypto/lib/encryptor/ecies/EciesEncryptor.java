@@ -48,7 +48,7 @@ public class EciesEncryptor {
     private final AESEncryptionUtils aes = new AESEncryptionUtils();
     private final HMACHashUtilities hmac = new HMACHashUtilities();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private KeyGenerator keyGenerator;
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     // Working data storage
     private final PublicKey publicKey;
@@ -190,7 +190,6 @@ public class EciesEncryptor {
             final byte[] iv;
             if (useIv) {
                 // V3.1+, generate random nonce and calculate IV
-                keyGenerator = new KeyGenerator();
                 nonce = keyGenerator.generateRandomBytes(16);
                 iv = envelopeKey.deriveIvForNonce(nonce);
             } else {

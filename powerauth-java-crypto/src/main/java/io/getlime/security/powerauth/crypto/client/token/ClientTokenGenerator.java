@@ -28,22 +28,15 @@ import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
  */
 public class ClientTokenGenerator {
 
-    private final TokenUtils tokenUtils;
-
-    /**
-     * Client token generator constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public ClientTokenGenerator() throws CryptoProviderException {
-        tokenUtils = new TokenUtils();
-    }
+    private final TokenUtils tokenUtils = new TokenUtils();
 
     /**
      * Generate random token nonce, 16 random bytes.
      *
      * @return Random token nonce.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenNonce() {
+    public byte[] generateTokenNonce() throws CryptoProviderException {
         return tokenUtils.generateTokenNonce();
     }
 

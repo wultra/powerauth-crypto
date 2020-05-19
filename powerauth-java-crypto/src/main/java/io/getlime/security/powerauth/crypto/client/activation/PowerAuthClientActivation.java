@@ -45,16 +45,8 @@ import java.util.Arrays;
 public class PowerAuthClientActivation {
 
     private final SignatureUtils signatureUtils = new SignatureUtils();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private final KeyGenerator keyGenerator;
-
-    /**
-     * PowerAuth client activation constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public PowerAuthClientActivation() throws CryptoProviderException {
-        keyGenerator = new KeyGenerator();
-    }
 
     /**
      * Verify the signature of activation code using Master Public Key.
@@ -86,8 +78,9 @@ public class PowerAuthClientActivation {
      * Generate a new activation nonce.
      *
      * @return A new activation nonce.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateActivationNonce() {
+    public byte[] generateActivationNonce() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(16);
     }
 

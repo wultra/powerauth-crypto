@@ -51,20 +51,10 @@ public class KeyGenerator {
 
     private final KeyConvertor keyConvertor = new KeyConvertor();
 
+    // The SecureRandom is initialized lazily. This is done so that the Bouncy Castle provider can be safely registered
+    // dynamically before requesting the SecureRandom instance. It also allows KeyGenerator field instances
+    // to be created inline outside of constructors.
     private SecureRandom random;
-
-    /**
-     * Key generator constructor.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public KeyGenerator() throws CryptoProviderException {
-        try {
-            random = SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM_NAME, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            // The Bouncy Castle provider needs to be initialized before creating the KeyGenerator instance
-            throw new CryptoProviderException(ex.getMessage(), ex);
-        }
-    }
 
     /**
      * Generate a new ECDH key pair using P256r1 curve.
@@ -151,8 +141,18 @@ public class KeyGenerator {
      *
      * @param len Number of random bytes to be generated.
      * @return An array with len random bytes.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateRandomBytes(int len) {
+    public byte[] generateRandomBytes(int len) throws CryptoProviderException {
+        if (random == null) {
+            try {
+                // Lazy initialization of SecureRandom allows safe Bouncy Castle provider initialization as well
+                // as initialization of KeyGenerator instances in fields outside of constructors.
+                random = SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM_NAME, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+                throw new CryptoProviderException("The Bouncy Castle provider was not initialized correctly");
+            }
+        }
         byte[] randomBytes = new byte[len];
         random.nextBytes(randomBytes);
         return randomBytes;
@@ -162,8 +162,9 @@ public class KeyGenerator {
      * Generate a new random symmetric key.
      *
      * @return A new instance of a symmetric key.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateRandomSecretKey() {
+    public SecretKey generateRandomSecretKey() throws CryptoProviderException {
         return keyConvertor.convertBytesToSharedSecretKey(generateRandomBytes(16));
     }
 
