@@ -18,7 +18,11 @@ package io.getlime.security.powerauth.crypto.generator;
 
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.security.Security;
 
 import static junit.framework.TestCase.assertTrue;
 
@@ -28,6 +32,15 @@ import static junit.framework.TestCase.assertTrue;
 public class ActivationCodeGeneratorTest {
 
     private IdentifierGenerator identifierGenerator = new IdentifierGenerator();
+
+    /**
+     * Set up crypto providers
+     */
+    @Before
+    public void setUp() {
+        // Add Bouncy Castle Security Provider
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     /**
      * Test generator of activation codes and validate CRC-16 checksum.
