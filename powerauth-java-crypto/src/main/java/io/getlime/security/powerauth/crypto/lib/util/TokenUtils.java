@@ -48,8 +48,9 @@ public class TokenUtils {
      * Generate random token secret, 16 random bytes.
      *
      * @return Random token secret.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenSecret() {
+    public byte[] generateTokenSecret() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(16);
     }
 
@@ -57,8 +58,9 @@ public class TokenUtils {
      * Generate random token nonce, 16 random bytes.
      *
      * @return Random token nonce.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenNonce() {
+    public byte[] generateTokenNonce() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(16);
     }
 

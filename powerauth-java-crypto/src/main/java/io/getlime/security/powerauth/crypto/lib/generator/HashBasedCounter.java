@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import io.getlime.security.powerauth.crypto.lib.api.Counter;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 
 /**
@@ -40,9 +41,10 @@ public class HashBasedCounter implements Counter {
     /**
      * Generate initial counter data.
      * @return Initial counter data.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
     @Override
-    public byte[] init() {
+    public byte[] init() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(HASH_COUNTER_RANDOM_BYTES_LENGTH);
     }
 

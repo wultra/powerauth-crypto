@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.Security;
@@ -51,7 +50,7 @@ public class HashBasedCounterUtilsTest {
 
     @Test
     public void testCounterHashCalculationAndVerification()
-            throws IOException, CryptoProviderException, InvalidKeyException, GenericCryptoException {
+            throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
         final HashBasedCounterUtils hashBasedCounterUtils = new HashBasedCounterUtils();
         for (int i = 0; i < 100; i++) {
             // Generate random transport key

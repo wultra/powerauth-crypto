@@ -103,9 +103,9 @@ public class DataDigest {
         if (items.size() == 0) {
             return null;
         }
-        byte[] operationData = String.join("&", items).getBytes(StandardCharsets.UTF_8);
-        byte[] randomKey = new KeyGenerator().generateRandomBytes(16);
         try {
+            byte[] operationData = String.join("&", items).getBytes(StandardCharsets.UTF_8);
+            byte[] randomKey = new KeyGenerator().generateRandomBytes(16);
             byte[] otpHash = hmac.hash(randomKey, operationData);
             BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(authorizationCodeLength));
             String digitFormat = "%" + String.format("%02d", authorizationCodeLength) + "d";

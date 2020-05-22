@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.server.token;
 
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.util.TokenUtils;
 
 /**
@@ -38,8 +39,9 @@ public class ServerTokenGenerator {
     /**
      * Generate random token secret, 16 random bytes.
      * @return Random token secret.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenSecret() {
+    public byte[] generateTokenSecret() throws CryptoProviderException {
         return tokenUtils.generateTokenSecret();
     }
 
