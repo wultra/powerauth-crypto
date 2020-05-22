@@ -145,12 +145,16 @@ public class KeyGenerator {
      */
     public byte[] generateRandomBytes(int len) throws CryptoProviderException {
         if (random == null) {
-            try {
-                // Lazy initialization of SecureRandom allows safe Bouncy Castle provider initialization as well
-                // as initialization of KeyGenerator instances in fields outside of constructors.
-                random = SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM_NAME, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-                throw new CryptoProviderException("The Bouncy Castle provider was not initialized correctly");
+            synchronized (KeyGenerator.class) {
+                if (random == null) {
+                    try {
+                        // Lazy initialization of SecureRandom allows safe Bouncy Castle provider initialization as well
+                        // as initialization of KeyGenerator instances in fields outside of constructors.
+                        random = SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM_NAME, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+                    } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+                        throw new CryptoProviderException("The Bouncy Castle provider was not initialized correctly");
+                    }
+                }
             }
         }
         byte[] randomBytes = new byte[len];
