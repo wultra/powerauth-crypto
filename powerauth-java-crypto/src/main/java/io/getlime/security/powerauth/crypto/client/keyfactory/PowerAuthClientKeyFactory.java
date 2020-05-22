@@ -51,6 +51,10 @@ public class PowerAuthClientKeyFactory {
 
         List<SecretKey> signatureKeys = new ArrayList<>();
 
+        if (signatureType == null) {
+            return signatureKeys;
+        }
+
         if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION)) {
 
             signatureKeys.add(possessionSignatureKey);
