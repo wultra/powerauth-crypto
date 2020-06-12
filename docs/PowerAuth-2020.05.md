@@ -32,10 +32,10 @@ For updating to 2020.05, please follow these migration guides:
 
 | Platform | Package Name | Version | Description |
 |---|---|---|---|
-| iOS | `PowerAuth2` | 1.4.0 | A client library for iOS. |
-| watchOS | `PowerAuth2ForWatch` | 1.4.0 | A limited library for watchOS. |
-| iOS App Extensions | `PowerAuth2ForExtensions` | 1.4.0 | A limited library for iOS App Extensions. |
-| Android | `io.getlime.security.powerauth:powerauth-android-sdk` |1.4.0 | A client library for Android. |
+| iOS | `PowerAuth2` | 1.4.1 | A client library for iOS. |
+| watchOS | `PowerAuth2ForWatch` | 1.4.1 | A limited library for watchOS. |
+| iOS App Extensions | `PowerAuth2ForExtensions` | 1.4.1 | A limited library for iOS App Extensions. |
+| Android | `io.getlime.security.powerauth:powerauth-android-sdk` |1.4.1 | A client library for Android. |
 
 ### Back-End Integration Libraries
 
