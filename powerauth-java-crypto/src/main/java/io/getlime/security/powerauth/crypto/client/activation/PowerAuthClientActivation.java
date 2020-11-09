@@ -78,8 +78,9 @@ public class PowerAuthClientActivation {
      * Generate a new activation nonce.
      *
      * @return A new activation nonce.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateActivationNonce() {
+    public byte[] generateActivationNonce() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(16);
     }
 

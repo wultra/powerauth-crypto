@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.Argon2Hash;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
 
@@ -53,8 +54,9 @@ public class PasswordHash {
      * Generate hash in Argon2 Modular Crypt Format for specified password using Argon2i algorithm.
      * @param password Password bytes.
      * @return Hash String in Argon2 Modular Crypt Format.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public static String hash(byte[] password) {
+    public static String hash(byte[] password) throws CryptoProviderException {
         // Generate random salt
         byte[] salt = keyGenerator.generateRandomBytes(8);
         // Set up the Argon2i algorithm with default parameters

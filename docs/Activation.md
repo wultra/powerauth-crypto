@@ -19,7 +19,7 @@ Following components play role in activation:
 Record associated with given PowerAuth keys transits between following states during it's lifecycle:
 
 - **CREATED** - The activation record is created but it was not activated yet.
-- **OTP_USED** - The activation record is created and activation code was already used, but the activation record was not activated yet.
+- **PENDING_COMMIT** - The activation record is created and activation code was already used, but the activation record was not activated yet.
 - **ACTIVE** - The activation record is created and active, ready to be used for generating signatures.
 - **BLOCKED** - The activation record is blocked and cannot be used for generating signatures. It can be renewed and activated again.
 - **REMOVED** - The activation record is permanently blocked - cannot be used for generating signatures or renewed.
@@ -81,7 +81,7 @@ To describe the steps more precisely, the activation process is performed in fol
 1. PowerAuth Server generates an `ACTIVATION_ID`, `ACTIVATION_CODE`, `CTR_DATA` - an initial value for hash based counter, and a key pair `(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC)`. Server also optionally computes a signature `ACTIVATION_SIGNATURE` of `ACTIVATION_CODE` using servers master private key `KEY_SERVER_MASTER_PRIVATE`.
    ```java
    String ACTIVATION_ID = Generator.randomUUID()
-   String ACTIVATION_CODE = Generator.randomActivationCode()  // must be unique among records in CREATED and OTP_USED states
+   String ACTIVATION_CODE = Generator.randomActivationCode()  // must be unique among records in CREATED and PENDING_COMMIT states
    byte[] CTR_DATA = Generator.randomBytes(16)
    KeyPair keyPair = KeyGenerator.randomKeyPair()
    PrivateKey KEY_SERVER_PRIVATE = keyPair.getPrivate()
@@ -119,7 +119,7 @@ To describe the steps more precisely, the activation process is performed in fol
 
 1. PowerAuth Server decrypts `ACTIVATION_DATA` with using an application scoped ECIES (level 2, `sh1="/pa/activation"`) and stores `KEY_DEVICE_PUBLIC` at given record.
 
-1. PowerAuth Server changes the record status to `OTP_USED`.
+1. PowerAuth Server changes the record status to `PENDING_COMMIT`.
 
 1. PowerAuth Server encrypts response, containing `ACTIVATION_ID`, `CTR_DATA`, `KEY_SERVER_PUBLIC` with the same key as was used for ECIES level 2 decryption. This data is once more time encrypted by Intermediate Server Application, with the same key from ECIES level 1, and the response is sent to the PowerAuth Client. 
 
@@ -132,7 +132,7 @@ To describe the steps more precisely, the activation process is performed in fol
    byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(KeyConversion.getBytes(fingerprintBytes), 4)
    int H_K_DEVICE_PUBLIC = ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (10 ^ 8)
    ```
-   _Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack. (Displaying fingerprint of the server key is not necessary, since the server's public key is signed using server's private master key and encrypted with activation OTP and server public key)._
+   _Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack._
 
 1. PowerAuth Client uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
    ```java
@@ -149,3 +149,9 @@ To describe the steps more precisely, the activation process is performed in fol
 1. Record associated with given `ACTIVATION_ID` is now in `ACTIVE` state.
 
 After completing the activation, client must store derived keys and throw away unencrypted device private key and key master secret. Only the derived keys should be stored on the device according to the description in "PowerAuth Key Derivation" chapter.
+
+## Related topics
+
+- [Activation Code Format](Activation-Code.md)
+- [Activation Recovery](Activation-Recovery.md)
+- [Additional Activation OTP](Additional-Activation-OTP.md)

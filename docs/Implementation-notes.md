@@ -4,7 +4,7 @@ Following implementation notes use simplified Java code with definitions from th
 
 ## Used Cryptography
 
-A PowerAuth key exchange mechanism is based on **ECDH** key exchange algorithm with **P256r1 curve**. Additionally, an **ECDSA** (more specifically, **SHA256withECDSA** algorighm) is used for signing data sent from the service provider using a provider's Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0 (later on, each signature attempt increments this counter). The PowerAuth signature is computed using data, shared master secret and counter using the **HMAC** algorithm.
+A PowerAuth key exchange mechanism is based on **ECDH** key exchange algorithm with **P256r1 curve**. Additionally, an **ECDSA** (more specifically, **SHA256withECDSA** algorighm) is used for signing data sent from the service provider using a provider's Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0. Later on, each signature attempt increments this counter. A related hash-based counter is initialized as well with a random value and it is updated with each signature attempt. The PowerAuth signature is computed using data, shared master secret and counter using the **HMAC** algorithm.
 
 ## Key Derivation Functions
 
@@ -12,7 +12,7 @@ KDF (Key Derivation Function) is an algorithm used for deriving a secret key fro
 
 - **KDF** - AES-based KDF function. Works by encrypting fixed `long` index with a random secret master key. This function is handy for situations where developer selects the function index. A human readable index, such as "1", "2", or "1000" can be selected for key derivation.
 - **KDF_INTERNAL** - HMAC-SHA256-based KDF function. Works by computing HMAC-SHA256 of provided `byte[]` index with a random secret master key. This function is used in internal algorithm workings, in situations where readability of the index is not important at all.
-- **PBKDF2** - Standard algorithm for deriving long keys from short passwords. This function is considered a standard KDF and it is used only for deriving base key from the user entered password. Since it has no major impact on PowerAuth cryptography, we will not elaborate about this KFD in more details.
+- **PBKDF2** - Standard algorithm for deriving long keys from short passwords. This function is considered a standard KDF and it is used only for deriving base key from the user entered password. Since it has no major impact on PowerAuth cryptography, we will not elaborate about this KDF in more details.
 
 ### KDF Description
 
@@ -82,7 +82,7 @@ A single `ACTIVATION_CODE` must be valid only for a limited period of time (acti
 ```sql
 DO {
     ACTIVATION_CODE = Generator.randomActivationCode()
-    COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'OTP_USED') AND ACTIVATION.CODE = ACTIVATION_CODE
+    COUNT = SELECT COUNT(*) FROM ACTIVATION WHERE (ACTIVATION.STATE = 'CREATED' OR ACTIVATION.STATE = 'PENDING_COMMIT') AND ACTIVATION.CODE = ACTIVATION_CODE
 } WHILE (COUNT > 0);
 ```
 
