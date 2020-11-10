@@ -54,7 +54,7 @@ public class KeyGenerator {
     // The SecureRandom is initialized lazily. This is done so that the Bouncy Castle provider can be safely registered
     // dynamically before requesting the SecureRandom instance. It also allows KeyGenerator field instances
     // to be created inline outside of constructors.
-    private SecureRandom random;
+    private volatile SecureRandom random;
 
     /**
      * Generate a new ECDH key pair using P256r1 curve.
