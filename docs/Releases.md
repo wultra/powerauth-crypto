@@ -12,6 +12,8 @@ In order to consolidate the information about the current versions, we have intr
 
 ## List of Releases
 
+- [PowerAuth 2020.11](./PowerAuth-2020.11.md)
+- [PowerAuth 2020.05](./PowerAuth-2020.05.md)
 - [PowerAuth 2019.11](./PowerAuth-2019.11.md)
 - [PowerAuth 2019.05](./PowerAuth-2019.05.md)
 - [PowerAuth 2018.12](./PowerAuth-2018.12.md)

@@ -34,8 +34,9 @@ public class ClientTokenGenerator {
      * Generate random token nonce, 16 random bytes.
      *
      * @return Random token nonce.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenNonce() {
+    public byte[] generateTokenNonce() throws CryptoProviderException {
         return tokenUtils.generateTokenNonce();
     }
 

@@ -16,6 +16,8 @@
  */
 package io.getlime.security.powerauth.crypto.lib.api;
 
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+
 /**
  * Interface for byte array based counter used for cryptography.
  *
@@ -27,8 +29,9 @@ public interface Counter {
     /**
      * Initialize counter by generating initial counter data.
      * @return Initial counter data.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    byte[] init();
+    byte[] init() throws CryptoProviderException;
 
     /**
      * Generate next counter data based on current counter data.

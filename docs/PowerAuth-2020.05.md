@@ -15,7 +15,7 @@ For updating to 2020.05, please follow these migration guides:
 
 | Component | Application Name | Version | Description |
 |---|---|---|---|
-| PowerAuth Server | `powerauth-java-server.war` | 0.24.0 | Core back-end component for PowerAuth stack. |
+| PowerAuth Server | `powerauth-java-server.war` | 0.24.2 | Core back-end component for PowerAuth stack. |
 | PowerAuth Admin | `powerauth-admin.war` | 0.24.0 | Administration console for PowerAuth Server. |
 | PowerAuth Push Server | `powerauth-push-server.war` | 0.24.0 | Simple to deploy push server for APNS and FCM. |
 | PowerAuth Web Flow | `powerauth-webflow.war` | 0.24.0 | Central web authentication page. |
@@ -44,8 +44,8 @@ For updating to 2020.05, please follow these migration guides:
 | PowerAuth RESTful Model | `powerauth-restful-model.jar` | 0.24.0 | Model classes for request and response objects used in PowerAuth Standard RESTful API. |
 | PowerAuth RESTful API Security for Spring | `powerauth-restful-security-spring.jar` | 0.24.0 | High-level integration libraries for RESTful API security, build for Spring MVC. |
 | PowerAuth RESTful API Security for JAX-RS | `powerauth-restful-security-javaee.jar` | 0.24.0 | High-level integration libraries for RESTful API security, build for Java EE (JAX-RS). |
-| PowerAuth SOAP Client for Spring WS | `powerauth-java-client-spring.jar` | 0.24.0 | SOAP service client for PowerAuth Server service, built using Spring WS. |
-| PowerAuth SOAP Client for Axis2 | `powerauth-java-client-axis.jar` | 0.24.0 | SOAP service client for PowerAuth Server service, built using Axis2. |
+| PowerAuth SOAP Client for Spring WS | `powerauth-java-client-spring.jar` | 0.24.2 | SOAP service client for PowerAuth Server service, built using Spring WS. |
+| PowerAuth SOAP Client for Axis2 | `powerauth-java-client-axis.jar` | 0.24.2 | SOAP service client for PowerAuth Server service, built using Axis2. |
 | PowerAuth Push Server RESTful Model | `powerauth-push-model.jar` | 0.24.0 | Model classes for request and response objects used in PowerAuth Push Server. |
 | PowerAuth Push Server RESTful Client | `powerauth-push-client.jar` | 0.24.0 | Client implementation that simplifies integration with PowerAuth Push Server service. |
 | PowerAuth Data Adapter RESTful Model | `powerauth-data-adapter-model.jar` | 0.24.0 | Model classes for request and response objects used in PowerAuth Data Adapter component. |

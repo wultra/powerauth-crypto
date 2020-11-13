@@ -72,7 +72,7 @@ public enum PowerAuthSignatureTypes {
     }
 
     /**
-     * Get enum value from provided string. In case the provided value does not match any value, POSSESSION_KNOWLEDGE is returned.
+     * Get enum value from provided string. In case the provided value does not match any value, null value is returned.
      * @param value String to get the enum value for.
      * @return Enum value.
      */
@@ -83,8 +83,8 @@ public enum PowerAuthSignatureTypes {
                 return type;
             }
         }
-        // Otherwise try to guess the most usual suspect...
-        return PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE;
+        // Otherwise return null
+        return null;
     }
 
     /**
