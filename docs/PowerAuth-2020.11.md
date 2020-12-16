@@ -64,7 +64,8 @@ For updating to 2020.11, please follow these migration guides:
 | PowerAuth Cryptography Provider | `powerauth-java-prov.jar` | 1.0.0 | Abstraction on top of cryptography providers, so that Bouncy Castle can be switched to other implementation more easily. |
 | PowerAuth Command-Line Tool Library | `powerauth-java-cmd-lib.jar` | 1.0.0 | Library used for implementation of the PowerAuth Command-Line Tool app, useful for unit testing. |
 | PowerAuth RESTful Security Base Support | `powerauth-restful-security-base.jar` | 1.0.0 | Base classes for RESTful API security, shared between JAX-RS and Spring implementations. |
-| Wultra Java Networking Objects | `rest-model-base.jar` | 1.1.0 | Base classes for RESTful API networking, shared across all Wultra back-end projects. |
+| Wultra Java Networking Objects | `rest-model-base.jar` | 1.2.0 | Base classes for RESTful API networking, shared across all Wultra back-end projects. |
+| Wultra REST Client | `rest-client-base.jar` | 1.2.0 | Base RESTful client implementation, shared across all Wultra back-end projects. |
 
 ## Known Issues When Updating From Older Versions
 
