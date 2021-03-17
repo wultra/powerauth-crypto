@@ -39,6 +39,7 @@ public class PasswordHash {
     private static final int ITERATIONS = 3;
     private static final int MEMORY_POW_2 = 15;
     private static final int PARALLELISM = 16;
+    private static final int SALT_SIZE = 16;
 
     // Conversion of algorithm ID to algorithm name for Argon2
     private static final Map<Integer, String> ALGORITHM_NAME_MAP = new LinkedHashMap<>();
@@ -48,7 +49,7 @@ public class PasswordHash {
         ALGORITHM_NAME_MAP.put(Argon2Parameters.ARGON2_id, "argon2id");
     }
 
-    private static KeyGenerator keyGenerator = new KeyGenerator();
+    private static final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
      * Generate hash in Argon2 Modular Crypt Format for specified password using Argon2i algorithm.
@@ -58,7 +59,7 @@ public class PasswordHash {
      */
     public static String hash(byte[] password) throws CryptoProviderException {
         // Generate random salt
-        byte[] salt = keyGenerator.generateRandomBytes(8);
+        byte[] salt = keyGenerator.generateRandomBytes(SALT_SIZE);
         // Set up the Argon2i algorithm with default parameters
         Argon2Parameters.Builder builder = new Argon2Parameters.Builder(ALGORITHM_ID)
                 .withVersion(VERSION)
