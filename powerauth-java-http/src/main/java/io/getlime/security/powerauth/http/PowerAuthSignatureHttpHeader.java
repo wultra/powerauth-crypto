@@ -29,7 +29,7 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
     /**
      * Class with keys used in the underlying map.
      */
-    public class Key {
+    public static class Key {
 
         /**
          * Key representing the "pa_activation_id" in the PowerAuth authorization header.

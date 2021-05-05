@@ -54,7 +54,7 @@ In case you are updating from older versions of PA stack, you might meet followi
 
 ```java
 public class MyEncryptedObjectResponse<T> extends ObjectResponse<T> {
-    private String encryption = "nonpersonalized";
+    private final String encryption = "nonpersonalized";
     // ... getters and setters
 }
 ```

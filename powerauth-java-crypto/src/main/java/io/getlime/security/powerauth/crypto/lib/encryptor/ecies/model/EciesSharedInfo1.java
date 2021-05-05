@@ -32,7 +32,7 @@ public enum EciesSharedInfo1 {
     CREATE_TOKEN("/pa/token/create"),
     CONFIRM_RECOVERY_CODE("/pa/recovery/confirm");
 
-    private byte[] value;
+    private final byte[] value;
 
     /**
      * Constructor with sharedInfo1 parameter for ECIES.

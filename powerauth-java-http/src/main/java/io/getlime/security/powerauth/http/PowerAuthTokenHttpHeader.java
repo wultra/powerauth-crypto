@@ -29,7 +29,7 @@ public class PowerAuthTokenHttpHeader extends PowerAuthHttpHeader {
     /**
      * Class with keys used in the underlying map.
      */
-    public class Key {
+    public static class Key {
 
         /**
          * Key representing the "token_id" in the PowerAuth token header.
