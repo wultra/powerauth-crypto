@@ -20,13 +20,17 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 
@@ -138,6 +142,29 @@ public class InvalidPointTest {
             // y: "33552521881581467670836617859178523407344471948513881718969729275859461829010"
             keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("BLcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/Si4N7VelFWu4LrQxTDf9QVU5Wn5RmIryiczlMbnBcZI="));
         } catch (GenericCryptoException ex) {
+            return;
+        }
+        Assert.fail("EC point validation is missing");
+    }
+
+    /**
+     * Test of validation for point order. The point is correct, however the curve parameters
+     * have been altered to simulate an EC curve fault attack.
+     */
+    @Test
+    public void testValidationInvalidOrder() throws InvalidKeySpecException, CryptoProviderException, IllegalAccessException, NoSuchFieldException {
+        KeyConvertor keyConvertor = new KeyConvertor();
+        SecP256R1Curve p256curve = (SecP256R1Curve) CustomNamedCurves.getByName("secp256r1").getCurve();
+        Class<?> parentClass = p256curve.getClass().getSuperclass().getSuperclass();
+        Field orderField = parentClass.getDeclaredField("order");
+        orderField.setAccessible(true);
+        BigInteger orderValid = p256curve.getOrder();
+        orderField.set(p256curve, orderValid.add(BigInteger.ONE));
+        try {
+            keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("BJBAcEeM25rL3lo5GIM9J4ygFzkkY3dPe6dKx6x17XNdG1Jy+FlH31rejjCHYVKcLs8lgKjJTKzyxrxMe+kK4KY="));
+        } catch (GenericCryptoException ex) {
+            // Revert the P-256 curve order change used only for fault attack simulation
+            orderField.set(p256curve, orderValid);
             return;
         }
         Assert.fail("EC point validation is missing");
