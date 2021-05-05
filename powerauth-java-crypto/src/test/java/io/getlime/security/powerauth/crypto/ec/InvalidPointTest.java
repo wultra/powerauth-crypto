@@ -153,15 +153,18 @@ public class InvalidPointTest {
      */
     @Test
     public void testValidationInvalidOrder() throws InvalidKeySpecException, CryptoProviderException, IllegalAccessException, NoSuchFieldException {
+        KeyConvertor keyConvertor = new KeyConvertor();
+        SecP256R1Curve p256curve = (SecP256R1Curve) CustomNamedCurves.getByName("secp256r1").getCurve();
+        Class<?> parentClass = p256curve.getClass().getSuperclass().getSuperclass();
+        Field orderField = parentClass.getDeclaredField("order");
+        orderField.setAccessible(true);
+        BigInteger orderValid = p256curve.getOrder();
+        orderField.set(p256curve, orderValid.add(BigInteger.ONE));
         try {
-            KeyConvertor keyConvertor = new KeyConvertor();
-            SecP256R1Curve p256curve = (SecP256R1Curve) CustomNamedCurves.getByName("secp256r1").getCurve();
-            Class<?> parentClass = p256curve.getClass().getSuperclass().getSuperclass();
-            Field orderField = parentClass.getDeclaredField("order");
-            orderField.setAccessible(true);
-            orderField.set(p256curve, p256curve.getOrder().add(BigInteger.ONE));
             keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("BJBAcEeM25rL3lo5GIM9J4ygFzkkY3dPe6dKx6x17XNdG1Jy+FlH31rejjCHYVKcLs8lgKjJTKzyxrxMe+kK4KY="));
         } catch (GenericCryptoException ex) {
+            // Revert the P-256 curve order change used only for fault attack simulation
+            orderField.set(p256curve, orderValid);
             return;
         }
         Assert.fail("EC point validation is missing");
