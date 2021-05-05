@@ -234,12 +234,12 @@ public class IdentifierGenerator {
         final Map<Integer, String> puks = new LinkedHashMap<>();
 
         for (int i = 1; i <= pukCount; i++) {
-            Long derivationIndex;
+            long derivationIndex;
             String derivedPuk;
             int derivationAttempt = 0;
             do {
                 // Generate random derivation index
-                byte[] derivationIndexBytes = keyGenerator.generateRandomBytes(8);
+                final byte[] derivationIndexBytes = keyGenerator.generateRandomBytes(8);
                 derivationIndex = ByteBuffer.wrap(derivationIndexBytes).getLong();
                 // Generate recovery PUK
                 derivedPuk = generatePuk(recoveryPukBaseKey, derivationIndexBytes);

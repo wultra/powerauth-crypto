@@ -37,6 +37,7 @@ public class PublicKeyValidator {
      *
      * @param curve EC curve.
      * @param point EC point.
+     * @throws GenericCryptoException In case the EC point validation fails.
      */
     public void validate(ECCurve curve, ECPoint point) throws GenericCryptoException {
         if (point.isInfinity()) {
