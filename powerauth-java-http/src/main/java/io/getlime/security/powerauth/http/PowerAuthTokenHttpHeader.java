@@ -138,22 +138,42 @@ public class PowerAuthTokenHttpHeader extends PowerAuthHttpHeader {
 
     // Field getters
 
+    /**
+     * Get token identifier.
+     * @return Token identifier.
+     */
     public String getTokenId() {
         return tokenId;
     }
 
+    /**
+     * Get token digest.
+     * @return Token digest.
+     */
     public String getTokenDigest() {
         return tokenDigest;
     }
 
+    /**
+     * Get nonce.
+     * @return Nonce.
+     */
     public String getNonce() {
         return nonce;
     }
 
+    /**
+     * Get timestamp.
+     * @return Timestamp.
+     */
     public String getTimestamp() {
         return timestamp;
     }
 
+    /**
+     * Get version.
+     * @return Version.
+     */
     public String getVersion() {
         return version;
     }

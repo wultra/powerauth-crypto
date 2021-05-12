@@ -164,34 +164,66 @@ public class NonPersonalizedEncryptor {
         return aes.decrypt(encryptedData, nonce, encryptionKey);
     }
 
+    /**
+     * Get application key.
+     * @return Application key.
+     */
     public byte[] getApplicationKey() {
         return applicationKey;
     }
 
+    /**
+     * Set application key.
+     * @param applicationKey Application key.
+     */
     public void setApplicationKey(byte[] applicationKey) {
         this.applicationKey = applicationKey;
     }
 
+    /**
+     * Get session index.
+     * @return Session index.
+     */
     public byte[] getSessionIndex() {
         return sessionIndex;
     }
 
+    /**
+     * Set session index.
+     * @param sessionIndex Session index.
+     */
     public void setSessionIndex(byte[] sessionIndex) {
         this.sessionIndex = sessionIndex;
     }
 
+    /**
+     * Get ephemeral public key.
+     * @return Ephemeral public key.
+     */
     public byte[] getEphemeralPublicKey() {
         return ephemeralPublicKey;
     }
 
+    /**
+     * Set ephemeral public key.
+     * @param ephemeralPublicKey Ephemeral public key.
+     */
     public void setEphemeralPublicKey(byte[] ephemeralPublicKey) {
         this.ephemeralPublicKey = ephemeralPublicKey;
     }
 
+    /**
+     * Get session related secret key.
+     * @return Session related secret key.
+     */
     public byte[] getSessionRelatedSecretKey() {
         return sessionRelatedSecretKey;
     }
 
+    /**
+     * Set session related secret key.
+     * @param sessionRelatedSecretKey Session related secret key.
+     */
     public void setSessionRelatedSecretKey(byte[] sessionRelatedSecretKey) {
         this.sessionRelatedSecretKey = sessionRelatedSecretKey;
     }

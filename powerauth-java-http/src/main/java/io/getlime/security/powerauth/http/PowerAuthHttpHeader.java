@@ -28,6 +28,9 @@ import java.util.regex.Pattern;
  */
 public abstract class PowerAuthHttpHeader {
 
+    /**
+     * PowerAuth HTTP header prefix.
+     */
     protected static final String POWERAUTH_PREFIX = "PowerAuth ";
 
     /**

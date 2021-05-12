@@ -25,6 +25,11 @@ import io.getlime.security.powerauth.http.PowerAuthSignatureHttpHeader;
  */
 public class PowerAuthSignatureHttpHeaderValidator {
 
+    /**
+     * Validate PowerAuth signature HTTP header.
+     * @param header PowerAuth signature HTTP header.
+     * @throws InvalidPowerAuthHttpHeaderException Thrown in case PowerAuth signature HTTP header is invalid.
+     */
     public static void validate(PowerAuthSignatureHttpHeader header) throws InvalidPowerAuthHttpHeaderException {
 
         // Check if the parsing was successful
