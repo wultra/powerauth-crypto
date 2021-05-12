@@ -1,6 +1,6 @@
 # Activation Code
 
-The PowerAuth protocol 3, defines a new version of activation code, where OTP<sup>1</sup> is no longer applied. The format of the code is the same (four groups, each group is composed from five Base32 characters), but the code is no longer split into `OTP` and `SHORT_ID` parts. The new code has following features:
+The PowerAuth protocol 3, defines a new version of activation code, where OTP<sup>1</sup> is no longer applied. The format of the code is the same (four groups, each group is composed of five Base32 characters), but the code is no longer split into `OTP` and `SHORT_ID` parts. The new code has following features:
 
 - The whole code is now a short activation identifier, and we call it simply `ACTIVATION_CODE`. This principally means, that the code is no longer used in the cryptographic calculations.
 - The code is using `CRC-16/ARC` to detect a typing errors. This is useful for scenarios, where the user needs to re-type the code manually.

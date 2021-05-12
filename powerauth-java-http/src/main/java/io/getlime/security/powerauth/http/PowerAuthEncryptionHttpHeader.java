@@ -29,7 +29,7 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
     /**
      * Class with keys used in the underlying map.
      */
-    public class Key {
+    public static class Key {
 
         /**
          * Key representing the "application_key" in the PowerAuth encryption header.

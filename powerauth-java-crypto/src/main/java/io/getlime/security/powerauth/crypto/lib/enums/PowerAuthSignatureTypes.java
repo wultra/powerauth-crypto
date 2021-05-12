@@ -57,7 +57,7 @@ public enum PowerAuthSignatureTypes {
      */
     POSSESSION_KNOWLEDGE_BIOMETRY("possession_knowledge_biometry");
 
-    private String value;
+    private final String value;
 
     private final static Map<String, PowerAuthSignatureTypes> map = new HashMap<>();
 
@@ -77,14 +77,10 @@ public enum PowerAuthSignatureTypes {
      * @return Enum value.
      */
     public static PowerAuthSignatureTypes getEnumFromString(String value) {
-        if (value != null) {
-            final PowerAuthSignatureTypes type = map.get(value.toLowerCase());
-            if (type != null) {
-                return type;
-            }
+        if (value == null) {
+            return null;
         }
-        // Otherwise return null
-        return null;
+        return map.get(value.toLowerCase());
     }
 
     /**

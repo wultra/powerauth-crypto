@@ -53,7 +53,7 @@ public enum PowerAuthDerivedKey {
      */
     ENCRYPTED_VAULT(2000);
 
-    private long index;
+    private final long index;
 
     private final static Map<Long, PowerAuthDerivedKey> map = new HashMap<>();
 
