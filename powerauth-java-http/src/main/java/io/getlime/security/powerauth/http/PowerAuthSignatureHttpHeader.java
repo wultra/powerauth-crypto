@@ -155,26 +155,50 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
 
     // Field getters
 
+    /**
+     * Get activation ID.
+     * @return Activation ID.
+     */
     public String getActivationId() {
         return activationId;
     }
 
+    /**
+     * Get application key.
+     * @return Application key.
+     */
     public String getApplicationKey() {
         return applicationKey;
     }
 
+    /**
+     * Get signature.
+     * @return Signature.
+     */
     public String getSignature() {
         return signature;
     }
 
+    /**
+     * Get signature type.
+     * @return Signature type.
+     */
     public String getSignatureType() {
         return signatureType;
     }
 
+    /**
+     * Get nonce.
+     * @return Nonce.
+     */
     public String getNonce() {
         return nonce;
     }
 
+    /**
+     * Get version.
+     * @return Version.
+     */
     public String getVersion() {
         return version;
     }
