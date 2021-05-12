@@ -36,7 +36,7 @@ For updating to 2021.05, please follow these migration guides:
 | iOS | `PowerAuth2` | 1.6.0 | A client library for iOS. |
 | watchOS | `PowerAuth2ForWatch` | 1.6.0 | A limited library for watchOS. |
 | iOS App Extensions | `PowerAuth2ForExtensions` | 1.6.0 | A limited library for iOS App Extensions. |
-| Android | `io.getlime.security.powerauth:powerauth-android-sdk` | 1.6.0 | A client library for Android. |
+| Android | `com.wultra.android.powerauth:powerauth-sdk` | 1.6.0 | A client library for Android. |
 
 ### Back-End Integration Libraries
 
