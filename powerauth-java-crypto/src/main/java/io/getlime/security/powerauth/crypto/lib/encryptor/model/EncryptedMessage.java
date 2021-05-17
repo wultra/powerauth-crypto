@@ -39,50 +39,98 @@ public class EncryptedMessage {
     private byte[] encryptedData;
     private byte[] mac;
 
+    /**
+     * Get session index.
+     * @return Session index.
+     */
     public byte[] getSessionIndex() {
         return sessionIndex;
     }
 
+    /**
+     * Set session index.
+     * @param sessionIndex Session index.
+     */
     public void setSessionIndex(byte[] sessionIndex) {
         this.sessionIndex = sessionIndex;
     }
 
+    /**
+     * Get ad-hoc index.
+     * @return Ad-hoc index.
+     */
     public byte[] getAdHocIndex() {
         return adHocIndex;
     }
 
+    /**
+     * Set ad-hoc index.
+     * @param adHocIndex Ad-hoc index.
+     */
     public void setAdHocIndex(byte[] adHocIndex) {
         this.adHocIndex = adHocIndex;
     }
 
+    /**
+     * Get MAC index.
+     * @return MAC index.
+     */
     public byte[] getMacIndex() {
         return macIndex;
     }
 
+    /**
+     * Set MAC index.
+     * @param macIndex MAC index.
+     */
     public void setMacIndex(byte[] macIndex) {
         this.macIndex = macIndex;
     }
 
+    /**
+     * Get nonce.
+     * @return Nonce.
+     */
     public byte[] getNonce() {
         return nonce;
     }
 
+    /**
+     * Set nonce.
+     * @param nonce Nonce.
+     */
     public void setNonce(byte[] nonce) {
         this.nonce = nonce;
     }
 
+    /**
+     * Get encrypted data.
+     * @return Encrypted data.
+     */
     public byte[] getEncryptedData() {
         return encryptedData;
     }
 
+    /**
+     * Set encrypted data.
+     * @param encryptedData Encrypted data.
+     */
     public void setEncryptedData(byte[] encryptedData) {
         this.encryptedData = encryptedData;
     }
 
+    /**
+     * Get MAC.
+     * @return MAC.
+     */
     public byte[] getMac() {
         return mac;
     }
 
+    /**
+     * Set MAC.
+     * @param mac MAC.
+     */
     public void setMac(byte[] mac) {
         this.mac = mac;
     }

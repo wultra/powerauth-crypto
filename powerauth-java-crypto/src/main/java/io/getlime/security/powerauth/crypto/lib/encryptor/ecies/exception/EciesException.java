@@ -23,13 +23,25 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception;
  */
 public class EciesException extends Exception {
 
+    /**
+     * Default constructor.
+     */
     public EciesException() {
     }
 
+    /**
+     * Constructor with message.
+     * @param message Message.
+     */
     public EciesException(String message) {
         super(message);
     }
 
+    /**
+     * Construction with message and cause.
+     * @param message Message.
+     * @param cause Cause.
+     */
     public EciesException(String message, Throwable cause) {
         super(message, cause);
     }

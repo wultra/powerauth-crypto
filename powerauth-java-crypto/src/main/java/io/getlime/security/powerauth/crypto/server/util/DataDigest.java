@@ -49,10 +49,18 @@ public class DataDigest {
             this.salt = salt;
         }
 
+        /**
+         * Get data digest.
+         * @return Data digest.
+         */
         public String getDigest() {
             return digest;
         }
 
+        /**
+         * Get salt used for creating the data digest.
+         * @return Salt used for creating the data digest.
+         */
         public byte[] getSalt() {
             return salt;
         }

@@ -17,10 +17,18 @@ public class PersonalizedEncryptedMessage extends EncryptedMessage {
 
     private String activationId;
 
+    /**
+     * Get activation identifier.
+     * @return Activation identifier.
+     */
     public String getActivationId() {
         return activationId;
     }
 
+    /**
+     * Set activation identifier.
+     * @param activationId Activation identifier.
+     */
     public void setActivationId(String activationId) {
         this.activationId = activationId;
     }

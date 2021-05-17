@@ -22,6 +22,14 @@ package io.getlime.security.powerauth.crypto.lib.model;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public enum ActivationVersion {
+
+    /**
+     * Version 2.
+     */
     VERSION_2,
+
+    /**
+     * Version 3.
+     */
     VERSION_3
 }
