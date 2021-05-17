@@ -27,7 +27,7 @@ import java.security.PublicKey;
  */
 public class ClientNonPersonalizedEncryptor {
 
-    private NonPersonalizedEncryptor encryptor;
+    private final NonPersonalizedEncryptor encryptor;
 
     private final KeyConvertor keyConvertor = new KeyConvertor();
 

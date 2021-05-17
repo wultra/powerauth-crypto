@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.slf4j.Logger;
@@ -40,6 +41,8 @@ import java.security.spec.*;
 public class KeyConvertor {
 
     private static final Logger logger = LoggerFactory.getLogger(KeyConvertor.class);
+
+    private final PublicKeyValidator publicKeyValidator = new PublicKeyValidator();
 
     /**
      * Converts an EC public key to a byte array by encoding Q point parameter (W in Java Security).
@@ -70,8 +73,9 @@ public class KeyConvertor {
      * @throws InvalidKeySpecException When provided bytes are not a correct key
      *                                 representation.
      * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     * @throws GenericCryptoException When public key is invalid.
      */
-    public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
+    public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException, GenericCryptoException {
         try {
             // Decode EC point using Bouncy Castle and extract its coordinates
             ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
@@ -79,6 +83,8 @@ public class KeyConvertor {
                 throw new CryptoProviderException("Crypto provider does not support the secp256r1 curve");
             }
             org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
+            publicKeyValidator.validate(ecSpec.getCurve(), point);
+
             BigInteger x = point.getAffineXCoord().toBigInteger();
             BigInteger y = point.getAffineYCoord().toBigInteger();
 
@@ -91,6 +97,9 @@ public class KeyConvertor {
         } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (IllegalArgumentException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
 

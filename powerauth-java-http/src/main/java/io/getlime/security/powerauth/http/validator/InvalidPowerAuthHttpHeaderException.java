@@ -23,6 +23,10 @@ package io.getlime.security.powerauth.http.validator;
  */
 public class InvalidPowerAuthHttpHeaderException extends Exception {
 
+    /**
+     * Exception constructor.
+     * @param message Message.
+     */
     public InvalidPowerAuthHttpHeaderException(String message) {
         super(message);
     }

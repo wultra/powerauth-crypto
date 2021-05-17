@@ -24,15 +24,42 @@ import java.nio.charset.StandardCharsets;
  */
 public enum EciesSharedInfo1 {
 
+    /**
+     * Generic application scope.
+     */
     APPLICATION_SCOPE_GENERIC("/pa/generic/application"),
+
+    /**
+     * Generic activation scope.
+     */
     ACTIVATION_SCOPE_GENERIC("/pa/generic/activation"),
+
+    /**
+     * Activation scope layer 2.
+     */
     ACTIVATION_LAYER_2("/pa/activation"),
+
+    /**
+     * Upgrade scope.
+     */
     UPGRADE("/pa/upgrade"),
+
+    /**
+     * Vault unlock scope.
+     */
     VAULT_UNLOCK("/pa/vault/unlock"),
+
+    /**
+     * Create token scope.
+     */
     CREATE_TOKEN("/pa/token/create"),
+
+    /**
+     * Recovery code confirmation scope.
+     */
     CONFIRM_RECOVERY_CODE("/pa/recovery/confirm");
 
-    private byte[] value;
+    private final byte[] value;
 
     /**
      * Constructor with sharedInfo1 parameter for ECIES.

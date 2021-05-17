@@ -25,7 +25,7 @@
 
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-crypto-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <inceptionYear>2016</inceptionYear>
@@ -73,10 +73,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
-        <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
-        <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
     </properties>
 
     <build>
@@ -138,7 +138,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -165,11 +165,11 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
+            <id>ossrh-snapshots-distribution</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
-            <id>ossrh</id>
+            <id>ossrh-staging-distribution</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>

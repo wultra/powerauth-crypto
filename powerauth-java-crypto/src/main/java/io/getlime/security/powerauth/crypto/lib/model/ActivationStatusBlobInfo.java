@@ -25,6 +25,9 @@ package io.getlime.security.powerauth.crypto.lib.model;
  */
 public class ActivationStatusBlobInfo {
 
+    /**
+     * Activation status magic value.
+     */
     public static final int ACTIVATION_STATUS_MAGIC_VALUE = 0xDEC0DED1;
 
     private boolean valid;
