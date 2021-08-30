@@ -18,11 +18,11 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.model.Argon2Hash;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Verify parsing of Argon2 hashes in Modular Crypt Format.
@@ -51,24 +51,32 @@ public class Argon2Test {
         assertArrayEquals(BaseEncoding.base64().decode("wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA"), hash19.getDigest());
     }
 
-    @Test(expected = IOException.class)
-    public void testInvalidHash1() throws IOException {
-        Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
+    @Test
+    public void testInvalidHash1() {
+        assertThrows(IOException.class, () -> {
+            Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
+        });
     }
 
-    @Test(expected = IOException.class)
-    public void testInvalidHash2() throws IOException {
-        Argon2Hash.parse("$argon2i$v=19$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
+    @Test
+    public void testInvalidHash2() {
+        assertThrows(IOException.class, () -> {
+            Argon2Hash.parse("$argon2i$v=19$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
+        });
     }
 
-    @Test(expected = IOException.class)
-    public void testInvalidHash3() throws IOException {
-        Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
+    @Test
+    public void testInvalidHash3() {
+        assertThrows(IOException.class, () -> {
+            Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
+        });
     }
 
-    @Test(expected = IOException.class)
-    public void testInvalidHash4() throws IOException {
-        Argon2Hash.parse("$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$");
+    @Test
+    public void testInvalidHash4() {
+        assertThrows(IOException.class, () -> {
+            Argon2Hash.parse("$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$");
+        });
     }
 
     @Test
