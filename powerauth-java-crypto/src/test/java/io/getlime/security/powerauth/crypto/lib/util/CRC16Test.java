@@ -16,17 +16,17 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CRC16Test {
 
-    private CRC16 crc16;
+    private static CRC16 crc16;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         crc16 = new CRC16();
     }
 

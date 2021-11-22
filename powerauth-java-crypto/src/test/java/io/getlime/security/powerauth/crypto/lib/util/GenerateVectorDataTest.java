@@ -31,8 +31,8 @@ import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
 import io.getlime.security.powerauth.crypto.lib.util.model.TestSet;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import java.io.File;
@@ -50,7 +50,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Generate test vectors
@@ -67,7 +67,7 @@ public class GenerateVectorDataTest {
     /**
      * Register crypto providers
      */
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());

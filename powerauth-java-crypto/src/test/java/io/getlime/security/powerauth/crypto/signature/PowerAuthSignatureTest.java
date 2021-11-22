@@ -26,8 +26,8 @@ import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import io.getlime.security.powerauth.crypto.server.keyfactory.PowerAuthServerKeyFactory;
 import io.getlime.security.powerauth.crypto.server.signature.PowerAuthServerSignature;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -38,8 +38,8 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test for PowerAuth signature calculation and validation.
@@ -54,8 +54,8 @@ public class PowerAuthSignatureTest {
 	/**
 	 * Register crypto providers. 
 	 */
-	@Before
-    public void setUp() {
+	@BeforeAll
+    public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
     }

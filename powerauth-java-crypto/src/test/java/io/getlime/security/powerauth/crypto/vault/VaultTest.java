@@ -24,8 +24,8 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import io.getlime.security.powerauth.crypto.server.vault.PowerAuthServerVault;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -33,7 +33,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test the secure vault implementation.
@@ -47,8 +47,8 @@ public class VaultTest {
     /**
      * Register crypto providers.
      */
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
     }

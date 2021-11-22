@@ -25,16 +25,16 @@ import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for validations during public key import.
@@ -48,8 +48,8 @@ public class InvalidPointTest {
     /**
      * Add BC crypto provider.
      */
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
@@ -72,7 +72,7 @@ public class InvalidPointTest {
         } catch (GenericCryptoException ex) {
             return;
         }
-        Assert.fail("Infinity allowed as public key");
+        fail("Infinity allowed as public key");
     }
 
     /**
@@ -86,7 +86,7 @@ public class InvalidPointTest {
         } catch (GenericCryptoException ex) {
             return;
         }
-        Assert.fail("EC point validation is missing");
+        fail("EC point validation is missing");
     }
 
     /**
@@ -100,7 +100,7 @@ public class InvalidPointTest {
         } catch (GenericCryptoException ex) {
             return;
         }
-        Assert.fail("EC point validation is missing");
+        fail("EC point validation is missing");
     }
 
     /**
@@ -114,7 +114,7 @@ public class InvalidPointTest {
         } catch (GenericCryptoException ex) {
             return;
         }
-        Assert.fail("EC point validation is missing");
+        fail("EC point validation is missing");
     }
 
     /**
@@ -128,7 +128,7 @@ public class InvalidPointTest {
         } catch (GenericCryptoException ex) {
             return;
         }
-        Assert.fail("EC point validation is missing");
+        fail("EC point validation is missing");
     }
 
     /**
@@ -144,7 +144,7 @@ public class InvalidPointTest {
         } catch (GenericCryptoException ex) {
             return;
         }
-        Assert.fail("EC point validation is missing");
+        fail("EC point validation is missing");
     }
 
     /**
@@ -167,7 +167,7 @@ public class InvalidPointTest {
             orderField.set(p256curve, orderValid);
             return;
         }
-        Assert.fail("EC point validation is missing");
+        fail("EC point validation is missing");
     }
 
 }

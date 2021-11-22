@@ -30,8 +30,8 @@ import io.getlime.security.powerauth.crypto.lib.util.Hash;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -43,8 +43,8 @@ import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test to validate functionality of {@link EciesEncryptor}
@@ -60,8 +60,8 @@ public class EciesEncryptorTest {
     /**
      * Add crypto providers.
      */
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
     }

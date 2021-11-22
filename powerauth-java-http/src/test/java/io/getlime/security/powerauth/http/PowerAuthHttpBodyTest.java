@@ -17,11 +17,11 @@
 package io.getlime.security.powerauth.http;
 
 import com.google.common.io.BaseEncoding;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for HTTP body normalization routine.
