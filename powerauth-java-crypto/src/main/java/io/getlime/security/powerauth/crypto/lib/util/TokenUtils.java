@@ -116,7 +116,7 @@ public class TokenUtils {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
-        return Arrays.equals(computeTokenDigest(nonce, timestamp, tokenSecret), tokenDigest);
+        return SideChannelUtils.constantTimeAreEqual(computeTokenDigest(nonce, timestamp, tokenSecret), tokenDigest);
     }
 
 }
