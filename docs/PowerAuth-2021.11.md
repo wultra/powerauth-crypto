@@ -61,8 +61,8 @@ For updating to 2021.11, please follow these migration guides:
 | PowerAuth HTTP Utilities | `powerauth-java-http.jar` | 1.2.0 | Utilities used for binding PowerAuth cryptography to HTTP technology. |
 | PowerAuth Command-Line Tool Library | `powerauth-java-cmd-lib.jar` | 1.2.0 | Library used for implementation of the PowerAuth Command-Line Tool app, useful for unit testing. |
 | PowerAuth RESTful Security Base Support | `powerauth-restful-security-base.jar` | 1.2.0 | Base classes for RESTful API security. |
-| Wultra Java Networking Objects | `rest-model-base.jar` | 1.3.0 | Base classes for RESTful API networking, shared across all Wultra back-end projects. |
-| Wultra REST Client | `rest-client-base.jar` | 1.3.0 | Base RESTful client implementation, shared across all Wultra back-end projects. |
+| Wultra Java Networking Objects | `rest-model-base.jar` | 1.4.0 | Base classes for RESTful API networking, shared across all Wultra back-end projects. |
+| Wultra REST Client | `rest-client-base.jar` | 1.4.0 | Base RESTful client implementation, shared across all Wultra back-end projects. |
 
 ## Known Issues When Updating From Older Versions
 
