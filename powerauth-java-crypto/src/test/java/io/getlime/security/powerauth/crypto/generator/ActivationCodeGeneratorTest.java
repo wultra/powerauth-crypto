@@ -19,12 +19,12 @@ package io.getlime.security.powerauth.crypto.generator;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.security.Security;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test activation code generator.
@@ -36,8 +36,8 @@ public class ActivationCodeGeneratorTest {
     /**
      * Set up crypto providers
      */
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
     }

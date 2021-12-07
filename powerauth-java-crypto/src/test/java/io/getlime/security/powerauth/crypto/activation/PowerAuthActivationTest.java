@@ -24,8 +24,8 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderEx
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import io.getlime.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import java.security.KeyPair;
@@ -33,7 +33,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author petrdvorak
@@ -45,8 +45,8 @@ public class PowerAuthActivationTest {
     /**
      * Add crypto providers.
      */
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
     }

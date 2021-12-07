@@ -104,6 +104,6 @@ public class HashBasedCounterUtils {
         // Calculate hash from current hash based counter
         final byte[] expectedCtrDataHash = calculateHashFromHashBasedCounter(expectedCtrData, transportKey);
         // Compare both hashed values
-        return Arrays.equals(expectedCtrDataHash, receivedCtrDataHash);
+        return SideChannelUtils.constantTimeAreEqual(expectedCtrDataHash, receivedCtrDataHash);
     }
 }

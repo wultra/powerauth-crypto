@@ -19,10 +19,9 @@ package io.getlime.security.powerauth.crypto.signature;
 
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test that validates whether signature version to signature format works properly.
@@ -40,34 +39,46 @@ public class PowerAuthSignatureFormatTest {
         assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("4.0"));
     }
 
-    @Test(expected = GenericCryptoException.class)
-    public void testInvalidV2() throws Exception {
-        PowerAuthSignatureFormat.getFormatForSignatureVersion("2.2");
+    @Test
+    public void testInvalidV2() {
+        assertThrows(GenericCryptoException.class, () -> {
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("2.2");
+        });
     }
 
-    @Test(expected = GenericCryptoException.class)
-    public void testInvalidV3() throws Exception {
-        PowerAuthSignatureFormat.getFormatForSignatureVersion("3.05");
+    @Test
+    public void testInvalidV3() {
+        assertThrows(GenericCryptoException.class, () -> {
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("3.05");
+        });
     }
 
-    @Test(expected = GenericCryptoException.class)
-    public void testInvalidFormat1() throws Exception {
-        PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1.1");
+    @Test
+    public void testInvalidFormat1() {
+        assertThrows(GenericCryptoException.class, () -> {
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1.1");
+        });
     }
 
-    @Test(expected = GenericCryptoException.class)
-    public void testInvalidFormat2() throws Exception {
-        PowerAuthSignatureFormat.getFormatForSignatureVersion("foo");
+    @Test
+    public void testInvalidFormat2() {
+        assertThrows(GenericCryptoException.class, () -> {
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("foo");
+        });
     }
 
-    @Test(expected = GenericCryptoException.class)
-    public void testInvalidFormat3() throws Exception {
-        PowerAuthSignatureFormat.getFormatForSignatureVersion("");
+    @Test
+    public void testInvalidFormat3() {
+        assertThrows(GenericCryptoException.class, () -> {
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("");
+        });
     }
 
-    @Test(expected = GenericCryptoException.class)
-    public void testInvalidFormat4() throws Exception {
-        PowerAuthSignatureFormat.getFormatForSignatureVersion(null);
+    @Test
+    public void testInvalidFormat4() {
+        assertThrows(GenericCryptoException.class, () -> {
+            PowerAuthSignatureFormat.getFormatForSignatureVersion(null);
+        });
     }
 
     @Test

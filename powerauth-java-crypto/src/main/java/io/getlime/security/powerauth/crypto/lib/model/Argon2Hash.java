@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.model;
 
 import com.google.common.io.BaseEncoding;
+import io.getlime.security.powerauth.crypto.lib.util.SideChannelUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -231,7 +232,7 @@ public class Argon2Hash {
         if (digest == null || other.digest == null) {
             return false;
         }
-        return Arrays.equals(digest, other.digest);
+        return SideChannelUtils.constantTimeAreEqual(digest, other.digest);
     }
 
     /**
