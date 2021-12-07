@@ -33,10 +33,10 @@ For updating to 2021.11, please follow these migration guides:
 
 | Platform | Package Name | Version | Description |
 |---|---|---|---|
-| iOS | `PowerAuth2` | 1.6.0 | A client library for iOS. |
-| watchOS | `PowerAuth2ForWatch` | 1.6.0 | A limited library for watchOS. |
-| iOS App Extensions | `PowerAuth2ForExtensions` | 1.6.0 | A limited library for iOS App Extensions. |
-| Android | `com.wultra.android.powerauth:powerauth-sdk` | 1.6.0 | A client library for Android. |
+| iOS | `PowerAuth2` | 1.6.2 | A client library for iOS. |
+| watchOS | `PowerAuth2ForWatch` | 1.6.2 | A limited library for watchOS. |
+| iOS App Extensions | `PowerAuth2ForExtensions` | 1.6.2 | A limited library for iOS App Extensions. |
+| Android | `com.wultra.android.powerauth:powerauth-sdk` | 1.6.2 | A client library for Android. |
 
 ### Back-End Integration Libraries
 
