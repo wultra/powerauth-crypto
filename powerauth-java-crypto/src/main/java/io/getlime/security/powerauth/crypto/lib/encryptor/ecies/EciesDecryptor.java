@@ -24,6 +24,7 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
+import io.getlime.security.powerauth.crypto.lib.util.SideChannelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,6 @@ import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
-import java.util.Arrays;
 
 /**
  * Class implementing an ECIES decryptor.
@@ -222,7 +222,7 @@ public class EciesDecryptor {
             // Validate data MAC value
             final byte[] macData = (sharedInfo2 == null ? cryptogram.getEncryptedData() : Bytes.concat(cryptogram.getEncryptedData(), sharedInfo2));
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
-            if (!Arrays.equals(mac, cryptogram.getMac())) {
+            if (!SideChannelUtils.constantTimeAreEqual(mac, cryptogram.getMac())) {
                 throw new EciesException("Invalid MAC");
             }
 

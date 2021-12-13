@@ -4,9 +4,9 @@
 
 For updating to 2021.11, please follow these migration guides:
 
-- [PowerAuth Server - Migration from version 1.2.0 to version 1.2.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-1.2.0.md)
-- [PowerAuth Push Server - Migration from version 1.2.0 to version 1.2.0](https://github.com/wultra/powerauth-push-server/blob/develop/docs/PowerAuth-Push-Server-1.2.0.md)
-- [PowerAuth Web Flow - Migration from version 1.2.0 to version 1.2.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-1.2.0.md)
+- [PowerAuth Server - Migration from version 1.1.0 to version 1.2.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-1.2.0.md)
+- [PowerAuth Push Server - Migration from version 1.1.0 to version 1.2.0](https://github.com/wultra/powerauth-push-server/blob/develop/docs/PowerAuth-Push-Server-1.2.0.md)
+- [PowerAuth Web Flow - Migration from version 1.1.0 to version 1.2.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-1.2.0.md)
 - [PowerAuth Mobile SDK - Migration from version 1.5.0 to version 1.6.0](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/Migration-from-1.5-to-1.6.md)
 
 ## Components for version 2021.11
@@ -33,10 +33,10 @@ For updating to 2021.11, please follow these migration guides:
 
 | Platform | Package Name | Version | Description |
 |---|---|---|---|
-| iOS | `PowerAuth2` | 1.6.0 | A client library for iOS. |
-| watchOS | `PowerAuth2ForWatch` | 1.6.0 | A limited library for watchOS. |
-| iOS App Extensions | `PowerAuth2ForExtensions` | 1.6.0 | A limited library for iOS App Extensions. |
-| Android | `com.wultra.android.powerauth:powerauth-sdk` | 1.6.0 | A client library for Android. |
+| iOS | `PowerAuth2` | 1.6.2 | A client library for iOS. |
+| watchOS | `PowerAuth2ForWatch` | 1.6.2 | A limited library for watchOS. |
+| iOS App Extensions | `PowerAuth2ForExtensions` | 1.6.2 | A limited library for iOS App Extensions. |
+| Android | `com.wultra.android.powerauth:powerauth-sdk` | 1.6.2 | A client library for Android. |
 
 ### Back-End Integration Libraries
 
