@@ -1,6 +1,6 @@
 # PowerAuth Standard RESTful API
 
-<!-- template API -->
+<!-- TEMPLATE api -->
 
 In order to assure a standard behavior of various PowerAuth implementations, fixed endpoint and request/response structure between PowerAuth Client and Intermediate Server Application is specified for the PowerAuth protocol.
 
@@ -708,3 +708,4 @@ The JSON response after the decryption:
     "alreadyConfirmed" : false
 }
 ```
+<!-- end -->
