@@ -47,11 +47,11 @@ All error responses that produced by the PowerAuth Standard RESTful API have the
 
 ```json
 {
-    "status": "ERROR",
-    "responseObject": {
-        "code": "ERROR_CODE",
-        "message": "ERROR_MESSAGE_IN_ENGLISH"
-    }
+  "status": "ERROR",
+  "responseObject": {
+    "code": "ERROR_CODE",
+    "message": "ERROR_MESSAGE_IN_ENGLISH"
+  }
 }
 ```
 
@@ -122,12 +122,12 @@ The JSON request object before ECIES level 2 encryption:
 
 ```json
 {
-    "devicePublicKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-    "activationName": "My iPhone",
-    "activationOtp": "12345678",
-    "platform": "ios",
-    "deviceInfo": "iPhone12,3",
-    "extras": "Any data in string format"
+  "devicePublicKey": "RUNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
+  "activationName": "My iPhone",
+  "activationOtp": "12345678",
+  "platform": "ios",
+  "deviceInfo": "iPhone12,3",
+  "extras": "Any data in string format"
 }
 ```
 
@@ -135,16 +135,16 @@ The JSON request object before ECIES level 1 encryption. The `activationData` fi
 
 ```json
 {
-    "activationType": "CODE",
-    "identityAttributes": {
-        "code": "VVVVV-VVVVV-VVVVV-VTFVA"
-    },
-    "activationData": {
-        "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
-        "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
-        "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-        "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
-    }
+  "activationType": "CODE",
+  "identityAttributes": {
+    "code": "VVVVV-VVVVV-VVVVV-VTFVA"
+  },
+  "activationData": {
+    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
+  }
 }
 ```
 
@@ -152,10 +152,10 @@ The actual request payload then looks like:
 
 ```json
 {
-    "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
-    "encryptedData": "19gyYaW5ZhdGlvblkb521fYWN0ASKDHsakdhksajhdkjashdkhKSDJhAKSDHKSADHkahdskahdakhdKADHakjhdadsaX9JRaAhbG9duZ==",
-    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
+  "ephemeralPublicKey": "MSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJ==",
+  "encryptedData": "19gyYaW5ZhdGlvblkb521fYWN0ASKDHsakdhksajhdkjashdkhKSDJhAKSDHKSADHkahdskahdakhdKADHakjhdadsaX9JRaAhbG9duZ==",
+  "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+  "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 
@@ -165,8 +165,8 @@ The JSON response (before any decryption) is the following:
 
 ```json
 {
-    "encryptedData": "19gyYaW5ZhdGlvblkb521fYWNSDKJHSDkhadkhSDKJHASDKHSADkjhasdkhSADKHASKDHASKDJHASDKHJ0aX9JRaAhbG9duZ==",
-    "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI="
+  "encryptedData": "19gyYaW5ZhdGlvblkb521fYWNSDKJHSDkhadkhSDKJHASDKHSADkjhasdkhSADKHASKDHASKDJHASDKHJ0aX9JRaAhbG9duZ==",
+  "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI="
 }
 ```
 
@@ -174,13 +174,13 @@ The JSON response after ECIES level 1 decryption unwraps to:
 
 ```json
 {
-    "customAttributes": {
-        "any-key": "any-value"
-    },
-    "activationData": {
-        "encryptedData": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
-        "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI="
-    }
+  "customAttributes": {
+    "any-key": "any-value"
+  },
+  "activationData": {
+    "encryptedData": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
+    "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI="
+  }
 }
 ```
 
@@ -188,13 +188,13 @@ The `activationData` contains an encrypted level 2 response. So, the JSON respon
 
 ```json
 {
-    "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-    "serverPublicKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-    "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J==",
-    "activationRecovery": {
-        "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA",
-        "puk": "0123456789"
-    }
+  "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+  "serverPublicKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
+  "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J==",
+  "activationRecovery": {
+    "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA",
+    "puk": "0123456789"
+  }
 }
 ```
 
@@ -221,10 +221,10 @@ This endpoint also returns a `customObject` object with custom application speci
 
 ```json
 {
-    "requestObject": {
-        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-        "challenge": "MDEyMzQ1Njc4OWFiY2RlZg=="
-    }
+  "requestObject": {
+    "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+    "challenge": "MDEyMzQ1Njc4OWFiY2RlZg=="
+  }
 }
 ```
 
@@ -232,15 +232,15 @@ This endpoint also returns a `customObject` object with custom application speci
 
 ```json
 {
-    "status": "OK",
-    "responseObject": {
-        "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-        "encryptedStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
-        "nonce": "MDEyMzQ1Njc4OWFiY2RlZg==",
-        "customObject": {
-            "_comment": "Any object data, such as timestamp, service status info, etc."
-        }
+  "status": "OK",
+  "responseObject": {
+    "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+    "encryptedStatusBlob": "19gyYaW5ZhdGlvblkb521fYWN0aX9JRaAhbG9duZ==",
+    "nonce": "MDEyMzQ1Njc4OWFiY2RlZg==",
+    "customObject": {
+      "_comment": "Any object data, such as timestamp, service status info, etc."
     }
+  }
 }
 ```
 <!-- end -->
@@ -284,7 +284,7 @@ Any, the value is ignored but must match the signature header.
 
 ```json
 {
-    "status": "OK"
+  "status": "OK"
 }
 ```
 <!-- end -->
@@ -329,10 +329,10 @@ Actual JSON request body, after the encryption:
 
 ```json
 {
-    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
-    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
-    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
+  "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+  "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+  "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+  "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 
@@ -346,8 +346,8 @@ The JSON response before the decryption:
 
 ```json
 {
-    "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-    "encryptedData": "6YkPoxWXQDIHdT5OIQrxMe4+qH+pNec5HlzBacZPAy3fB3fCc25OJAoXIaBOTatVbAcsuToseNanIX3+ZNcyxIEVj16OoawPhm1w=="
+  "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+  "encryptedData": "6YkPoxWXQDIHdT5OIQrxMe4+qH+pNec5HlzBacZPAy3fB3fCc25OJAoXIaBOTatVbAcsuToseNanIX3+ZNcyxIEVj16OoawPhm1w=="
 }
 ```
 
@@ -355,8 +355,8 @@ The JSON object after the decryption:
 
 ```json
 {
-   "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb",  
-   "tokenSecret": "VqAXEhziiT27lxoqREjtcQ=="
+  "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb",  
+  "tokenSecret": "VqAXEhziiT27lxoqREjtcQ=="
 }
 ```
 <!-- end -->
@@ -392,9 +392,9 @@ X-PowerAuth-Authorization: PowerAuth ...
 
 ```json
 {
-    "requestObject": {
-        "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb"
-    }
+  "requestObject": {
+    "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb"
+  }
 }
 ```
 
@@ -453,7 +453,7 @@ The JSON request before ECIES encryption:
 
 ```json
 {
-    "reason": "ADD_BIOMETRY"
+  "reason": "ADD_BIOMETRY"
 }
 ```
 
@@ -468,10 +468,10 @@ An actual JSON request body after the encryption is the following:
 
 ```json
 {
-    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
-    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
-    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
+  "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+  "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+  "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+  "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 
@@ -483,8 +483,8 @@ When unlocking the secure vault, the PowerAuth Signature must be calculated from
 
 ```json
 {
-    "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
-    "encryptedVaultEncryptionKey": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
+  "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
+  "encryptedVaultEncryptionKey": "QNESF9QVUJMSUNfS0VZX3JhbmRvbQ=="
 }
 ```
 <!-- end -->
@@ -538,7 +538,7 @@ The JSON request body can contain any valid JSON data:
 
 ```json
 {
-    "status": "OK"
+  "status": "OK"
 }
 ```
 
@@ -546,11 +546,11 @@ The JSON request body can contain any valid JSON data:
 
 ```json
 {
-    "status": "ERROR",
-    "responseObject": {
-        "code": "POWERAUTH_AUTH_FAIL",
-        "message": "Signature validation failed"
-    }
+  "status": "ERROR",
+  "responseObject": {
+    "code": "POWERAUTH_AUTH_FAIL",
+    "message": "Signature validation failed"
+  }
 }
 ```
 <!-- end -->
@@ -595,7 +595,7 @@ The JSON response after the decryption:
 
 ```json
 {
-    "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J=="
+  "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J=="
 }
 ```
 <!-- end -->
@@ -676,7 +676,7 @@ The JSON request before an ECIES encryption:
 
 ```json
 {
-    "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA"
+  "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA"
 }
 ```
 
@@ -684,10 +684,10 @@ An actual JSON request body after the encryption:
 
 ```json
 {
-    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
-    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
-    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
+  "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
+  "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
+  "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+  "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
 }
 ```
 
@@ -697,8 +697,8 @@ The JSON response before ECIES decryption:
 
 ```json
 {
-    "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-    "encryptedData": "7LK7qs+OK0cfQPZlkzl2G8z5/IZx0SHhI/BPYFhhxqE="
+  "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
+  "encryptedData": "7LK7qs+OK0cfQPZlkzl2G8z5/IZx0SHhI/BPYFhhxqE="
 }
 ```
 
@@ -706,7 +706,7 @@ The JSON response after the decryption:
 
 ```json
 {
-    "alreadyConfirmed" : false
+  "alreadyConfirmed" : false
 }
 ```
 <!-- end -->
