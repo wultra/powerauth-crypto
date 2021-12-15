@@ -228,7 +228,7 @@ This endpoint also returns a `customObject` object with custom application speci
 }
 ```
 
-### Response 200
+#### Response 200
 
 ```json
 {
@@ -490,7 +490,7 @@ When unlocking the secure vault, the PowerAuth Signature must be calculated from
 <!-- end -->
 
 <!-- begin api POST /pa/v3/signature/validate -->
-## Validate Signature
+### Validate Signature
 
 Validate a PowerAuth signature in the `X-PowerAuth-Authorization` HTTP header. The HTTP request can use the `GET`, `POST`, `PUT` or `DELETE` method.
 
@@ -638,6 +638,7 @@ X-PowerAuth-Authorization: PowerAuth ...
 ```json
 {}
 ```
+<!-- end -->
 
 <!-- begin api POST /pa/v3/recovery/confirm -->
 ### Confirm Recovery
