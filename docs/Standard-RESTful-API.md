@@ -489,16 +489,7 @@ When unlocking the secure vault, the PowerAuth Signature must be calculated from
 ```
 <!-- end -->
 
-<!-- begin api GET /pa/v3/signature/validate -->
-### Validate Signature
-<!-- end -->
-<!-- begin api PUT /pa/v3/signature/validate -->
-### Validate Signature
-<!-- end -->
-<!-- begin api POST /pa/v3/signature/validate -->
-### Validate Signature
-<!-- end -->
-<!-- begin api DELETE /pa/v3/signature/validate -->
+<!-- begin api MULTIPLE /pa/v3/signature/validate -->
 ### Validate Signature
 
 Validate a PowerAuth signature in the `X-PowerAuth-Authorization` HTTP header. The HTTP request can use the `GET`, `POST`, `PUT` or `DELETE` method.
