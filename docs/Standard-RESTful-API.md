@@ -489,7 +489,6 @@ When unlocking the secure vault, the PowerAuth Signature must be calculated from
 ```
 <!-- end -->
 
-<!-- begin remove -->
 <!-- begin api GET /pa/v3/signature/validate -->
 ### Validate Signature
 <!-- end -->
@@ -498,7 +497,6 @@ When unlocking the secure vault, the PowerAuth Signature must be calculated from
 <!-- end -->
 <!-- begin api POST /pa/v3/signature/validate -->
 ### Validate Signature
-<!-- end -->
 <!-- end -->
 <!-- begin api DELETE /pa/v3/signature/validate -->
 ### Validate Signature
