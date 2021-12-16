@@ -15,7 +15,7 @@
 
 **API Reference**
 
-- [Standard REST API](./Standard-RESTful-API.md)
+- [PowerAuth Standard RESTful API](./Standard-RESTful-API.md)
 
 **Deployment**
 
