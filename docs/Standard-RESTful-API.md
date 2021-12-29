@@ -59,7 +59,7 @@ All error responses that produced by the PowerAuth Standard RESTful API have the
 The code and message are usually very generic and do not provide a lot of information. Please consult the server log for details. On application level, use the HTTP status code to determine the type of the issue and present appropriate message to the user.
 <!-- end -->
 
-## API Resources
+## Activation Lifecycle API
 
 <!-- begin api POST /pa/v3/activation/create -->
 ### Initiate Activation
@@ -245,7 +245,7 @@ This endpoint also returns a `customObject` object with custom application speci
 ```
 <!-- end -->
 
-<!-- begin api POST /pa/v3/activation/status -->
+<!-- begin api POST /pa/v3/activation/remove -->
 ### Activation Remove
 
 Remove an activation with given ID, set the activation status to `REMOVED`. Activation can be removed only after successful verification of the signature.
@@ -256,7 +256,7 @@ PowerAuth Client sends an authenticated request using an activation ID. Authenti
 | Request parameter | Value                       |
 | ----------------- | --------------------------- |
 | Method            | `POST`                      |
-| Resource URI      | `/pa/v3/activation/status`  |
+| Resource URI      | `/pa/v3/activation/remove`  |
 <!-- end -->
 
 #### Request
@@ -288,6 +288,8 @@ Any, the value is ignored but must match the signature header.
 }
 ```
 <!-- end -->
+
+## Token Lifecycle API
 
 <!-- begin api POST /pa/v3/token/create -->
 ### Create Token
@@ -405,6 +407,8 @@ X-PowerAuth-Authorization: PowerAuth ...
 ```
 <!-- end -->
 
+## Secure Vault API
+
 <!-- begin api POST /pa/v3/vault/unlock -->
 ### Vault Unlock
 
@@ -489,6 +493,8 @@ When unlocking the secure vault, the PowerAuth Signature must be calculated from
 ```
 <!-- end -->
 
+## Signatures API
+
 <!-- begin api POST /pa/v3/signature/validate -->
 ### Validate Signature
 
@@ -554,6 +560,8 @@ The JSON request body can contain any valid JSON data:
 }
 ```
 <!-- end -->
+
+## Protocol Upgrade API
 
 <!-- begin api POST /pa/v3/upgrade/start -->
 ### Upgrade Start
@@ -639,6 +647,8 @@ X-PowerAuth-Authorization: PowerAuth ...
 {}
 ```
 <!-- end -->
+
+## Recovery Code API
 
 <!-- begin api POST /pa/v3/recovery/confirm -->
 ### Confirm Recovery
