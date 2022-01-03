@@ -93,7 +93,7 @@ Since the client and server use the same encryption context, the ephemeral publi
 
 Each encryption context can only be used once, for a single request-response cycle.
 
-### Structure of EciesPayload
+### Structure of `EciesPayload`
 
 The structure of the `EciesPayload` is following:
 
@@ -133,9 +133,9 @@ PowerAuth protocol defines two basic usage scopes for ECIES encryption:
 - In "application scope", ECIES encryption is available for a whole PowerAuth Client lifetime. In other words, your application can use this mode anytime in its lifetime.
 - In "activation scope", ECIES encryption is available once the PowerAuth Client has a valid activation. In this mode, the encryptor is cryptographically bound to keys exchanged during the activation process.
 
-### Application scope
+### Application Scope
 
-ECIES in application scope has following configuration of parameters:
+ECIES in application scope has the following configuration of parameters:
 
 - `KEY_ENC_PUB` is `KEY_SERVER_MASTER_PUBLIC`
 - `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
@@ -144,16 +144,20 @@ ECIES in application scope has following configuration of parameters:
   byte[] SHARED_INFO_2 = Hash.sha256(APPLICATION_SECRET);
   ```
 
-*Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.*
+<!-- begin box warning -->
+Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.
+<!-- end -->
 
 HTTP header example:
+
 ```
-X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ=="
+X-PowerAuth-Encryption: PowerAuth version="3.1",
+    application_key="UNfS0VZX3JhbmRvbQ=="
 ```
 
-### Activation scope
+### Activation Scope
 
-ECIES in activation scope has following configuration of parameters:
+ECIES in activation scope has the following configuration of parameters:
 
 - `KEY_ENC_PUB` is `KEY_SERVER_PUBLIC` (e.g. key which is unique for each activation)
 - `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
@@ -162,15 +166,21 @@ ECIES in activation scope has following configuration of parameters:
   byte[] SHARED_INFO_2 = Mac.hmacSha256(KEY_TRANSPORT, APPLICATION_SECRET);
   ```
 
-*Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.*
+<!-- begin box warning -->
+Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.
+<!-- end -->
 
 HTTP header example:
+
 ```
-X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+X-PowerAuth-Encryption: PowerAuth version="3.1",
+    application_key="UNfS0VZX3JhbmRvbQ==",
+    activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
 ```
+
 Note, that the header must not be added to the request, when ECIES encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
 
-### Pre-shared constants
+### Pre-Shared Constants
 
 PowerAuth protocol defines following `SHARED_INFO_1` (also called as `sh1` or `sharedInfo1`) constants for its own internal purposes:
 

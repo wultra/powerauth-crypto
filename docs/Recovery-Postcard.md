@@ -2,7 +2,7 @@
 
 The Recovery Postcard is a postcard delivered via OOB channel (typically via the courier service) which contains information needed for the PowerAuth Client's [activation recovery](Activation-Recovery.md). This document describes, in brief, the format of the postcard and the process required for its construction.
 
-## Information printed on the postcard
+## Information Printed on the Postcard
 
 The Recovery Postcard typically contains the following information:
 
@@ -25,7 +25,7 @@ The purpose of this section is to describe how the postcard is securely exchange
 
 ![Recovery Postcard Construction - Architecture](resources/images/arch_cloud_printing_center.png)
 
-### Introduction to the problem
+### Introduction to the Problem
 
 1. The PowerAuth Server is typically located in a controlled and very secure environment in the bank
 2. On opposite to that, the Printing Service responsible for Recovery Postcard manufacturing, is typically located outside of the bank.
@@ -33,7 +33,7 @@ The purpose of this section is to describe how the postcard is securely exchange
 3. We don't want to transmit recovery codes in plaintext (or even encrypted with the pre-shared key)
 
 
-### Printing order
+### Printing Order
 
 1. PAS and RPPS must have pre-shared asymmetric EC keys (P256r1), leading to 32bytes long shared secret (ECDH). Let's call this as `RPPS_MASTER_SHARED_SECRET`.
 

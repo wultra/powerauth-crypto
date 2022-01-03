@@ -4,9 +4,9 @@ PowerAuth Client may need to check for an activation status, so that it can dete
 
 ## Flow of the Activation Status Check
 
-Checking for an activation status is simple. Client needs to prepare a HTTP request with an activation ID and random `STATUS_CHALLENGE`. Server processes the request and sends back the response with activation status blob and random `STATUS_NONCE`. Activation status blob is an encrypted binary blob that encodes activation status. Key `KEY_TRANSPORT` and `STATUS_IV` is used to encrypt the activation blob.
+Checking for an activation status is simple. Client needs to prepare a HTTP request with an activation ID and random `STATUS_CHALLENGE`. Server processes the request and sends back the response with activation status blob and random `STATUS_NONCE`. Activation status blob is an encrypted binary blob that encodes the activation status. Key `KEY_TRANSPORT` and `STATUS_IV` is used to encrypt the activation blob.
 
-Following sequence diagram shows the activation status check in more detail.
+The following sequence diagram shows the activation status check in more detail.
 
 ![Check Activation Status](./resources/images/sequence_activation_status.png)
 
@@ -37,7 +37,7 @@ Following sequence diagram shows the activation status check in more detail.
    byte[] STATUS_IV = KeyConversion.getBytes(KDF_INTERNAL.derive(KEY_TRANSPORT_IV, STATUS_IV_DATA))
    byte[] statusBlob = AES.decrypt(encryptedStatusBlob, STATUS_IV, KEY_TRANSPORT, "AES/CBC/NoPadding")
    ```
-   
+
 ## Status Blob Format
 
 When obtaining the activation status, application receives the binary status blob. Structure of the 32B long status blob is following:
@@ -49,7 +49,7 @@ When obtaining the activation status, application receives the binary status blo
 where:
 
 - The first 4 bytes (`0xDE 0xC0 0xDE 0xD1`) are basically a fixed prefix.
-    - Note that the last byte of this constant also represents the version of the status blob format. If we decide to change the status blob significantly, then the value will be changed to `0xD2`, `0xD3`, etc... 
+    - Note that the last byte of this constant also represents the version of the status blob format. If we decide to change the status blob significantly, then the value will be changed to `0xD2`, `0xD3`, etc.
 - `${STATUS}` - A status of the activation record, it can be one of following values:
     - `0x01 - CREATED`
     - `0x02 - PENDING_COMMIT`
@@ -73,4 +73,3 @@ where:
     SecretKey KEY_TRANSPORT_CTR = KDF.derive(KEY_TRANSPORT, 4000);
     byte[] CTR_DATA_HASH = KeyConversion.getBytes(KDF_INTERNAL.derive(KEY_TRANSPORT_CTR, CTR_DATA));
     ```
-
