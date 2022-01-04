@@ -1,6 +1,6 @@
 **PowerAuth Specification**
 
-- [Overview](./PowerAuth-Specification.md)
+- [Overview](./Readme.md)
 - [Basic Definitions](./Basic-definitions.md)
 - [Activation](./Activation.md)
 - [Key Derivation](./Key-derivation.md)
