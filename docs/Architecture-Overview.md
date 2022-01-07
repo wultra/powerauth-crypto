@@ -48,7 +48,6 @@ To simplify deployment, PowerAuth brings ready-to-use libraries for Java EE / Sp
 - High-level integration libraries that publish all required services and simplify signature validation (Java EE or Spring)
     - Documentation:
         - [RESTful API Security for Spring](https://github.com/wultra/powerauth-restful-integration/blob/develop/docs/RESTful-API-for-Spring.md)
-        - [RESTful API Security for JAX-RS](https://github.com/wultra/powerauth-restful-integration/blob/develop/docs/RESTful-API-for-JavaEE.md)
 
 ### Our Mobile SDK for iOS or Android
 
