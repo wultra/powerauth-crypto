@@ -1,6 +1,6 @@
 # Development
 
-PowerAuth projects can be easily build using Maven with JDK 7 or 8.
+PowerAuth projects can be easily build using Maven with JDK 8 or higher (Java LTS release recommended).
 
 To build PowerAuth server, use the following shell commands:
 
@@ -20,6 +20,7 @@ You can build all PowerAuth Java projects using similar steps:
 - [PowerAuth Server](https://github.com/wultra/powerauth-server)
 - [PowerAuth Admin](https://github.com/wultra/powerauth-admin)
 - [PowerAuth Push Server](https://github.com/wultra/powerauth-push-server)
+- [Enrollment Server](https://github.com/wultra/enrollment-server)
 - [PowerAuth CMD Tool](https://github.com/wultra/powerauth-cmd-tool)
 - [PowerAuth Crypto](./Readme.md)
 - [PowerAuth Web Flow](https://github.com/wultra/powerauth-webflow)

@@ -21,13 +21,18 @@ PowerAuth Deployment requires installation of just one easy to deploy component.
 
 - PowerAuth Server
     - The core server component that manages activated devices, enables the activation process, verifies signatures and keeps system configuration.
-    - Component communicates using SOAP or REST services.
+    - Component communicates using RESTful services.
     - Documentation:
         - [Deploying PowerAuth Server](https://github.com/wultra/powerauth-server/blob/develop/docs/Deploying-PowerAuth-Server.md)
 - PowerAuth Admin _(optional)_
     - Simple GUI admin for managing the PowerAuth Server.
     - Documentation:
         - [Deploying PowerAuth Admin](https://github.com/wultra/powerauth-admin/blob/develop/docs/Deploying-PowerAuth-Admin.md)
+- Enrollment Server
+    - Easy to deploy application exposing the PowerAuth RESTful API.
+  - Documentation:
+       - [Deploying Enrollment Server](https://github.com/wultra/enrollment-server/blob/develop/docs/Deploying-Enrollment-Server.md)
+
 
 ### Your Back-End Components
 
@@ -39,15 +44,9 @@ PowerAuth installation has impact on several of your components:
 
 ### Our Back-End Integration Libraries
 
-To simplify deployment, PowerAuth brings ready-to-use libraries for Java EE / Spring, namely:
-
-- Easy to use PowerAuth Server SOAP service client (Axis2 or Spring-WS)
-    - Documentation:
-        - [SOAP Service Client for Spring](https://github.com/wultra/powerauth-server/blob/develop/docs/Configuring-SOAP-Client-for-Spring.md)
-        - [SOAP Service Client for Axis2](https://github.com/wultra/powerauth-server/blob/develop/docs/Configuring-SOAP-Client-for-Axis2.md)
-- High-level integration libraries that publish all required services and simplify signature validation (Java EE or Spring)
-    - Documentation:
-        - [RESTful API Security for Spring](https://github.com/wultra/powerauth-restful-integration/blob/develop/docs/RESTful-API-for-Spring.md)
+To simplify deployment, PowerAuth brings ready-to-use libraries for Spring:
+ - Documentation:
+    - [RESTful API Security for Spring](https://github.com/wultra/powerauth-restful-integration/blob/develop/docs/RESTful-API-for-Spring.md)
 
 ### Our Mobile SDK for iOS or Android
 
