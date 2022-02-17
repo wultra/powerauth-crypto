@@ -1,7 +1,6 @@
 **PowerAuth Specification**
 
 - [Overview](./Readme.md)
-- [Basic Definitions](./Basic-definitions.md)
 - [Activation](./Activation.md)
 - [Key Derivation](./Key-derivation.md)
 - [Checking Status](./Activation-Status.md)
@@ -10,6 +9,7 @@
 - [End-To-End Encryption](./End-To-End-Encryption.md)
 - [Activation Recovery](Activation-Recovery.md)
 - [Additional Activation OTP](Additional-Activation-OTP.md)
+- [Basic Definitions](./Basic-definitions.md)
 - [Implementation Details](./Implementation-notes.md)
 - [List of Used Keys](./List-of-used-keys.md)
 

@@ -1,65 +1,50 @@
 # Activation via Activation Code
 
+The most straight forward activation type is "activation via the activation code". The activation code is a random one-time token value with limited time span associated with the particular user. Typically, the activation code is displayed as a QR code in the Internet banking, at branch kiosk, or ATM, or - as a less secure but more convenient alternative - it can be sent via SMS message or e-mail.
+
 The following components typically play role in the process of activation via activation code:
 
-- **PowerAuth Client** - A mobile client application, that implements PowerAuth protocol. A good example of a typical PowerAuth Client can be a mobile banking application.
-- **Enrollment Server** - A front-end facing server application (or a set of applications, that we currently view as a single unified system, for the sake of simplicity) that is deployed in demilitarized zone in order to accommodate a communication between PowerAuth Client, Master Front-End Application and PowerAuth Server. A good example of Intermediate Server Application is a mobile banking RESTful API server.
-- **Master Front-End Application Client** - An application that initiates the activation process by displaying the activation code to help the PowerAuth Client start the key exchange flow. Example of Master Front-End Application can be an Internet banking.
-- **Master Front-End Application Back-End** - An application that initiates the activation process by displaying the activation code to help the PowerAuth Client start the key exchange flow. Example of Master Front-End Application can be an Internet banking.
-- **PowerAuth Server** - A server application hidden deep in secure infrastructure, stores activation records, or verifies the request signatures. This application provides services for Intermediate Server Application to implement the PowerAuth protocol. An example of a PowerAuth Server is a bank identity management system.
+- **PowerAuth Mobile SDK** - An SDK embedded in the mobile client application.
+- **Enrollment Server** - A front-end facing server application that is deployed in demilitarized zone (DMZ) in order to accommodate a communication between the PowerAuth Mobile SDK and PowerAuth Server.
+- **Activation Code Delivery Application** - An application (for example Internet banking) that initiates the activation process by requesting and then displaying or sending the activation code for the use in the PowerAuth Mobile SDK.
+- **PowerAuth Server** - A server application hidden deep in the secure infrastructure. It stores activation records and verifies the request signatures.
 
 ![Architecture Overview](./resources/images/arch_big_picture.png)
 
 
-## Activation User Flow
+## Example User Flow
 
-From the user perspective, PowerAuth activation is performed as a sequence of steps in PowerAuth Client and Master Front-End Application. Following steps (with possible UI / UX alterations) must be performed:
+From the user perspective, PowerAuth activation is performed as a sequence of steps in the mobile app and Activation Code Delivery Application (i.e., in web Internet banking). The following steps (with possible user interface alterations) should be performed:
 
-### Master Front-End Application
+### Activation Code Delivery Application
 
-Following diagram shows example steps in Master Front-End Application - imagine the Internet banking as an example application.
+The following diagram shows example steps in the Internet banking as an example application. You can apply similar principles to other Activation Code Delivery Applications, such as branch kiosk.
 
 
 ![Activation - Web UI Flow](./resources/images/ui_internetbanking_activation_web.png)
 
 
-### PowerAuth Client
+### Mobile Application
 
-Following diagram shows example steps in PowerAuth Client - imagine the Mobile banking as an example application.
+The following diagram shows example steps in the mobile banking app.
 
 ![Activation - Mobile UI Flow](./resources/images/ui_internetbanking_activation_mobile.png)
 
 ## Sequence Diagrams
 
-The sequence diagrams below explain the PowerAuth key exchange. It shows how PowerAuth Client, Intermediate Server Application, Master Front-End Application and PowerAuth Server play together in order to establish a shared secret between the client application and PowerAuth Server.
+The sequence diagrams below explain the PowerAuth key exchange. It shows how an app with PowerAuth Mobile SDK, Enrollment Server, Activation Code Delivery Application and PowerAuth Server play together in order to establish a shared secret between the client mobile application and the PowerAuth Server.
 
-For the sake of the simplicity, we have split the process into three diagrams. The details of individual steps can be found in the chapter below ("Activation Flow - Description").
+For the sake of the simplicity, we have split the process into three diagrams.
 
 ### Activation Initialization
 
-This diagram shows how Master Front-End Application requests the activation data from the PowerAuth Server. The process is initiated by the Master Front-End Application (for example, the Internet banking in the web browser) and it also ends here: by displaying the activation data so that they can be entered in the PowerAuth Client.
+This diagram shows how the Activation Code Delivery Application requests the activation data from the PowerAuth Server. The process is initiated by the Activation Code Delivery Application (for example, the Internet banking in the web browser) and it also ends here: by displaying the activation data so that they can be entered in the mobile app and passed to the PowerAuth Mobile SDK.
 
 ![Activation Initialization](./resources/images/sequence_activation_init.png)
 
-### Key Exchange
+#### Process Description
 
-This diagram shows how public keys are exchanged between PowerAuth Client and PowerAuth Server, and how  master shared secret and PowerAuth Standard Keys are derived. The Master Front-End Application plays no active role in the process of a key exchange.
-
-![Activation Key Exchange](./resources/images/sequence_activation_prepare.png)
-
-### Activation Commit
-
-Finally, the last diagram shows how Master Front-End Application proactively checks the status of the activation and allows it's completion by committing the activation record. A PowerAuth Client plays a very little role in this step - it only shows a public key fingerprint so that the key exchange can be confirmed before committing the activation.
-
-![Activation Commit](./resources/images/sequence_activation_commit.png)
-
-## Process Description
-
-The activation process is performed in following steps:
-
-### Obtaining an Activation code
-
-1. The Master Front-End Application requests a new activation for a given user.
+1. The Activation Code Delivery Application requests a new activation for a given user.
 
 1. PowerAuth Server generates an `ACTIVATION_ID`, `ACTIVATION_CODE`, `CTR_DATA` - an initial value for hash based counter, and a key pair `(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC)`. Server also computes a signature `ACTIVATION_SIGNATURE` of `ACTIVATION_CODE` using servers master private key `KEY_SERVER_MASTER_PRIVATE`.
    ```java
@@ -75,30 +60,38 @@ The activation process is performed in following steps:
 
 1. Record associated with given `ACTIVATION_ID` is now in `CREATED` state.
 
-1. Master Front-End Application receives an `ACTIVATION_CODE` and `ACTIVATION_SIGNATURE` (optional) and displays these information visually in the front-end so that a user can rewrite them in PowerAuth Client.
+1. Activation Code Delivery Application receives an `ACTIVATION_CODE` and `ACTIVATION_SIGNATURE` (optional) and displays these information visually in the front-end so that a user can rewrite them in a mobile app with PowerAuth Mobile SDK.
 
-### Client-Side Activation Code Entry
+### Key Exchange
 
-1. User enters the `ACTIVATION_CODE` and `ACTIVATION_SIGNATURE` (optional) in the PowerAuth Client. The entry can be manual or using a QR code with activation data.
+This diagram shows how public keys are exchanged between the PowerAuth Mobile SDK and PowerAuth Server, and how the master shared secret and PowerAuth Standard Keys are derived.
 
-1. PowerAuth Client verifies the `ACTIVATION_SIGNATURE` against `ACTIVATION_CODE` using `KEY_SERVER_MASTER_PUBLIC` and if the signature matches, it proceeds.
+<!-- begin box info -->
+The Activation Code Delivery Application plays no active role in the process of a key exchange.
+<!-- end -->
+
+![Activation Key Exchange](./resources/images/sequence_activation_prepare.png)
+
+#### Process Description
+
+1. User enters the `ACTIVATION_CODE` and `ACTIVATION_SIGNATURE` (optional) in the app with PowerAuth Mobile SDK. The entry can be manual or using a QR code with activation data.
+
+1. PowerAuth Mobile SDK verifies the `ACTIVATION_SIGNATURE` against `ACTIVATION_CODE` using `KEY_SERVER_MASTER_PUBLIC` and if the signature matches, it proceeds.
    ```java
    byte[] DATA = ACTIVATION_CODE.getBytes("UTF-8")
    boolean isOK = ECDSA.verify(DATA, ACTIVATION_SIGNATURE, KEY_SERVER_MASTER_PUBLIC)
    ```
 
-### Client-Server Key Exchange
-
-1. PowerAuth Client generates its key pair `(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC)`.
+1. PowerAuth Mobile SDK generates its key pair `(KEY_DEVICE_PRIVATE, KEY_DEVICE_PUBLIC)`.
    ```java
    KeyPair keyPair = KeyGenerator.randomKeyPair()
    PrivateKey KEY_DEVICE_PRIVATE = keyPair.getPrivate()
    PublicKey KEY_DEVICE_PUBLIC = keyPair.getPublic()
    ```
 
-1. PowerAuth Client encrypts the payload containing `KEY_DEVICE_PUBLIC` with an application scoped ECIES (level 2, `sh1="/pa/activation"`). Let's call the result of this step as `ACTIVATION_DATA`.
+1. PowerAuth Mobile SDK encrypts the payload containing `KEY_DEVICE_PUBLIC` with an application scoped ECIES (level 2, `sh1="/pa/activation"`). Let's call the result of this step as `ACTIVATION_DATA`.
 
-1. PowerAuth Client encrypts payload containing `ACTIVATION_DATA` and `ACTIVATION_CODE` with an application scoped ECIES (level 1, `sh1="/pa/generic/application"`) and sends HTTPS request to the `/pa/v3/activation/create` endpoint.
+1. PowerAuth Mobile SDK encrypts payload containing `ACTIVATION_DATA` and `ACTIVATION_CODE` with an application scoped ECIES (level 1, `sh1="/pa/generic/application"`) and sends HTTPS request to the `/pa/v3/activation/create` endpoint.
 
 1. Enrollment Server decrypts the ECIES envelope, with an application scoped ECIES (level 1, `sh1="/pa/generic/application"`) and calls PowerAuth Server with `ACTIVATION_DATA`. At this step, the `ACTIVATION_CODE` is be used to identify the pending activation.
 
@@ -110,23 +103,31 @@ The activation process is performed in following steps:
 
 1. PowerAuth Server encrypts response, containing `ACTIVATION_ID`, `CTR_DATA`, `KEY_SERVER_PUBLIC` with the same key as was used for ECIES level 2 decryption. This data is once more time encrypted by Intermediate Server Application, with the same key from ECIES level 1, and the response is sent to the PowerAuth Client.
 
-1. PowerAuth Client decrypts the response with both levels of ECIES, in the right order and receives `ACTIVATION_ID`, `KEY_SERVER_PUBLIC`, `CTR_DATA` and stores all that values locally in the volatile memory on the device.
+1. PowerAuth Mobile SDK decrypts the response with both levels of ECIES, in the right order and receives `ACTIVATION_ID`, `KEY_SERVER_PUBLIC`, `CTR_DATA` and stores all that values locally in the volatile memory on the device.
 
-1. (optional) PowerAuth Client displays `H_K_DEVICE_PUBLIC`, so that a user can visually verify the device public key correctness by comparing the `H_K_DEVICE_PUBLIC` value displayed in the Master Front-End Application.
+1. PowerAuth Mobile SDK uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
+   ```java
+   KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)
+   ```
+
+### Activation Commit
+
+Finally, the last diagram shows how the Activation Code Delivery Application proactively checks the status of the activation and allows it's completion by committing the activation record. A PowerAuth Mobile SDK plays a very little role in this step. It only allows showing a public key fingerprint in the mobile app to the user so that the key exchange can be visually confirmed before committing the activation.
+
+![Activation Commit](./resources/images/sequence_activation_commit.png)
+
+#### Process Description
+
+1. PowerAuth Mobile SDK displays `H_K_DEVICE_PUBLIC`, so that a user can visually verify the device public key correctness by comparing the `H_K_DEVICE_PUBLIC` value displayed in the Master Front-End Application.
    ```java
    byte[] activationIdBytes = ACTIVATION_ID.getBytes("UTF-8")
    byte[] fingerprintBytes = ByteUtils.concat(K_DEVICE_PUBLIC_BYTES, ByteUtils.concat(activationIdBytes, K_SERVER_PUBLIC_BYTES))
    byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(KeyConversion.getBytes(fingerprintBytes), 4)
    int H_K_DEVICE_PUBLIC = ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (10 ^ 8)
    ```
-   _Note: Client and server should check the client's public key fingerprint before the shared secret established by the key exchange is considered active. This is necessary so that user can verify the exchanged information in order to detect the MITM attack._
+   _Note: Client and server should allow checking the public key fingerprint before committing the activation. This is necessary so that user can verify the exchanged information in order to detect the MITM attack._
 
-1. PowerAuth Client uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
-   ```java
-   KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)
-   ```
-
-1. Master Front-End Application allows completion of the activation - for example, it may ask user to enter a code delivered via an SMS message. Master Front-End Application technically commits the activation by calling PowerAuth Server (via Intermediate Server Application).
+1. Activation Code Delivery Application allows completion of the activation. For example, it may ask the user to enter an OTP code delivered via an SMS message. Activation Code Delivery Application commits the activation by calling the `/pa/v3/activation/commit` service on PowerAuth Server.
 
 1. Record associated with given `ACTIVATION_ID` is now in `ACTIVE` state.
 
