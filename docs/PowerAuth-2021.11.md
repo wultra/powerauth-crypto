@@ -15,13 +15,13 @@ For updating to 2021.11, please follow these migration guides:
 
 | Component | Application Name | Version | Description |
 |---|---|---|---|
-| PowerAuth Server | `powerauth-java-server.war` | 1.2.0 | Core back-end component for PowerAuth stack. |
+| PowerAuth Server | `powerauth-java-server.war` | 1.2.1 | Core back-end component for PowerAuth stack. |
 | PowerAuth Admin | `powerauth-admin.war` | 1.2.0 | Administration console for PowerAuth Server. |
-| PowerAuth Push Server | `powerauth-push-server.war` | 1.2.0 | Simple to deploy push server for APNS and FCM. |
-| PowerAuth Web Flow | `powerauth-webflow.war` | 1.2.1 | Central web authentication page. |
-| PowerAuth Next Step | `powerauth-next-step.war` | 1.2.1 | Authorization server used for PowerAuth Web Flow component. |
-| PowerAuth Data Adapter | `powerauth-data-adapter.war` | 1.2.1 | Customization component for PowerAuth Web Flow. |
-| PowerAuth Tpp Engine | `powerauth-tpp-engine.war` | 1.2.1 | Third party provider registry and consent engine. |
+| PowerAuth Push Server | `powerauth-push-server.war` | 1.2.1 | Simple to deploy push server for APNS and FCM. |
+| PowerAuth Web Flow | `powerauth-webflow.war` | 1.2.2 | Central web authentication page. |
+| PowerAuth Next Step | `powerauth-next-step.war` | 1.2.2 | Authorization server used for PowerAuth Web Flow component. |
+| PowerAuth Data Adapter | `powerauth-data-adapter.war` | 1.2.0 | Customization component for PowerAuth Web Flow. |
+| PowerAuth Tpp Engine | `powerauth-tpp-engine.war` | 1.2.2 | Third party provider registry and consent engine. |
 
 ### Utilities
 
@@ -44,14 +44,14 @@ For updating to 2021.11, please follow these migration guides:
 |---|---|---|---|
 | PowerAuth RESTful Model | `powerauth-restful-model.jar` | 1.2.0 | Model classes for request and response objects used in PowerAuth Standard RESTful API. |
 | PowerAuth RESTful API Security for Spring | `powerauth-restful-security-spring.jar` | 1.2.0 | High-level integration libraries for RESTful API security, build for Spring MVC. |
-| PowerAuth SOAP Client for Spring WS | `powerauth-java-client-spring.jar` | 1.2.0 | SOAP service client for PowerAuth Server service, built using Spring WS. |
-| PowerAuth Push Server RESTful Model | `powerauth-push-model.jar` | 1.2.0 | Model classes for request and response objects used in PowerAuth Push Server. |
-| PowerAuth Push Server RESTful Client | `powerauth-push-client.jar` | 1.2.0 | Client implementation that simplifies integration with PowerAuth Push Server service. |
-| PowerAuth Data Adapter RESTful Model | `powerauth-data-adapter-model.jar` | 1.2.1 | Model classes for request and response objects used in PowerAuth Data Adapter component. |
-| PowerAuth Data Adapter Client | `powerauth-data-adapter-client.jar` | 1.2.1 | Client implementation that simplifies integration with PowerAuth Data Adapter custom component. |
-| PowerAuth Next Step RESTful Model | `powerauth-nextstep-model.jar` | 1.2.1 | Model classes for request and response objects used in PowerAuth Next Step service. |
-| PowerAuth Next Step Client | `powerauth-nextstep-client.jar` | 1.2.1 | Client implementation that simplifies integration with PowerAuth Next Step service. |
-| PowerAuth Mobile Token Model | `powerauth-mtoken-model.jar` | 1.2.1 | Model classes for request and response objects used in PowerAuth Mobile Token. |
+| PowerAuth SOAP Client for Spring WS | `powerauth-java-client-spring.jar` | 1.2.1 | SOAP service client for PowerAuth Server service, built using Spring WS. |
+| PowerAuth Push Server RESTful Model | `powerauth-push-model.jar` | 1.2.1 | Model classes for request and response objects used in PowerAuth Push Server. |
+| PowerAuth Push Server RESTful Client | `powerauth-push-client.jar` | 1.2.1 | Client implementation that simplifies integration with PowerAuth Push Server service. |
+| PowerAuth Data Adapter RESTful Model | `powerauth-data-adapter-model.jar` | 1.2.2 | Model classes for request and response objects used in PowerAuth Data Adapter component. |
+| PowerAuth Data Adapter Client | `powerauth-data-adapter-client.jar` | 1.2.2 | Client implementation that simplifies integration with PowerAuth Data Adapter custom component. |
+| PowerAuth Next Step RESTful Model | `powerauth-nextstep-model.jar` | 1.2.2 | Model classes for request and response objects used in PowerAuth Next Step service. |
+| PowerAuth Next Step Client | `powerauth-nextstep-client.jar` | 1.2.2 | Client implementation that simplifies integration with PowerAuth Next Step service. |
+| PowerAuth Mobile Token Model | `mtoken-model.jar` | 1.2.0 | Model classes for request and response objects used in PowerAuth Mobile Token. |
 
 ### Technical Dependencies
 
@@ -61,8 +61,8 @@ For updating to 2021.11, please follow these migration guides:
 | PowerAuth HTTP Utilities | `powerauth-java-http.jar` | 1.2.0 | Utilities used for binding PowerAuth cryptography to HTTP technology. |
 | PowerAuth Command-Line Tool Library | `powerauth-java-cmd-lib.jar` | 1.2.0 | Library used for implementation of the PowerAuth Command-Line Tool app, useful for unit testing. |
 | PowerAuth RESTful Security Spring | `powerauth-restful-security-spring.jar` | 1.2.0 | Spring integration library for RESTful API security. |
-| Wultra Java Networking Objects | `rest-model-base.jar` | 1.4.0 | Base classes for RESTful API networking, shared across all Wultra back-end projects. |
-| Wultra REST Client | `rest-client-base.jar` | 1.4.0 | Base RESTful client implementation, shared across all Wultra back-end projects. |
+| Wultra Java Networking Objects | `rest-model-base.jar` | 1.4.1 | Base classes for RESTful API networking, shared across all Wultra back-end projects. |
+| Wultra REST Client | `rest-client-base.jar` | 1.4.1 | Base RESTful client implementation, shared across all Wultra back-end projects. |
 
 ## Known Issues When Updating From Older Versions
 
