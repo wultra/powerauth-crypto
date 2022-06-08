@@ -30,19 +30,16 @@
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-crypto-parent</artifactId>
 		<version>1.3.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>31.1-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.8.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
