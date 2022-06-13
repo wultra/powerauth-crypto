@@ -71,7 +71,7 @@ byte[] token_digest = Mac.hmacSha256(key, data)
 
 In order to use the token authentication with the RESTful API call, you need to set following HTTP header to the request:
 
-```http
+```
 X-PowerAuth-Token: PowerAuth token_id="${TOKEN_ID}"
     token_digest="${TOKEN_DIGEST}"
     nonce="${NONCE}"
