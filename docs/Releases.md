@@ -11,6 +11,8 @@ In order to consolidate the information about the current versions, we have intr
     - `Z` is the bugfix version. Upgraded in case a hotfix is needed in some `X.Y.*` version.
 
 ## List of Releases
+
+- [PowerAuth 2022.05](./PowerAuth-2022.05.md)
 - [PowerAuth 2022.04](./PowerAuth-2022.04.md)
 - [PowerAuth 2021.11](./PowerAuth-2021.11.md)
 - [PowerAuth 2021.05](./PowerAuth-2021.05.md)
