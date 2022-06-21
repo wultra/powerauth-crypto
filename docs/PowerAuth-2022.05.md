@@ -4,7 +4,10 @@
 
 For updating to 2022.05, please follow these migration guides:
 
-- [PowerAuth Server - Migration from version 1.2.5 to version 1.3.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-1.3.0.md)
+- [PowerAuth Server - Migration from version 1.2.5 to version 1.3.0](https://github.com/wultra/powerauth-server/blob/develop/docs/powerauth-server/PowerAuth-Server-1.3.0.md)
+- [PowerAuth Push Server - Migration from version 1.2.5 to version 1.3.0](https://github.com/wultra/powerauth-push-server/blob/develop/docs/PowerAuth-Push-Server-1.3.0.md)
+- [PowerAuth Web Flow - Migration from version 1.2.0 to version 1.3.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-1.3.0.md)
+- [PowerAuth Mobile SDK - Migration from version 1.6.0 to version 1.7.0](https://github.com/wultra/powerauth-mobile-sdk/blob/develop/docs/Migration-from-1.6-to-1.7.md)
 
 ## Components for version 2022.05
 
