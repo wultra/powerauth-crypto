@@ -23,11 +23,16 @@ jobs:
       run: mvn -B package --file pom.xml
     - run: |
         mkdir staging
-        cp powerauth-java-crypto/target/*.jar staging
-        cp powerauth-java-http/target/*.jar staging
-    - name: Publish Artifacts
+        cp powerauth-java-crypto/target/*.jar powerauth-java-crypto
+        cp powerauth-java-http/target/*.jar powerauth-java-http
+    - name: Publish PowerAuth Java Crypto
       uses: actions/upload-artifact@v3
       with:
-        name: Package
-        path: staging
+        name: PowerAuth Java Crypto
+        path: powerauth-java-crypto
+    - name: Publish PowerAuth Java HTTP Utilities
+      uses: actions/upload-artifact@v3
+      with:
+        name: PowerAuth Java HTTP Utilities
+        path: powerauth-java-http
 
