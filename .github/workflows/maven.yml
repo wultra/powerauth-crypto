@@ -21,9 +21,10 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    - run: mkdir staging && |
-        cp powerauth-java-crypto/target/*.jar staging/powerauth-java-crypto.jar |
-        cp powerauth-java-http/target/*.jar staging/powerauth-java-http.jar |
+    - run: |
+        mkdir staging && \
+        cp powerauth-java-crypto/target/*.jar staging/powerauth-java-crypto.jar && \
+        cp powerauth-java-http/target/*.jar staging/powerauth-java-http.jar
     - name: Publish Artifacts
       uses: actions/upload-artifact@v3
       with:
