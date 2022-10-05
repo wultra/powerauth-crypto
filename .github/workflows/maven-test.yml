@@ -18,5 +18,13 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Run the Maven verify phase
-      run: mvn -B --update-snapshots verify
+    - name: Run Maven Verify Step
+      run: mvn -B --update-snapshots -Dmaven.test.failure.ignore=true verify
+    - name: Generate JUnit Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Maven Tests
+        path: target/surefire-reports/*.xml
+        reporter: java-junit
+        fail-on-error: true
