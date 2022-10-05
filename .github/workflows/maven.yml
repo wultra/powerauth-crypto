@@ -1,6 +1,7 @@
 name: Java CI with Maven
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "develop" ]
   pull_request:
@@ -38,8 +39,10 @@ jobs:
       with:
         name: PowerAuth Java HTTP Utilities
         path: powerauth-java-http
+    - name: Run the Maven verify phase
+      run: mvn -B --update-snapshots verify
     - name: Publish Libraries to OSS Sonatype Repository
-      run: mvn -B deploy --file pom.xml
+      run: mvn -DskipTests=true -B deploy --file pom.xml
       env:
         MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
