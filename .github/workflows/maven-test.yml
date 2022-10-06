@@ -19,7 +19,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Run Maven Test Step
-      run: mvn -B --update-snapshots -Dmaven.test.failure.ignore=true test
+      run: mvn -B --update-snapshots -Dmaven.test.failure.ignore=true package
     - name: Generate JUnit Report
       uses: dorny/test-reporter@v1
       if: always()
