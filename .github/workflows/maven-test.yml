@@ -25,4 +25,5 @@ jobs:
       if: always()
       with:
         detailed_summary: true
+        include_passed: true
         report_paths: '**/target/surefire-reports/*.xml'
