@@ -18,5 +18,15 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Run the Maven verify phase
-      run: mvn -B --update-snapshots verify
+    - name: Run Maven Package Step
+      run: mvn -B -U -DskipTests package
+    - name: Run Maven Test Step
+      run: mvn -B -U -Dmaven.test.failure.ignore=true test
+    - name: Generate JUnit Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Maven Tests
+        path: powerauth-java-crypto/target/surefire-reports/*.xml,powerauth-java-http/target/surefire-reports/*.xml
+        reporter: java-junit
+        fail-on-error: true
