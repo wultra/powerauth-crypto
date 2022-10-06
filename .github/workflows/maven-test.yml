@@ -24,4 +24,4 @@ jobs:
       uses: mikepenz/action-junit-report@v3
       if: always()
       with:
-        report_paths: ['powerauth-java-crypto/target/surefire-reports/*.xml', 'powerauth-java-http/target/surefire-reports/*.xml']
+        report_paths: '**/target/surefire-reports/*.xml'
