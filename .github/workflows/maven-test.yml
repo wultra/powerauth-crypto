@@ -18,7 +18,7 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Run Maven Build Step
+    - name: Run Maven Package Step
       run: mvn -B -U -DskipTests package
     - name: Run Maven Test Step
       run: mvn -B -U -Dmaven.test.failure.ignore=true test
