@@ -18,8 +18,6 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Run Maven Build Step
-      run: mvn -B --update-snapshots -DskipTests package
     - name: Run Maven Test Step
       run: mvn -B --update-snapshots -Dmaven.test.failure.ignore=true test
     - name: Generate JUnit Report
