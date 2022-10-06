@@ -26,8 +26,11 @@ jobs:
       env:
         MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+    - run: |
+        mkdir staging
+        cp **/target/*.jar staging
     - name: Publish JAR Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Build Artifacts
-        path: '**/target/*.jar'
+        path: 'staging/*.jar'
