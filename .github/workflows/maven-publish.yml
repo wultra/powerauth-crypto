@@ -28,15 +28,15 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
     - run: |
         mkdir staging
-        cp powerauth-java-crypto/target/*.jar powerauth-java-crypto
-        cp powerauth-java-http/target/*.jar powerauth-java-http
+        cp powerauth-java-crypto/target/*.jar staging
+        cp powerauth-java-http/target/*.jar staging
     - name: Publish PowerAuth Java Crypto
       uses: actions/upload-artifact@v3
       with:
         name: PowerAuth Java Crypto
-        path: powerauth-java-crypto
+        path: staging/powerauth-java-crypto*.jar
     - name: Publish PowerAuth Java HTTP Utilities
       uses: actions/upload-artifact@v3
       with:
         name: PowerAuth Java HTTP Utilities
-        path: powerauth-java-http
+        path: staging/powerauth-java-http*.jar
