@@ -28,9 +28,15 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
     - run: |
         mkdir staging
-        cp **/target/*.jar staging
+        cp **/target/*.jar lib
+        cp **/target/*.war war
     - name: Publish JAR Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: Build Artifacts
-        path: 'staging/*.jar'
+        name: Library Artifacts
+        path: 'lib/*.jar'
+    - name: Publish WAR Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Application Artifacts
+        path: 'war/*.war'
