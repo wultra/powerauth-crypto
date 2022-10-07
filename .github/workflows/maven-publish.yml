@@ -29,15 +29,17 @@ jobs:
     - run: |
         mkdir lib
         mkdir war
-        cp **/target/*.jar lib
-        cp **/target/*.war war
+        cp **/target/*.jar lib 2>/dev/null || :
+        cp **/target/*.war war 2>/dev/null || :
     - name: Publish JAR Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Library Artifacts
         path: 'lib/*.jar'
+        if-no-files-found: ignore
     - name: Publish WAR Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Application Artifacts
         path: 'war/*.war'
+        if-no-files-found: ignore
