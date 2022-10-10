@@ -2,44 +2,16 @@ name: Publish with Maven
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "develop" ]
+    branches:
+      - 'develop'
+      - 'master'
+      - '431-reusable-actions'
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: maven
-        server-id: ossrh-snapshots-distribution
-        server-username: MAVEN_USERNAME
-        server-password: MAVEN_PASSWORD
-    - name: Publish Libraries to OSS Sonatype Repository
-      run: mvn -DskipTests=true -B deploy
-      env:
-        MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-    - run: |
-        mkdir lib
-        mkdir war
-        cp **/target/*.jar lib 2>/dev/null || :
-        cp **/target/*.war war 2>/dev/null || :
-    - name: Publish JAR Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: Library Artifacts
-        path: 'lib/*.jar'
-        if-no-files-found: ignore
-    - name: Publish WAR Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: Application Artifacts
-        path: 'war/*.war'
-        if-no-files-found: ignore
+  maven-deploy:
+    uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
+    with:
+      environment: maven-publish
+    secrets:
+      username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
