@@ -5,7 +5,9 @@ on:
     branches:
       - 'develop'
       - 'master'
-      - 'issues/431-reusable-actions'
+  push:
+    branches:
+     - 'develop'
 
 jobs:
   maven-deploy:
