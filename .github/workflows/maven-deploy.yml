@@ -38,8 +38,9 @@ jobs:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
 
-  maven-deploy-maven:
+  maven-deploy-public:
     if: ${{ github.event_name == 'workflow_dispatch' }}
+    name: Deploy to ${{ inputs.environment }}
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
     with:
       environment: ${{ inputs.environment }}
