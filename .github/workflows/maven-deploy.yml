@@ -15,23 +15,31 @@ on:
         options:
           - snapshot
           - release
+      environment:
+        type: environment
+        default: internal-publish
+        description: internal or external repository
   push:
     branches:
      - 'develop'
      - 'test/ci'
 
-    environment:
-      type: environment
-      default: internal-publish
-      description: internal or external repository
+
 
 jobs:
   maven-deploy:
-    name: Deploy to ${{ inputs.environment }}
-    uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
-    with:
-      environment: ${{ inputs.environment }}
-      style: ${{ inputs.style }}
-    secrets:
-      username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-      password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+    steps:
+      - name: set default environment for push
+        if: ${{ github.event_name == 'push' }}
+        run: echo "environment=internal-publish" >> $GITHUB_ENV
+      - name: set inputed environment for push
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: echo "environment=${{ input.environment }}" >> $GITHUB_ENV
+      - name: Deploy to ${{ inputs.environment }}
+        uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
+        with:
+          environment: ${{ env.environment }}
+          style: ${{ inputs.style }}
+        secrets:
+          username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
