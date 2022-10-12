@@ -7,18 +7,19 @@ on:
       - 'master'
       - 'release/*'
       - 'test/ci'
+    inputs:
+      style:
+        type: choice
+        description:
+        default: snapshot
+        options:
+          - snapshot
+          - release
   push:
     branches:
      - 'develop'
      - 'test/ci'
-  inputs:
-    type:
-      type: choice
-      description:
-      default: snapshot
-      options:
-        - snapshot
-        - release
+
     environment:
       type: environment
       default: internal-publish
@@ -30,6 +31,7 @@ jobs:
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
     with:
       environment: ${{ inputs.environment }}
+      style: ${{ inputs.style }}
     secrets:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
