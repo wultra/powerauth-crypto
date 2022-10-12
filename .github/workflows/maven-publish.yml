@@ -6,6 +6,7 @@ on:
       - 'develop'
       - 'master'
       - 'release/*'
+      - 'test/ci'
   push:
     branches:
      - 'develop'
