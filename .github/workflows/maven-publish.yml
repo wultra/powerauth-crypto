@@ -5,15 +5,30 @@ on:
     branches:
       - 'develop'
       - 'master'
+      - 'release/*'
   push:
     branches:
      - 'develop'
+     - 'test/ci'
+  inputs:
+    type:
+      type: choice
+      description:
+      default: snapshot
+      options:
+        - snapshot
+        - release
+    environment:
+      type: environment
+      default: internal-publish
+      description: internal or external repository
 
 jobs:
   maven-deploy:
+    name: Deploy to ${{ inputs.environment }}
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
     with:
-      environment: maven-publish
+      environment: ${{ inputs.environment }}
     secrets:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
