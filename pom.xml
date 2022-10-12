@@ -207,7 +207,7 @@
                     <url>https://wultra.jfrog.io/artifactory/internal-maven-repository</url>
                 </repository>
                 <snapshotRepository>
-                    <id>jfrog-snapshot</id>
+                    <id>jfrog-central</id>
                     <name>Wultra Artifactory-snapshots</name>
                     <url>https://wultra.jfrog.io/artifactory/internal-maven-repository</url>
                 </snapshotRepository>
