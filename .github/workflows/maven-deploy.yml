@@ -1,4 +1,4 @@
-name: Publish with Maven
+name: Deploy with Maven
 
 on:
   workflow_dispatch:
@@ -28,7 +28,7 @@ on:
 jobs:
   maven-deploy:
     name: Deploy to ${{ inputs.environment }}
-    uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
+    uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
     with:
       environment: ${{ inputs.environment }}
       style: ${{ inputs.style }}
