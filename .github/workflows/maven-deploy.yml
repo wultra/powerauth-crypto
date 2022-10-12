@@ -27,19 +27,23 @@ on:
 
 
 jobs:
-  maven-deploy:
-    steps:
-      - name: set default environment for push
-        if: ${{ github.event_name == 'push' }}
-        run: echo "environment=internal-publish" >> $GITHUB_ENV
-      - name: set inputed environment for push
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: echo "environment=${{ input.environment }}" >> $GITHUB_ENV
-      - name: Deploy to ${{ inputs.environment }}
-        uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
-        with:
-          environment: ${{ env.environment }}
-          style: ${{ inputs.style }}
-        secrets:
-          username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+  maven-deploy-internal:
+    if: ${{ github.event_name == 'push' }}
+    name: Deploy to ${{ inputs.environment }}
+    uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
+    with:
+      environment: internal-publish
+      style: snapshot
+    secrets:
+      username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+
+  maven-deploy-maven:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
+    with:
+      environment: ${{ inputs.environment }}
+      style: ${{ inputs.style }}
+    secrets:
+      username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
