@@ -16,4 +16,4 @@ on:
 
 jobs:
   maven-tests:
-    uses: wultra/wultra-infrastructure/.github/workflows/maven-test.yml@test/ci
+    uses: wultra/wultra-infrastructure/.github/workflows/maven-test.yml@develop
