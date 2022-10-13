@@ -8,7 +8,7 @@ on:
       - 'releases/*'
       - 'test/ci'
     inputs:
-      style:
+      release_type:
         type: choice
         description:
         default: snapshot
@@ -33,7 +33,7 @@ jobs:
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
     with:
       environment: internal-publish
-      style: snapshot
+      release_type: snapshot
     secrets:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
@@ -44,7 +44,7 @@ jobs:
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@test/ci
     with:
       environment: ${{ inputs.environment }}
-      style: ${{ inputs.style }}
+      release_type: ${{ inputs.release_type }}
     secrets:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
