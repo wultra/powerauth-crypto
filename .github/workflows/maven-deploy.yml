@@ -1,0 +1,50 @@
+name: Deploy with Maven
+
+on:
+  workflow_dispatch:
+    branches:
+      - 'develop'
+      - 'master'
+      - 'releases/*'
+      - 'test/ci'
+    inputs:
+      release_type:
+        type: choice
+        description:
+        default: snapshot
+        options:
+          - snapshot
+          - release
+      environment:
+        type: environment
+        default: internal-publish
+        description: internal or external repository
+  push:
+    branches:
+     - 'develop'
+     - 'test/ci'
+
+
+
+jobs:
+  maven-deploy-internal:
+    if: ${{ github.event_name == 'push' }}
+    name: Deploy to ${{ inputs.environment }}
+    uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
+    with:
+      environment: internal-publish
+      release_type: snapshot
+    secrets:
+      username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+
+  maven-deploy-public:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    name: Deploy to ${{ inputs.environment }}
+    uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
+    with:
+      environment: ${{ inputs.environment }}
+      release_type: ${{ inputs.release_type }}
+    secrets:
+      username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}

@@ -7,6 +7,7 @@ on:
      - 'develop'
      - 'master'
      - 'releases/**'
+     - 'test/ci'
   pull_request:
     branches:
       - 'develop'
