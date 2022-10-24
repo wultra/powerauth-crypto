@@ -29,7 +29,7 @@ on:
 jobs:
   maven-deploy-internal:
     if: ${{ github.event_name == 'push' }}
-    name: Deploy to ${{ inputs.environment }}
+    name: Deploy to jfrog
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
     with:
       environment: internal-publish
@@ -40,7 +40,7 @@ jobs:
 
   maven-deploy-public:
     if: ${{ github.event_name == 'workflow_dispatch' }}
-    name: Deploy to ${{ inputs.environment }}
+    name: Deploy by parameter
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
     with:
       environment: ${{ inputs.environment }}
