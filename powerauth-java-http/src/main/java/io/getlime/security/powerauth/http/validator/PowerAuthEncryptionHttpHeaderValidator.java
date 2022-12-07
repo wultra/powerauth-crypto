@@ -69,7 +69,7 @@ public class PowerAuthEncryptionHttpHeaderValidator {
         final String version = header.getVersion();
         if (version == null || version.isEmpty()) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
-        } else if (Arrays.asList(VERSIONS).contains(version)) {
+        } else if (!Arrays.asList(VERSIONS).contains(version)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
