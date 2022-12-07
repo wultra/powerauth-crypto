@@ -18,12 +18,19 @@ package io.getlime.security.powerauth.http.validator;
 
 import io.getlime.security.powerauth.http.PowerAuthEncryptionHttpHeader;
 
+import java.util.Arrays;
+
 /**
  * Validator class for {@link PowerAuthEncryptionHttpHeader}.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class PowerAuthEncryptionHttpHeaderValidator {
+
+    /**
+     * Admissible protocol versions in the header.
+     */
+    private static final String[] VERSIONS = { "1.0" };
 
     /**
      * Validate PowerAuth encryption HTTP header.
@@ -38,7 +45,7 @@ public class PowerAuthEncryptionHttpHeaderValidator {
         }
 
         // Check application key
-        String applicationKey = header.getApplicationKey();
+        final String applicationKey = header.getApplicationKey();
         if (applicationKey == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_APPLICATION_KEY_EMPTY");
         }
@@ -48,7 +55,7 @@ public class PowerAuthEncryptionHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_APPLICATION_KEY_INVALID");
         }
 
-        String activationId = header.getActivationId();
+        final String activationId = header.getActivationId();
 
         // Activation ID is null in application scope, thus null value is allowed
         if (activationId != null) {
@@ -58,11 +65,12 @@ public class PowerAuthEncryptionHttpHeaderValidator {
             }
         }
 
-        // Check that version is present
-        String version = header.getVersion();
-
+        // Check that version is present and correct
+        final String version = header.getVersion();
         if (version == null || version.isEmpty()) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
+        } else if (Arrays.asList(VERSIONS).contains(version)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
     }

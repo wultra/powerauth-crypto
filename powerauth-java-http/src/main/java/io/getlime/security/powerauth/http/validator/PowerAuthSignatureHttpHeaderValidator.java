@@ -18,12 +18,19 @@ package io.getlime.security.powerauth.http.validator;
 
 import io.getlime.security.powerauth.http.PowerAuthSignatureHttpHeader;
 
+import java.util.Arrays;
+
 /**
  * Validator class for {@link io.getlime.security.powerauth.http.PowerAuthSignatureHttpHeader}.
  *
  * @author Petr Dvorak, petr@wultra.com
  */
 public class PowerAuthSignatureHttpHeaderValidator {
+
+    /**
+     * Admissible protocol versions in the header.
+     */
+    private static final String[] VERSIONS = { "3.1", "3.0", "2.1", "2.0" };
 
     /**
      * Validate PowerAuth signature HTTP header.
@@ -38,7 +45,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check activation ID
-        String activationId = header.getActivationId();
+        final String activationId = header.getActivationId();
         if (activationId == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ACTIVATION_ID_EMPTY");
         }
@@ -49,7 +56,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check nonce
-        String nonce = header.getNonce();
+        final String nonce = header.getNonce();
         if (nonce == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_NONCE_EMPTY");
         }
@@ -60,7 +67,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check signature type
-        String signatureType = header.getSignatureType();
+        final String signatureType = header.getSignatureType();
         if (signatureType == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_TYPE_EMPTY");
         }
@@ -71,7 +78,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check signature
-        String signature = header.getSignature();
+        final String signature = header.getSignature();
         if (signature == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_EMPTY");
         }
@@ -82,7 +89,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check application key.
-        String applicationKey = header.getApplicationKey();
+        final String applicationKey = header.getApplicationKey();
         if (applicationKey == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_APPLICATION_EMPTY");
         }
@@ -90,6 +97,14 @@ public class PowerAuthSignatureHttpHeaderValidator {
         // Check if application key has correct format
         if (!ValueTypeValidator.isValidBase64OfLength(applicationKey, 16)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_APPLICATION_INVALID");
+        }
+
+        // Check that version is present and correct
+        final String version = header.getVersion();
+        if (version == null || version.isEmpty()) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
+        } else if (Arrays.asList(VERSIONS).contains(version)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
     }

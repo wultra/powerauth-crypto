@@ -18,12 +18,19 @@ package io.getlime.security.powerauth.http.validator;
 
 import io.getlime.security.powerauth.http.PowerAuthTokenHttpHeader;
 
+import java.util.Arrays;
+
 /**
  * Validator class for {@link io.getlime.security.powerauth.http.PowerAuthTokenHttpHeader}.
  *
  * @author Petr Dvorak, petr@wultra.com
  */
 public class PowerAuthTokenHttpHeaderValidator {
+
+    /**
+     * Admissible protocol versions in the header.
+     */
+    private static final String[] VERSIONS = { "1.0" };
 
     /**
      * Validate PowerAuth token HTTP header.
@@ -38,7 +45,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check token ID
-        String tokenId = header.getTokenId();
+        final String tokenId = header.getTokenId();
         if (tokenId == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_ID_EMPTY");
         }
@@ -49,7 +56,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check token digest
-        String tokenDigest = header.getTokenDigest();
+        final String tokenDigest = header.getTokenDigest();
         if (tokenDigest == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_DIGEST_EMPTY");
         }
@@ -60,7 +67,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check nonce
-        String nonce = header.getNonce();
+        final String nonce = header.getNonce();
         if (nonce == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_NONCE_EMPTY");
         }
@@ -71,7 +78,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check timestamp
-        String timestamp = header.getTimestamp();
+        final String timestamp = header.getTimestamp();
         if (timestamp == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_TIMESTAMP_EMPTY");
         }
@@ -79,6 +86,14 @@ public class PowerAuthTokenHttpHeaderValidator {
         // Check if timestamp has correct format
         if (!ValueTypeValidator.isDecimalString(timestamp, 9, 15)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_TIMESTAMP_INVALID");
+        }
+
+        // Check that version is present and correct
+        final String version = header.getVersion();
+        if (version == null || version.isEmpty()) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
+        } else if (Arrays.asList(VERSIONS).contains(version)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
     }
