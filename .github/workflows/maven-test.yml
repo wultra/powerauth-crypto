@@ -4,10 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-     - 'develop'
-     - 'master'
-     - 'releases/**'
-     - 'test/ci'
+      - 'master'
+      - 'releases/**'
   pull_request:
     branches:
       - 'develop'
@@ -17,3 +15,4 @@ on:
 jobs:
   maven-tests:
     uses: wultra/wultra-infrastructure/.github/workflows/maven-test.yml@develop
+    secrets: inherit
