@@ -1,4 +1,4 @@
-name: Package with Maven and JDK 8
+name: Run Coverity scan and upload results
 
 on:
   workflow_dispatch:
@@ -21,6 +21,14 @@ jobs:
       - run: cov-build --dir cov-int mvn -DskipTests=true compile
       - run: tar czvf powerauth-crypto.tgz cov-int
       - run: mkdir result && cp powerauth-crypto.tgz result
+      - name: upload to Coverity Scan Dashboard
+      - run: |
+          curl --form token=${{secrets.COVERITY_SCAN_TOKEN}} \
+            --form email=hello@wultra.com \
+            --form file=@powerauth-crypto.tgz \
+            --form version="${{ github.sha }}" \
+            --form description="RC" \
+            https://scan.coverity.com/builds?project=wultra%2Fpowerauth-crypto
       - uses: actions/upload-artifact@v3
         with:
           name: Analysis
