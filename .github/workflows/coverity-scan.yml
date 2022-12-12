@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Coverity Scan
     runs-on: ubuntu-latest
     container: ghcr.io/wultra/coverity:latest
     steps:
@@ -25,8 +26,8 @@ jobs:
         with:
           name: Analysis
           path: result
-      - name: upload to Coverity Scan Dashboard
-      - run: |
+      - name: Upload to Coverity Scan Dashboard
+        run: |
           curl --form token=${{secrets.COVERITY_SCAN_TOKEN}} \
             --form email=hello@wultra.com \
             --form file=@powerauth-crypto.tgz \
