@@ -1,0 +1,21 @@
+name: Package with Maven and JDK 8
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'issues/coverity_scan'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/wultra/coverity:latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: cov-build --dir cov-int mvn -DskipTests=true compile
+      - run: tar czvf powerauth-crypto.tgz cov-int
+      - run: mkdir result && cp powerauth-crypto.tgz result
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Analysis
+          path: result
