@@ -21,6 +21,10 @@ jobs:
       - run: cov-build --dir cov-int mvn -DskipTests=true compile
       - run: tar czvf powerauth-crypto.tgz cov-int
       - run: mkdir result && cp powerauth-crypto.tgz result
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Analysis
+          path: result
       - name: upload to Coverity Scan Dashboard
       - run: |
           curl --form token=${{secrets.COVERITY_SCAN_TOKEN}} \
@@ -29,7 +33,4 @@ jobs:
             --form version="${{ github.sha }}" \
             --form description="RC" \
             https://scan.coverity.com/builds?project=wultra%2Fpowerauth-crypto
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Analysis
-          path: result
+
