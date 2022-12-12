@@ -24,10 +24,8 @@ on:
      - 'develop'
      - 'test/ci'
 
-
-
 jobs:
-  maven-deploy-internal:
+  maven-deploy-push:
     if: ${{ github.event_name == 'push' }}
     name: Deploy to jfrog
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
@@ -38,7 +36,7 @@ jobs:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
 
-  maven-deploy-public:
+  maven-deploy-manual:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     name: Deploy by parameter
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
