@@ -38,7 +38,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check token ID
-        String tokenId = header.getTokenId();
+        final String tokenId = header.getTokenId();
         if (tokenId == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_ID_EMPTY");
         }
@@ -49,7 +49,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check token digest
-        String tokenDigest = header.getTokenDigest();
+        final String tokenDigest = header.getTokenDigest();
         if (tokenDigest == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_DIGEST_EMPTY");
         }
@@ -60,7 +60,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check nonce
-        String nonce = header.getNonce();
+        final String nonce = header.getNonce();
         if (nonce == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_NONCE_EMPTY");
         }
@@ -71,7 +71,7 @@ public class PowerAuthTokenHttpHeaderValidator {
         }
 
         // Check timestamp
-        String timestamp = header.getTimestamp();
+        final String timestamp = header.getTimestamp();
         if (timestamp == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_TIMESTAMP_EMPTY");
         }
@@ -79,6 +79,17 @@ public class PowerAuthTokenHttpHeaderValidator {
         // Check if timestamp has correct format
         if (!ValueTypeValidator.isDecimalString(timestamp, 9, 15)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_TIMESTAMP_INVALID");
+        }
+
+        // Check that version is present
+        final String version = header.getVersion();
+        if (version == null || version.isEmpty()) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
+        }
+
+        // Check that version is correct
+        if (!ValueTypeValidator.isValidProtocolVersion(version)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
     }
