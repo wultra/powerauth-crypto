@@ -20,7 +20,6 @@ import com.google.common.io.BaseEncoding;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,10 +32,23 @@ public class ValueTypeValidator {
     private static final String uuidRegex = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
     private static final String signatureRegex = "^[0-9]{8}(-[0-9]{8}){0,2}$";
 
+    public static final String decimalStringRegex = "^[0-9]*$";
+
     /**
      * Admissible protocol versions in the header.
      */
-    private static final Set<String> protocolVersions = new HashSet<>(Arrays.asList("3.1", "3.0", "2.1", "2.0"));
+    private static final Set<String> protocolVersions = new HashSet<>(Arrays.asList(
+            "3.1", "3.0", "2.1", "2.0"
+    ));
+
+    /**
+     * Admissible signature types in the header.
+     */
+    private static final Set<String> expectedSignatureTypes = new HashSet<>(Arrays.asList(
+            "possession", "knowledge", "biometry",
+            "possession_knowledge", "possession_biometry",
+            "possession_knowledge_biometry"
+    ));
 
 
     /**
@@ -44,6 +56,7 @@ public class ValueTypeValidator {
      * @param uuidCandidate UUID candidate.
      * @return True in case provided string is a valid UUID, false otherwise.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidUuid(String uuidCandidate) {
         return uuidCandidate != null && uuidCandidate.toLowerCase().matches(uuidRegex);
     }
@@ -56,6 +69,7 @@ public class ValueTypeValidator {
      * @return True in case the provided string are Base64 encoded data of expected byte length,
      * false otherwise.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidBase64OfLength(String base64candidate, int expectedLength) {
         final BaseEncoding base64 = BaseEncoding.base64();
         if (base64candidate != null && base64.canDecode(base64candidate)) {
@@ -91,11 +105,6 @@ public class ValueTypeValidator {
      * @return True if the provided signature type is valid.
      */
     public static boolean isValidSignatureType(String signatureType) {
-        List<String> expectedSignatureTypes = Arrays.asList(
-                "possession", "knowledge", "biometry",
-                "possession_knowledge", "possession_biometry",
-                "possession_knowledge_biometry"
-        );
         return signatureType != null && expectedSignatureTypes.contains(signatureType.toLowerCase());
     }
 
@@ -135,13 +144,19 @@ public class ValueTypeValidator {
      * @return True if provided string is decimal and has expected length range.
      */
     public static boolean isDecimalString(String decimalString, int from, int to) {
-        if (decimalString != null && decimalString.matches("^[0-9]*$")) {
+        if (decimalString != null && decimalString.matches(decimalStringRegex)) {
             return decimalString.length() >= from && decimalString.length() <= to;
         } else {
             return false;
         }
     }
 
+    /**
+     * Check if the provided version is a valid one.
+     * @param version Version to check.
+     * @return True if provided version is valid, false otherwise.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidProtocolVersion(String version) {
         return protocolVersions.contains(version);
     }
