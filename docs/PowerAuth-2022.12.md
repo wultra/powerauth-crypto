@@ -36,6 +36,7 @@ For updating to 2022.12, please follow these migration guides:
 | watchOS | `PowerAuth2ForWatch` | 1.7.6 | A limited library for watchOS. |
 | iOS App Extensions | `PowerAuth2ForExtensions` | 1.7.6 | A limited library for iOS App Extensions. |
 | Android | `com.wultra.android.powerauth:powerauth-sdk` | 1.7.6 | A client library for Android. |
+| React Native | `react-native-powerauth-mobile-sdk` | 2.3.1 | React Native wrapper library for PowerAuth. | 
 
 ### Back-End Integration Libraries
 
