@@ -32,6 +32,12 @@ public class ValueTypeValidator {
     private static final String signatureRegex = "^[0-9]{8}(-[0-9]{8}){0,2}$";
 
     /**
+     * Admissible protocol versions in the header.
+     */
+    private static final String[] protocolVersions = { "3.1", "3.0", "2.1", "2.0" };
+
+
+    /**
      * Check if provided string is a valid UUID.
      * @param uuidCandidate UUID candidate.
      * @return True in case provided string is a valid UUID, false otherwise.
@@ -132,6 +138,10 @@ public class ValueTypeValidator {
         } else {
             return false;
         }
+    }
+
+    public static boolean isValidProtocolVersion(String version) {
+        return Arrays.asList(protocolVersions).contains(version);
     }
 
 }

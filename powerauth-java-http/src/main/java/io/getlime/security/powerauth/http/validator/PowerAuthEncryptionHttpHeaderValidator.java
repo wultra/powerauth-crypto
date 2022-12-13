@@ -18,19 +18,12 @@ package io.getlime.security.powerauth.http.validator;
 
 import io.getlime.security.powerauth.http.PowerAuthEncryptionHttpHeader;
 
-import java.util.Arrays;
-
 /**
  * Validator class for {@link PowerAuthEncryptionHttpHeader}.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class PowerAuthEncryptionHttpHeaderValidator {
-
-    /**
-     * Admissible protocol versions in the header.
-     */
-    private static final String[] VERSIONS = { "1.0" };
 
     /**
      * Validate PowerAuth encryption HTTP header.
@@ -69,7 +62,7 @@ public class PowerAuthEncryptionHttpHeaderValidator {
         final String version = header.getVersion();
         if (version == null || version.isEmpty()) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
-        } else if (!Arrays.asList(VERSIONS).contains(version)) {
+        } else if (!ValueTypeValidator.isValidProtocolVersion(version)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
