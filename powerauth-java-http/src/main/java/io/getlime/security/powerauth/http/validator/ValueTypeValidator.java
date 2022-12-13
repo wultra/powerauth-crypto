@@ -32,29 +32,29 @@ public class ValueTypeValidator {
     /**
      * Regexp for validating UUID values.
      */
-    private static final String uuidRegex = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
+    private static final String UUID_REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
     /**
      * Regexp for validating decimalized signature values.
      */
-    private static final String signatureRegex = "^[0-9]{8}(-[0-9]{8}){0,2}$";
+    private static final String SIGNATURE_REGEX = "^[0-9]{8}(-[0-9]{8}){0,2}$";
 
     /**
      * Regexp for validating decimal strings.
      */
-    private static final String decimalStringRegex = "^[0-9]*$";
+    private static final String DECIMAL_STRING_REGEX = "^[0-9]*$";
 
     /**
      * Admissible protocol versions in the header.
      */
-    private static final Set<String> protocolVersions = new HashSet<>(Arrays.asList(
+    private static final Set<String> PROTOCOL_VERSIONS = new HashSet<>(Arrays.asList(
             "3.1", "3.0", "2.1", "2.0"
     ));
 
     /**
      * Admissible signature types in the header.
      */
-    private static final Set<String> expectedSignatureTypes = new HashSet<>(Arrays.asList(
+    private static final Set<String> EXPECTED_SIGNATURE_TYPES = new HashSet<>(Arrays.asList(
             "possession", "knowledge", "biometry",
             "possession_knowledge", "possession_biometry",
             "possession_knowledge_biometry"
@@ -67,7 +67,7 @@ public class ValueTypeValidator {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidUuid(String uuidCandidate) {
-        return uuidCandidate != null && uuidCandidate.toLowerCase().matches(uuidRegex);
+        return uuidCandidate != null && uuidCandidate.toLowerCase().matches(UUID_REGEX);
     }
 
     /**
@@ -114,7 +114,7 @@ public class ValueTypeValidator {
      * @return True if the provided signature type is valid.
      */
     public static boolean isValidSignatureType(String signatureType) {
-        return signatureType != null && expectedSignatureTypes.contains(signatureType.toLowerCase());
+        return signatureType != null && EXPECTED_SIGNATURE_TYPES.contains(signatureType.toLowerCase());
     }
 
     /**
@@ -129,7 +129,7 @@ public class ValueTypeValidator {
                 case 17:
                 case 26:
                     // "2.0", "2.1", "3.0" signature version uses "DECIMAL" format
-                    return signature.matches(signatureRegex);
+                    return signature.matches(SIGNATURE_REGEX);
                 case 24:
                 case 44:
                 case 64:
@@ -153,7 +153,7 @@ public class ValueTypeValidator {
      * @return True if provided string is decimal and has expected length range.
      */
     public static boolean isDecimalString(String decimalString, int from, int to) {
-        if (decimalString != null && decimalString.matches(decimalStringRegex)) {
+        if (decimalString != null && decimalString.matches(DECIMAL_STRING_REGEX)) {
             return decimalString.length() >= from && decimalString.length() <= to;
         } else {
             return false;
@@ -167,7 +167,7 @@ public class ValueTypeValidator {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidProtocolVersion(String version) {
-        return protocolVersions.contains(version);
+        return PROTOCOL_VERSIONS.contains(version);
     }
 
 }
