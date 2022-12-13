@@ -92,11 +92,14 @@ public class PowerAuthSignatureHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_APPLICATION_INVALID");
         }
 
-        // Check that version is present and correct
+        // Check that version is present
         final String version = header.getVersion();
         if (version == null || version.isEmpty()) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
-        } else if (!ValueTypeValidator.isValidProtocolVersion(version)) {
+        }
+
+        // Check that version is correct
+        if (!ValueTypeValidator.isValidProtocolVersion(version)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
