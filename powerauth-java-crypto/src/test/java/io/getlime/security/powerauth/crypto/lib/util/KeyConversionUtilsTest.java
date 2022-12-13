@@ -19,6 +19,7 @@ package io.getlime.security.powerauth.crypto.lib.util;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
@@ -84,7 +85,7 @@ public class KeyConversionUtilsTest {
 			String originalPrivateBase64 = BaseEncoding.base64().encode(originalPrivateBytes);
 			byte[] decodedPrivateBytes = BaseEncoding.base64().decode(originalPrivateBase64);
 			PrivateKey decodedPrivateKey = instance.convertBytesToPrivateKey(decodedPrivateBytes);
-			assertEquals(privateKey, decodedPrivateKey);
+			assertEquals(((BCECPrivateKey)privateKey).getD(), (((BCECPrivateKey)decodedPrivateKey).getD()));
 
 			KeyFactory kf = KeyFactory.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
 			BigInteger keyInteger = new BigInteger("" + (12 * i));
