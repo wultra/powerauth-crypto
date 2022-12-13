@@ -29,10 +29,20 @@ import java.util.Set;
  */
 public class ValueTypeValidator {
 
+    /**
+     * Regexp for validating UUID values.
+     */
     private static final String uuidRegex = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
+
+    /**
+     * Regexp for validating decimalized signature values.
+     */
     private static final String signatureRegex = "^[0-9]{8}(-[0-9]{8}){0,2}$";
 
-    public static final String decimalStringRegex = "^[0-9]*$";
+    /**
+     * Regexp for validating decimal strings.
+     */
+    private static final String decimalStringRegex = "^[0-9]*$";
 
     /**
      * Admissible protocol versions in the header.
@@ -49,7 +59,6 @@ public class ValueTypeValidator {
             "possession_knowledge", "possession_biometry",
             "possession_knowledge_biometry"
     ));
-
 
     /**
      * Check if provided string is a valid UUID.
