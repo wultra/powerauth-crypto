@@ -19,7 +19,9 @@ package io.getlime.security.powerauth.http.validator;
 import com.google.common.io.BaseEncoding;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Utility class to validate various value types, such as UUID, base64 encoded data, etc.
@@ -34,7 +36,7 @@ public class ValueTypeValidator {
     /**
      * Admissible protocol versions in the header.
      */
-    private static final String[] protocolVersions = { "3.1", "3.0", "2.1", "2.0" };
+    private static final Set<String> protocolVersions = new HashSet<>(Arrays.asList("3.1", "3.0", "2.1", "2.0"));
 
 
     /**
@@ -141,7 +143,7 @@ public class ValueTypeValidator {
     }
 
     public static boolean isValidProtocolVersion(String version) {
-        return Arrays.asList(protocolVersions).contains(version);
+        return protocolVersions.contains(version);
     }
 
 }
