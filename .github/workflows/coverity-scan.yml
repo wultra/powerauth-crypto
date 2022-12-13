@@ -1,0 +1,16 @@
+name: Run Coverity scan and upload results
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 10 1 * *'    # monthly
+
+
+jobs:
+  coverity-scan:
+    uses: wultra/wultra-infrastructure/.github/workflows/coverity-scan.yml@develop
+    secrets: inherit
+    with:
+      project-name: ${{ github.event.repository.name }}
+      version: ${{ github.sha }}
+      description: ${{ github.ref }}
