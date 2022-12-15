@@ -23,6 +23,7 @@ import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import io.getlime.security.powerauth.crypto.server.vault.PowerAuthServerVault;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -114,7 +115,7 @@ public class VaultTest {
             assertEquals(clientVaultEncryptionKey, vaultEncryptionKeyLocal);
 
             PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);
-            assertEquals(deviceKeyPair.getPrivate(), devicePrivateKeyLocal);
+            assertEquals(((BCECPrivateKey)deviceKeyPair.getPrivate()).getD(), ((BCECPrivateKey)devicePrivateKeyLocal).getD());
         }
 
     }
@@ -173,7 +174,7 @@ public class VaultTest {
         assertEquals(clientVaultEncryptionKey, vaultEncryptionKeyLocal);
 
         PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);
-        assertEquals(deviceKeyPair.getPrivate(), devicePrivateKeyLocal);
+        assertEquals(((BCECPrivateKey)deviceKeyPair.getPrivate()).getD(), ((BCECPrivateKey)devicePrivateKeyLocal).getD());
 
     }
 

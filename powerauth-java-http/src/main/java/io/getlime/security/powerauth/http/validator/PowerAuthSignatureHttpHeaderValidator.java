@@ -38,7 +38,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check activation ID
-        String activationId = header.getActivationId();
+        final String activationId = header.getActivationId();
         if (activationId == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ACTIVATION_ID_EMPTY");
         }
@@ -49,7 +49,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check nonce
-        String nonce = header.getNonce();
+        final String nonce = header.getNonce();
         if (nonce == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_NONCE_EMPTY");
         }
@@ -60,7 +60,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check signature type
-        String signatureType = header.getSignatureType();
+        final String signatureType = header.getSignatureType();
         if (signatureType == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_TYPE_EMPTY");
         }
@@ -71,7 +71,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check signature
-        String signature = header.getSignature();
+        final String signature = header.getSignature();
         if (signature == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_EMPTY");
         }
@@ -82,7 +82,7 @@ public class PowerAuthSignatureHttpHeaderValidator {
         }
 
         // Check application key.
-        String applicationKey = header.getApplicationKey();
+        final String applicationKey = header.getApplicationKey();
         if (applicationKey == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_APPLICATION_EMPTY");
         }
@@ -90,6 +90,17 @@ public class PowerAuthSignatureHttpHeaderValidator {
         // Check if application key has correct format
         if (!ValueTypeValidator.isValidBase64OfLength(applicationKey, 16)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_APPLICATION_INVALID");
+        }
+
+        // Check that version is present
+        final String version = header.getVersion();
+        if (version == null || version.isEmpty()) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
+        }
+
+        // Check that version is correct
+        if (!ValueTypeValidator.isValidProtocolVersion(version)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
     }

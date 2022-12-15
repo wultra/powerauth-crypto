@@ -14,6 +14,7 @@
 - [List of Used Keys](./List-of-used-keys.md)
 
 **Tutorials**
+
 - [Authentication in Mobile Banking Apps (SCA)](https://developers.wultra.com/products/mobile-security-suite/develop/tutorials/Authentication-in-Mobile-Apps)
 - [Verifying PowerAuth Signatures On The Server](https://developers.wultra.com/products/mobile-security-suite/develop/tutorials/Manual-Signature-Verification)
 

@@ -38,7 +38,7 @@ public class PowerAuthEncryptionHttpHeaderValidator {
         }
 
         // Check application key
-        String applicationKey = header.getApplicationKey();
+        final String applicationKey = header.getApplicationKey();
         if (applicationKey == null) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_APPLICATION_KEY_EMPTY");
         }
@@ -48,7 +48,7 @@ public class PowerAuthEncryptionHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_APPLICATION_KEY_INVALID");
         }
 
-        String activationId = header.getActivationId();
+        final String activationId = header.getActivationId();
 
         // Activation ID is null in application scope, thus null value is allowed
         if (activationId != null) {
@@ -59,10 +59,14 @@ public class PowerAuthEncryptionHttpHeaderValidator {
         }
 
         // Check that version is present
-        String version = header.getVersion();
-
+        final String version = header.getVersion();
         if (version == null || version.isEmpty()) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
+        }
+
+        // Check that version is correct
+        if (!ValueTypeValidator.isValidProtocolVersion(version)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
         }
 
     }
