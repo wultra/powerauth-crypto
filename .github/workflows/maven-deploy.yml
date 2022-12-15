@@ -46,3 +46,5 @@ jobs:
     secrets:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      gpg_passphrase: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+      pgp_key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
