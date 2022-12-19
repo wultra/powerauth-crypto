@@ -25,7 +25,7 @@ on:
      - 'test/ci'
 
 jobs:
-  maven-deploy-push:
+  maven-deploy-jfrog:
     if: ${{ github.event_name == 'push' }}
     name: Deploy to jfrog
     uses: wultra/wultra-infrastructure/.github/workflows/maven-deploy.yml@develop
