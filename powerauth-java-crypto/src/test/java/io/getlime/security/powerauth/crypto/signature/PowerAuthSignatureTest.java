@@ -19,6 +19,7 @@ package io.getlime.security.powerauth.crypto.signature;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
+import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
@@ -95,6 +96,7 @@ public class PowerAuthSignatureTest {
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("2.1");
         assertEquals(PowerAuthSignatureFormat.DECIMAL, signatureFormat);
+        final SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
         
@@ -124,7 +126,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Client Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKey)));
 
                 byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctrData, signatureFormat);
+                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctrData, signatureConfiguration);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -140,7 +142,7 @@ public class PowerAuthSignatureTest {
                 assertEquals(signatureClientKey, signatureServerKey);
 
                 ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctrData, signatureFormat);
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctrData, signatureConfiguration);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
@@ -166,7 +168,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Client Signature Key - Knowledge:  " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKeyKnowledge)));
 
                 byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureFormat);
+                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -185,7 +187,7 @@ public class PowerAuthSignatureTest {
                 assertEquals(signatureClientKeyKnowledge, signatureServerKeyKnowledge);
 
                 ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData, signatureFormat);
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
@@ -227,6 +229,7 @@ public class PowerAuthSignatureTest {
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
         assertEquals(PowerAuthSignatureFormat.DECIMAL, signatureFormat);
+        SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
 
@@ -258,7 +261,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
                 System.out.println("### Client Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKey)));
 
-                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctrData, signatureFormat);
+                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctrData, signatureConfiguration);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -273,7 +276,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKey)));
                 assertEquals(signatureClientKey, signatureServerKey);
 
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctrData, signatureFormat);
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctrData, signatureConfiguration);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
@@ -299,7 +302,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKeyKnowledge = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
                 System.out.println("### Client Signature Key - Knowledge:  " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKeyKnowledge)));
 
-                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureFormat);
+                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -317,7 +320,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKeyKnowledge)));
                 assertEquals(signatureClientKeyKnowledge, signatureServerKeyKnowledge);
 
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData, signatureFormat);
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
@@ -360,6 +363,7 @@ public class PowerAuthSignatureTest {
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
         assertEquals(PowerAuthSignatureFormat.BASE64, signatureFormat);
+        final SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
 
@@ -391,7 +395,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
                 System.out.println("### Client Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKey)));
 
-                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctrData, signatureFormat);
+                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctrData, signatureConfiguration);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -406,7 +410,7 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKey)));
                 assertEquals(signatureClientKey, signatureServerKey);
 
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctrData, signatureFormat);
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctrData, signatureConfiguration);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 
@@ -432,7 +436,7 @@ public class PowerAuthSignatureTest {
                 SecretKey signatureClientKeyKnowledge = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
                 System.out.println("### Client Signature Key - Knowledge:  " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKeyKnowledge)));
 
-                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureFormat);
+                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
 
                 System.out.println("## Client Signature: " + signature);
 
@@ -450,7 +454,195 @@ public class PowerAuthSignatureTest {
                 System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKeyKnowledge)));
                 assertEquals(signatureClientKeyKnowledge, signatureServerKeyKnowledge);
 
-                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData, signatureFormat);
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
+                System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
+                assertTrue(isSignatureValid);
+
+                ctrData = ctrGenerator.next(ctrData);
+            }
+        }
+    }
+
+    /**
+     * Test of signature generation and validation.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.1</li>
+     * </ul>
+     *
+     * @throws java.lang.Exception If the test fails.
+     */
+    @Test
+    public void testOfflineSignatureForDataV31() throws Exception {
+        System.out.println("# PowerAuth Offline Signature");
+        System.out.println();
+
+        // Prepare data
+        KeyGenerator keyGenerator = new KeyGenerator();
+
+        KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+        PrivateKey serverPrivateKey = serverKeyPair.getPrivate();
+        PublicKey serverPublicKey = serverKeyPair.getPublic();
+
+        System.out.println("## Server Private Key: " + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(serverPrivateKey)));
+        System.out.println("## Server Public Key:  " + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(serverPublicKey)));
+
+        KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+        PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
+        PublicKey devicePublicKey = deviceKeyPair.getPublic();
+
+        System.out.println("## Device Private Key: " + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(devicePrivateKey)));
+        System.out.println("## Device Public Key:  " + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
+
+        final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.DECIMAL;
+        final SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
+
+        PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
+        PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
+
+        PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
+        PowerAuthServerKeyFactory serverKeyFactory = new PowerAuthServerKeyFactory();
+
+        HashBasedCounter ctrGenerator = new HashBasedCounter();
+        byte[] ctrData = ctrGenerator.init();
+
+        for (int i = 0; i < 5; i++) {
+
+            System.out.println();
+            System.out.println("# PowerAuth Signature Test - Round " + i);
+            System.out.println("# 1FA ====");
+
+            for (int j = 0; j < 20; j++) {
+
+                System.out.println();
+                System.out.println("## Counter: " + BaseEncoding.base64().encode(ctrData));
+
+                // generate random data
+                byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * 1000));
+                System.out.println("## Data: " + BaseEncoding.base64().encode(data));
+
+                // compute data signature
+                System.out.println("## Client Signature Key Derivation");
+                SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                System.out.println("### Client Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterClientKey)));
+                SecretKey signatureClientKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
+                System.out.println("### Client Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKey)));
+
+                String signature = clientSignature.signatureForData(data, Collections.singletonList(signatureClientKey), ctrData, signatureConfiguration);
+
+                System.out.println("## Client Signature: " + signature);
+
+                // validate data signature
+                System.out.println("## Server Signature Key Derivation");
+
+                SecretKey masterServerKey = serverKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+                System.out.println("### Server Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterServerKey)));
+                assertEquals(masterClientKey, masterServerKey);
+
+                SecretKey signatureServerKey = serverKeyFactory.generateServerSignaturePossessionKey(masterServerKey);
+                System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKey)));
+                assertEquals(signatureClientKey, signatureServerKey);
+
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Collections.singletonList(signatureServerKey), ctrData, signatureConfiguration);
+                System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
+                assertTrue(isSignatureValid);
+
+                ctrData = ctrGenerator.next(ctrData);
+            }
+
+            System.out.println("# 2FA ====");
+            for (int j = 0; j < 20; j++) {
+
+                System.out.println();
+                System.out.println("## Counter: " + BaseEncoding.base64().encode(ctrData));
+
+                // generate random data
+                byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * 1000));
+                System.out.println("## Data: " + BaseEncoding.base64().encode(data));
+
+                // compute data signature
+                System.out.println("## Client Signature Key Derivation");
+                SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                System.out.println("### Client Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterClientKey)));
+                SecretKey signatureClientKeyPossession = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
+                System.out.println("### Client Signature Key - Possession: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKeyPossession)));
+                SecretKey signatureClientKeyKnowledge = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
+                System.out.println("### Client Signature Key - Knowledge:  " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKeyKnowledge)));
+
+                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
+
+                System.out.println("## Client Signature: " + signature);
+
+                // validate data signature
+                System.out.println("## Server Signature Key Derivation");
+
+                SecretKey masterServerKey = serverKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+                System.out.println("### Server Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterServerKey)));
+                assertEquals(masterClientKey, masterServerKey);
+
+                SecretKey signatureServerKeyPossession = serverKeyFactory.generateServerSignaturePossessionKey(masterServerKey);
+                System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKeyPossession)));
+                assertEquals(signatureClientKeyPossession, signatureServerKeyPossession);
+                SecretKey signatureServerKeyKnowledge = serverKeyFactory.generateServerSignatureKnowledgeKey(masterServerKey);
+                System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKeyKnowledge)));
+                assertEquals(signatureClientKeyKnowledge, signatureServerKeyKnowledge);
+
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
+                System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
+                assertTrue(isSignatureValid);
+
+                ctrData = ctrGenerator.next(ctrData);
+            }
+
+            System.out.println("# 2FA, override component length ====");
+            for (int j = 0; j < 20; j++) {
+
+                System.out.println();
+                System.out.println("## Counter: " + BaseEncoding.base64().encode(ctrData));
+
+                // generate random data
+                byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * 1000));
+                System.out.println("## Data: " + BaseEncoding.base64().encode(data));
+
+                // Chose length between 0 and 20
+                signatureConfiguration.putInteger(SignatureConfiguration.DECIMAL_SIGNATURE_COMPONENT_LENGTH, j);
+
+                // compute data signature
+                System.out.println("## Client Signature Key Derivation");
+                SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                System.out.println("### Client Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterClientKey)));
+                SecretKey signatureClientKeyPossession = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
+                System.out.println("### Client Signature Key - Possession: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKeyPossession)));
+                SecretKey signatureClientKeyKnowledge = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
+                System.out.println("### Client Signature Key - Knowledge:  " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureClientKeyKnowledge)));
+
+                String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
+
+                System.out.println("## Client Signature: " + signature);
+                assertEquals(Math.min(Math.max(9, j * 2 + 1), 25), signature.length()); // two components separated by a dash - min. 2x4+1=9, max. 2x12+1=25
+                if (j == 1) {
+                    assertEquals(9, signature.length());
+                }
+                if (j == 14) {
+                    assertEquals(25, signature.length());
+                }
+
+                // validate data signature
+                System.out.println("## Server Signature Key Derivation");
+
+                SecretKey masterServerKey = serverKeyFactory.generateServerMasterSecretKey(serverPrivateKey, devicePublicKey);
+                System.out.println("### Server Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(masterServerKey)));
+                assertEquals(masterClientKey, masterServerKey);
+
+                SecretKey signatureServerKeyPossession = serverKeyFactory.generateServerSignaturePossessionKey(masterServerKey);
+                System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKeyPossession)));
+                assertEquals(signatureClientKeyPossession, signatureServerKeyPossession);
+                SecretKey signatureServerKeyKnowledge = serverKeyFactory.generateServerSignatureKnowledgeKey(masterServerKey);
+                System.out.println("### Server Signature Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureServerKeyKnowledge)));
+                assertEquals(signatureClientKeyKnowledge, signatureServerKeyKnowledge);
+
+                boolean isSignatureValid = serverSignature.verifySignatureForData(data, signature, Arrays.asList(signatureServerKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
                 System.out.println("## Signature valid: " + (isSignatureValid ? "TRUE" : "FALSE"));
                 assertTrue(isSignatureValid);
 

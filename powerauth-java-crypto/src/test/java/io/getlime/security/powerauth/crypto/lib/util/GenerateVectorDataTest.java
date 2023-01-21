@@ -22,6 +22,7 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
+import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
@@ -463,6 +464,7 @@ public class GenerateVectorDataTest {
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("2.0");
+            SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
@@ -480,7 +482,7 @@ public class GenerateVectorDataTest {
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
                     byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureConfiguration);
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -501,7 +503,7 @@ public class GenerateVectorDataTest {
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
                     byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureConfiguration);
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -522,7 +524,7 @@ public class GenerateVectorDataTest {
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * data_max));
 
                     byte[] ctrData = ByteBuffer.allocate(16).putLong(8, ctr).array();
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureConfiguration);
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -572,6 +574,7 @@ public class GenerateVectorDataTest {
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
+            SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
@@ -592,7 +595,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureConfiguration);
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -614,7 +617,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureConfiguration);
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -636,7 +639,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureConfiguration);
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -688,6 +691,7 @@ public class GenerateVectorDataTest {
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
+            SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
@@ -708,7 +712,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureConfiguration);
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -730,7 +734,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureConfiguration);
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -752,7 +756,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureFormat);
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureConfiguration);
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -768,6 +772,95 @@ public class GenerateVectorDataTest {
 
                     ctrData = hashBasedCounter.next(ctrData);
                 }
+            }
+        }
+        writeTestVector(testSet);
+    }
+
+    @Test
+    public void testSignatureOfflineValidation() throws Exception {
+
+        TestSet testSet = new TestSet("signatures-offline.json", "Client must be able to compute PowerAuth offline signature (using 1FA, 2FA signature keys) based on given data, counter and signature type");
+
+        int min = 2;
+        int max = 8;
+        int keyMax = 2;
+        int signatureCount = 10;
+        int dataMax = 256;
+        for (int j = min; j < max; j++) {
+
+            // Prepare data
+            KeyGenerator keyGenerator = new KeyGenerator();
+
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            PublicKey serverPublicKey = serverKeyPair.getPublic();
+
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
+
+            SignatureConfiguration signatureConfiguration = new SignatureConfiguration(PowerAuthSignatureFormat.DECIMAL);
+            signatureConfiguration.putInteger(SignatureConfiguration.DECIMAL_SIGNATURE_COMPONENT_LENGTH, j);
+            PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
+            PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
+
+            HashBasedCounter hashBasedCounter = new HashBasedCounter();
+
+            for (int i = 0; i < keyMax; i++) {
+
+                // compute data signature
+                SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
+                SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
+                SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
+                SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
+
+                byte[] ctrData = hashBasedCounter.init();
+
+                for (int k = 0; k < signatureCount; k++) {
+
+                    // generate random data
+                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
+
+                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureConfiguration);
+                    String signatureType = "possession";
+
+                    Map<String, String> input = new LinkedHashMap<>();
+                    input.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signatureType", signatureType);
+                    input.put("signatureComponentLength", String.valueOf(j));
+                    input.put("counterData", BaseEncoding.base64().encode(ctrData));
+                    input.put("data", BaseEncoding.base64().encode(data));
+                    Map<String, String> output = new LinkedHashMap<>();
+                    output.put("signature", signature);
+                    testSet.addData(input, output);
+
+                    ctrData = hashBasedCounter.next(ctrData);
+                }
+
+                for (int k = 0; k < signatureCount; k++) {
+
+                    // generate random data
+                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
+
+                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureConfiguration);
+                    String signatureType = "possession_knowledge";
+
+                    Map<String, String> input = new LinkedHashMap<>();
+                    input.put("signaturePossessionKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signatureType", signatureType);
+                    input.put("signatureComponentLength", String.valueOf(j));
+                    input.put("counterData", BaseEncoding.base64().encode(ctrData));
+                    input.put("data", BaseEncoding.base64().encode(data));
+                    Map<String, String> output = new LinkedHashMap<>();
+                    output.put("signature", signature);
+                    testSet.addData(input, output);
+
+                    ctrData = hashBasedCounter.next(ctrData);
+                }
+
             }
         }
         writeTestVector(testSet);
