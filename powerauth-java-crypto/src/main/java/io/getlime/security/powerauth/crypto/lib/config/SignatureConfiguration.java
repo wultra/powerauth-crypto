@@ -17,24 +17,16 @@
 package io.getlime.security.powerauth.crypto.lib.config;
 
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 
 /**
  * Class that holds information about the signature configuration.
  *
  * @author Petr Dvorak, petr@wultra.com
  */
-public class SignatureConfiguration {
-
-    /**
-     * Key used for retrieving expected length of the signature component.
-     */
-    public static final String DECIMAL_SIGNATURE_COMPONENT_LENGTH = "DECIMAL_SIGNATURE_COMPONENT_LENGTH";
+public abstract class SignatureConfiguration {
 
     private final PowerAuthSignatureFormat signatureFormat;
-    private final Map<String, Object> signatureParameters = new LinkedHashMap<>();
 
     /**
      * Constructor with the signature format.
@@ -53,22 +45,44 @@ public class SignatureConfiguration {
         return signatureFormat;
     }
 
-    /**
-     * Get integer with a given key from the configuration parameter map.
-     * @param key Key to obtain.
-     * @return Integer value, or null in case the value is not present.
-     */
-    public Integer getInteger(String key) {
-        return (Integer) signatureParameters.get(key);
+    public static SignatureConfiguration forFormat(PowerAuthSignatureFormat format) throws CryptoProviderException {
+        switch (format) {
+            case BASE64: {
+                return new Base64SignatureConfiguration();
+            }
+            case DECIMAL: {
+                return new DecimalSignatureConfiguration();
+            }
+        }
+        throw new CryptoProviderException("Invalid or null format provided");
     }
 
     /**
-     * Get integer value with a given key to the configuration parameter map.
-     * @param key Key to insert.
-     * @param val Value to insert.
+     * Construct new decimal signature of default length.
+     *
+     * @return Decimal signature with default length.
      */
-    public void putInteger(String key, Integer val) {
-        signatureParameters.put(key, val);
+    public static DecimalSignatureConfiguration decimal() {
+        return new DecimalSignatureConfiguration();
+    }
+
+    /**
+     * Construct new decimal signature of given length.
+     *
+     * @param length Length.
+     * @return Decimal signature with given length.
+     */
+    public static DecimalSignatureConfiguration decimal(Integer length) {
+        return new DecimalSignatureConfiguration(length);
+    }
+
+    /**
+     * Construct new Base64 signature.
+     *
+     * @return Base64 signature.
+     */
+    public static Base64SignatureConfiguration base64() {
+        return new Base64SignatureConfiguration();
     }
 
 }

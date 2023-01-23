@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.io.BaseEncoding;
+import io.getlime.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
@@ -107,12 +108,23 @@ public class SignatureUtils {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     private String computePowerAuthDecimalSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData, Integer length) throws GenericCryptoException, CryptoProviderException {
+        // Determine the length of the signature component, validate length
+        final int signatureDecimalLength;
+        if (length != null) {
+            if (length < 4) {
+                throw new CryptoProviderException("Length must be at least 4, provided: " + length);
+            }
+            if (length > 8) {
+                throw new CryptoProviderException("Length must be less or equal to 8, provided: " + length);
+            }
+            signatureDecimalLength = length;
+        } else {
+            signatureDecimalLength = PowerAuthConfiguration.SIGNATURE_DECIMAL_LENGTH;
+        }
         // Prepare holder for signature components
         final String[] signatureStringComponents = new String[signatureKeys.size()];
         // Compute signature components
         final List<byte[]> signatureComponents = computePowerAuthSignatureComponents(data, signatureKeys, ctrData);
-        // Determine the length of the signature component
-        int signatureDecimalLength = (length == null) ? PowerAuthConfiguration.SIGNATURE_DECIMAL_LENGTH : Math.min(Math.max(length, 4), 12);
         // Convert byte components into decimal signature
         for (int i = 0; i < signatureComponents.size(); i++) {
             final byte[] signatureComponent = signatureComponents.get(i);
@@ -221,7 +233,7 @@ public class SignatureUtils {
                 return computePowerAuthBase64Signature(data, signatureKeys, ctrData);
             }
             case DECIMAL: {
-                final Integer len = configuration.getInteger(SignatureConfiguration.DECIMAL_SIGNATURE_COMPONENT_LENGTH);
+                final Integer len = ((DecimalSignatureConfiguration)configuration).getLength();
                 return computePowerAuthDecimalSignature(data, signatureKeys, ctrData, len);
             }
             default: {

@@ -19,6 +19,7 @@ package io.getlime.security.powerauth.crypto.signature;
 import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
+import io.getlime.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
@@ -96,7 +97,7 @@ public class PowerAuthSignatureTest {
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("2.1");
         assertEquals(PowerAuthSignatureFormat.DECIMAL, signatureFormat);
-        final SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
+        final SignatureConfiguration signatureConfiguration = SignatureConfiguration.forFormat(signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
         
@@ -229,7 +230,7 @@ public class PowerAuthSignatureTest {
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
         assertEquals(PowerAuthSignatureFormat.DECIMAL, signatureFormat);
-        SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
+        final SignatureConfiguration signatureConfiguration = SignatureConfiguration.forFormat(signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
 
@@ -363,7 +364,7 @@ public class PowerAuthSignatureTest {
 
         final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
         assertEquals(PowerAuthSignatureFormat.BASE64, signatureFormat);
-        final SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
+        final SignatureConfiguration signatureConfiguration = SignatureConfiguration.forFormat(signatureFormat);
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
 
@@ -495,8 +496,7 @@ public class PowerAuthSignatureTest {
         System.out.println("## Device Private Key: " + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(devicePrivateKey)));
         System.out.println("## Device Public Key:  " + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
 
-        final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.DECIMAL;
-        final SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
+        final DecimalSignatureConfiguration signatureConfiguration = SignatureConfiguration.decimal();
 
         PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
         PowerAuthServerSignature serverSignature = new PowerAuthServerSignature();
@@ -605,8 +605,9 @@ public class PowerAuthSignatureTest {
                 byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * 1000));
                 System.out.println("## Data: " + BaseEncoding.base64().encode(data));
 
-                // Chose length between 0 and 20
-                signatureConfiguration.putInteger(SignatureConfiguration.DECIMAL_SIGNATURE_COMPONENT_LENGTH, j);
+                // Chose length between 4 and 8
+                final int componentLength = 4 + j % 5;
+                signatureConfiguration.setLength(componentLength);
 
                 // compute data signature
                 System.out.println("## Client Signature Key Derivation");
@@ -620,13 +621,7 @@ public class PowerAuthSignatureTest {
                 String signature = clientSignature.signatureForData(data, Arrays.asList(signatureClientKeyPossession, signatureClientKeyKnowledge), ctrData, signatureConfiguration);
 
                 System.out.println("## Client Signature: " + signature);
-                assertEquals(Math.min(Math.max(9, j * 2 + 1), 25), signature.length()); // two components separated by a dash - min. 2x4+1=9, max. 2x12+1=25
-                if (j == 1) {
-                    assertEquals(9, signature.length());
-                }
-                if (j == 14) {
-                    assertEquals(25, signature.length());
-                }
+                assertEquals(componentLength * 2 + 1, signature.length());
 
                 // validate data signature
                 System.out.println("## Server Signature Key Derivation");

@@ -22,6 +22,7 @@ import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
+import io.getlime.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
@@ -464,7 +465,7 @@ public class GenerateVectorDataTest {
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("2.0");
-            SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
+            SignatureConfiguration signatureConfiguration = SignatureConfiguration.forFormat(signatureFormat);
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
@@ -574,7 +575,7 @@ public class GenerateVectorDataTest {
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
-            SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
+            SignatureConfiguration signatureConfiguration = SignatureConfiguration.forFormat(signatureFormat);
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
@@ -691,7 +692,7 @@ public class GenerateVectorDataTest {
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
-            SignatureConfiguration signatureConfiguration = new SignatureConfiguration(signatureFormat);
+            SignatureConfiguration signatureConfiguration = SignatureConfiguration.forFormat(signatureFormat);
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
@@ -782,8 +783,8 @@ public class GenerateVectorDataTest {
 
         TestSet testSet = new TestSet("signatures-offline.json", "Client must be able to compute PowerAuth offline signature (using 1FA, 2FA signature keys) based on given data, counter and signature type");
 
-        int min = 2;
-        int max = 8;
+        int min = 4;
+        int max = 9;
         int keyMax = 2;
         int signatureCount = 10;
         int dataMax = 256;
@@ -798,8 +799,7 @@ public class GenerateVectorDataTest {
             KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
-            SignatureConfiguration signatureConfiguration = new SignatureConfiguration(PowerAuthSignatureFormat.DECIMAL);
-            signatureConfiguration.putInteger(SignatureConfiguration.DECIMAL_SIGNATURE_COMPONENT_LENGTH, j);
+            SignatureConfiguration signatureConfiguration = SignatureConfiguration.decimal();
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
