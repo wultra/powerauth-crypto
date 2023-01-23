@@ -100,9 +100,8 @@ public class SignatureUtils {
      * @param signatureKeys Keys for computing the signature.
      * @param ctrData Counter byte array / derived key index.
      * @param length Required length of the factor related signature component (i.e, if length is 4, then 2FA will
-     *               have 8 digits). Minimal allowed non-null value is 4. If the provided value is less than 4, the value
-     *               is increased automatically to 4. Maximum allowed value is 12, values above are again set to 12.
-     *               If the value is null, the default system value (8) is used.
+     *               have 8 digits). Minimal allowed non-null value is 4. Maximum allowed value is 8. If the value
+     *               is null, the default system value (8) is used.
      * @return Decimal formatted PowerAuth signature for given data.
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
