@@ -29,7 +29,7 @@
     <packaging>pom</packaging>
 
     <inceptionYear>2016</inceptionYear>
-    <url>http://powerauth.com/</url>
+    <url>https://powerauth.com/</url>
 
     <organization>
         <name>Wultra s.r.o.</name>
@@ -39,7 +39,7 @@
     <licenses>
         <license>
             <name>Apache 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
