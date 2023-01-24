@@ -54,7 +54,7 @@ public abstract class SignatureConfiguration {
                 return new DecimalSignatureConfiguration();
             }
         }
-        throw new CryptoProviderException("Invalid or null format provided");
+        throw new CryptoProviderException("Invalid or null format provided: " + format);
     }
 
     /**
