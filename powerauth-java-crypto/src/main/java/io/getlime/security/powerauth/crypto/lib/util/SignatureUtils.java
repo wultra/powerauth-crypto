@@ -18,8 +18,9 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.io.BaseEncoding;
+import io.getlime.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
+import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.slf4j.Logger;
@@ -98,11 +99,27 @@ public class SignatureUtils {
      * @param data Data to be signed.
      * @param signatureKeys Keys for computing the signature.
      * @param ctrData Counter byte array / derived key index.
+     * @param length Required length of the factor related signature component (i.e, if length is 4, then 2FA will
+     *               have 8 digits). Minimal allowed non-null value is 4. Maximum allowed value is 8. If the value
+     *               is null, the default system value (8) is used.
      * @return Decimal formatted PowerAuth signature for given data.
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private String computePowerAuthDecimalSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
+    private String computePowerAuthDecimalSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData, Integer length) throws GenericCryptoException, CryptoProviderException {
+        // Determine the length of the signature component, validate length
+        final int signatureDecimalLength;
+        if (length != null) {
+            if (length < 4) {
+                throw new CryptoProviderException("Length must be at least 4, provided: " + length);
+            }
+            if (length > 8) {
+                throw new CryptoProviderException("Length must be less or equal to 8, provided: " + length);
+            }
+            signatureDecimalLength = length;
+        } else {
+            signatureDecimalLength = PowerAuthConfiguration.SIGNATURE_DECIMAL_LENGTH;
+        }
         // Prepare holder for signature components
         final String[] signatureStringComponents = new String[signatureKeys.size()];
         // Compute signature components
@@ -111,8 +128,8 @@ public class SignatureUtils {
         for (int i = 0; i < signatureComponents.size(); i++) {
             final byte[] signatureComponent = signatureComponents.get(i);
             int index = signatureComponent.length - 4;
-            int number = (ByteBuffer.wrap(signatureComponent).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.SIGNATURE_DECIMAL_LENGTH));
-            signatureStringComponents[i] = String.format("%0" + PowerAuthConfiguration.SIGNATURE_DECIMAL_LENGTH + "d", number);
+            int number = (ByteBuffer.wrap(signatureComponent).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, signatureDecimalLength));
+            signatureStringComponents[i] = String.format("%0" + signatureDecimalLength + "d", number);
         }
         // Join components with dash.
         return Joiner.on("-").join(signatureStringComponents);
@@ -192,12 +209,12 @@ public class SignatureUtils {
      * @param data Data to be signed.
      * @param signatureKeys Keys for computing the signature.
      * @param ctrData Counter byte array / derived key index.
-     * @param format Format of signature to produce.
+     * @param configuration Format of signature to produce and parameters for the signature.
      * @return PowerAuth signature for given data.
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData, PowerAuthSignatureFormat format) throws GenericCryptoException, CryptoProviderException {
+    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData, SignatureConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
         if (signatureKeys == null) {
             throw new GenericCryptoException("Missing signatureKeys parameter");
         }
@@ -210,13 +227,17 @@ public class SignatureUtils {
         if (ctrData.length != PowerAuthConfiguration.SIGNATURE_COUNTER_LENGTH) {
             throw new GenericCryptoException("Invalid length of signature counter");
         }
-        switch (format) {
-            case BASE64:
+        switch (configuration.getSignatureFormat()) {
+            case BASE64: {
                 return computePowerAuthBase64Signature(data, signatureKeys, ctrData);
-            case DECIMAL:
-                return computePowerAuthDecimalSignature(data, signatureKeys, ctrData);
-            default:
+            }
+            case DECIMAL: {
+                final Integer len = ((DecimalSignatureConfiguration)configuration).getLength();
+                return computePowerAuthDecimalSignature(data, signatureKeys, ctrData, len);
+            }
+            default: {
                 throw new GenericCryptoException("Unsupported format of PowerAuth signature.");
+            }
         }
     }
 
@@ -227,13 +248,13 @@ public class SignatureUtils {
      * @param signature Data signature.
      * @param signatureKeys Keys for signature validation.
      * @param ctrData Counter data.
-     * @param format Format in which signature will be validated.
+     * @param configuration Format in which signature will be validated and parameters for the validation.
      * @return Return "true" if signature matches, "false" otherwise.
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData, PowerAuthSignatureFormat format) throws GenericCryptoException, CryptoProviderException {
-        return signature.equals(computePowerAuthSignature(data, signatureKeys, ctrData, format));
+    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData, SignatureConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
+        return signature.equals(computePowerAuthSignature(data, signatureKeys, ctrData, configuration));
     }
 
 }
