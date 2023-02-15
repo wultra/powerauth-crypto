@@ -799,7 +799,7 @@ public class GenerateVectorDataTest {
             KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
-            SignatureConfiguration signatureConfiguration = SignatureConfiguration.decimal();
+            SignatureConfiguration signatureConfiguration = SignatureConfiguration.decimal(j);
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
