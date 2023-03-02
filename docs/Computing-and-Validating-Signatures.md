@@ -190,7 +190,7 @@ PowerAuth Server can validate the signature using the following mechanism:
 1. Check the record state - if it is other than `ACTIVE`, terminate the validation.
 1. Obtain `KEY_SERVER_PRIV` and `KEY_DEVICE_PUB` from the record.
 1. Compute `KEY_MASTER_SECRET`.
-	- `KEY_MASTER_SECRET = ECDH(KEY_SERVER_PRIV, KEY_DEVICE_PUB)`
+	- `KEY_MASTER_SECRET = ByteUtils.convert32Bto16B(ECDH.phase(KEY_SERVER_PRIV, KEY_DEVICE_PUB))`
 1. Compute required signature keys (`KEY_SIGNATURE_POSSESSION`, `KEY_SIGNATURE_KNOWLEDGE` or `KEY_SIGNATURE_BIOMETRY`).
 	- see "PowerAuth Key Derivation" section.
 1. Compute the expected signature for obtained data and check if the expected signature matches the one sent with the client. Since the PowerAuth Client may be ahead with counter from PowerAuth Server, server should try couple extra indexes ahead:
