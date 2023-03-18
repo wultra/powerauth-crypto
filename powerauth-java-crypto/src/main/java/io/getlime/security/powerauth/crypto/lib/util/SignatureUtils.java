@@ -54,8 +54,34 @@ public class SignatureUtils {
      */
     public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             ecdsa.initSign(masterPrivateKey);
+            ecdsa.update(bytes);
+            return ecdsa.sign();
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (SignatureException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new GenericCryptoException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Compute ECDSA signature of given bytes with a private key, using a provided instance of SecureRandom.
+     *
+     * @param bytes Bytes to be signed.
+     * @param masterPrivateKey Private key for computing the signature.
+     * @param secureRandom Secure random instance.
+     * @return Signature for given data.
+     * @throws InvalidKeyException In case invalid key was provided.
+     * @throws GenericCryptoException In case signature calculation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey, SecureRandom secureRandom) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        try {
+            final Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            ecdsa.initSign(masterPrivateKey, secureRandom);
             ecdsa.update(bytes);
             return ecdsa.sign();
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
@@ -80,7 +106,7 @@ public class SignatureUtils {
      */
     public boolean validateECDSASignature(byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             ecdsa.initVerify(masterPublicKey);
             ecdsa.update(signedBytes);
             return ecdsa.verify(signature);
@@ -127,8 +153,8 @@ public class SignatureUtils {
         // Convert byte components into decimal signature
         for (int i = 0; i < signatureComponents.size(); i++) {
             final byte[] signatureComponent = signatureComponents.get(i);
-            int index = signatureComponent.length - 4;
-            int number = (ByteBuffer.wrap(signatureComponent).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, signatureDecimalLength));
+            final int index = signatureComponent.length - 4;
+            final int number = (ByteBuffer.wrap(signatureComponent).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, signatureDecimalLength));
             signatureStringComponents[i] = String.format("%0" + signatureDecimalLength + "d", number);
         }
         // Join components with dash.
@@ -187,8 +213,8 @@ public class SignatureUtils {
             byte[] derivedKey = hmac.hash(signatureKey, ctrData);
 
             for (int j = 0; j < i; j++) {
-                byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
-                byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctrData);
+                final byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
+                final byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctrData);
                 derivedKey = hmac.hash(derivedKeyInner, derivedKey);
             }
 

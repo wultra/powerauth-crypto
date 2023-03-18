@@ -87,7 +87,7 @@ public class PowerAuthServerActivation {
 
     /**
      * Generate signature for the activation code.
-     *
+     * <p>
      * Signature is then computed using the master private key.
      *
      * @param activationCode Short activation ID.
