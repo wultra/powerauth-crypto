@@ -59,10 +59,12 @@ public class SignatureUtils {
             ecdsa.update(bytes);
             return ecdsa.sign();
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            logger.warn(ex.getMessage(), ex);
+            logger.warn("Calculating signature failed due to cryptographic provider issue: {}", ex.getMessage());
+            logger.debug("Exception detail: ", ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (SignatureException ex) {
-            logger.warn(ex.getMessage(), ex);
+            logger.warn("Calculating signature failed due to configuration issue: {}", ex.getMessage());
+            logger.debug("Exception detail: ", ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -85,10 +87,12 @@ public class SignatureUtils {
             ecdsa.update(bytes);
             return ecdsa.sign();
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            logger.warn(ex.getMessage(), ex);
+            logger.warn("Calculating signature failed due to cryptographic provider issue: {}", ex.getMessage());
+            logger.debug("Exception detail: ", ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (SignatureException ex) {
-            logger.warn(ex.getMessage(), ex);
+            logger.warn("Calculating signature failed due to configuration issue: {}", ex.getMessage());
+            logger.debug("Exception detail: ", ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
@@ -111,10 +115,12 @@ public class SignatureUtils {
             ecdsa.update(signedBytes);
             return ecdsa.verify(signature);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            logger.warn(ex.getMessage(), ex);
+            logger.warn("Verifying signature failed due to cryptographic provider issue: {}", ex.getMessage());
+            logger.debug("Exception detail: ", ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (SignatureException ex) {
-            logger.warn(ex.getMessage(), ex);
+            logger.warn("Verifying signature failed due to configuration issue: {}", ex.getMessage());
+            logger.debug("Exception detail: ", ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
