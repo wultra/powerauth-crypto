@@ -17,7 +17,6 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import com.google.common.base.Joiner;
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
@@ -30,6 +29,7 @@ import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.security.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -190,7 +190,7 @@ public class SignatureUtils {
             System.arraycopy(signatureComponent, sourceOffset, signatureBytes, destinationOffset, PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH);
         }
         // Finally, convert bytes into one Base64 string
-        return BaseEncoding.base64().encode(signatureBytes);
+        return Base64.getEncoder().encodeToString(signatureBytes);
     }
 
     /**

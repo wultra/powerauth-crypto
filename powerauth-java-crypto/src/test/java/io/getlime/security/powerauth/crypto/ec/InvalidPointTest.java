@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.ec;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
@@ -32,9 +31,9 @@ import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for validations during public key import.
@@ -68,7 +67,7 @@ public class InvalidPointTest {
     @Test
     public void testInfinityAsPublicKey() throws InvalidKeySpecException, CryptoProviderException {
         try {
-            keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("AA=="));
+            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("AA=="));
         } catch (GenericCryptoException ex) {
             return;
         }
@@ -82,7 +81,7 @@ public class InvalidPointTest {
     public void testValidationInvalidPoint1() throws InvalidKeySpecException, CryptoProviderException {
         try {
             // Invalid point compression
-            keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("ArcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/"));
+            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("ArcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/"));
         } catch (GenericCryptoException ex) {
             return;
         }
@@ -93,14 +92,12 @@ public class InvalidPointTest {
      * Test of validation for invalid encoding.
      */
     @Test
-    public void testValidationInvalidPoint2() throws InvalidKeySpecException, CryptoProviderException {
-        try {
-            // Invalid point encoding 0x3d
-            keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("Pes+/6wnmrjwVa2L9v2wqUDBYMCtq0qvQ7JIZ6+nZe6fsT+vr85+rUPunAIaK3tRAuIkIROUwYEvj/TlcemQ5Q="));
-        } catch (GenericCryptoException ex) {
-            return;
-        }
-        fail("EC point validation is missing");
+    void testValidationInvalidPoint2() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("Pes+/6wnmrjwVa2L9v2wqUDBYMCtq0qvQ7JIZ6+nZe6fsT+vr85+rUPunAIaK3tRAuIkIROUwYEvj/TlcemQ5Q==")),
+                "EC point validation is missing");
+
+        assertEquals("Invalid point encoding 0x3d", exception.getMessage());
     }
 
     /**
@@ -110,7 +107,7 @@ public class InvalidPointTest {
     public void testValidationInvalidPoint3() throws InvalidKeySpecException, CryptoProviderException {
         try {
             // Invalid point coordinates
-            keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("BGjj8wAErlEt1FNJzH8uhpWN2GSd9apNK0tWaDAN+Bukt5EwKZ6l3YzX475apYQdVbzmg0X2mRysqrvTEPRj8b8="));
+            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BGjj8wAErlEt1FNJzH8uhpWN2GSd9apNK0tWaDAN+Bukt5EwKZ6l3YzX475apYQdVbzmg0X2mRysqrvTEPRj8b8="));
         } catch (GenericCryptoException ex) {
             return;
         }
@@ -124,7 +121,7 @@ public class InvalidPointTest {
     public void testValidationInvalidPoint4() throws InvalidKeySpecException, CryptoProviderException {
         try {
             // Invalid point coordinates
-            keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("BMa1eFhnJNtFLU6yFeFgcHMt9iPg074ZUKM9D8tX3nuNk7cKwTbbQG8uHItW8NxvPaMYo0WM87eV5Ud9dB3/14Q="));
+            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BMa1eFhnJNtFLU6yFeFgcHMt9iPg074ZUKM9D8tX3nuNk7cKwTbbQG8uHItW8NxvPaMYo0WM87eV5Ud9dB3/14Q="));
         } catch (GenericCryptoException ex) {
             return;
         }
@@ -140,7 +137,7 @@ public class InvalidPointTest {
             // Invalid point coordinates
             // x: "82794344854243450371984501721340198645022926339504713863786955730156937886079"
             // y: "33552521881581467670836617859178523407344471948513881718969729275859461829010"
-            keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("BLcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/Si4N7VelFWu4LrQxTDf9QVU5Wn5RmIryiczlMbnBcZI="));
+            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BLcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/Si4N7VelFWu4LrQxTDf9QVU5Wn5RmIryiczlMbnBcZI="));
         } catch (GenericCryptoException ex) {
             return;
         }
@@ -161,7 +158,7 @@ public class InvalidPointTest {
         BigInteger orderValid = p256curve.getOrder();
         orderField.set(p256curve, orderValid.add(BigInteger.ONE));
         try {
-            keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("BJBAcEeM25rL3lo5GIM9J4ygFzkkY3dPe6dKx6x17XNdG1Jy+FlH31rejjCHYVKcLs8lgKjJTKzyxrxMe+kK4KY="));
+            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BJBAcEeM25rL3lo5GIM9J4ygFzkkY3dPe6dKx6x17XNdG1Jy+FlH31rejjCHYVKcLs8lgKjJTKzyxrxMe+kK4KY="));
         } catch (GenericCryptoException ex) {
             // Revert the P-256 curve order change used only for fault attack simulation
             orderField.set(p256curve, orderValid);
