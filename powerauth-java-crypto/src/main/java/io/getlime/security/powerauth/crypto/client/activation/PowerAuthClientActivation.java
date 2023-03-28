@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.client.activation;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
@@ -34,6 +33,7 @@ import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
+import java.util.Base64;
 
 /**
  * Class implementing a cryptography used on the client side in order
@@ -107,9 +107,9 @@ public class PowerAuthClientActivation {
      */
     public byte[] computeApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret) throws GenericCryptoException, CryptoProviderException {
         String signatureBaseString = activationIdShort + "&"
-                + BaseEncoding.base64().encode(activationNonce) + "&"
-                + BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
-                + BaseEncoding.base64().encode(applicationKey);
+                + Base64.getEncoder().encodeToString(activationNonce) + "&"
+                + Base64.getEncoder().encodeToString(encryptedDevicePublicKey) + "&"
+                + Base64.getEncoder().encodeToString(applicationKey);
         return new HMACHashUtilities().hash(applicationSecret, signatureBaseString.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -158,8 +158,8 @@ public class PowerAuthClientActivation {
      */
     public boolean verifyServerDataSignature(String activationId, byte[] C_serverPublicKey, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-        String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
-        String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
+        String activationIdBytesBase64 = Base64.getEncoder().encodeToString(activationIdBytes);
+        String C_serverPublicKeyBase64 = Base64.getEncoder().encodeToString(C_serverPublicKey);
         byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
         return signatureUtils.validateECDSASignature(result, signature, masterPublicKey);
     }

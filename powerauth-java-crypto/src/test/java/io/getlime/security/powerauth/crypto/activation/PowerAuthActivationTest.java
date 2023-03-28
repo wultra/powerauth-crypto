@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.activation;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
@@ -32,6 +31,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,8 +58,8 @@ public class PowerAuthActivationTest {
     public void testGenerateKeys() throws CryptoProviderException {
         KeyGenerator keyGenerator = new KeyGenerator();
         KeyPair kp = keyGenerator.generateKeyPair();
-        System.out.println("Private Key: " + BaseEncoding.base64().encode(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
-        System.out.println("Public Key: " + BaseEncoding.base64().encode(keyConvertor.convertPublicKeyToBytes(kp.getPublic())));
+        System.out.println("Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
+        System.out.println("Public Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(kp.getPublic())));
     }
 
     /**
@@ -225,10 +225,10 @@ public class PowerAuthActivationTest {
     public void testActivationGenerate() throws Exception {
         String activationOTP = "CKZ2O-OE544";
         String activationIdShort = "IFA6F-3NPAZ";
-        byte[] activationNonce = BaseEncoding.base64().decode("grDwkvXrgfUdKBsqg0xYYw==");
-        byte[] publicKeyBytes = BaseEncoding.base64().decode("BJXfJMCANX+T9FzsG6Hi0KTYPN64i7HxMiWoMYPd17DYfBR+IwzOesTh/jj/B3trL9m3O1oODYil+8ssJzDt/QA=");
-        byte[] ephemeralPrivateKeyBytes = BaseEncoding.base64().decode("AKeMTtivK/XRiQPhfJYxAw1L62ah4lGTQ4JKqRrr0fnC");
-        byte[] masterPublicKey = BaseEncoding.base64().decode("BFOqvpLNi15eHDt8fkFxFe034Buw/i8gR3ax4fKiIQynt5K858oBBYhqLVH8FhNmMnlysnRd2UsPJSQxzoPhEn8=");
+        byte[] activationNonce = Base64.getDecoder().decode("grDwkvXrgfUdKBsqg0xYYw==");
+        byte[] publicKeyBytes = Base64.getDecoder().decode("BJXfJMCANX+T9FzsG6Hi0KTYPN64i7HxMiWoMYPd17DYfBR+IwzOesTh/jj/B3trL9m3O1oODYil+8ssJzDt/QA=");
+        byte[] ephemeralPrivateKeyBytes = Base64.getDecoder().decode("AKeMTtivK/XRiQPhfJYxAw1L62ah4lGTQ4JKqRrr0fnC");
+        byte[] masterPublicKey = Base64.getDecoder().decode("BFOqvpLNi15eHDt8fkFxFe034Buw/i8gR3ax4fKiIQynt5K858oBBYhqLVH8FhNmMnlysnRd2UsPJSQxzoPhEn8=");
 
         PrivateKey eph = keyConvertor.convertBytesToPrivateKey(ephemeralPrivateKeyBytes);
         PublicKey mpk = keyConvertor.convertBytesToPublicKey(masterPublicKey);
@@ -237,7 +237,7 @@ public class PowerAuthActivationTest {
         PowerAuthClientActivation activation = new PowerAuthClientActivation();
 
         byte[] cDevicePublicKey = activation.encryptDevicePublicKey(publicKey, eph, mpk, activationOTP, activationIdShort, activationNonce);
-        assertArrayEquals(cDevicePublicKey, BaseEncoding.base64().decode("tnAyB0C5I9xblLlFCPONUT4GtABvutPkRvvx2oTeGIuUMAmUYTqJluKn/Zge+vbq+VArIVNYVTd+0yuBZGVtkkd1mTcc2eTDhqZSQJS6mMgmKeCqv64c6E4dm4INOkxh"));
+        assertArrayEquals(cDevicePublicKey, Base64.getDecoder().decode("tnAyB0C5I9xblLlFCPONUT4GtABvutPkRvvx2oTeGIuUMAmUYTqJluKn/Zge+vbq+VArIVNYVTd+0yuBZGVtkkd1mTcc2eTDhqZSQJS6mMgmKeCqv64c6E4dm4INOkxh"));
     }
 
     /**
@@ -269,7 +269,7 @@ public class PowerAuthActivationTest {
         PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
 
         for (int i = 0; i < publicKeyFingerprint.length; i++) {
-            byte[] publicKeyBytes = BaseEncoding.base64().decode(publicKeysBase64[i]);
+            byte[] publicKeyBytes = Base64.getDecoder().decode(publicKeysBase64[i]);
             PublicKey publicKey = keyConvertor.convertBytesToPublicKey(publicKeyBytes);
             final String fingerprintClient = clientActivation.computeActivationFingerprint(publicKey);
             final String fingerprintServer = serverActivation.computeActivationFingerprint(publicKey);
@@ -316,8 +316,8 @@ public class PowerAuthActivationTest {
         PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
 
         for (int i = 0; i < publicKeyFingerprint.length; i++) {
-            byte[] devicePublicKeyBytes = BaseEncoding.base64().decode(devicePublicKeysBase64[i]);
-            byte[] serverPublicKeyBytes = BaseEncoding.base64().decode(serverPublicKeysBase64[i]);
+            byte[] devicePublicKeyBytes = Base64.getDecoder().decode(devicePublicKeysBase64[i]);
+            byte[] serverPublicKeyBytes = Base64.getDecoder().decode(serverPublicKeysBase64[i]);
             String activation1 = activationId[i];
             PublicKey devicePublicKey = keyConvertor.convertBytesToPublicKey(devicePublicKeyBytes);
             PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(serverPublicKeyBytes);
