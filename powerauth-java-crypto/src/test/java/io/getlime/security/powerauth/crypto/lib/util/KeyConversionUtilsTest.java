@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
-import java.util.Base64;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -99,6 +99,33 @@ public class KeyConversionUtilsTest {
 			assertEquals(privateKey2, decodedPrivateKey2);
 		}
 
+	}
+
+	@Test
+	public void testConvertPoint() throws Exception {
+		System.out.println("testConvertPoint");
+		final KeyConvertor instance = new KeyConvertor();
+		final List<byte[]> testVector = Arrays.asList(
+				// Public Key 1
+				Base64.getDecoder().decode("c+aNszGLNA/CfexMq3lUXLY5xS2Pqougl+OmTX3toZc="),
+				Base64.getDecoder().decode("OqrmEXN5Ou7zAmDD5V0Uq4SdgRUmbtfLw2fg+anUOxU="),
+				Base64.getDecoder().decode("BHPmjbMxizQPwn3sTKt5VFy2OcUtj6qLoJfjpk197aGXOqrmEXN5Ou7zAmDD5V0Uq4SdgRUmbtfLw2fg+anUOxU="),
+
+				// Public Key 2
+				Base64.getDecoder().decode("TUh1vYPq7OXRXGEacVO+pUQr8vj8elfytOV9+ebaBvo="),
+				Base64.getDecoder().decode("CGvImC7L9jiStTUSRF7Z1wgdzBcuvOkUwNH7LGzlWd0="),
+				Base64.getDecoder().decode("BE1Idb2D6uzl0VxhGnFTvqVEK/L4/HpX8rTlffnm2gb6CGvImC7L9jiStTUSRF7Z1wgdzBcuvOkUwNH7LGzlWd0=")
+		);
+
+		for (int i = 0; i < testVector.size() / 3; i++) {
+			final int keyIndex = i * 3;
+			final byte[] x = testVector.get(keyIndex);
+			final byte[] y = testVector.get(keyIndex + 1);
+			final byte[] encoded = testVector.get(keyIndex + 2);
+			final PublicKey publicKey = instance.convertPointBytesToPublicKey(x, y);
+			final PublicKey publicKeyExpected = instance.convertBytesToPublicKey(encoded);
+			assertEquals(publicKeyExpected, publicKey);
+		}
 	}
 
 }
