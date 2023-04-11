@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -101,6 +102,22 @@ public class KeyConvertor {
             logger.warn(ex.getMessage(), ex);
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Converts provided byte array representing X coordinate of an EC public key.
+     *
+     * @param xBytes X coordinate.
+     * @return Public key with provided coordinates.
+     * @throws InvalidKeySpecException When provided bytes are not a correct key representation.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     * @throws GenericCryptoException  When public key is invalid.
+     */
+    public PublicKey convertPointBytesToPublicKey(byte[] xBytes) throws InvalidKeySpecException, CryptoProviderException, GenericCryptoException {
+        final ByteBuffer compressedBytes = ByteBuffer.allocate(xBytes.length + 1);
+        compressedBytes.put((byte) 0x03);
+        compressedBytes.put(xBytes);
+        return convertBytesToPublicKey(compressedBytes.array());
     }
 
     /**
