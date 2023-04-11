@@ -20,8 +20,7 @@ KDF (Key Derivation Function) is an algorithm used for deriving a secret key fro
 public SecretKey kdfDeriveSecretKey(SecretKey secret, long index) {
     byte[] bytes = ByteBuffer.allocate(16).putLong(index).array();
     byte[] iv = new byte[16];
-    byte[] encryptedBytes = AES.encrypt(bytes, iv, secret);
-    byte[] newKeyBytes = ByteUtil.convert32Bto16B(derivedKey32);
+    byte[] newKeyBytes = AES.encrypt(bytes, iv, secret);
     return KeyConversion.secretKeyFromBytes(newKeyBytes);
 }
 ```
