@@ -127,15 +127,12 @@ public class KeyConvertor {
             final org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().createPoint(x, y);
             publicKeyValidator.validate(ecSpec.getCurve(), point);
 
-            final BigInteger xAffine = point.getAffineXCoord().toBigInteger();
-            final BigInteger yAffine = point.getAffineYCoord().toBigInteger();
-
             // Generate public key using Java security API
             final AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             parameters.init(new ECGenParameterSpec("secp256r1"));
             final ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
 
-            final ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(xAffine, yAffine), ecParameterSpec);
+            final ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
             return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(ecPublicKeySpec);
         } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
