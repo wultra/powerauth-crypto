@@ -16,13 +16,13 @@
  */
 package io.getlime.security.powerauth.crypto.vault;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.vault.PowerAuthClientVault;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import io.getlime.security.powerauth.crypto.server.vault.PowerAuthServerVault;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -86,16 +87,16 @@ public class VaultTest {
         SecretKey serverMasterKey = keyGenerator.computeSharedKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic());
         assertEquals(deviceMasterKey, serverMasterKey);
 
-        System.out.println("## Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(deviceMasterKey)));
+        System.out.println("## Master Secret Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(deviceMasterKey)));
 
         // Deduce client vault encryption key and client / server master transport key
         SecretKey clientVaultEncryptionKey = keyFactory.generateServerEncryptedVaultKey(deviceMasterKey);
-        System.out.println("## Vault Encryption Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
+        System.out.println("## Vault Encryption Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
 
         SecretKey clientTransportKey = keyGenerator.deriveSecretKey(deviceMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
         SecretKey serverTransportKey = keyGenerator.deriveSecretKey(serverMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
         assertEquals(clientTransportKey, serverTransportKey);
-        System.out.println("## Master Transport Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(clientTransportKey)));
+        System.out.println("## Master Transport Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientTransportKey)));
 
         // Encrypt device private key
         byte[] cDevicePrivateKey = clientVault.encryptDevicePrivateKey(deviceKeyPair.getPrivate(), clientVaultEncryptionKey);
@@ -108,13 +109,13 @@ public class VaultTest {
 
             byte[] ctrBytes = ByteBuffer.allocate(16).putLong(0L).putLong(ctr).array();
             byte[] cVaultEncryptionKey = serverVault.encryptVaultEncryptionKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic(), ctrBytes);
-            System.out.println("## cVaultEncryptionKey: " + BaseEncoding.base64().encode(cVaultEncryptionKey));
+            System.out.println("## cVaultEncryptionKey: " + Base64.getEncoder().encodeToString(cVaultEncryptionKey));
 
             SecretKey vaultEncryptionKeyLocal = clientVault.decryptVaultEncryptionKey(cVaultEncryptionKey, clientTransportKey, ctrBytes);
             assertEquals(clientVaultEncryptionKey, vaultEncryptionKeyLocal);
 
             PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);
-            assertEquals(deviceKeyPair.getPrivate(), devicePrivateKeyLocal);
+            assertEquals(((BCECPrivateKey)deviceKeyPair.getPrivate()).getD(), ((BCECPrivateKey)devicePrivateKeyLocal).getD());
         }
 
     }
@@ -151,29 +152,29 @@ public class VaultTest {
         SecretKey serverMasterKey = keyGenerator.computeSharedKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic());
         assertEquals(deviceMasterKey, serverMasterKey);
 
-        System.out.println("## Master Secret Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(deviceMasterKey)));
+        System.out.println("## Master Secret Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(deviceMasterKey)));
 
         // Deduce client vault encryption key and client / server master transport key
         SecretKey clientVaultEncryptionKey = keyFactory.generateServerEncryptedVaultKey(deviceMasterKey);
-        System.out.println("## Vault Encryption Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
+        System.out.println("## Vault Encryption Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientVaultEncryptionKey)));
 
         SecretKey clientTransportKey = keyGenerator.deriveSecretKey(deviceMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
         SecretKey serverTransportKey = keyGenerator.deriveSecretKey(serverMasterKey, PowerAuthDerivedKey.TRANSPORT.getIndex());
         assertEquals(clientTransportKey, serverTransportKey);
-        System.out.println("## Master Transport Key: " + BaseEncoding.base64().encode(keyConvertor.convertSharedSecretKeyToBytes(clientTransportKey)));
+        System.out.println("## Master Transport Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientTransportKey)));
 
         // Encrypt device private key
         byte[] cDevicePrivateKey = clientVault.encryptDevicePrivateKey(deviceKeyPair.getPrivate(), clientVaultEncryptionKey);
 
         // Get encrypted vault encryption key from the server
         byte[] cVaultEncryptionKey = serverVault.encryptVaultEncryptionKey(serverKeyPair.getPrivate(), deviceKeyPair.getPublic());
-        System.out.println("## cVaultEncryptionKey: " + BaseEncoding.base64().encode(cVaultEncryptionKey));
+        System.out.println("## cVaultEncryptionKey: " + Base64.getEncoder().encodeToString(cVaultEncryptionKey));
 
         SecretKey vaultEncryptionKeyLocal = clientVault.decryptVaultEncryptionKey(cVaultEncryptionKey, clientTransportKey);
         assertEquals(clientVaultEncryptionKey, vaultEncryptionKeyLocal);
 
         PrivateKey devicePrivateKeyLocal = clientVault.decryptDevicePrivateKey(cDevicePrivateKey, vaultEncryptionKeyLocal);
-        assertEquals(deviceKeyPair.getPrivate(), devicePrivateKeyLocal);
+        assertEquals(((BCECPrivateKey)deviceKeyPair.getPrivate()).getD(), ((BCECPrivateKey)devicePrivateKeyLocal).getD());
 
     }
 

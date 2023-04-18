@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.server.activation;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
@@ -37,6 +36,7 @@ import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
+import java.util.Base64;
 
 /**
  * Class implementing cryptography used on a server side in order to assure
@@ -87,7 +87,7 @@ public class PowerAuthServerActivation {
 
     /**
      * Generate signature for the activation code.
-     *
+     * <p>
      * Signature is then computed using the master private key.
      *
      * @param activationCode Short activation ID.
@@ -137,9 +137,9 @@ public class PowerAuthServerActivation {
      */
     public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) throws GenericCryptoException, CryptoProviderException {
         String signatureBaseString = activationIdShort + "&"
-                + BaseEncoding.base64().encode(activationNonce) + "&"
-                + BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
-                + BaseEncoding.base64().encode(applicationKey);
+                + Base64.getEncoder().encodeToString(activationNonce) + "&"
+                + Base64.getEncoder().encodeToString(encryptedDevicePublicKey) + "&"
+                + Base64.getEncoder().encodeToString(applicationKey);
         byte[] signatureExpected = new HMACHashUtilities().hash(applicationSecret, signatureBaseString.getBytes(StandardCharsets.UTF_8));
         return Arrays.equals(signatureExpected, signature);
     }
@@ -335,8 +335,8 @@ public class PowerAuthServerActivation {
     public byte[] computeServerDataSignature(String activationId, byte[] C_serverPublicKey, PrivateKey masterPrivateKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-        String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
-        String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
+        String activationIdBytesBase64 = Base64.getEncoder().encodeToString(activationIdBytes);
+        String C_serverPublicKeyBase64 = Base64.getEncoder().encodeToString(C_serverPublicKey);
         byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
         return signatureUtils.computeECDSASignature(result, masterPrivateKey);
     }

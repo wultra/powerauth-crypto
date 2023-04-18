@@ -16,10 +16,13 @@
  */
 package io.getlime.security.powerauth.http.validator;
 
-import com.google.common.io.BaseEncoding;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Utility class to validate various value types, such as UUID, base64 encoded data, etc.
@@ -28,16 +31,47 @@ import java.util.List;
  */
 public class ValueTypeValidator {
 
-    private static final String uuidRegex = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
-    private static final String signatureRegex = "^[0-9]{8}(-[0-9]{8}){0,2}$";
+    private static final Logger logger = LoggerFactory.getLogger(ValueTypeValidator.class);
+
+    /**
+     * Regexp for validating UUID values.
+     */
+    private static final String UUID_REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
+
+    /**
+     * Regexp for validating decimalized signature values.
+     */
+    private static final String SIGNATURE_REGEX = "^[0-9]{8}(-[0-9]{8}){0,2}$";
+
+    /**
+     * Regexp for validating decimal strings.
+     */
+    private static final String DECIMAL_STRING_REGEX = "^[0-9]*$";
+
+    /**
+     * Admissible protocol versions in the header.
+     */
+    private static final Set<String> PROTOCOL_VERSIONS = new HashSet<>(Arrays.asList(
+            "3.1", "3.0", "2.1", "2.0"
+    ));
+
+    /**
+     * Admissible signature types in the header.
+     */
+    private static final Set<String> EXPECTED_SIGNATURE_TYPES = new HashSet<>(Arrays.asList(
+            "possession", "knowledge", "biometry",
+            "possession_knowledge", "possession_biometry",
+            "possession_knowledge_biometry"
+    ));
 
     /**
      * Check if provided string is a valid UUID.
      * @param uuidCandidate UUID candidate.
      * @return True in case provided string is a valid UUID, false otherwise.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidUuid(String uuidCandidate) {
-        return uuidCandidate != null && uuidCandidate.toLowerCase().matches(uuidRegex);
+        return uuidCandidate != null && uuidCandidate.toLowerCase().matches(UUID_REGEX);
     }
 
     /**
@@ -48,14 +82,18 @@ public class ValueTypeValidator {
      * @return True in case the provided string are Base64 encoded data of expected byte length,
      * false otherwise.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidBase64OfLength(String base64candidate, int expectedLength) {
-        final BaseEncoding base64 = BaseEncoding.base64();
-        if (base64candidate != null && base64.canDecode(base64candidate)) {
-            byte[] bytes = base64.decode(base64candidate);
-            return bytes.length == expectedLength;
-        } else {
-            return false;
+        if (base64candidate != null) {
+            try {
+                byte[] bytes = Base64.getDecoder().decode(base64candidate);
+                return bytes.length == expectedLength;
+            } catch (IllegalArgumentException e) {
+                logger.trace("Given string '{}' is not in base64 format.", base64candidate, e);
+            }
         }
+
+        return false;
     }
 
     /**
@@ -68,13 +106,16 @@ public class ValueTypeValidator {
      * false otherwise.
      */
     public static boolean isValidBase64OfLengthRange(String base64candidate, int from, int to) {
-        final BaseEncoding base64 = BaseEncoding.base64();
-        if (base64candidate != null && base64.canDecode(base64candidate)) {
-            byte[] bytes = base64.decode(base64candidate);
-            return bytes.length >= from && bytes.length <= to;
-        } else {
-            return false;
+        if (base64candidate != null) {
+            try {
+                byte[] bytes = Base64.getDecoder().decode(base64candidate);
+                return bytes.length >= from && bytes.length <= to;
+            } catch (IllegalArgumentException e) {
+                logger.trace("Given string '{}' is not in base64 format.", base64candidate, e);
+            }
         }
+
+        return false;
     }
 
     /**
@@ -83,12 +124,7 @@ public class ValueTypeValidator {
      * @return True if the provided signature type is valid.
      */
     public static boolean isValidSignatureType(String signatureType) {
-        List<String> expectedSignatureTypes = Arrays.asList(
-                "possession", "knowledge", "biometry",
-                "possession_knowledge", "possession_biometry",
-                "possession_knowledge_biometry"
-        );
-        return signatureType != null && expectedSignatureTypes.contains(signatureType.toLowerCase());
+        return signatureType != null && EXPECTED_SIGNATURE_TYPES.contains(signatureType.toLowerCase());
     }
 
     /**
@@ -103,7 +139,7 @@ public class ValueTypeValidator {
                 case 17:
                 case 26:
                     // "2.0", "2.1", "3.0" signature version uses "DECIMAL" format
-                    return signature.matches(signatureRegex);
+                    return signature.matches(SIGNATURE_REGEX);
                 case 24:
                 case 44:
                 case 64:
@@ -127,11 +163,21 @@ public class ValueTypeValidator {
      * @return True if provided string is decimal and has expected length range.
      */
     public static boolean isDecimalString(String decimalString, int from, int to) {
-        if (decimalString != null && decimalString.matches("^[0-9]*$")) {
+        if (decimalString != null && decimalString.matches(DECIMAL_STRING_REGEX)) {
             return decimalString.length() >= from && decimalString.length() <= to;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check if the provided version is a valid one.
+     * @param version Version to check.
+     * @return True if provided version is valid, false otherwise.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean isValidProtocolVersion(String version) {
+        return PROTOCOL_VERSIONS.contains(version);
     }
 
 }

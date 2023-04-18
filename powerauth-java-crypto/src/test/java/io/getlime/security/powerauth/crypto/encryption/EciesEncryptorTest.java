@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.encryption;
 
-import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesDecryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesEncryptor;
@@ -42,6 +41,7 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -85,11 +85,11 @@ public class EciesEncryptorTest {
             EciesEncryptor encryptor = new EciesEncryptor((ECPublicKey) publicKey);
             final EciesCryptogram payloadRequest = encryptor.encryptRequest(request, useIV);
             System.out.println("# REQUEST");
-            System.out.println("- Original data: " + BaseEncoding.base64().encode(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
-            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadRequest.getEncryptedData()));
-            System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadRequest.getMac()));
-            System.out.println("- NONCE: " + (useIV ? BaseEncoding.base64().encode(payloadRequest.getNonce()) : "null"));
-            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadRequest.getEphemeralPublicKey()));
+            System.out.println("- Original data: " + Base64.getEncoder().encodeToString(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
+            System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadRequest.getEncryptedData()));
+            System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadRequest.getMac()));
+            System.out.println("- NONCE: " + (useIV ? Base64.getEncoder().encodeToString(payloadRequest.getNonce()) : "null"));
+            System.out.println("- Ephemeral Public Key: " + Base64.getEncoder().encodeToString(payloadRequest.getEphemeralPublicKey()));
             System.out.println();
 
             EciesDecryptor decryptor = new EciesDecryptor((ECPrivateKey) privateKey);
@@ -99,9 +99,9 @@ public class EciesEncryptorTest {
 
             final EciesCryptogram payloadResponse = decryptor.encryptResponse(response);
             System.out.println("# RESPONSE");
-            System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
-            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getEncryptedData()));
-            System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadResponse.getMac()));
+            System.out.println("- Original data: " + Base64.getEncoder().encodeToString(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
+            System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadResponse.getEncryptedData()));
+            System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadResponse.getMac()));
             System.out.println();
 
 
@@ -130,10 +130,10 @@ public class EciesEncryptorTest {
             EciesEncryptor encryptor = new EciesEncryptor((ECPublicKey) publicKey);
             final EciesCryptogram payloadRequest = encryptor.encryptRequest(request, useIV);
             System.out.println("# REQUEST");
-            System.out.println("- Original data: " + BaseEncoding.base64().encode(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
-            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadRequest.getEncryptedData()));
-            System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadRequest.getMac()));
-            System.out.println("- Ephemeral Public Key: " + BaseEncoding.base64().encode(payloadRequest.getEphemeralPublicKey()));
+            System.out.println("- Original data: " + Base64.getEncoder().encodeToString(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
+            System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadRequest.getEncryptedData()));
+            System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadRequest.getMac()));
+            System.out.println("- Ephemeral Public Key: " + Base64.getEncoder().encodeToString(payloadRequest.getEphemeralPublicKey()));
             System.out.println();
 
             byte[] macBroken = keyGenerator.generateRandomBytes(16);
@@ -156,9 +156,9 @@ public class EciesEncryptorTest {
 
             final EciesCryptogram payloadResponse = decryptor.encryptResponse(response);
             System.out.println("# RESPONSE");
-            System.out.println("- Original data: " + BaseEncoding.base64().encode(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
-            System.out.println("- Encrypted data: " + BaseEncoding.base64().encode(payloadResponse.getEncryptedData()));
-            System.out.println("- MAC: " + BaseEncoding.base64().encode(payloadResponse.getMac()));
+            System.out.println("- Original data: " + Base64.getEncoder().encodeToString(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
+            System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadResponse.getEncryptedData()));
+            System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadResponse.getMac()));
             System.out.println();
 
             byte[] macBrokenResponse = keyGenerator.generateRandomBytes(16);
@@ -258,85 +258,85 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(Bytes.concat(signByte, BaseEncoding.base64().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
-        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(BaseEncoding.base64().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(Bytes.concat(signByte, Base64.getDecoder().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
+        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
 
         byte[][] request = {
-                BaseEncoding.base64().decode("aGVsbG8gd29ybGQh"),
-                BaseEncoding.base64().decode("QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzIQ=="),
-                BaseEncoding.base64().decode("SXQncyBvdmVyIEpvaG55ISBJdCdzIG92ZXIu"),
+                Base64.getDecoder().decode("aGVsbG8gd29ybGQh"),
+                Base64.getDecoder().decode("QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzIQ=="),
+                Base64.getDecoder().decode("SXQncyBvdmVyIEpvaG55ISBJdCdzIG92ZXIu"),
                 "".getBytes(StandardCharsets.UTF_8),
-                BaseEncoding.base64().decode("e30="),
-                BaseEncoding.base64().decode("e30=")
+                Base64.getDecoder().decode("e30="),
+                Base64.getDecoder().decode("e30=")
         };
         byte[][] response = {
-                BaseEncoding.base64().decode("aGV5IHRoZXJlIQ=="),
-                BaseEncoding.base64().decode("Tk9QRSE="),
-                BaseEncoding.base64().decode("Tm90aGluZyBpcyBvdmVyISBOb3RoaW5nISBZb3UganVzdCBkb24ndCB0dXJuIGl0IG9mZiEgSXQgd2Fzbid0IG15IHdhciEgWW91IGFza2VkIG1lLCBJIGRpZG4ndCBhc2sgeW91ISBBbmQgSSBkaWQgd2hhdCBJIGhhZCB0byBkbyB0byB3aW4h"),
+                Base64.getDecoder().decode("aGV5IHRoZXJlIQ=="),
+                Base64.getDecoder().decode("Tk9QRSE="),
+                Base64.getDecoder().decode("Tm90aGluZyBpcyBvdmVyISBOb3RoaW5nISBZb3UganVzdCBkb24ndCB0dXJuIGl0IG9mZiEgSXQgd2Fzbid0IG15IHdhciEgWW91IGFza2VkIG1lLCBJIGRpZG4ndCBhc2sgeW91ISBBbmQgSSBkaWQgd2hhdCBJIGhhZCB0byBkbyB0byB3aW4h"),
                 "".getBytes(StandardCharsets.UTF_8),
-                BaseEncoding.base64().decode("e30="),
+                Base64.getDecoder().decode("e30="),
                 "".getBytes(StandardCharsets.UTF_8)
         };
         byte[][] sharedInfo1 = {
                 "".getBytes(StandardCharsets.UTF_8),
-                BaseEncoding.base64().decode("dmVyeSBzZWNyZXQgaW5mb3JtYXRpb24="),
-                BaseEncoding.base64().decode("MDEyMzQ1Njc4OWFiY2RlZg=="),
-                BaseEncoding.base64().decode("MTIzNDUtNTY3ODk="),
+                Base64.getDecoder().decode("dmVyeSBzZWNyZXQgaW5mb3JtYXRpb24="),
+                Base64.getDecoder().decode("MDEyMzQ1Njc4OWFiY2RlZg=="),
+                Base64.getDecoder().decode("MTIzNDUtNTY3ODk="),
                 "".getBytes(StandardCharsets.UTF_8),
                 "".getBytes(StandardCharsets.UTF_8)
         };
         byte[][] sharedInfo2 = {
                 "".getBytes(StandardCharsets.UTF_8),
-                BaseEncoding.base64().decode("bm90LXNvLXNlY3JldA=="),
-                BaseEncoding.base64().decode("Sm9obiBUcmFtb250YQ=="),
-                BaseEncoding.base64().decode("WlgxMjg="),
+                Base64.getDecoder().decode("bm90LXNvLXNlY3JldA=="),
+                Base64.getDecoder().decode("Sm9obiBUcmFtb250YQ=="),
+                Base64.getDecoder().decode("WlgxMjg="),
                 "".getBytes(StandardCharsets.UTF_8),
                 "".getBytes(StandardCharsets.UTF_8)
         };
         byte[][] ephemeralPublicKey = {
-                BaseEncoding.base64().decode("AhzMrk7VZ98yCfi4iPw+1ib/e+CraDPy/zix3efvBJHv"),
-                BaseEncoding.base64().decode("ArKyGliRX064oZHF8kIhA4DK6kvCfJS8G9/2hRGncetK"),
-                BaseEncoding.base64().decode("AiN9sPbXLHrxj218+4so6Iq+eYDIzKhWAsfUGYp1qxll"),
-                BaseEncoding.base64().decode("AxlBhx1um2Az3kBgJ/MBWSkC4rVMJie7VdYCeBvy0sbG"),
-                BaseEncoding.base64().decode("Alt6eIEqdqhYguBW46Ixoo/leN8Pym0zgWKZX2HotYFj"),
-                BaseEncoding.base64().decode("A8OFtFRZcgpQ8xmA8qGCoKFFphTkNpK0x4i2SRy51eRk")
+                Base64.getDecoder().decode("AhzMrk7VZ98yCfi4iPw+1ib/e+CraDPy/zix3efvBJHv"),
+                Base64.getDecoder().decode("ArKyGliRX064oZHF8kIhA4DK6kvCfJS8G9/2hRGncetK"),
+                Base64.getDecoder().decode("AiN9sPbXLHrxj218+4so6Iq+eYDIzKhWAsfUGYp1qxll"),
+                Base64.getDecoder().decode("AxlBhx1um2Az3kBgJ/MBWSkC4rVMJie7VdYCeBvy0sbG"),
+                Base64.getDecoder().decode("Alt6eIEqdqhYguBW46Ixoo/leN8Pym0zgWKZX2HotYFj"),
+                Base64.getDecoder().decode("A8OFtFRZcgpQ8xmA8qGCoKFFphTkNpK0x4i2SRy51eRk")
         };
 
         EciesCryptogram[] encryptedRequest = {
                 new EciesCryptogram(
                         ephemeralPublicKey[0],
-                        BaseEncoding.base64().decode("M1R8d1WtIj7Ch4EY7kfFdEu8+ogX2zfQZmFsQNvLI+k="),
-                        BaseEncoding.base64().decode("tvhNs0hyb9o4cXxXR8NeHg=="),
+                        Base64.getDecoder().decode("M1R8d1WtIj7Ch4EY7kfFdEu8+ogX2zfQZmFsQNvLI+k="),
+                        Base64.getDecoder().decode("tvhNs0hyb9o4cXxXR8NeHg=="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[1],
-                        BaseEncoding.base64().decode("SQAniMR93pr3tVHwCB+C7ocMO7Jo4SdIAgG3FbxKMZQ="),
-                        BaseEncoding.base64().decode("n8BlIA81qdEh4h/Y53rlrfVodJFB2KoiCXWIKt4JAGc="),
+                        Base64.getDecoder().decode("SQAniMR93pr3tVHwCB+C7ocMO7Jo4SdIAgG3FbxKMZQ="),
+                        Base64.getDecoder().decode("n8BlIA81qdEh4h/Y53rlrfVodJFB2KoiCXWIKt4JAGc="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[2],
-                        BaseEncoding.base64().decode("gtUyhNxO2mEjcJin/qjSskiPvHuD7zku10o3U5sz3pg="),
-                        BaseEncoding.base64().decode("+mL/+v8LR07Ih1F1FnPGmqI6Emay6ZDBIndWnsZETB0="),
+                        Base64.getDecoder().decode("gtUyhNxO2mEjcJin/qjSskiPvHuD7zku10o3U5sz3pg="),
+                        Base64.getDecoder().decode("+mL/+v8LR07Ih1F1FnPGmqI6Emay6ZDBIndWnsZETB0="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[3],
-                        BaseEncoding.base64().decode("GOu5tZblRyXGwVNfWioh1UQzpg9Ztq9ysZ29Kkn29f8="),
-                        BaseEncoding.base64().decode("6DjnlMLj1xDfdnmBGRmFIQ=="),
+                        Base64.getDecoder().decode("GOu5tZblRyXGwVNfWioh1UQzpg9Ztq9ysZ29Kkn29f8="),
+                        Base64.getDecoder().decode("6DjnlMLj1xDfdnmBGRmFIQ=="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[4],
-                        BaseEncoding.base64().decode("ZUAk0lEk5jh73oNhvK9I7nOW0jvkSrLN8IiDGXXIbA0="),
-                        BaseEncoding.base64().decode("JpHpSRHKUcaLk7oDZO1K5A=="),
+                        Base64.getDecoder().decode("ZUAk0lEk5jh73oNhvK9I7nOW0jvkSrLN8IiDGXXIbA0="),
+                        Base64.getDecoder().decode("JpHpSRHKUcaLk7oDZO1K5A=="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[5],
-                        BaseEncoding.base64().decode("x6K9y6ggWMbfAgD1CWePGP6sj6JHHKgzXvzQiWNpNJA="),
-                        BaseEncoding.base64().decode("H/DRpFXS38oah/XOpy6mrw=="),
+                        Base64.getDecoder().decode("x6K9y6ggWMbfAgD1CWePGP6sj6JHHKgzXvzQiWNpNJA="),
+                        Base64.getDecoder().decode("H/DRpFXS38oah/XOpy6mrw=="),
                         null
                 )
         };
@@ -344,38 +344,38 @@ public class EciesEncryptorTest {
         EciesCryptogram[] encryptedResponse = {
                 new EciesCryptogram(
                         ephemeralPublicKey[0],
-                        BaseEncoding.base64().decode("GMSvl+OhGsSnBVjLp8MozL/H+lh+Nm96ssaOpt+xa5s="),
-                        BaseEncoding.base64().decode("3Bhf8/hDkuObm3ufbUWdNg=="),
+                        Base64.getDecoder().decode("GMSvl+OhGsSnBVjLp8MozL/H+lh+Nm96ssaOpt+xa5s="),
+                        Base64.getDecoder().decode("3Bhf8/hDkuObm3ufbUWdNg=="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[1],
-                        BaseEncoding.base64().decode("X7jagQ+WGqGe5nH2gTEutBBi9jF/D2oHXR+Ywcg28F8="),
-                        BaseEncoding.base64().decode("i2nsyA7WeUFbWNoPGq1WRQ=="),
+                        Base64.getDecoder().decode("X7jagQ+WGqGe5nH2gTEutBBi9jF/D2oHXR+Ywcg28F8="),
+                        Base64.getDecoder().decode("i2nsyA7WeUFbWNoPGq1WRQ=="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[2],
-                        BaseEncoding.base64().decode("Sqb+1Kk5krPJCqDFWK8JNIpvlaIzq3IYW7RBDGgJPdM="),
-                        BaseEncoding.base64().decode("u9Pz7CL3w7N5oBEvHoOYgheeBjZzSrvBrLgCxIVizqTJjvJ/TLinhnC99uPZM33RTRmU70U/bj2Wx05e9vBUSwxiHW0aHGfBv8li6CeoiPO32W7V6J6wPmjahxyXrECO7GBRz7eGwAXseHnsE5+mw+xQV6fYLBZHHp7062r/NCrnLwZ4UZDvRLS3q9xPf+NZ"),
+                        Base64.getDecoder().decode("Sqb+1Kk5krPJCqDFWK8JNIpvlaIzq3IYW7RBDGgJPdM="),
+                        Base64.getDecoder().decode("u9Pz7CL3w7N5oBEvHoOYgheeBjZzSrvBrLgCxIVizqTJjvJ/TLinhnC99uPZM33RTRmU70U/bj2Wx05e9vBUSwxiHW0aHGfBv8li6CeoiPO32W7V6J6wPmjahxyXrECO7GBRz7eGwAXseHnsE5+mw+xQV6fYLBZHHp7062r/NCrnLwZ4UZDvRLS3q9xPf+NZ"),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[3],
-                        BaseEncoding.base64().decode("GOu5tZblRyXGwVNfWioh1UQzpg9Ztq9ysZ29Kkn29f8="),
-                        BaseEncoding.base64().decode("6DjnlMLj1xDfdnmBGRmFIQ=="),
+                        Base64.getDecoder().decode("GOu5tZblRyXGwVNfWioh1UQzpg9Ztq9ysZ29Kkn29f8="),
+                        Base64.getDecoder().decode("6DjnlMLj1xDfdnmBGRmFIQ=="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[4],
-                        BaseEncoding.base64().decode("ZUAk0lEk5jh73oNhvK9I7nOW0jvkSrLN8IiDGXXIbA0="),
-                        BaseEncoding.base64().decode("JpHpSRHKUcaLk7oDZO1K5A=="),
+                        Base64.getDecoder().decode("ZUAk0lEk5jh73oNhvK9I7nOW0jvkSrLN8IiDGXXIbA0="),
+                        Base64.getDecoder().decode("JpHpSRHKUcaLk7oDZO1K5A=="),
                         null
                 ),
                 new EciesCryptogram(
                         ephemeralPublicKey[5],
-                        BaseEncoding.base64().decode("zjISViFih5CrRXt0H3CLsH7j305OQvZ29+DC/yevLfs="),
-                        BaseEncoding.base64().decode("KcyCAzCmVVeH7xlUZcXLXw=="),
+                        Base64.getDecoder().decode("zjISViFih5CrRXt0H3CLsH7j305OQvZ29+DC/yevLfs="),
+                        Base64.getDecoder().decode("KcyCAzCmVVeH7xlUZcXLXw=="),
                         null
                 )
         };
@@ -407,119 +407,118 @@ public class EciesEncryptorTest {
     @Test
     public void testVectorsV3_1() throws Exception {
 
-        final BaseEncoding b64 = BaseEncoding.base64();
         // Add magical 0x0 byte which resolves the sign issue when converting the private key.
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(Bytes.concat(signByte, b64.decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
-        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(b64.decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(Bytes.concat(signByte, Base64.getDecoder().decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
+        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
 
         byte[][] request = {
-                b64.decode("aGVsbG8gd29ybGQh"),
-                b64.decode("QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzIQ=="),
-                b64.decode("SXQncyBvdmVyIEpvaG55ISBJdCdzIG92ZXIu"),
+                Base64.getDecoder().decode("aGVsbG8gd29ybGQh"),
+                Base64.getDecoder().decode("QWxsIHlvdXIgYmFzZSBhcmUgYmVsb25nIHRvIHVzIQ=="),
+                Base64.getDecoder().decode("SXQncyBvdmVyIEpvaG55ISBJdCdzIG92ZXIu"),
                 "".getBytes(StandardCharsets.UTF_8),
-                b64.decode("e30="),
-                b64.decode("e30=")
+                Base64.getDecoder().decode("e30="),
+                Base64.getDecoder().decode("e30=")
         };
         byte[][] response = {
-                b64.decode("aGV5IHRoZXJlIQ=="),
-                b64.decode("Tk9QRSE="),
-                b64.decode("Tm90aGluZyBpcyBvdmVyISBOb3RoaW5nISBZb3UganVzdCBkb24ndCB0dXJuIGl0IG9mZiEgSXQgd2Fzbid0IG15IHdhciEgWW91IGFza2VkIG1lLCBJIGRpZG4ndCBhc2sgeW91ISBBbmQgSSBkaWQgd2hhdCBJIGhhZCB0byBkbyB0byB3aW4h"),
+                Base64.getDecoder().decode("aGV5IHRoZXJlIQ=="),
+                Base64.getDecoder().decode("Tk9QRSE="),
+                Base64.getDecoder().decode("Tm90aGluZyBpcyBvdmVyISBOb3RoaW5nISBZb3UganVzdCBkb24ndCB0dXJuIGl0IG9mZiEgSXQgd2Fzbid0IG15IHdhciEgWW91IGFza2VkIG1lLCBJIGRpZG4ndCBhc2sgeW91ISBBbmQgSSBkaWQgd2hhdCBJIGhhZCB0byBkbyB0byB3aW4h"),
                 "".getBytes(StandardCharsets.UTF_8),
-                b64.decode("e30="),
+                Base64.getDecoder().decode("e30="),
                 "".getBytes(StandardCharsets.UTF_8)
         };
         byte[][] sharedInfo1 = {
                 "".getBytes(StandardCharsets.UTF_8),
-                b64.decode("dmVyeSBzZWNyZXQgaW5mb3JtYXRpb24="),
-                b64.decode("MDEyMzQ1Njc4OWFiY2RlZg=="),
-                b64.decode("MTIzNDUtNTY3ODk="),
+                Base64.getDecoder().decode("dmVyeSBzZWNyZXQgaW5mb3JtYXRpb24="),
+                Base64.getDecoder().decode("MDEyMzQ1Njc4OWFiY2RlZg=="),
+                Base64.getDecoder().decode("MTIzNDUtNTY3ODk="),
                 "".getBytes(StandardCharsets.UTF_8),
                 "".getBytes(StandardCharsets.UTF_8)
         };
         byte[][] sharedInfo2 = {
                 "".getBytes(StandardCharsets.UTF_8),
-                b64.decode("bm90LXNvLXNlY3JldA=="),
-                b64.decode("Sm9obiBUcmFtb250YQ=="),
-                b64.decode("WlgxMjg="),
+                Base64.getDecoder().decode("bm90LXNvLXNlY3JldA=="),
+                Base64.getDecoder().decode("Sm9obiBUcmFtb250YQ=="),
+                Base64.getDecoder().decode("WlgxMjg="),
                 "".getBytes(StandardCharsets.UTF_8),
                 "".getBytes(StandardCharsets.UTF_8)
         };
         EciesCryptogram[] encryptedRequest = {
                 new EciesCryptogram(
-                        b64.decode("A8sRqx/VLwqoVtCzVfe/qk9c3soQ0Qqn7MQa66JEsooQ"),
-                        b64.decode("eLJ+JPk6Tu+XFqPl7faJtdsz4Xifxj1+1dqm320Yd6c="),
-                        b64.decode("E4rq1Ekje1sCWnXHpMfXUQ=="),
-                        b64.decode("/TlSg4ufI5RHlq+Pg+lo7A==")
+                        Base64.getDecoder().decode("A8sRqx/VLwqoVtCzVfe/qk9c3soQ0Qqn7MQa66JEsooQ"),
+                        Base64.getDecoder().decode("eLJ+JPk6Tu+XFqPl7faJtdsz4Xifxj1+1dqm320Yd6c="),
+                        Base64.getDecoder().decode("E4rq1Ekje1sCWnXHpMfXUQ=="),
+                        Base64.getDecoder().decode("/TlSg4ufI5RHlq+Pg+lo7A==")
                 ),
                 new EciesCryptogram(
-                        b64.decode("A+DPiM1Ax0Re++L9sIJl/5PRs57Kn9+jWC1vfCC6XV22"),
-                        b64.decode("HXLU+J9ngaL4n1CfzqA2gGeR2/ueR2n6q3d6WYZY8yQ="),
-                        b64.decode("d9ClPpIwQk/bNcsIBFHSxaVyv866slbpBwZ4WGxcSr8="),
-                        b64.decode("CxXmHhyF31GeDhiR7GLSVg==")
+                        Base64.getDecoder().decode("A+DPiM1Ax0Re++L9sIJl/5PRs57Kn9+jWC1vfCC6XV22"),
+                        Base64.getDecoder().decode("HXLU+J9ngaL4n1CfzqA2gGeR2/ueR2n6q3d6WYZY8yQ="),
+                        Base64.getDecoder().decode("d9ClPpIwQk/bNcsIBFHSxaVyv866slbpBwZ4WGxcSr8="),
+                        Base64.getDecoder().decode("CxXmHhyF31GeDhiR7GLSVg==")
                 ),
                 new EciesCryptogram(
-                        b64.decode("A8fRuHXpaa4DXso8SmgHnMMyscjrVAGq1R1Dj59fqSiL"),
-                        b64.decode("AUApQaTjjuGJeCWP8J/qh9ZvWKvncN91DqPJSrDNM0w="),
-                        b64.decode("rufQnCIBL+n5E3YICTrrQZJVjUoH1PovL5BEPQKDENI="),
-                        b64.decode("+CFO8M60gIwDkh9chdQ98w==")
+                        Base64.getDecoder().decode("A8fRuHXpaa4DXso8SmgHnMMyscjrVAGq1R1Dj59fqSiL"),
+                        Base64.getDecoder().decode("AUApQaTjjuGJeCWP8J/qh9ZvWKvncN91DqPJSrDNM0w="),
+                        Base64.getDecoder().decode("rufQnCIBL+n5E3YICTrrQZJVjUoH1PovL5BEPQKDENI="),
+                        Base64.getDecoder().decode("+CFO8M60gIwDkh9chdQ98w==")
                 ),
                 new EciesCryptogram(
-                        b64.decode("AuvQMBfzI40VlUVbq1FxXh42R9oRljMeod9cr72/KUe9"),
-                        b64.decode("aUIOblPJPBvdvU1ODwpgh3tq64wf0acVODSn9GV3zy0="),
-                        b64.decode("uvaq0kSsNHmdipjVeHvqpQ=="),
-                        b64.decode("heRzz/F1sVK/aTIX9LJEIA==")
+                        Base64.getDecoder().decode("AuvQMBfzI40VlUVbq1FxXh42R9oRljMeod9cr72/KUe9"),
+                        Base64.getDecoder().decode("aUIOblPJPBvdvU1ODwpgh3tq64wf0acVODSn9GV3zy0="),
+                        Base64.getDecoder().decode("uvaq0kSsNHmdipjVeHvqpQ=="),
+                        Base64.getDecoder().decode("heRzz/F1sVK/aTIX9LJEIA==")
                 ),
                 new EciesCryptogram(
-                        b64.decode("AnHy5cXlI3PZBDzgkkYWVdccG9oZvVlAKUAdPmOVXFO5"),
-                        b64.decode("ogs4Cj5qw5BNQ/pULEp4gtR/6S++hW7YR3sOTBuRDHY="),
-                        b64.decode("LS8vSt2r3UupkzhskAebPw=="),
-                        b64.decode("F+zQghpwtuxioHA3jWvFoA==")
+                        Base64.getDecoder().decode("AnHy5cXlI3PZBDzgkkYWVdccG9oZvVlAKUAdPmOVXFO5"),
+                        Base64.getDecoder().decode("ogs4Cj5qw5BNQ/pULEp4gtR/6S++hW7YR3sOTBuRDHY="),
+                        Base64.getDecoder().decode("LS8vSt2r3UupkzhskAebPw=="),
+                        Base64.getDecoder().decode("F+zQghpwtuxioHA3jWvFoA==")
                 ),
                 new EciesCryptogram(
-                        b64.decode("AuCjc3K6XDM+xqnwwmZrlOszg95gHgLzwn56Y98kjlGq"),
-                        b64.decode("fqJZ6k2efCCpuAjBiAYQH3IpAtgO6yt7hFfnpt9N604="),
-                        b64.decode("NiE9TJk0VsXxPb/6zxdGBA=="),
-                        b64.decode("9plefnOayDXfiQrqiIdnww==")
+                        Base64.getDecoder().decode("AuCjc3K6XDM+xqnwwmZrlOszg95gHgLzwn56Y98kjlGq"),
+                        Base64.getDecoder().decode("fqJZ6k2efCCpuAjBiAYQH3IpAtgO6yt7hFfnpt9N604="),
+                        Base64.getDecoder().decode("NiE9TJk0VsXxPb/6zxdGBA=="),
+                        Base64.getDecoder().decode("9plefnOayDXfiQrqiIdnww==")
                 )        };
 
         EciesCryptogram[] encryptedResponse = {
                 new EciesCryptogram(
                         null,
-                        b64.decode("u2VgJ0Gfz+L3Nf3QHpnmRidczKNX80Nbv9Cs4Bxn4xo="),
-                        b64.decode("4c28lphPgGJIQ87q0BqGNA=="),
+                        Base64.getDecoder().decode("u2VgJ0Gfz+L3Nf3QHpnmRidczKNX80Nbv9Cs4Bxn4xo="),
+                        Base64.getDecoder().decode("4c28lphPgGJIQ87q0BqGNA=="),
                         null
                 ),
                 new EciesCryptogram(
                         null,
-                        b64.decode("Mk6p7EqUd6chb68b0nTckNKUZ9NmlHTtTCBGBHqiB0I="),
-                        b64.decode("iZ110EAyTSB8NXVEAaeN8Q=="),
+                        Base64.getDecoder().decode("Mk6p7EqUd6chb68b0nTckNKUZ9NmlHTtTCBGBHqiB0I="),
+                        Base64.getDecoder().decode("iZ110EAyTSB8NXVEAaeN8Q=="),
                         null
                 ),
                 new EciesCryptogram(
                         null,
-                        b64.decode("M7k84CSmhvyKG6paPbMOydJp0o2pjUuc863puRhGJD8="),
-                        b64.decode("SclHObcsY8FUFWhuiKjiW5A7jPbtzEqyYOYVRPX7+fD7ehGHfnZWuQMRF1ErtYP4AzzSLF4BEmCzfKd1LyshxjUBFPHoUvRuQVhWYhn+XqXI4nUFx4hhxKFqPDea3DLqNFOKE46LZFbtatW6pKrnmwH2qiRs+NKMy9oHb0BRBnv61lmCQtrgUtAezQKfR8qf"),
+                        Base64.getDecoder().decode("M7k84CSmhvyKG6paPbMOydJp0o2pjUuc863puRhGJD8="),
+                        Base64.getDecoder().decode("SclHObcsY8FUFWhuiKjiW5A7jPbtzEqyYOYVRPX7+fD7ehGHfnZWuQMRF1ErtYP4AzzSLF4BEmCzfKd1LyshxjUBFPHoUvRuQVhWYhn+XqXI4nUFx4hhxKFqPDea3DLqNFOKE46LZFbtatW6pKrnmwH2qiRs+NKMy9oHb0BRBnv61lmCQtrgUtAezQKfR8qf"),
                         null
                 ),
                 new EciesCryptogram(
                         null,
-                        b64.decode("aUIOblPJPBvdvU1ODwpgh3tq64wf0acVODSn9GV3zy0="),
-                        b64.decode("uvaq0kSsNHmdipjVeHvqpQ=="),
+                        Base64.getDecoder().decode("aUIOblPJPBvdvU1ODwpgh3tq64wf0acVODSn9GV3zy0="),
+                        Base64.getDecoder().decode("uvaq0kSsNHmdipjVeHvqpQ=="),
                         null
                 ),
                 new EciesCryptogram(
                         null,
-                        b64.decode("ogs4Cj5qw5BNQ/pULEp4gtR/6S++hW7YR3sOTBuRDHY="),
-                        b64.decode("LS8vSt2r3UupkzhskAebPw=="),
+                        Base64.getDecoder().decode("ogs4Cj5qw5BNQ/pULEp4gtR/6S++hW7YR3sOTBuRDHY="),
+                        Base64.getDecoder().decode("LS8vSt2r3UupkzhskAebPw=="),
                         null
                 ),
                 new EciesCryptogram(
                         null,
-                        b64.decode("mUYcNE2UlkGYe9ox+pMvj94yNqUBpR1hNbWhCTl+cbI="),
-                        b64.decode("WuGjDlStpC9f++4vIpSXSQ=="),
+                        Base64.getDecoder().decode("mUYcNE2UlkGYe9ox+pMvj94yNqUBpR1hNbWhCTl+cbI="),
+                        Base64.getDecoder().decode("WuGjDlStpC9f++4vIpSXSQ=="),
                         null
                 )
         };

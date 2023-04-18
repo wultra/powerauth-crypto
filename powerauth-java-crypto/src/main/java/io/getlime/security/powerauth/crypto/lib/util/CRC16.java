@@ -20,7 +20,7 @@ import java.util.zip.Checksum;
 
 /**
  * Class which computes CRC-16 of input data providing standard {@link java.util.zip.Checksum} interface.
- *
+ * <p>
  * The algorithm uses irreducible polynomial 1 + x^2 + x^15 + x^16.
  *
  * @author Roman Strobl, roman.strobl@wultra.com

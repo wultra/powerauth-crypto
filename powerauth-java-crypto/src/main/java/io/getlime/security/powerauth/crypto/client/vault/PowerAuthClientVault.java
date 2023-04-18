@@ -40,9 +40,8 @@ public class PowerAuthClientVault {
     /**
      * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using a transport key
      * KEY_ENCRYPTION_VAULT_TRANSPORT.
-     *
-     *
-     * <p><b>PowerAuth protocol versions:</b>
+     * <p>
+     * <b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>2.0</li>
      *     <li>2.1</li>

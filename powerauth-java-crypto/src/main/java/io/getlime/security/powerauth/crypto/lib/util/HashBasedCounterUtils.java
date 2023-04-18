@@ -23,7 +23,6 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
-import java.util.Arrays;
 
 /**
  * The {@code HashBasedCounterUtils} class provides additional functionality that allows secure transfer
