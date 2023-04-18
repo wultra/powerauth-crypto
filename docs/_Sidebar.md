@@ -1,21 +1,27 @@
 **PowerAuth Specification**
 
 - [Overview](./Readme.md)
-- [Activation Overview](./Activation.md)
+
+**Activation**
+
+- [Activation Principles](./Activation.md)
 - [Activation via Activation Code](./Activation-via-Activation-Code.md)
 - [Activation via Recovery Code](./Activation-via-Recovery-Code.md)
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Key Derivation](./Key-derivation.md)
 - [Checking Activation Status](./Activation-Status.md)
 
-Signatures
+**Signatures**
+
 - [Signatures](./Computing-and-Validating-Signatures.md)
 - [MAC Token Based Authentication](./MAC-Token-Based-Authentication.md)
 
-Encryption
+**Encryption**
+
 - [End-To-End Encryption](./End-To-End-Encryption.md)
 
-Other Chapters
+**Other Chapters**
+
 - [Basic Definitions](./Basic-definitions.md)
 - [Activation Code Format](./Activation-Code.md)
 - [Additional Activation OTP](./Additional-Activation-OTP.md)
