@@ -1,15 +1,24 @@
 **PowerAuth Specification**
 
 - [Overview](./Readme.md)
-- [Activation](./Activation.md)
+- [Activation Overview](./Activation.md)
+- [Activation via Activation Code](./Activation-via-Activation-Code.md)
+- [Activation via Recovery Code](./Activation-via-Recovery-Code.md)
+- [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Key Derivation](./Key-derivation.md)
-- [Checking Status](./Activation-Status.md)
+- [Checking Activation Status](./Activation-Status.md)
+
+Signatures
 - [Signatures](./Computing-and-Validating-Signatures.md)
 - [MAC Token Based Authentication](./MAC-Token-Based-Authentication.md)
+
+Encryption
 - [End-To-End Encryption](./End-To-End-Encryption.md)
-- [Activation Recovery](Activation-Recovery.md)
-- [Additional Activation OTP](Additional-Activation-OTP.md)
+
+Other Chapters
 - [Basic Definitions](./Basic-definitions.md)
+- [Activation Code Format](./Activation-Code.md)
+- [Additional Activation OTP](./Additional-Activation-OTP.md)
 - [Implementation Details](./Implementation-notes.md)
 - [List of Used Keys](./List-of-used-keys.md)
 
@@ -30,6 +39,7 @@
 **Applications**
 
 - [PowerAuth Server](https://github.com/wultra/powerauth-server)
+- [Enrollment Server](https://github.com/wultra/enrollment-server)
 - [PowerAuth Admin](https://github.com/wultra/powerauth-admin)
 - [PowerAuth Push Server](https://github.com/wultra/powerauth-push-server)
 - [PowerAuth CMD Tool](https://github.com/wultra/powerauth-cmd-tool)

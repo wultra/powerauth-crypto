@@ -2,24 +2,13 @@
 
 The most straight forward activation type is "activation via the activation code". The activation code is a random one-time token value with limited time span associated with the particular user. Typically, the activation code is displayed as a QR code in the Internet banking, at branch kiosk, or ATM, or - as a less secure but more convenient alternative - it can be sent via SMS message or e-mail.
 
-The following components typically play role in the process of activation via activation code:
-
-- **PowerAuth Mobile SDK** - An SDK embedded in the mobile client application.
-- **Enrollment Server** - A front-end facing server application that is deployed in demilitarized zone (DMZ) in order to accommodate a communication between the PowerAuth Mobile SDK and PowerAuth Server.
-- **Activation Code Delivery Application** - An application (for example Internet banking) that initiates the activation process by requesting and then displaying or sending the activation code for the use in the PowerAuth Mobile SDK.
-- **PowerAuth Server** - A server application hidden deep in the secure infrastructure. It stores activation records and verifies the request signatures.
-
-![Architecture Overview](./resources/images/arch_big_picture.png)
-
-
 ## Example User Flow
 
-From the user perspective, PowerAuth activation is performed as a sequence of steps in the mobile app and Activation Code Delivery Application (i.e., in web Internet banking). The following steps (with possible user interface alterations) should be performed:
+From the user perspective, activation via activation code is performed as a sequence of steps in the mobile app and Activation Code Delivery Application (i.e., in web Internet banking). The following steps (with possible user interface alterations) should be performed:
 
 ### Activation Code Delivery Application
 
 The following diagram shows example steps in the Internet banking as an example application. You can apply similar principles to other Activation Code Delivery Applications, such as branch kiosk.
-
 
 ![Activation - Web UI Flow](./resources/images/ui_internetbanking_activation_web.png)
 
@@ -32,7 +21,7 @@ The following diagram shows example steps in the mobile banking app.
 
 ## Sequence Diagrams
 
-The sequence diagrams below explain the PowerAuth key exchange. It shows how an app with PowerAuth Mobile SDK, Enrollment Server, Activation Code Delivery Application and PowerAuth Server play together in order to establish a shared secret between the client mobile application and the PowerAuth Server.
+The sequence diagrams below explain the PowerAuth key exchange during the activation via activation code. It shows how an app with PowerAuth Mobile SDK, Enrollment Server, Activation Code Delivery Application and PowerAuth Server play together in order to establish a shared secret between the client mobile application and the PowerAuth Server.
 
 For the sake of the simplicity, we have split the process into three diagrams.
 
@@ -124,7 +113,7 @@ The Activation Code Delivery Application plays no active role in the process of 
 
 ### Activation Commit
 
-Finally, the last diagram shows how the Activation Code Delivery Application proactively checks the status of the activation and allows it's completion by committing the activation record. A PowerAuth Mobile SDK plays a very little role in this step. It only allows showing a public key fingerprint in the mobile app to the user so that the key exchange can be visually confirmed before committing the activation.
+Finally, the last diagram shows how the Activation Code Delivery Application proactively checks the status of the activation and allows its completion by committing the activation record. A PowerAuth Mobile SDK plays a very little role in this step. It only allows showing a public key fingerprint in the mobile app to the user so that the key exchange can be visually confirmed before committing the activation.
 
 ![Activation Commit](./resources/images/sequence_activation_commit.png)
 
@@ -148,3 +137,9 @@ Finally, the last diagram shows how the Activation Code Delivery Application pro
 ## Related Topics
 
 - [Activation Code Format](Activation-Code.md)
+- [Activation via Recovery Code](./Activation-via-Recovery-Code.md)
+- [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
+- [Checking Activation Status](./Activation-Status.md)
+- [Key Derivation](./Key-derivation.md)
+- [Additional Activation OTP](Additional-Activation-OTP.md)
+

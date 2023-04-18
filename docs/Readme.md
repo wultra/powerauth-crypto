@@ -1,4 +1,4 @@
-# PowerAuth Specification
+# PowerAuth
 
 PowerAuth is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or mobile identity applications. It defines all items that are required for a complete security solution: a used cryptography, associated processes, and standard RESTful API end-points.
 

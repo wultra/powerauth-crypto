@@ -1,6 +1,6 @@
 # Recovery Postcard
 
-The Recovery Postcard is a postcard delivered via OOB channel (typically via the courier service) which contains information needed for the PowerAuth Client's [activation recovery](Activation-Recovery.md). This document describes, in brief, the format of the postcard and the process required for its construction.
+The Recovery Postcard is a postcard delivered via OOB channel (typically via the courier service) which contains information needed for the PowerAuth Client's [activation recovery](Activation-via-Recovery-Code.md). This document describes, in brief, the format of the postcard and the process required for its construction.
 
 ## Information Printed on the Postcard
 
