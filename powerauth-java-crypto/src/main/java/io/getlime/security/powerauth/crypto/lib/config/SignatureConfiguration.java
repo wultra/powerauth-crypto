@@ -47,10 +47,10 @@ public abstract class SignatureConfiguration {
 
     public static SignatureConfiguration forFormat(PowerAuthSignatureFormat format) throws CryptoProviderException {
         switch (format) {
-            case BASE64: {
+            case BASE64 -> {
                 return new Base64SignatureConfiguration();
             }
-            case DECIMAL: {
+            case DECIMAL -> {
                 return new DecimalSignatureConfiguration();
             }
         }

@@ -91,21 +91,17 @@ public class EciesFactory {
      */
     private EciesEncryptor getEciesEncryptor(EciesScope eciesScope, ECPublicKey publicKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         switch (eciesScope) {
-
-            case APPLICATION_SCOPE: {
+            case APPLICATION_SCOPE -> {
                 // Compute hash from APP_SECRET as sharedInfo2
                 byte[] sharedInfo2 = Hash.sha256(applicationSecret);
                 return new EciesEncryptor(publicKey, sharedInfo1, sharedInfo2);
             }
-
-            case ACTIVATION_SCOPE: {
+            case ACTIVATION_SCOPE -> {
                 // The sharedInfo2 is defined as HMAC_SHA256(key: KEY_TRANSPORT, data: APP_SECRET)
                 byte[] sharedInfo2 = hmacHashUtilities.hash(transportKey, applicationSecret);
                 return new EciesEncryptor(publicKey, sharedInfo1, sharedInfo2);
             }
-
-            default:
-                throw new GenericCryptoException("Unsupported ECIES scope: "+eciesScope);
+            default -> throw new GenericCryptoException("Unsupported ECIES scope: " + eciesScope);
         }
     }
 
@@ -165,21 +161,17 @@ public class EciesFactory {
      */
     private EciesDecryptor getEciesDecryptor(EciesScope eciesScope, ECPrivateKey privateKey, byte[] applicationSecret, byte[] transportKey, byte[] sharedInfo1) throws GenericCryptoException, CryptoProviderException {
         switch (eciesScope) {
-
-            case APPLICATION_SCOPE: {
+            case APPLICATION_SCOPE -> {
                 // Compute hash from APP_SECRET as sharedInfo2
                 byte[] sharedInfo2 = Hash.sha256(applicationSecret);
                 return new EciesDecryptor(privateKey, sharedInfo1, sharedInfo2);
             }
-
-            case ACTIVATION_SCOPE: {
+            case ACTIVATION_SCOPE -> {
                 // The sharedInfo2 is defined as HMAC_SHA256(key: KEY_TRANSPORT, data: APP_SECRET)
                 byte[] sharedInfo2 = hmacHashUtilities.hash(transportKey, applicationSecret);
                 return new EciesDecryptor(privateKey, sharedInfo1, sharedInfo2);
             }
-
-            default:
-                throw new GenericCryptoException("Unsupported ECIES scope: "+eciesScope);
+            default -> throw new GenericCryptoException("Unsupported ECIES scope: " + eciesScope);
         }
     }
 

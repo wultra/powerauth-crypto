@@ -260,16 +260,15 @@ public class SignatureUtils {
             throw new GenericCryptoException("Invalid length of signature counter");
         }
         switch (configuration.getSignatureFormat()) {
-            case BASE64: {
+            case BASE64 -> {
                 return computePowerAuthBase64Signature(data, signatureKeys, ctrData);
             }
-            case DECIMAL: {
-                final Integer len = ((DecimalSignatureConfiguration)configuration).getLength();
+            case DECIMAL -> {
+                final Integer len = ((DecimalSignatureConfiguration) configuration).getLength();
                 return computePowerAuthDecimalSignature(data, signatureKeys, ctrData, len);
             }
-            default: {
+            default ->
                 throw new GenericCryptoException("Unsupported format of PowerAuth signature.");
-            }
         }
     }
 
