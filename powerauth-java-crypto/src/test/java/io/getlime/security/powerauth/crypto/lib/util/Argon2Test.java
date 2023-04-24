@@ -53,30 +53,26 @@ public class Argon2Test {
 
     @Test
     public void testInvalidHash1() {
-        assertThrows(IOException.class, () -> {
-            Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
-        });
+        assertThrows(IOException.class, () ->
+            Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA"));
     }
 
     @Test
     public void testInvalidHash2() {
-        assertThrows(IOException.class, () -> {
-            Argon2Hash.parse("$argon2i$v=19$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
-        });
+        assertThrows(IOException.class, () ->
+            Argon2Hash.parse("$argon2i$v=19$c29tZXNhbHQ$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA"));
     }
 
     @Test
     public void testInvalidHash3() {
-        assertThrows(IOException.class, () -> {
-            Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA");
-        });
+        assertThrows(IOException.class, () ->
+            Argon2Hash.parse("argon2i$v=19$m=65536,t=2,p=1$$wWKIMhR9lyDFvRz9YTZweHKfbftvj+qf+YFY4NeBbtA"));
     }
 
     @Test
     public void testInvalidHash4() {
-        assertThrows(IOException.class, () -> {
-            Argon2Hash.parse("$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$");
-        });
+        assertThrows(IOException.class, () ->
+            Argon2Hash.parse("$argon2i$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$"));
     }
 
     @Test
