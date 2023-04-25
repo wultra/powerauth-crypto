@@ -1,0 +1,182 @@
+/*
+ * PowerAuth Crypto Library
+ * Copyright 2023 Wultra s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.getlime.security.powerauth.crypto.lib.totp;
+
+import com.google.common.base.Strings;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.HexFormat;
+
+/**
+ * TOTP: Time-Based One-Time Password Algorithm according to <a href="https://www.rfc-editor.org/rfc/rfc6238">RFC 6238</a>.
+ *
+ * @author Lubos Racansky, lubos.racansky@wultra.com
+ */
+public final class TOTP {
+
+    private static final Logger logger = LoggerFactory.getLogger(TOTP.class);
+
+    private static final int TIME_STEP_X = 30;
+
+    private TOTP() {
+        throw new IllegalStateException("Should not be instantiated");
+    }
+
+    private static final int[] DIGITS_POWER
+            // 0  1   2    3      4       5        6          7           8
+            = {1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000};
+
+    /**
+     * Generates a TOTP value for the given set of parameters using HmacSHA1 algorithm.
+     *
+     * @param key           the shared secret, HEX encoded
+     * @param localDateTime date time
+     * @param returnDigits  number of digits to return
+     * @return a numeric String in base 10 that includes truncation digits
+     * @throws CryptoProviderException in case of any crypto error
+     */
+    public static String generateTOTPSHA1(final String key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
+        return generateTOTP(key, countTimeSteps(localDateTime), returnDigits, Algorithm.HMAC_SHA1.code);
+    }
+
+    /**
+     * Generates a TOTP value for the given set of parameters using HmacSHA256 algorithm.
+     *
+     * @param key           the shared secret, HEX encoded
+     * @param localDateTime date time
+     * @param returnDigits  number of digits to return
+     * @return a numeric String in base 10 that includes truncation digits
+     * @throws CryptoProviderException in case of any crypto error
+     */
+    public static String generateTOTPSHA256(final String key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
+        return generateTOTP(key, countTimeSteps(localDateTime), returnDigits, Algorithm.HMAC_SHA256.code);
+    }
+
+    /**
+     * Generates a TOTP value for the given set of parameters using HmacSHA512 algorithm.
+     *
+     * @param key           the shared secret, HEX encoded
+     * @param localDateTime date time
+     * @param returnDigits  number of digits to return
+     * @return a numeric String in base 10 that includes truncation digits
+     * @throws CryptoProviderException in case of any crypto error
+     */
+    public static String generateTOTPSHA512(final String key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
+        return generateTOTP(key, countTimeSteps(localDateTime), returnDigits, Algorithm.HMAC_SHA512.code);
+    }
+
+
+    /**
+     * Generates a TOTP value for the given set of parameters.
+     *
+     * @param key          the shared secret, HEX encoded
+     * @param timeSteps    number of time steps
+     * @param returnDigits number of digits to return
+     * @param algorithm    the algorithm to use
+     * @return a numeric String in base 10 that includes truncation digits
+     * @throws CryptoProviderException in case of any crypto error
+     */
+    private static String generateTOTP(final String key, final long timeSteps, final int returnDigits, final String algorithm) throws CryptoProviderException {
+        logger.debug("Generating TOTP for timeSteps={}, algorithm={}", timeSteps, algorithm);
+
+        if (key == null || key.trim().length() == 0) {
+            throw new CryptoProviderException("Key is mandatory");
+        }
+
+        if (algorithm == null) {
+            throw new CryptoProviderException("Algorithm is mandatory");
+        }
+
+        if (returnDigits <= 0) {
+            throw new CryptoProviderException("ReturnDigits must be positive number");
+        }
+
+        // Using the counter
+        // First 8 bytes are for the movingFactor
+        // Compliant with base RFC4226 (HOTP)
+        final String timeWithCounterPrefix = padWithZeros(Long.toHexString(timeSteps), 16);
+
+        // Get the HEX in a Byte[]
+        final byte[] msg = HexFormat.of().parseHex(timeWithCounterPrefix);
+        final byte[] k = HexFormat.of().parseHex(key);
+
+        final byte[] hash = computeHash(algorithm, k, msg);
+
+        // put selected bytes into result int
+        final int offset = hash[hash.length - 1] & 0xf;
+
+        final int binary = ((hash[offset] & 0x7f) << 24) |
+                ((hash[offset + 1] & 0xff) << 16) |
+                ((hash[offset + 2] & 0xff) << 8) |
+                (hash[offset + 3] & 0xff);
+
+        final int otp = binary % DIGITS_POWER[returnDigits];
+
+        final String result = Integer.toString(otp);
+        return padWithZeros(result, returnDigits);
+    }
+
+    private static long countTimeSteps(final LocalDateTime localDateTime) throws CryptoProviderException {
+        if (localDateTime == null) {
+            throw new CryptoProviderException("LocalDateTime is mandatory");
+        }
+
+        return localDateTime.toEpochSecond(ZoneOffset.UTC) / TIME_STEP_X;
+    }
+
+    private static String padWithZeros(final String source, final int length) {
+        return Strings.padStart(source, length, '0');
+    }
+
+    /**
+     * Computes a Hashed Message Authentication Code with the give hash algorithm as a parameter.
+     *
+     * @param algorithm the algorithm
+     * @param keyBytes  the bytes to use for the HMAC key
+     * @param text      the message or text to be authenticated
+     * @throws CryptoProviderException in case of any crypto error
+     */
+    private static byte[] computeHash(final String algorithm, final byte[] keyBytes, final byte[] text) throws CryptoProviderException {
+        try {
+            final Mac hmac = Mac.getInstance(algorithm);
+            final SecretKeySpec macKey = new SecretKeySpec(keyBytes, "RAW");
+            hmac.init(macKey);
+            return hmac.doFinal(text);
+        } catch (GeneralSecurityException e) {
+            throw new CryptoProviderException(e);
+        }
+    }
+
+    private enum Algorithm {
+        HMAC_SHA1("HmacSHA1"),
+        HMAC_SHA256("HmacSHA256"),
+        HMAC_SHA512("HmacSHA512");
+
+        private final String code;
+
+        Algorithm(String code) {
+            this.code = code;
+        }
+    }
+}
