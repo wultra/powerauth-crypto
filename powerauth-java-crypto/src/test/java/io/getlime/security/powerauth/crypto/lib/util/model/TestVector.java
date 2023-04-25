@@ -19,37 +19,9 @@ package io.getlime.security.powerauth.crypto.lib.util.model;
 import java.util.Map;
 
 /**
+ * @param input Test vector input data.
+ * @param output Test vector output data.
  * Class representing a single test vector.
  */
-public class TestVector {
-
-    private final Map<String, String> input;
-    private final Map<String, String> output;
-
-    /**
-     * Test vector constructor.
-     * @param input Test vector input data.
-     * @param output Test vector output data.
-     */
-    public TestVector(Map<String, String> input, Map<String, String> output) {
-        this.input = input;
-        this.output = output;
-    }
-
-    /**
-     * Get test vector input data.
-     * @return Test vector input data.
-     */
-    public Map<String, String> getInput() {
-        return input;
-    }
-
-    /**
-     * Get test vector output data.
-     * @return Test vector output data.
-     */
-    public Map<String, String> getOutput() {
-        return output;
-    }
-
+public record TestVector(Map<String, String> input, Map<String, String> output) {
 }

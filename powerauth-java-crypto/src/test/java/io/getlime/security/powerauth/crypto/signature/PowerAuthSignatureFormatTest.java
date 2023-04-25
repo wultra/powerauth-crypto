@@ -41,44 +41,38 @@ public class PowerAuthSignatureFormatTest {
 
     @Test
     public void testInvalidV2() {
-        assertThrows(GenericCryptoException.class, () -> {
-            PowerAuthSignatureFormat.getFormatForSignatureVersion("2.2");
-        });
+        assertThrows(GenericCryptoException.class, () ->
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("2.2"));
     }
 
     @Test
     public void testInvalidV3() {
-        assertThrows(GenericCryptoException.class, () -> {
-            PowerAuthSignatureFormat.getFormatForSignatureVersion("3.05");
-        });
+        assertThrows(GenericCryptoException.class, () ->
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("3.05"));
     }
 
     @Test
     public void testInvalidFormat1() {
-        assertThrows(GenericCryptoException.class, () -> {
-            PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1.1");
-        });
+        assertThrows(GenericCryptoException.class, () ->
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1.1"));
     }
 
     @Test
     public void testInvalidFormat2() {
-        assertThrows(GenericCryptoException.class, () -> {
-            PowerAuthSignatureFormat.getFormatForSignatureVersion("foo");
-        });
+        assertThrows(GenericCryptoException.class, () ->
+            PowerAuthSignatureFormat.getFormatForSignatureVersion("foo"));
     }
 
     @Test
     public void testInvalidFormat3() {
-        assertThrows(GenericCryptoException.class, () -> {
-            PowerAuthSignatureFormat.getFormatForSignatureVersion("");
-        });
+        assertThrows(GenericCryptoException.class, () ->
+            PowerAuthSignatureFormat.getFormatForSignatureVersion(""));
     }
 
     @Test
     public void testInvalidFormat4() {
-        assertThrows(GenericCryptoException.class, () -> {
-            PowerAuthSignatureFormat.getFormatForSignatureVersion(null);
-        });
+        assertThrows(GenericCryptoException.class, () ->
+            PowerAuthSignatureFormat.getFormatForSignatureVersion(null));
     }
 
     @Test
