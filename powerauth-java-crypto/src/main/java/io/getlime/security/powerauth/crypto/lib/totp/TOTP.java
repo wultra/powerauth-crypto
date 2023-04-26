@@ -235,7 +235,7 @@ public final class TOTP {
         // Compliant with base RFC4226 (HOTP)
         final String timeWithCounterPrefix = padWithZeros(Long.toHexString(timeStep), 16);
 
-        // Get the HEX in a Byte[]
+        // Get the HEX in a byte[]
         final byte[] msg = HexFormat.of().parseHex(timeWithCounterPrefix);
 
         final byte[] hash = computeHash(algorithm, key, msg);
