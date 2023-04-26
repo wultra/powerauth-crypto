@@ -155,7 +155,7 @@ public final class Totp {
             throw new CryptoProviderException("Steps must not be negative number");
         }
 
-        long currentTimeStep = countTimeSteps(localDateTime);
+        final long currentTimeStep = countTimeSteps(localDateTime);
         for (int i = 0; i <= backwardSteps; i++) {
             logger.debug("Validating TOTP for localDateTime={}, algorithm={}, step={} out of allowed backward steps={}", localDateTime, algorithm, i, backwardSteps);
             final long step = currentTimeStep - i;
@@ -196,12 +196,17 @@ public final class Totp {
         // Using the counter
         // First 8 bytes are for the movingFactor
         // Compliant with base RFC4226 (HOTP)
-        final byte[] data = HexFormat.of().parseHex(padWithZeros(Long.toHexString(timeStep), 16));
+        final String hexPaddedTimeStep = padWithZeros(Long.toHexString(timeStep), 16);
+        
+        final byte[] data = HexFormat.of().parseHex(hexPaddedTimeStep);
         final byte[] hash = computeHash(algorithm, key, data);
 
         // Put selected bytes into result int
         final int offset = hash[hash.length - 1] & 0xf;
 
+        // To explain 0x7f
+        // The reason for masking the most significant bit is to avoid confusion about signed vs. unsigned modulo computations.
+        // Different processors perform these operations differently, and masking out the signed bit removes all ambiguity.
         final int binaryCode = ((hash[offset] & 0x7f) << 24) |
                 ((hash[offset + 1] & 0xff) << 16) |
                 ((hash[offset + 2] & 0xff) << 8) |
