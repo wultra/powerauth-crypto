@@ -138,25 +138,25 @@ public final class Totp {
      * @param otp           TOTP to validate
      * @param key           the shared secret
      * @param localDateTime date time
-     * @param steps         number of backward time steps allowed to validate
+     * @param backwardSteps number of backward time steps allowed to validate
      * @param algorithm     the algorithm to use
      * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
      */
-    private static boolean validateTotp(final String otp, final byte[] key, final LocalDateTime localDateTime, final int steps, final String algorithm) throws CryptoProviderException {
-        logger.debug("Validating TOTP for localDateTime={}, algorithm={}, steps={}", localDateTime, algorithm, steps);
+    private static boolean validateTotp(final String otp, final byte[] key, final LocalDateTime localDateTime, final int backwardSteps, final String algorithm) throws CryptoProviderException {
+        logger.debug("Validating TOTP for localDateTime={}, algorithm={}, steps={}", localDateTime, algorithm, backwardSteps);
 
         if (otp == null || otp.trim().length() == 0) {
             throw new CryptoProviderException("Otp is mandatory");
         }
 
-        if (steps < 0) {
+        if (backwardSteps < 0) {
             throw new CryptoProviderException("Steps must not be negative number");
         }
 
         long currentTimeStep = countTimeSteps(localDateTime);
-        for (int i = 0; i <= steps; i++) {
-            logger.debug("Validating TOTP for localDateTime={}, algorithm={}, backward step={} out of allowed steps={}", localDateTime, algorithm, i, steps);
+        for (int i = 0; i <= backwardSteps; i++) {
+            logger.debug("Validating TOTP for localDateTime={}, algorithm={}, step={} out of allowed backward steps={}", localDateTime, algorithm, i, backwardSteps);
             final long step = currentTimeStep - i;
             final String expectedOtp = generateTotp(key, step, otp.length(), algorithm);
             if (expectedOtp.equals(otp)) {
