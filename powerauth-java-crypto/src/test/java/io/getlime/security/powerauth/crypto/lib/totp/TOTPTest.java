@@ -24,7 +24,6 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.opentest4j.AssertionFailedError;
 
 import java.time.LocalDateTime;
-import java.util.HexFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class TOTPTest {
 
-    private static final String SEED = HexFormat.of().formatHex("12345678901234567890".getBytes());
+    private static final byte[] SEED = "12345678901234567890".getBytes();
 
     /**
      * The test token shared secret uses the ASCII string value {@code 12345678901234567890}.

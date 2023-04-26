@@ -50,39 +50,39 @@ public final class TOTP {
     /**
      * Generates a TOTP value for the given set of parameters using HmacSHA1 algorithm.
      *
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
      * @param returnDigits  number of digits to return
      * @return a numeric String in base 10 that includes truncation digits
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static String generateTOTPSHA1(final String key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
+    public static String generateTOTPSHA1(final byte[] key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
         return generateTOTP(key, countTimeSteps(localDateTime), returnDigits, Algorithm.HMAC_SHA1.code);
     }
 
     /**
      * Generates a TOTP value for the given set of parameters using HmacSHA256 algorithm.
      *
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
      * @param returnDigits  number of digits to return
      * @return a numeric String in base 10 that includes truncation digits
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static String generateTOTPSHA256(final String key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
+    public static String generateTOTPSHA256(final byte[] key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
         return generateTOTP(key, countTimeSteps(localDateTime), returnDigits, Algorithm.HMAC_SHA256.code);
     }
 
     /**
      * Generates a TOTP value for the given set of parameters using HmacSHA512 algorithm.
      *
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
      * @param returnDigits  number of digits to return
      * @return a numeric String in base 10 that includes truncation digits
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static String generateTOTPSHA512(final String key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
+    public static String generateTOTPSHA512(final byte[] key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
         return generateTOTP(key, countTimeSteps(localDateTime), returnDigits, Algorithm.HMAC_SHA512.code);
     }
 
@@ -90,13 +90,13 @@ public final class TOTP {
      * Validate a TOTP value for the given set of parameters using HmacSHA1 algorithm. Validates one time step backward.
      *
      * @param otp           TOTP to validate
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
-     * @return a numeric String in base 10 that includes truncation digits
+     * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
-     * @see #validateTOTPSHA1(String, String, LocalDateTime, int)
+     * @see #validateTOTPSHA1(String, byte[], LocalDateTime, int)
      */
-    public static boolean validateTOTPSHA1(final String otp, final String key, final LocalDateTime localDateTime) throws CryptoProviderException {
+    public static boolean validateTOTPSHA1(final String otp, final byte[] key, final LocalDateTime localDateTime) throws CryptoProviderException {
         return validateTOTPSHA1(otp, key, localDateTime, 1);
     }
 
@@ -104,13 +104,13 @@ public final class TOTP {
      * Validate a TOTP value for the given set of parameters using HmacSHA1 algorithm.
      *
      * @param otp           TOTP to validate
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
      * @param steps         number of backward time steps allowed to validate
-     * @return a numeric String in base 10 that includes truncation digits
+     * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static boolean validateTOTPSHA1(final String otp, final String key, final LocalDateTime localDateTime, final int steps) throws CryptoProviderException {
+    public static boolean validateTOTPSHA1(final String otp, final byte[] key, final LocalDateTime localDateTime, final int steps) throws CryptoProviderException {
         return validateTOTP(otp, key, localDateTime, steps, Algorithm.HMAC_SHA1.code);
     }
 
@@ -118,13 +118,13 @@ public final class TOTP {
      * Validate a TOTP value for the given set of parameters using HmacSHA256 algorithm. Validates one time step backward.
      *
      * @param otp           TOTP to validate
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
-     * @return a numeric String in base 10 that includes truncation digits
+     * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
-     * @see #validateTOTPSHA1(String, String, LocalDateTime, int)
+     * @see #validateTOTPSHA1(String, byte[], LocalDateTime, int)
      */
-    public static boolean validateTOTPSHA256(final String otp, final String key, final LocalDateTime localDateTime) throws CryptoProviderException {
+    public static boolean validateTOTPSHA256(final String otp, final byte[] key, final LocalDateTime localDateTime) throws CryptoProviderException {
         return validateTOTPSHA256(otp, key, localDateTime, 1);
     }
 
@@ -132,13 +132,13 @@ public final class TOTP {
      * Validate a TOTP value for the given set of parameters using HmacSHA256 algorithm.
      *
      * @param otp           TOTP to validate
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
      * @param steps         number of backward time steps allowed to validate
-     * @return a numeric String in base 10 that includes truncation digits
+     * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static boolean validateTOTPSHA256(final String otp, final String key, final LocalDateTime localDateTime, final int steps) throws CryptoProviderException {
+    public static boolean validateTOTPSHA256(final String otp, final byte[] key, final LocalDateTime localDateTime, final int steps) throws CryptoProviderException {
         return validateTOTP(otp, key, localDateTime, steps, Algorithm.HMAC_SHA256.code);
     }
 
@@ -146,13 +146,13 @@ public final class TOTP {
      * Validate a TOTP value for the given set of parameters using HmacSHA512 algorithm. Validates one time step backward.
      *
      * @param otp           TOTP to validate
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
-     * @return a numeric String in base 10 that includes truncation digits
+     * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
-     * @see #validateTOTPSHA1(String, String, LocalDateTime, int)
+     * @see #validateTOTPSHA1(String, byte[], LocalDateTime, int)
      */
-    public static boolean validateTOTPSHA512(final String otp, final String key, final LocalDateTime localDateTime) throws CryptoProviderException {
+    public static boolean validateTOTPSHA512(final String otp, final byte[] key, final LocalDateTime localDateTime) throws CryptoProviderException {
         return validateTOTPSHA512(otp, key, localDateTime, 1);
     }
 
@@ -160,13 +160,13 @@ public final class TOTP {
      * Validate a TOTP value for the given set of parameters using HmacSHA512 algorithm.
      *
      * @param otp           TOTP to validate
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
      * @param steps         number of backward time steps allowed to validate
-     * @return a numeric String in base 10 that includes truncation digits
+     * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static boolean validateTOTPSHA512(final String otp, final String key, final LocalDateTime localDateTime, final int steps) throws CryptoProviderException {
+    public static boolean validateTOTPSHA512(final String otp, final byte[] key, final LocalDateTime localDateTime, final int steps) throws CryptoProviderException {
         return validateTOTP(otp, key, localDateTime, steps, Algorithm.HMAC_SHA512.code);
     }
 
@@ -174,14 +174,14 @@ public final class TOTP {
      * Validate a TOTP value for the given set of parameters using HmacSHA1 algorithm.
      *
      * @param otp           TOTP to validate
-     * @param key           the shared secret, HEX encoded
+     * @param key           the shared secret
      * @param localDateTime date time
      * @param steps         number of backward time steps allowed to validate
      * @param algorithm     the algorithm to use
-     * @return a numeric String in base 10 that includes truncation digits
+     * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
      */
-    private static boolean validateTOTP(final String otp, final String key, final LocalDateTime localDateTime, final int steps, final String algorithm) throws CryptoProviderException {
+    private static boolean validateTOTP(final String otp, final byte[] key, final LocalDateTime localDateTime, final int steps, final String algorithm) throws CryptoProviderException {
         logger.debug("Validating TOTP for localDateTime={}, algorithm={}, steps={}", localDateTime, algorithm, steps);
 
         if (otp == null || otp.trim().length() == 0) {
@@ -190,10 +190,6 @@ public final class TOTP {
 
         if (steps < 0) {
             throw new CryptoProviderException("Steps must not be negative number");
-        }
-
-        if (localDateTime == null) {
-            throw new CryptoProviderException("LocalDateTime is mandatory");
         }
 
         long currentTimeStep = countTimeSteps(localDateTime);
@@ -212,17 +208,17 @@ public final class TOTP {
     /**
      * Generates a TOTP value for the given set of parameters.
      *
-     * @param key          the shared secret, HEX encoded
+     * @param key          the shared secret
      * @param timeStep     number of time step
      * @param returnDigits number of digits to return
      * @param algorithm    the algorithm to use
      * @return a numeric String in base 10 that includes truncation digits
      * @throws CryptoProviderException in case of any crypto error
      */
-    private static String generateTOTP(final String key, final long timeStep, final int returnDigits, final String algorithm) throws CryptoProviderException {
+    private static String generateTOTP(final byte[] key, final long timeStep, final int returnDigits, final String algorithm) throws CryptoProviderException {
         logger.debug("Generating TOTP for timeStep={}, algorithm={}", timeStep, algorithm);
 
-        if (key == null || key.trim().length() == 0) {
+        if (key == null) {
             throw new CryptoProviderException("Key is mandatory");
         }
 
@@ -241,9 +237,8 @@ public final class TOTP {
 
         // Get the HEX in a Byte[]
         final byte[] msg = HexFormat.of().parseHex(timeWithCounterPrefix);
-        final byte[] k = HexFormat.of().parseHex(key);
 
-        final byte[] hash = computeHash(algorithm, k, msg);
+        final byte[] hash = computeHash(algorithm, key, msg);
 
         // put selected bytes into result int
         final int offset = hash[hash.length - 1] & 0xf;
