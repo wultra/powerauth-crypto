@@ -45,7 +45,6 @@ class TOTPTest {
     @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
     void testGenerateTOTP(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm) throws Exception {
         final String result = switch (algorithm) {
-            case "HmacSHA1" -> TOTP.generateTOTPSHA1(SEED, localDateTime, 8);
             case "HmacSHA256" -> TOTP.generateTOTPSHA256(SEED, localDateTime, 8);
             case "HmacSHA512" -> TOTP.generateTOTPSHA512(SEED, localDateTime, 8);
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
@@ -57,7 +56,6 @@ class TOTPTest {
     @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
     void testValidateTOTPCurrentStep(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm) throws Exception {
         final boolean result = switch (algorithm) {
-            case "HmacSHA1" -> TOTP.validateTOTPSHA1(otp, SEED, localDateTime);
             case "HmacSHA256" -> TOTP.validateTOTPSHA256(otp, SEED, localDateTime);
             case "HmacSHA512" -> TOTP.validateTOTPSHA512(otp, SEED, localDateTime);
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
@@ -71,7 +69,6 @@ class TOTPTest {
         final LocalDateTime movedLocalDateTime = localDateTime.plusSeconds(30);
 
         final boolean result = switch (algorithm) {
-            case "HmacSHA1" -> TOTP.validateTOTPSHA1(otp, SEED, movedLocalDateTime);
             case "HmacSHA256" -> TOTP.validateTOTPSHA256(otp, SEED, movedLocalDateTime);
             case "HmacSHA512" -> TOTP.validateTOTPSHA512(otp, SEED, movedLocalDateTime);
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
@@ -85,7 +82,6 @@ class TOTPTest {
         final LocalDateTime movedLocalDateTime = localDateTime.plusSeconds(60);
 
         final boolean result = switch (algorithm) {
-            case "HmacSHA1" -> TOTP.validateTOTPSHA1(otp, SEED, movedLocalDateTime);
             case "HmacSHA256" -> TOTP.validateTOTPSHA256(otp, SEED, movedLocalDateTime);
             case "HmacSHA512" -> TOTP.validateTOTPSHA512(otp, SEED, movedLocalDateTime);
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);

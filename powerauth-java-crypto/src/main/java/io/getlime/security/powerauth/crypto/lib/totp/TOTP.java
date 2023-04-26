@@ -48,19 +48,6 @@ public final class TOTP {
             = {1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000};
 
     /**
-     * Generates a TOTP value for the given set of parameters using HmacSHA1 algorithm.
-     *
-     * @param key           the shared secret
-     * @param localDateTime date time
-     * @param returnDigits  number of digits to return
-     * @return a numeric String in base 10 that includes truncation digits
-     * @throws CryptoProviderException in case of any crypto error
-     */
-    public static String generateTOTPSHA1(final byte[] key, final LocalDateTime localDateTime, final int returnDigits) throws CryptoProviderException {
-        return generateTOTP(key, countTimeSteps(localDateTime), returnDigits, Algorithm.HMAC_SHA1.code);
-    }
-
-    /**
      * Generates a TOTP value for the given set of parameters using HmacSHA256 algorithm.
      *
      * @param key           the shared secret
@@ -87,34 +74,6 @@ public final class TOTP {
     }
 
     /**
-     * Validate a TOTP value for the given set of parameters using HmacSHA1 algorithm. Validates one time step backward.
-     *
-     * @param otp           TOTP to validate
-     * @param key           the shared secret
-     * @param localDateTime date time
-     * @return true if OTP is valid
-     * @throws CryptoProviderException in case of any crypto error
-     * @see #validateTOTPSHA1(String, byte[], LocalDateTime, int)
-     */
-    public static boolean validateTOTPSHA1(final String otp, final byte[] key, final LocalDateTime localDateTime) throws CryptoProviderException {
-        return validateTOTPSHA1(otp, key, localDateTime, 1);
-    }
-
-    /**
-     * Validate a TOTP value for the given set of parameters using HmacSHA1 algorithm.
-     *
-     * @param otp           TOTP to validate
-     * @param key           the shared secret
-     * @param localDateTime date time
-     * @param steps         number of backward time steps allowed to validate
-     * @return true if OTP is valid
-     * @throws CryptoProviderException in case of any crypto error
-     */
-    public static boolean validateTOTPSHA1(final String otp, final byte[] key, final LocalDateTime localDateTime, final int steps) throws CryptoProviderException {
-        return validateTOTP(otp, key, localDateTime, steps, Algorithm.HMAC_SHA1.code);
-    }
-
-    /**
      * Validate a TOTP value for the given set of parameters using HmacSHA256 algorithm. Validates one time step backward.
      *
      * @param otp           TOTP to validate
@@ -122,7 +81,7 @@ public final class TOTP {
      * @param localDateTime date time
      * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
-     * @see #validateTOTPSHA1(String, byte[], LocalDateTime, int)
+     * @see #validateTOTPSHA256(String, byte[], LocalDateTime, int)
      */
     public static boolean validateTOTPSHA256(final String otp, final byte[] key, final LocalDateTime localDateTime) throws CryptoProviderException {
         return validateTOTPSHA256(otp, key, localDateTime, 1);
@@ -150,7 +109,7 @@ public final class TOTP {
      * @param localDateTime date time
      * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
-     * @see #validateTOTPSHA1(String, byte[], LocalDateTime, int)
+     * @see #validateTOTPSHA512(String, byte[], LocalDateTime, int)
      */
     public static boolean validateTOTPSHA512(final String otp, final byte[] key, final LocalDateTime localDateTime) throws CryptoProviderException {
         return validateTOTPSHA512(otp, key, localDateTime, 1);
@@ -171,7 +130,7 @@ public final class TOTP {
     }
 
     /**
-     * Validate a TOTP value for the given set of parameters using HmacSHA1 algorithm.
+     * Validate a TOTP value for the given set of parameters.
      *
      * @param otp           TOTP to validate
      * @param key           the shared secret
@@ -286,7 +245,6 @@ public final class TOTP {
     }
 
     private enum Algorithm {
-        HMAC_SHA1("HmacSHA1"),
         HMAC_SHA256("HmacSHA256"),
         HMAC_SHA512("HmacSHA512");
 
