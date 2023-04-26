@@ -26,7 +26,7 @@ import org.opentest4j.AssertionFailedError;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for {@link TOTP}.
@@ -44,7 +44,7 @@ class TOTPTest {
      */
     @ParameterizedTest
     @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
-    void testGenerateTOTP(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String t, final String otp, final String algorithm) throws Exception {
+    void testGenerateTOTP(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm) throws Exception {
         final String result = switch (algorithm) {
             case "HmacSHA1" -> TOTP.generateTOTPSHA1(SEED, localDateTime, 8);
             case "HmacSHA256" -> TOTP.generateTOTPSHA256(SEED, localDateTime, 8);
@@ -52,6 +52,46 @@ class TOTPTest {
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
         };
         assertEquals(otp, result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
+    void testValidateTOTPCurrentStep(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm) throws Exception {
+        final boolean result = switch (algorithm) {
+            case "HmacSHA1" -> TOTP.validateTOTPSHA1(otp, SEED, localDateTime);
+            case "HmacSHA256" -> TOTP.validateTOTPSHA256(otp, SEED, localDateTime);
+            case "HmacSHA512" -> TOTP.validateTOTPSHA512(otp, SEED, localDateTime);
+            default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
+        };
+        assertTrue(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
+    void testValidateTOTPOneStepBack(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm) throws Exception {
+        final LocalDateTime movedLocalDateTime = localDateTime.plusSeconds(30);
+
+        final boolean result = switch (algorithm) {
+            case "HmacSHA1" -> TOTP.validateTOTPSHA1(otp, SEED, movedLocalDateTime);
+            case "HmacSHA256" -> TOTP.validateTOTPSHA256(otp, SEED, movedLocalDateTime);
+            case "HmacSHA512" -> TOTP.validateTOTPSHA512(otp, SEED, movedLocalDateTime);
+            default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
+        };
+        assertTrue(result);
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
+    void testValidateTOTPTwoStepsBack(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm) throws Exception {
+        final LocalDateTime movedLocalDateTime = localDateTime.plusSeconds(60);
+
+        final boolean result = switch (algorithm) {
+            case "HmacSHA1" -> TOTP.validateTOTPSHA1(otp, SEED, movedLocalDateTime);
+            case "HmacSHA256" -> TOTP.validateTOTPSHA256(otp, SEED, movedLocalDateTime);
+            case "HmacSHA512" -> TOTP.validateTOTPSHA512(otp, SEED, movedLocalDateTime);
+            default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
+        };
+        assertFalse(result);
     }
 
     static class DateTimeConverter extends TypedArgumentConverter<String, LocalDateTime> {
