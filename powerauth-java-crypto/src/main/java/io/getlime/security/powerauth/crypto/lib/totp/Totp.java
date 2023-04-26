@@ -236,6 +236,7 @@ public final class Totp {
      * @param data      data to be hashed
      * @throws CryptoProviderException in case of any crypto error
      */
+    @SuppressWarnings("java:S2139") // NOSONAR we need to be sure that the exception is logged, better twice than never
     private static byte[] computeHash(final String algorithm, final byte[] keyBytes, final byte[] data) throws CryptoProviderException {
         try {
             final Mac hmac = Mac.getInstance(algorithm);
