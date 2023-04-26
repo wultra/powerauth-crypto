@@ -78,7 +78,7 @@
         <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <guava.version>31.1-jre</guava.version>
-        <slf4j.version>2.0.5</slf4j.version>
+        <slf4j.version>2.0.7</slf4j.version>
         <junit.version>5.9.1</junit.version>
     </properties>
 
