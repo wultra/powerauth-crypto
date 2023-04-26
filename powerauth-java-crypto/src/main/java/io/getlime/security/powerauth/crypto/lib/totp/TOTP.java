@@ -37,6 +37,9 @@ public final class TOTP {
 
     private static final Logger logger = LoggerFactory.getLogger(TOTP.class);
 
+    /**
+     * Default time-step size of 30 seconds recommended by RFC. The value is selected as a balance between security and usability.
+     */
     private static final int TIME_STEP_X = 30;
 
     private TOTP() {
