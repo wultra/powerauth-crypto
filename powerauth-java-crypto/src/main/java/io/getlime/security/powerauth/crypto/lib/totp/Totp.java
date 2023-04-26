@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.totp;
 
 import com.google.common.base.Strings;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,7 +160,7 @@ public final class Totp {
             logger.debug("Validating TOTP for localDateTime={}, algorithm={}, step={} out of allowed backward steps={}", localDateTime, algorithm, i, backwardSteps);
             final long step = currentTimeStep - i;
             final String expectedOtp = generateTotp(key, step, otp.length(), algorithm);
-            if (expectedOtp.equals(otp)) {
+            if (Arrays.constantTimeAreEqual(expectedOtp.getBytes(), otp.getBytes())) {
                 return true;
             }
         }
