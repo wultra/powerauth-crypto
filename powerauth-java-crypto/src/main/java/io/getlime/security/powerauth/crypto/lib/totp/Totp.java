@@ -188,8 +188,8 @@ public final class Totp {
             throw new CryptoProviderException("Algorithm is mandatory");
         }
 
-        if (returnDigits <= 0) {
-            throw new CryptoProviderException("ReturnDigits must be positive number");
+        if (returnDigits <= 0 || returnDigits >= DIGITS_POWER.length) {
+            throw new CryptoProviderException("ReturnDigits must be positive number and smaller than " + DIGITS_POWER.length);
         }
 
         // Using the counter

@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.lib.totp;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -82,6 +83,13 @@ class TotpTest {
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
         };
         assertFalse(result);
+    }
+
+    @Test
+    void testGenerateTotpLeftPaddedWithZero() throws Exception {
+        final LocalDateTime localDateTime = LocalDateTime.parse("2023-04-27T01:26:29");
+        final String result = Totp.generateTotpSha256("12345678901234567890".getBytes(), localDateTime, 8);
+        assertEquals("01760428", result);
     }
 
     private static byte[] fromHex(final String source) {
