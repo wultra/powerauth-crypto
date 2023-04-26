@@ -199,7 +199,7 @@ public final class Totp {
         final byte[] data = HexFormat.of().parseHex(padWithZeros(Long.toHexString(timeStep), 16));
         final byte[] hash = computeHash(algorithm, key, data);
 
-        // put selected bytes into result int
+        // Put selected bytes into result int
         final int offset = hash[hash.length - 1] & 0xf;
 
         final int binary = ((hash[offset] & 0x7f) << 24) |
@@ -232,7 +232,7 @@ public final class Totp {
      * @param data      data to be hashed
      * @throws CryptoProviderException in case of any crypto error
      */
-    @SuppressWarnings("java:S2139") // NOSONAR we need to be sure that the exception is logged, better twice than never
+    @SuppressWarnings("java:S2139") // NOSONAR We need to be sure that the exception is logged, better twice than never
     private static byte[] computeHash(final String algorithm, final byte[] keyBytes, final byte[] data) throws CryptoProviderException {
         try {
             final Mac hmac = Mac.getInstance(algorithm);
