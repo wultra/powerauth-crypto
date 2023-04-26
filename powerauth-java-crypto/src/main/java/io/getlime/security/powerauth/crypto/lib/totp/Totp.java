@@ -233,15 +233,15 @@ public final class Totp {
      *
      * @param algorithm the algorithm
      * @param keyBytes  the bytes to use for the HMAC key
-     * @param text      the message or text to be authenticated
+     * @param data      data to be hashed
      * @throws CryptoProviderException in case of any crypto error
      */
-    private static byte[] computeHash(final String algorithm, final byte[] keyBytes, final byte[] text) throws CryptoProviderException {
+    private static byte[] computeHash(final String algorithm, final byte[] keyBytes, final byte[] data) throws CryptoProviderException {
         try {
             final Mac hmac = Mac.getInstance(algorithm);
             final SecretKeySpec macKey = new SecretKeySpec(keyBytes, "RAW");
             hmac.init(macKey);
-            return hmac.doFinal(text);
+            return hmac.doFinal(data);
         } catch (GeneralSecurityException e) {
             logger.error("Problem to compute hash for algorithm={}", algorithm, e);
             throw new CryptoProviderException("Problem to compute hash for algorithm=" + algorithm, e);
