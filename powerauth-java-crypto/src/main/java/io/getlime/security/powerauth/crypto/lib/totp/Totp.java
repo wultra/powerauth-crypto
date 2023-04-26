@@ -243,7 +243,8 @@ public final class Totp {
             hmac.init(macKey);
             return hmac.doFinal(text);
         } catch (GeneralSecurityException e) {
-            throw new CryptoProviderException(e);
+            logger.error("Problem to compute hash for algorithm={}", algorithm, e);
+            throw new CryptoProviderException("Problem to compute hash for algorithm=" + algorithm, e);
         }
     }
 
