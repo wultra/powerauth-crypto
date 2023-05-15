@@ -79,7 +79,7 @@
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <guava.version>31.1-jre</guava.version>
         <slf4j.version>2.0.7</slf4j.version>
-        <junit.version>5.9.1</junit.version>
+        <junit.version>5.9.2</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -105,6 +105,12 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
                 <version>${junit.version}</version>
             </dependency>
         </dependencies>
