@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class PowerAuthRecoveryCodeTest {
 
-    private IdentifierGenerator identifierGenerator = new IdentifierGenerator();
+    private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
 
     /**
      * Add crypto providers.
