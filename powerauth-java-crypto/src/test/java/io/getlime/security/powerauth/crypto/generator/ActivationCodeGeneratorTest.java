@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class ActivationCodeGeneratorTest {
 
-    private IdentifierGenerator identifierGenerator = new IdentifierGenerator();
+    private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
 
     /**
      * Set up crypto providers

@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class EciesEncryptorTest {
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
-    private KeyConvertor keyConvertor = new KeyConvertor();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Add crypto providers.

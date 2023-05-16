@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class KeyConversionUtilsTest {
 
-	private KeyGenerator keyGenerator = new KeyGenerator();
+	private final KeyGenerator keyGenerator = new KeyGenerator();
 
 	/**
 	 * Default constructor
