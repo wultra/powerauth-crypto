@@ -135,6 +135,7 @@ public class KeyConvertor {
             final ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
             return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(ecPublicKeySpec);
         } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (IllegalArgumentException ex) {
             throw new GenericCryptoException(ex.getMessage(), ex);
