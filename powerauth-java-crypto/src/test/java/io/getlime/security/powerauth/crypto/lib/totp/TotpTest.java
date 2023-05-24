@@ -27,6 +27,9 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.opentest4j.AssertionFailedError;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HexFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -91,7 +94,7 @@ class TotpTest {
 
     @Test
     void testGenerateTotpLeftPaddedWithZero() throws Exception {
-        final LocalDateTime localDateTime = LocalDateTime.parse("2023-04-27T01:26:29");
+        final LocalDateTime localDateTime = parse("2023-04-27T01:26:29Z");
         final String result = new String(Totp.generateTotpSha256("12345678901234567890".getBytes(), localDateTime, DIGITS_NUMBER));
         assertEquals("01760428", result);
     }
@@ -107,6 +110,12 @@ class TotpTest {
         return HexFormat.of().parseHex(source);
     }
 
+    private static LocalDateTime parse(String source) {
+        return ZonedDateTime.parse(source, DateTimeFormatter.ISO_DATE_TIME)
+                .withZoneSameInstant(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
     static class DateTimeConverter extends TypedArgumentConverter<String, LocalDateTime> {
         protected DateTimeConverter() {
             super(String.class, LocalDateTime.class);
@@ -115,10 +124,11 @@ class TotpTest {
         @Override
         protected LocalDateTime convert(final String source) throws ArgumentConversionException {
             try {
-                return LocalDateTime.parse(source);
+                return parse(source);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Failed to convert", e);
             }
         }
     }
+
 }

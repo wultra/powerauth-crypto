@@ -26,7 +26,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.HexFormat;
 
 /**
@@ -230,7 +230,8 @@ public final class Totp {
             throw new CryptoProviderException("LocalDateTime is mandatory");
         }
 
-        return localDateTime.toEpochSecond(ZoneOffset.UTC) / TIME_STEP_X;
+//        return localDateTime.toEpochSecond(ZoneOffset.UTC) / TIME_STEP_X;
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1_000 / TIME_STEP_X;
     }
 
     private static String padWithZeros(final String source, final int length) {
