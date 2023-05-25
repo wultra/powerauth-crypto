@@ -26,9 +26,7 @@ import org.junit.jupiter.params.converter.TypedArgumentConverter;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.opentest4j.AssertionFailedError;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HexFormat;
 
@@ -47,9 +45,10 @@ class TotpTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
     void testGenerateTotp(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm, final String seed) throws Exception {
+        final Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
         final byte[] result = switch (algorithm) {
-            case "HmacSHA256" -> Totp.generateTotpSha256(fromHex(seed), localDateTime, DIGITS_NUMBER);
-            case "HmacSHA512" -> Totp.generateTotpSha512(fromHex(seed), localDateTime, DIGITS_NUMBER);
+            case "HmacSHA256" -> Totp.generateTotpSha256(fromHex(seed), instant, DIGITS_NUMBER);
+            case "HmacSHA512" -> Totp.generateTotpSha512(fromHex(seed), instant, DIGITS_NUMBER);
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
         };
         assertEquals(otp, new String(result));
@@ -58,9 +57,10 @@ class TotpTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
     void testValidateTotpCurrentStep(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm, final String seed) throws Exception {
+        final Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
         final boolean result = switch (algorithm) {
-            case "HmacSHA256" -> Totp.validateTotpSha256(otp.getBytes(), fromHex(seed), localDateTime, DIGITS_NUMBER);
-            case "HmacSHA512" -> Totp.validateTotpSha512(otp.getBytes(), fromHex(seed), localDateTime, DIGITS_NUMBER);
+            case "HmacSHA256" -> Totp.validateTotpSha256(otp.getBytes(), fromHex(seed), instant, DIGITS_NUMBER);
+            case "HmacSHA512" -> Totp.validateTotpSha512(otp.getBytes(), fromHex(seed), instant, DIGITS_NUMBER);
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
         };
         assertTrue(result);
@@ -69,11 +69,11 @@ class TotpTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
     void testValidateTotpOneStepBack(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm, final String seed) throws Exception {
-        final LocalDateTime movedLocalDateTime = localDateTime.plusSeconds(30);
+        final Instant movedInstant = localDateTime.plusSeconds(30).toInstant(ZoneOffset.UTC);
 
         final boolean result = switch (algorithm) {
-            case "HmacSHA256" -> Totp.validateTotpSha256(otp.getBytes(), fromHex(seed), movedLocalDateTime, DIGITS_NUMBER);
-            case "HmacSHA512" -> Totp.validateTotpSha512(otp.getBytes(), fromHex(seed), movedLocalDateTime, DIGITS_NUMBER);
+            case "HmacSHA256" -> Totp.validateTotpSha256(otp.getBytes(), fromHex(seed), movedInstant, DIGITS_NUMBER);
+            case "HmacSHA512" -> Totp.validateTotpSha512(otp.getBytes(), fromHex(seed), movedInstant, DIGITS_NUMBER);
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
         };
         assertTrue(result);
@@ -82,11 +82,11 @@ class TotpTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/io/getlime/security/powerauth/crypto/lib/totp/data.csv", useHeadersInDisplayName=true)
     void testValidateTotpTwoStepsBack(final long seconds, final @ConvertWith(DateTimeConverter.class) LocalDateTime localDateTime, final String step, final String otp, final String algorithm, final String seed) throws Exception {
-        final LocalDateTime movedLocalDateTime = localDateTime.plusSeconds(60);
+        final Instant movedInstant = localDateTime.plusSeconds(60).toInstant(ZoneOffset.UTC);
 
         final boolean result = switch (algorithm) {
-            case "HmacSHA256" -> Totp.validateTotpSha256(otp.getBytes(), fromHex(seed), movedLocalDateTime, DIGITS_NUMBER);
-            case "HmacSHA512" -> Totp.validateTotpSha512(otp.getBytes(), fromHex(seed), movedLocalDateTime, DIGITS_NUMBER);
+            case "HmacSHA256" -> Totp.validateTotpSha256(otp.getBytes(), fromHex(seed), movedInstant, DIGITS_NUMBER);
+            case "HmacSHA512" -> Totp.validateTotpSha512(otp.getBytes(), fromHex(seed), movedInstant, DIGITS_NUMBER);
             default -> throw new AssertionFailedError("Not supported algorithm " + algorithm);
         };
         assertFalse(result);
@@ -94,15 +94,15 @@ class TotpTest {
 
     @Test
     void testGenerateTotpLeftPaddedWithZero() throws Exception {
-        final LocalDateTime localDateTime = parse("2023-04-27T01:26:29Z");
-        final String result = new String(Totp.generateTotpSha256("12345678901234567890".getBytes(), localDateTime, DIGITS_NUMBER));
+        final Instant instant = parse("2023-04-27T01:26:29Z").toInstant(ZoneOffset.UTC);
+        final String result = new String(Totp.generateTotpSha256("12345678901234567890".getBytes(), instant, DIGITS_NUMBER));
         assertEquals("01760428", result);
     }
 
     @Test
     void testValidateTotpInvalidLength() {
         var exception = Assertions.assertThrows(CryptoProviderException.class, () ->
-            Totp.validateTotpSha256("1".getBytes(), "12345678901234567890".getBytes(), LocalDateTime.now(), DIGITS_NUMBER));
+            Totp.validateTotpSha256("1".getBytes(), "12345678901234567890".getBytes(), Instant.now(), DIGITS_NUMBER));
         assertEquals("Otp length 1 is different from expected 8", exception.getMessage());
     }
 
@@ -112,7 +112,6 @@ class TotpTest {
 
     private static LocalDateTime parse(String source) {
         return ZonedDateTime.parse(source, DateTimeFormatter.ISO_DATE_TIME)
-                .withZoneSameInstant(ZoneId.systemDefault())
                 .toLocalDateTime();
     }
 
