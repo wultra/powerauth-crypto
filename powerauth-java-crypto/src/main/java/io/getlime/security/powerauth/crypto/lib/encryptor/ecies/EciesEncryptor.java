@@ -106,11 +106,12 @@ public class EciesEncryptor {
      *
      * @param data Request data.
      * @param useIv Controls whether encryption uses non-zero initialization vector for protocol V3.1+.
+     * @param useTimestamp Controls whether encryption uses timestamp for protocol V3.2+.
      * @param associatedData Associated data for protocol V3.2+ or null for previous protocol versions.
      * @return ECIES cryptogram.
      * @throws EciesException In case request encryption fails.
      */
-    public EciesCryptogram encryptRequest(byte[] data, boolean useIv, byte[] associatedData) throws EciesException {
+    public EciesCryptogram encryptRequest(byte[] data, boolean useIv, boolean useTimestamp, byte[] associatedData) throws EciesException {
         if (data == null) {
             throw new EciesException("Parameter data for request encryption is null");
         }
@@ -118,7 +119,7 @@ public class EciesEncryptor {
             throw new EciesException("Request encryption is not allowed");
         }
         envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
-        return encrypt(data, useIv, associatedData);
+        return encrypt(data, useIv, useTimestamp, associatedData);
     }
 
     /**
@@ -177,11 +178,12 @@ public class EciesEncryptor {
      *
      * @param data Data to be encrypted.
      * @param useIv Controls whether encryption uses non-zero initialization vector for protocol V3.1+.
+     * @param useTimestamp Controls whether encryption uses timestamp for protocol V3.2+.
      * @param associatedData Associated data for protocol V3.2+ or null for previous protocol versions.
      * @return Encrypted data as cryptogram.
      * @throws EciesException In case AES encryption fails.
      */
-    private EciesCryptogram encrypt(byte[] data, boolean useIv, byte[] associatedData) throws EciesException {
+    private EciesCryptogram encrypt(byte[] data, boolean useIv, boolean useTimestamp, byte[] associatedData) throws EciesException {
         try {
             // Prepare nonce & IV
             final byte[] nonce;
@@ -200,8 +202,11 @@ public class EciesEncryptor {
             final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
             final byte[] encryptedData = aes.encrypt(data, iv, encKey);
 
-            // Resolve timestamp based on protocol version
-            byte[] timestampBytes = EciesUtils.resolveTimestamp(associatedData);
+            // Generate timestamp in case it is required
+            byte[] timestampBytes = null;
+            if (useTimestamp) {
+                timestampBytes = EciesUtils.generateTimestamp();
+            }
 
             // Resolve MAC data based on protocol version
             final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, encryptedData, nonce,

@@ -54,16 +54,11 @@ public class EciesUtils {
     }
 
     /**
-     * Resolve ECIES timestamp based on availability of associated data.
+     * Generate timestamp for ECIES request/response.
      *
-     * @param associatedData Data associated with ECIES request or response.
      * @return Timestamp bytes to use for ECIES encryption.
      */
-    public static byte[] resolveTimestamp(byte[] associatedData) {
-        if (associatedData == null) {
-            // Protocol V3.1 or older
-            return null;
-        }
+    public static byte[] generateTimestamp() {
         // Protocol V3.2+
         long timestamp = System.currentTimeMillis();
         return ByteBuffer.allocate(8).putLong(timestamp).array();

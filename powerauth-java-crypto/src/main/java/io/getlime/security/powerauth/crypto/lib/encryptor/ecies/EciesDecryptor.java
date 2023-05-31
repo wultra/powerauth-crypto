@@ -57,6 +57,7 @@ public class EciesDecryptor {
     private boolean canEncryptData;
     private boolean useIv;
     private byte[] ivForEncryption;
+    private boolean useTimestamp;
 
     /**
      * Construct a new decryptor with the base private key and null sharedInfo1 and sharedInfo2 parameters.
@@ -238,6 +239,7 @@ public class EciesDecryptor {
             canEncryptData = true;
             useIv = requireIv;
             ivForEncryption = iv;
+            useTimestamp = cryptogram.getTimestamp() != null;
 
             return aes.decrypt(cryptogram.getEncryptedData(), iv, encKey);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
@@ -267,8 +269,11 @@ public class EciesDecryptor {
                 nonce = keyGenerator.generateRandomBytes(16);
             }
 
-            // Resolve timestamp based on protocol version
-            byte[] timestampBytes = EciesUtils.resolveTimestamp(associatedData);
+            // Generate timestamp in case it is required
+            byte[] timestampBytes = null;
+            if (useTimestamp) {
+                timestampBytes = EciesUtils.generateTimestamp();
+            }
 
             // Resolve MAC data based on protocol version
             final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, encryptedData, nonce,

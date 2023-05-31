@@ -100,7 +100,7 @@ public class EciesEncryptorTest {
                 associatedData = null;
             }
             EciesEncryptor encryptor = new EciesEncryptor((ECPublicKey) publicKey);
-            final EciesCryptogram payloadRequest = encryptor.encryptRequest(request, useIv, associatedData);
+            final EciesCryptogram payloadRequest = encryptor.encryptRequest(request, useIv, associatedData != null, associatedData);
             System.out.println("# REQUEST");
             System.out.println("- Original data: " + Base64.getEncoder().encodeToString(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadRequest.getEncryptedData()));
@@ -161,7 +161,7 @@ public class EciesEncryptorTest {
                 associatedData = null;
             }
             EciesEncryptor encryptor = new EciesEncryptor((ECPublicKey) publicKey);
-            final EciesCryptogram payloadRequest = encryptor.encryptRequest(request, useIv, associatedData);
+            final EciesCryptogram payloadRequest = encryptor.encryptRequest(request, useIv, associatedData != null, associatedData);
             System.out.println("# REQUEST");
             System.out.println("- Original data: " + Base64.getEncoder().encodeToString(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadRequest.getEncryptedData()));
