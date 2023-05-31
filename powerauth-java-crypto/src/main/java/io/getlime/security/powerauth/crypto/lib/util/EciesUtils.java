@@ -60,7 +60,7 @@ public class EciesUtils {
      */
     public static byte[] generateTimestamp() {
         // Protocol V3.2+
-        long timestamp = System.currentTimeMillis();
+        final long timestamp = System.currentTimeMillis();
         return ByteBuffer.allocate(8).putLong(timestamp).array();
     }
 }
