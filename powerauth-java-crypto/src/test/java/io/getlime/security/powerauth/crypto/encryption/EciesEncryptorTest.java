@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
@@ -105,9 +106,10 @@ public class EciesEncryptorTest {
             System.out.println("- Original data: " + Base64.getEncoder().encodeToString(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadRequest.getEncryptedData()));
             System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadRequest.getMac()));
-            System.out.println("- NONCE: " + (useIv ? Base64.getEncoder().encodeToString(payloadRequest.getNonce()) : "null"));
-            System.out.println("- AD: " + (payloadRequest.getAssociatedData() != null ? Base64.getEncoder().encodeToString(payloadRequest.getAssociatedData()) : "null"));
-            System.out.println("- Ephemeral Public Key: " + Base64.getEncoder().encodeToString(payloadRequest.getEphemeralPublicKey()));
+            System.out.println("- Nonce: " + (useIv ? Base64.getEncoder().encodeToString(payloadRequest.getNonce()) : "null"));
+            System.out.println("- Timestamp: " + (payloadRequest.getTimestamp() !=  null ? new BigInteger(payloadRequest.getTimestamp()) : "null"));
+            System.out.println("- Associated data: " + (payloadRequest.getAssociatedData() != null ? Base64.getEncoder().encodeToString(payloadRequest.getAssociatedData()) : "null"));
+            System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(payloadRequest.getEphemeralPublicKey()));
             System.out.println();
 
             EciesDecryptor decryptor = new EciesDecryptor((ECPrivateKey) privateKey);
@@ -166,9 +168,10 @@ public class EciesEncryptorTest {
             System.out.println("- Original data: " + Base64.getEncoder().encodeToString(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
             System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadRequest.getEncryptedData()));
             System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadRequest.getMac()));
-            System.out.println("- NONCE: " + (useIv ? Base64.getEncoder().encodeToString(payloadRequest.getNonce()) : "null"));
-            System.out.println("- AD: " + (payloadRequest.getAssociatedData() != null ? Base64.getEncoder().encodeToString(payloadRequest.getAssociatedData()) : "null"));
-            System.out.println("- Ephemeral Public Key: " + Base64.getEncoder().encodeToString(payloadRequest.getEphemeralPublicKey()));
+            System.out.println("- Nonce: " + (useIv ? Base64.getEncoder().encodeToString(payloadRequest.getNonce()) : "null"));
+            System.out.println("- Timestamp: " + (payloadRequest.getTimestamp() !=  null ? new BigInteger(payloadRequest.getTimestamp()) : "null"));
+            System.out.println("- Associated data: " + (payloadRequest.getAssociatedData() != null ? Base64.getEncoder().encodeToString(payloadRequest.getAssociatedData()) : "null"));
+            System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(payloadRequest.getEphemeralPublicKey()));
             System.out.println();
 
             byte[] macBroken = keyGenerator.generateRandomBytes(16);
