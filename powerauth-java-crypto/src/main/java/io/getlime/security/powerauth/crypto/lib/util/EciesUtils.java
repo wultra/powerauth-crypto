@@ -44,7 +44,7 @@ public class EciesUtils {
         if (sharedInfo2 == null) {
             // No shared info, use only encryptedData
             return encryptedData;
-        } else if (associatedData == null) {
+        } else if (timestampBytes == null) {
             // Protocol V3.1 and older
             return Bytes.concat(encryptedData, sharedInfo2);
         }
