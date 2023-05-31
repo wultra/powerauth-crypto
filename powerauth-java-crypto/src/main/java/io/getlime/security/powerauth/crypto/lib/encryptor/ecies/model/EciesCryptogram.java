@@ -28,6 +28,28 @@ public class EciesCryptogram {
     private final byte[] mac;
     private final byte[] encryptedData;
     private final byte[] nonce;
+    private final byte[] associatedData;
+    private final byte[] timestamp;
+
+    /**
+     * Constructor for ECIES cryptogram used in encrypted requests.
+     *
+     * @param ephemeralPublicKey Ephemeral public key.
+     * @param mac MAC computed for key and data.
+     * @param encryptedData Encrypted data.
+     * @param nonce Nonce, required for protocol V3.1+.
+     * @param associatedData Associated data, required for protocol V3.2+.
+     * @param timestamp Timestamp, required for protocol V3.2+.
+     */
+    public EciesCryptogram(byte[] ephemeralPublicKey, byte[] mac, byte[] encryptedData, byte[] nonce,
+                           byte[] associatedData, byte[] timestamp) {
+        this.ephemeralPublicKey = ephemeralPublicKey;
+        this.mac = mac;
+        this.encryptedData = encryptedData;
+        this.nonce = nonce;
+        this.associatedData = associatedData;
+        this.timestamp = timestamp;
+    }
 
     /**
      * Constructor for ECIES cryptogram used in encrypted requests.
@@ -42,6 +64,8 @@ public class EciesCryptogram {
         this.mac = mac;
         this.encryptedData = encryptedData;
         this.nonce = nonce;
+        this.associatedData = null;
+        this.timestamp = null;
     }
 
     /**
@@ -55,6 +79,8 @@ public class EciesCryptogram {
         this.mac = mac;
         this.encryptedData = encryptedData;
         this.nonce = null;
+        this.associatedData = null;
+        this.timestamp = null;
     }
 
     /**
@@ -91,5 +117,21 @@ public class EciesCryptogram {
      */
     public byte[] getNonce() {
         return nonce;
+    }
+
+    /**
+     * Get associated data.
+     * @return Associated data.
+     */
+    public byte[] getAssociatedData() {
+        return associatedData;
+    }
+
+    /**
+     * Get timestamp.
+     * @return Timestamp.
+     */
+    public byte[] getTimestamp() {
+        return timestamp;
     }
 }

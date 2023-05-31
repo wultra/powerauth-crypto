@@ -16,16 +16,12 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
-import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCryptogram;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
-import io.getlime.security.powerauth.crypto.lib.util.SideChannelUtils;
+import io.getlime.security.powerauth.crypto.lib.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,10 +106,11 @@ public class EciesEncryptor {
      *
      * @param data Request data.
      * @param useIv Controls whether encryption uses non-zero initialization vector for protocol V3.1+.
+     * @param associatedData Associated data for protocol V3.2+ or null for previous protocol versions.
      * @return ECIES cryptogram.
      * @throws EciesException In case request encryption fails.
      */
-    public EciesCryptogram encryptRequest(byte[] data, boolean useIv) throws EciesException {
+    public EciesCryptogram encryptRequest(byte[] data, boolean useIv, byte[] associatedData) throws EciesException {
         if (data == null) {
             throw new EciesException("Parameter data for request encryption is null");
         }
@@ -121,7 +118,7 @@ public class EciesEncryptor {
             throw new EciesException("Request encryption is not allowed");
         }
         envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
-        return encrypt(data, useIv);
+        return encrypt(data, useIv, associatedData);
     }
 
     /**
@@ -180,10 +177,11 @@ public class EciesEncryptor {
      *
      * @param data Data to be encrypted.
      * @param useIv Controls whether encryption uses non-zero initialization vector for protocol V3.1+.
+     * @param associatedData Associated data for protocol V3.2+ or null for previous protocol versions.
      * @return Encrypted data as cryptogram.
      * @throws EciesException In case AES encryption fails.
      */
-    private EciesCryptogram encrypt(byte[] data, boolean useIv) throws EciesException {
+    private EciesCryptogram encrypt(byte[] data, boolean useIv, byte[] associatedData) throws EciesException {
         try {
             // Prepare nonce & IV
             final byte[] nonce;
@@ -202,8 +200,14 @@ public class EciesEncryptor {
             final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
             final byte[] encryptedData = aes.encrypt(data, iv, encKey);
 
-            // Compute MAC of the data
-            final byte[] macData = (sharedInfo2 == null ? encryptedData : Bytes.concat(encryptedData, sharedInfo2));
+            // Resolve timestamp based on protocol version
+            byte[] timestampBytes = EciesUtils.resolveTimestamp(associatedData);
+
+            // Resolve MAC data based on protocol version
+            final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, encryptedData, nonce,
+                    associatedData, timestampBytes, envelopeKey.getEphemeralKeyPublic());
+
+            // Compute data MAC
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
 
             // Invalidate this encryptor for encryption
@@ -212,7 +216,7 @@ public class EciesEncryptor {
             ivForDecryption = iv;
 
             // Return encrypted payload
-            return new EciesCryptogram(envelopeKey.getEphemeralKeyPublic(), mac, encryptedData, nonce);
+            return new EciesCryptogram(envelopeKey.getEphemeralKeyPublic(), mac, encryptedData, nonce, associatedData, timestampBytes);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new EciesException("Request encryption failed", ex);
@@ -229,14 +233,17 @@ public class EciesEncryptor {
      */
     private byte[] decrypt(EciesCryptogram cryptogram) throws EciesException {
         try {
+            // Resolve MAC data based on protocol version
+            final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, cryptogram.getEncryptedData(), cryptogram.getNonce(),
+                    cryptogram.getAssociatedData(), cryptogram.getTimestamp(), cryptogram.getEphemeralPublicKey());
+
             // Validate data MAC value
-            final byte[] macData = (sharedInfo2 == null ? cryptogram.getEncryptedData() : Bytes.concat(cryptogram.getEncryptedData(), sharedInfo2));
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
             if (!SideChannelUtils.constantTimeAreEqual(mac, cryptogram.getMac())) {
                 throw new EciesException("Invalid MAC");
             }
 
-            // Decrypt the data with AES using zero IV
+            // Decrypt the data with AES using specified IV
             final byte[] encKeyBytes = envelopeKey.getEncKey();
             final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
             final byte[] iv = ivForDecryption;

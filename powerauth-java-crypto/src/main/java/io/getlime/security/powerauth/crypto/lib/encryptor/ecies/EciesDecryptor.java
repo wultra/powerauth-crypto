@@ -16,15 +16,12 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
-import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCryptogram;
+import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
-import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
-import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
-import io.getlime.security.powerauth.crypto.lib.util.SideChannelUtils;
+import io.getlime.security.powerauth.crypto.lib.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +44,7 @@ public class EciesDecryptor {
     private final AESEncryptionUtils aes = new AESEncryptionUtils();
     private final HMACHashUtilities hmac = new HMACHashUtilities();
     private final KeyConvertor keyConvertor = new KeyConvertor();
+    private final KeyGenerator keyGenerator = new KeyGenerator();
 
     // Encryptor working data storage
     private final PrivateKey privateKey;
@@ -57,6 +55,7 @@ public class EciesDecryptor {
     // Life-cycle management variables
     private boolean canDecryptData;
     private boolean canEncryptData;
+    private boolean useIv;
     private byte[] ivForEncryption;
 
     /**
@@ -164,14 +163,14 @@ public class EciesDecryptor {
      * @return ECIES cryptogram.
      * @throws EciesException In case response encryption fails.
      */
-    public EciesCryptogram encryptResponse(byte[] data) throws EciesException {
+    public EciesCryptogram encryptResponse(byte[] data, byte[] associatedData) throws EciesException {
         if (data == null) {
             throw new EciesException("Parameter data for response encryption is null");
         }
         if (!canEncryptResponse()) {
             throw new EciesException("Response encryption is not allowed");
         }
-        return encrypt(data);
+        return encrypt(data, associatedData);
     }
 
     /**
@@ -219,8 +218,11 @@ public class EciesDecryptor {
      */
     private byte[] decrypt(EciesCryptogram cryptogram, boolean requireIv) throws EciesException {
         try {
+            // Resolve MAC data based on protocol version
+            final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, cryptogram.getEncryptedData(), cryptogram.getNonce(),
+                    cryptogram.getAssociatedData(), cryptogram.getTimestamp(), cryptogram.getEphemeralPublicKey());
+
             // Validate data MAC value
-            final byte[] macData = (sharedInfo2 == null ? cryptogram.getEncryptedData() : Bytes.concat(cryptogram.getEncryptedData(), sharedInfo2));
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
             if (!SideChannelUtils.constantTimeAreEqual(mac, cryptogram.getMac())) {
                 throw new EciesException("Invalid MAC");
@@ -234,6 +236,7 @@ public class EciesDecryptor {
             // Invalidate this decryptor for decryption
             canDecryptData = false;
             canEncryptData = true;
+            useIv = requireIv;
             ivForEncryption = iv;
 
             return aes.decrypt(cryptogram.getEncryptedData(), iv, encKey);
@@ -251,16 +254,25 @@ public class EciesDecryptor {
      * @return Encrypted data as ECIES cryptogram.
      * @throws EciesException In case AES encryption fails.
      */
-    private EciesCryptogram encrypt(byte[] data) throws EciesException {
+    private EciesCryptogram encrypt(byte[] data, byte[] associatedData) throws EciesException {
         try {
-            // Encrypt the data with AES using zero IV
+            // Encrypt the data with AES using specified IV
             final byte[] encKeyBytes = envelopeKey.getEncKey();
             final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
             final byte[] iv = ivForEncryption;
-            final byte[] body = aes.encrypt(data, iv, encKey);
+            final byte[] encryptedData = aes.encrypt(data, iv, encKey);
 
-            // Compute MAC of the data
-            final byte[] macData = (sharedInfo2 == null ? body : Bytes.concat(body, sharedInfo2));
+            byte[] nonce = null;
+            if (useIv) {
+                nonce = keyGenerator.generateRandomBytes(16);
+            }
+
+            // Resolve timestamp based on protocol version
+            byte[] timestampBytes = EciesUtils.resolveTimestamp(associatedData);
+
+            // Resolve MAC data based on protocol version
+            final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, encryptedData, nonce,
+                    associatedData, timestampBytes, envelopeKey.getEphemeralKeyPublic());
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
 
             // Invalidate this decryptor
@@ -268,7 +280,7 @@ public class EciesDecryptor {
             ivForEncryption = null;
 
             // Return encrypted payload
-            return new EciesCryptogram(mac, body);
+            return new EciesCryptogram(mac, encryptedData);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new EciesException("Response encryption failed", ex);
