@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.GeneralSecurityException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.HexFormat;
 
 /**
@@ -55,26 +54,26 @@ public final class Totp {
      * Generates a TOTP value for the given set of parameters using HmacSHA256 algorithm.
      *
      * @param key           the shared secret
-     * @param localDateTime date time
+     * @param instant       current Unix time
      * @param digitsNumber  number of digits to return
      * @return a numeric String in base 10 that includes truncation digits
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static byte[] generateTotpSha256(final byte[] key, final LocalDateTime localDateTime, final int digitsNumber) throws CryptoProviderException {
-        return generateTotp(key, countTimeSteps(localDateTime), digitsNumber, Algorithm.HMAC_SHA256.code);
+    public static byte[] generateTotpSha256(final byte[] key, final Instant instant, final int digitsNumber) throws CryptoProviderException {
+        return generateTotp(key, countTimeSteps(instant), digitsNumber, Algorithm.HMAC_SHA256.code);
     }
 
     /**
      * Generates a TOTP value for the given set of parameters using HmacSHA512 algorithm.
      *
      * @param key           the shared secret
-     * @param localDateTime date time
+     * @param instant       current Unix time
      * @param digitsNumber  number of digits to return
      * @return a numeric String in base 10 that includes truncation digits
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static byte[] generateTotpSha512(final byte[] key, final LocalDateTime localDateTime, final int digitsNumber) throws CryptoProviderException {
-        return generateTotp(key, countTimeSteps(localDateTime), digitsNumber, Algorithm.HMAC_SHA512.code);
+    public static byte[] generateTotpSha512(final byte[] key, final Instant instant, final int digitsNumber) throws CryptoProviderException {
+        return generateTotp(key, countTimeSteps(instant), digitsNumber, Algorithm.HMAC_SHA512.code);
     }
 
     /**
@@ -82,14 +81,14 @@ public final class Totp {
      *
      * @param otp           TOTP to validate
      * @param key           the shared secret
-     * @param localDateTime date time
+     * @param instant       current Unix time
      * @param digitsNumber  expected length of the TOTP
      * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
-     * @see #validateTotpSha256(byte[], byte[], LocalDateTime, int)
+     * @see #validateTotpSha256(byte[], byte[], Instant, int)
      */
-    public static boolean validateTotpSha256(final byte[] otp, final byte[] key, final LocalDateTime localDateTime, final int digitsNumber) throws CryptoProviderException {
-        return validateTotpSha256(otp, key, localDateTime, digitsNumber, 1);
+    public static boolean validateTotpSha256(final byte[] otp, final byte[] key, final Instant instant, final int digitsNumber) throws CryptoProviderException {
+        return validateTotpSha256(otp, key, instant, digitsNumber, 1);
     }
 
     /**
@@ -97,14 +96,14 @@ public final class Totp {
      *
      * @param otp           TOTP to validate
      * @param key           the shared secret
-     * @param localDateTime date time
+     * @param instant       current Unix time
      * @param digitsNumber  expected length of the TOTP
      * @param steps         number of backward time steps allowed to validate
      * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static boolean validateTotpSha256(final byte[] otp, final byte[] key, final LocalDateTime localDateTime, final int digitsNumber, final int steps) throws CryptoProviderException {
-        return validateTotp(otp, key, localDateTime, digitsNumber, steps, Algorithm.HMAC_SHA256.code);
+    public static boolean validateTotpSha256(final byte[] otp, final byte[] key, final Instant instant, final int digitsNumber, final int steps) throws CryptoProviderException {
+        return validateTotp(otp, key, instant, digitsNumber, steps, Algorithm.HMAC_SHA256.code);
     }
 
     /**
@@ -112,14 +111,14 @@ public final class Totp {
      *
      * @param otp           TOTP to validate
      * @param key           the shared secret
-     * @param localDateTime date time
+     * @param instant       current Unix time
      * @param digitsNumber  expected length of the TOTP
      * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
-     * @see #validateTotpSha512(byte[], byte[], LocalDateTime, int, int)
+     * @see #validateTotpSha512(byte[], byte[], Instant, int, int)
      */
-    public static boolean validateTotpSha512(final byte[] otp, final byte[] key, final LocalDateTime localDateTime, final int digitsNumber) throws CryptoProviderException {
-        return validateTotpSha512(otp, key, localDateTime, digitsNumber, 1);
+    public static boolean validateTotpSha512(final byte[] otp, final byte[] key, final Instant instant, final int digitsNumber) throws CryptoProviderException {
+        return validateTotpSha512(otp, key, instant, digitsNumber, 1);
     }
 
     /**
@@ -127,14 +126,14 @@ public final class Totp {
      *
      * @param otp           TOTP to validate
      * @param key           the shared secret
-     * @param localDateTime date time
+     * @param instant       current Unix time
      * @param digitsNumber  expected length of the TOTP
      * @param steps         number of backward time steps allowed to validate
      * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
      */
-    public static boolean validateTotpSha512(final byte[] otp, final byte[] key, final LocalDateTime localDateTime, final int digitsNumber, final int steps) throws CryptoProviderException {
-        return validateTotp(otp, key, localDateTime, digitsNumber, steps, Algorithm.HMAC_SHA512.code);
+    public static boolean validateTotpSha512(final byte[] otp, final byte[] key, final Instant instant, final int digitsNumber, final int steps) throws CryptoProviderException {
+        return validateTotp(otp, key, instant, digitsNumber, steps, Algorithm.HMAC_SHA512.code);
     }
 
     /**
@@ -142,15 +141,15 @@ public final class Totp {
      *
      * @param otp           TOTP to validate
      * @param key           the shared secret
-     * @param localDateTime date time
+     * @param instant       current Unix time
      * @param digitsNumber  expected length of the TOTP
      * @param backwardSteps number of backward time steps allowed to validate
      * @param algorithm     the algorithm to use
      * @return true if OTP is valid
      * @throws CryptoProviderException in case of any crypto error
      */
-    private static boolean validateTotp(final byte[] otp, final byte[] key, final LocalDateTime localDateTime, final int digitsNumber, final int backwardSteps, final String algorithm) throws CryptoProviderException {
-        logger.debug("Validating TOTP for localDateTime={}, algorithm={}, steps={}", localDateTime, algorithm, backwardSteps);
+    private static boolean validateTotp(final byte[] otp, final byte[] key, final Instant instant, final int digitsNumber, final int backwardSteps, final String algorithm) throws CryptoProviderException {
+        logger.debug("Validating TOTP for instant={}, algorithm={}, steps={}", instant, algorithm, backwardSteps);
 
         if (otp == null) {
             throw new CryptoProviderException("Otp is mandatory");
@@ -164,9 +163,9 @@ public final class Totp {
             throw new CryptoProviderException("Steps must not be negative number");
         }
 
-        final long currentTimeStep = countTimeSteps(localDateTime);
+        final long currentTimeStep = countTimeSteps(instant);
         for (int i = 0; i <= backwardSteps; i++) {
-            logger.debug("Validating TOTP for localDateTime={}, algorithm={}, step={} out of allowed backward steps={}", localDateTime, algorithm, i, backwardSteps);
+            logger.debug("Validating TOTP for instant={}, algorithm={}, step={} out of allowed backward steps={}", instant, algorithm, i, backwardSteps);
             final long step = currentTimeStep - i;
             final byte[] expectedOtp = generateTotp(key, step, otp.length, algorithm);
             if (Arrays.constantTimeAreEqual(expectedOtp, otp)) {
@@ -225,12 +224,12 @@ public final class Totp {
         return padWithZeros(Integer.toString(otp), digitsNumber).getBytes();
     }
 
-    private static long countTimeSteps(final LocalDateTime localDateTime) throws CryptoProviderException {
-        if (localDateTime == null) {
-            throw new CryptoProviderException("LocalDateTime is mandatory");
+    private static long countTimeSteps(final Instant instant) throws CryptoProviderException {
+        if (instant == null) {
+            throw new CryptoProviderException("Instant is mandatory");
         }
 
-        return localDateTime.toEpochSecond(ZoneOffset.UTC) / TIME_STEP_X;
+        return instant.getEpochSecond() / TIME_STEP_X;
     }
 
     private static String padWithZeros(final String source, final int length) {
