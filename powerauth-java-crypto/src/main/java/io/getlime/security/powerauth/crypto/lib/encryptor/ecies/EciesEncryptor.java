@@ -203,14 +203,14 @@ public class EciesEncryptor {
             final byte[] encryptedData = aes.encrypt(data, iv, encKey);
 
             // Generate timestamp in case it is required
-            byte[] timestampBytes = null;
+            Long timestamp = null;
             if (useTimestamp) {
-                timestampBytes = EciesUtils.generateTimestamp();
+                timestamp = EciesUtils.generateTimestamp();
             }
 
             // Resolve MAC data based on protocol version
             final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, encryptedData, nonce,
-                    associatedData, timestampBytes, envelopeKey.getEphemeralKeyPublic());
+                    associatedData, timestamp, envelopeKey.getEphemeralKeyPublic());
 
             // Compute data MAC
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
@@ -221,7 +221,14 @@ public class EciesEncryptor {
             ivForDecryption = iv;
 
             // Return encrypted payload
-            return new EciesCryptogram(envelopeKey.getEphemeralKeyPublic(), mac, encryptedData, nonce, associatedData, timestampBytes);
+            return EciesCryptogram.builder()
+                    .ephemeralPublicKey(envelopeKey.getEphemeralKeyPublic())
+                    .mac(mac)
+                    .encryptedData(encryptedData)
+                    .nonce(nonce)
+                    .associatedData(associatedData)
+                    .timestamp(timestamp)
+                    .build();
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new EciesException("Request encryption failed", ex);
@@ -240,7 +247,7 @@ public class EciesEncryptor {
         try {
             // Resolve MAC data based on protocol version
             final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, cryptogram.getEncryptedData(), cryptogram.getNonce(),
-                    cryptogram.getAssociatedData(), cryptogram.getTimestamp(), cryptogram.getEphemeralPublicKey());
+                    cryptogram.getAssociatedData(), cryptogram.getTimestamp(), envelopeKey.getEphemeralKeyPublic());
 
             // Validate data MAC value
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);

@@ -16,12 +16,15 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model;
 
+import lombok.Builder;
+
 /**
  * The EciesCryptogram structure represents cryptogram transmitted over the network.
  *
  * @author Petr Dvorak, petr@wultra.com
  * @author Roman Strobl, roman.strobl@wultra.com
  */
+@Builder
 public class EciesCryptogram {
 
     private final byte[] ephemeralPublicKey;
@@ -29,7 +32,7 @@ public class EciesCryptogram {
     private final byte[] encryptedData;
     private final byte[] nonce;
     private final byte[] associatedData;
-    private final byte[] timestamp;
+    private final Long timestamp;
 
     /**
      * Constructor for ECIES cryptogram used in encrypted requests.
@@ -42,7 +45,7 @@ public class EciesCryptogram {
      * @param timestamp Timestamp, required for protocol V3.2+.
      */
     public EciesCryptogram(byte[] ephemeralPublicKey, byte[] mac, byte[] encryptedData, byte[] nonce,
-                           byte[] associatedData, byte[] timestamp) {
+                           byte[] associatedData, Long timestamp) {
         this.ephemeralPublicKey = ephemeralPublicKey;
         this.mac = mac;
         this.encryptedData = encryptedData;
@@ -131,7 +134,7 @@ public class EciesCryptogram {
      * Get timestamp.
      * @return Timestamp.
      */
-    public byte[] getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 }

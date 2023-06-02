@@ -161,6 +161,7 @@ public class EciesDecryptor {
      * already called and the ECIES envelope key is already derived.
      *
      * @param data Response data to encrypt.
+     * @param associatedData Associated data, required for protocol V3.2+.
      * @return ECIES cryptogram.
      * @throws EciesException In case response encryption fails.
      */
@@ -221,7 +222,7 @@ public class EciesDecryptor {
         try {
             // Resolve MAC data based on protocol version
             final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, cryptogram.getEncryptedData(), cryptogram.getNonce(),
-                    cryptogram.getAssociatedData(), cryptogram.getTimestamp(), cryptogram.getEphemeralPublicKey());
+                    cryptogram.getAssociatedData(), cryptogram.getTimestamp(), envelopeKey.getEphemeralKeyPublic());
 
             // Validate data MAC value
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
@@ -270,14 +271,14 @@ public class EciesDecryptor {
             }
 
             // Generate timestamp in case it is required
-            byte[] timestampBytes = null;
+            Long timestamp = null;
             if (useTimestamp) {
-                timestampBytes = EciesUtils.generateTimestamp();
+                timestamp = EciesUtils.generateTimestamp();
             }
 
             // Resolve MAC data based on protocol version
             final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, encryptedData, nonce,
-                    associatedData, timestampBytes, envelopeKey.getEphemeralKeyPublic());
+                    associatedData, timestamp, envelopeKey.getEphemeralKeyPublic());
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
 
             // Invalidate this decryptor
@@ -285,7 +286,13 @@ public class EciesDecryptor {
             ivForEncryption = null;
 
             // Return encrypted payload
-            return new EciesCryptogram(mac, encryptedData);
+            return EciesCryptogram.builder()
+                    .mac(mac)
+                    .encryptedData(encryptedData)
+                    .nonce(nonce)
+                    .associatedData(associatedData)
+                    .timestamp(timestamp)
+                    .build();
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new EciesException("Response encryption failed", ex);

@@ -16,8 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import com.google.common.primitives.Bytes;
-
 import java.nio.ByteBuffer;
 
 /**
@@ -25,7 +23,13 @@ import java.nio.ByteBuffer;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class EciesUtils {
+public final class EciesUtils {
+
+    /**
+     * Private constructor.
+     */
+    private EciesUtils() {
+    }
 
     /**
      * Resolve MAC data for ECIES request or response MAC validation.
@@ -34,23 +38,21 @@ public class EciesUtils {
      * @param encryptedData      Encypted data.
      * @param nonce              Nonce, required for protocol V3.1+.
      * @param associatedData     Data associated with ECIES request or response, required for protocol V3.2+
-     * @param timestampBytes     ECIES request timestamp bytes, required for protocol V3.2+
+     * @param timestamp     ECIES request timestamp bytes, required for protocol V3.2+
      * @param ephemeralKeyPublic Ephemeral public key.
      * @return Resolved MAC data.
      */
     public static byte[] resolveMacData(byte[] sharedInfo2, byte[] encryptedData, byte[] nonce,
-                                        byte[] associatedData, byte[] timestampBytes, byte[] ephemeralKeyPublic) {
+                                        byte[] associatedData, Long timestamp, byte[] ephemeralKeyPublic) {
         // Resolve MAC data based on protocol version
-        if (sharedInfo2 == null) {
-            // No shared info, use only encryptedData
-            return encryptedData;
-        } else if (timestampBytes == null) {
+        if (timestamp == null) {
             // Protocol V3.1 and older
-            return Bytes.concat(encryptedData, sharedInfo2);
+            return ByteUtils.concat(encryptedData, sharedInfo2);
         }
         // Protocol V3.2+
-        final byte[] ad = Bytes.concat(associatedData, ByteUtils.join(nonce, timestampBytes, ephemeralKeyPublic));
-        return Bytes.concat(ad, encryptedData, sharedInfo2);
+        final byte[] timestampBytes = ByteBuffer.allocate(8).putLong(timestamp).array();
+        final byte[] ad = ByteUtils.concat(associatedData, ByteUtils.join(nonce, timestampBytes, ephemeralKeyPublic));
+        return ByteUtils.concat(ad, encryptedData, sharedInfo2);
     }
 
     /**
@@ -58,9 +60,8 @@ public class EciesUtils {
      *
      * @return Timestamp bytes to use for ECIES encryption.
      */
-    public static byte[] generateTimestamp() {
+    public static long generateTimestamp() {
         // Protocol V3.2+
-        final long timestamp = System.currentTimeMillis();
-        return ByteBuffer.allocate(8).putLong(timestamp).array();
+        return System.currentTimeMillis();
     }
 }

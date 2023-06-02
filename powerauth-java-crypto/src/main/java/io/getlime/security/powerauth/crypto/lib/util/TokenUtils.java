@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -100,7 +99,7 @@ public class TokenUtils {
      */
     public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
         byte[] amp = "&".getBytes(StandardCharsets.UTF_8);
-        byte[] data = Bytes.concat(nonce, amp, timestamp);
+        byte[] data = ByteUtils.concat(nonce, amp, timestamp);
         return hmac.hash(tokenSecret, data);
     }
 

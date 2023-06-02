@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.encryption;
 
-import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesDecryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
@@ -107,7 +106,7 @@ public class EciesEncryptorTest {
             System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadRequest.getEncryptedData()));
             System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadRequest.getMac()));
             System.out.println("- Nonce: " + (useIv ? Base64.getEncoder().encodeToString(payloadRequest.getNonce()) : "null"));
-            System.out.println("- Timestamp: " + (payloadRequest.getTimestamp() !=  null ? new BigInteger(payloadRequest.getTimestamp()) : "null"));
+            System.out.println("- Timestamp: " + (payloadRequest.getTimestamp() !=  null ? payloadRequest.getTimestamp() : "null"));
             System.out.println("- Associated data: " + (payloadRequest.getAssociatedData() != null ? Base64.getEncoder().encodeToString(payloadRequest.getAssociatedData()) : "null"));
             System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(payloadRequest.getEphemeralPublicKey()));
             System.out.println();
@@ -169,7 +168,7 @@ public class EciesEncryptorTest {
             System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadRequest.getEncryptedData()));
             System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadRequest.getMac()));
             System.out.println("- Nonce: " + (useIv ? Base64.getEncoder().encodeToString(payloadRequest.getNonce()) : "null"));
-            System.out.println("- Timestamp: " + (payloadRequest.getTimestamp() !=  null ? new BigInteger(payloadRequest.getTimestamp()) : "null"));
+            System.out.println("- Timestamp: " + (payloadRequest.getTimestamp() != null ? payloadRequest.getTimestamp() : "null"));
             System.out.println("- Associated data: " + (payloadRequest.getAssociatedData() != null ? Base64.getEncoder().encodeToString(payloadRequest.getAssociatedData()) : "null"));
             System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(payloadRequest.getEphemeralPublicKey()));
             System.out.println();
@@ -232,7 +231,7 @@ public class EciesEncryptorTest {
             final byte[] kdfRef  = KdfX9_63.derive(secretKeyToBytes, null, 32);
 
             byte[] data = secretKeyToBytes;
-            data = Bytes.concat(data, ByteBuffer.allocate(4).putInt(1).array());
+            data = ByteUtils.concat(data, ByteBuffer.allocate(4).putInt(1).array());
 
             final byte[] kdfTriv = Hash.sha256(data);
 
@@ -296,7 +295,7 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(Bytes.concat(signByte, Base64.getDecoder().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(signByte, Base64.getDecoder().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
         final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
 
         byte[][] request = {
@@ -449,7 +448,7 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(Bytes.concat(signByte, Base64.getDecoder().decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(signByte, Base64.getDecoder().decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
         final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
 
         byte[][] request = {

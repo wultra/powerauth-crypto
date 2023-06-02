@@ -16,12 +16,12 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
-import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.slf4j.Logger;
@@ -97,7 +97,7 @@ public class EciesEnvelopeKey {
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, publicKey, true);
 
             // Construct final data for parameter sharedInfo1
-            byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : Bytes.concat(sharedInfo1, ephemeralPublicKeyBytes);
+            byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : ByteUtils.concat(sharedInfo1, ephemeralPublicKeyBytes);
 
             // Derive secret key using KDF function
             byte[] secretKey = KdfX9_63.derive(keyConvertor.convertSharedSecretKeyToBytes(ephemeralSecretKey), info1Data, ENVELOPE_KEY_SIZE);
@@ -128,7 +128,7 @@ public class EciesEnvelopeKey {
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, ephemeralPublicKey, true);
 
             // Construct final data for parameter sharedInfo1
-            byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : Bytes.concat(sharedInfo1, ephemeralPublicKeyBytes);
+            byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : ByteUtils.concat(sharedInfo1, ephemeralPublicKeyBytes);
 
             // Derive secret key using KDF function
             byte[] secretKey = KdfX9_63.derive(keyConvertor.convertSharedSecretKeyToBytes(ephemeralSecretKey), info1Data, ENVELOPE_KEY_SIZE);

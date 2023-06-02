@@ -26,7 +26,13 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class ByteUtils {
+public final class ByteUtils {
+
+    /**
+     * Private constructor.
+     */
+    private ByteUtils() {
+    }
 
     /**
      * Concatenate multiple byte arrays.
@@ -69,10 +75,10 @@ public class ByteUtils {
         byte[] result = new byte[0];
         for (String component : args) {
             if (component != null) {
-                int len = component.length();
-                result = concat(result, encode(len), encode(component));
+                byte[] componentBytes = encode(component);
+                result = ByteUtils.concat(result, encode(componentBytes.length), componentBytes);
             } else {
-                result = concat(result, encode(0));
+                result = ByteUtils.concat(result, encode(0));
             }
         }
         return result;
