@@ -51,7 +51,7 @@ public final class EciesUtils {
         }
         // Protocol V3.2+
         final byte[] timestampBytes = ByteBuffer.allocate(8).putLong(timestamp).array();
-        final byte[] ad = ByteUtils.concat(associatedData, ByteUtils.join(nonce, timestampBytes, ephemeralKeyPublic));
+        final byte[] ad = ByteUtils.concat(associatedData, ByteUtils.concatWithSizes(nonce, timestampBytes, ephemeralKeyPublic));
         return ByteUtils.concat(ad, encryptedData, sharedInfo2);
     }
 

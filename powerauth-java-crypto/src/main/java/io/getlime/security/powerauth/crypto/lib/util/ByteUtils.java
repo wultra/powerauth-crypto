@@ -16,8 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import com.google.common.primitives.Bytes;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
@@ -36,31 +34,30 @@ public final class ByteUtils {
 
     /**
      * Concatenate multiple byte arrays.
-     * @param args Byte arrays to concatenate.
+     * @param arrays Byte arrays to concatenate.
      * @return Concatenated byte array.
      */
-    public static byte[] concat(byte[]... args) {
-        byte[] result = new byte[0];
-        for (byte[] component : args) {
-            if (component != null) {
-                result = Bytes.concat(result, component);
-            }
-        }
-        return result;
+    public static byte[] concat(byte[]... arrays) {
+        return concatInternal(arrays);
     }
 
     /**
-     * Join multiple byte arrays, including each component size.
-     * @param args Byte arrays to join.
+     * Contact multiple byte arrays, including each component size.
+     *
+     * Sample structure output byte array structure: [size1][array1][size2][array2]
+     *
+     * In case byte array is empty, each empty component is encoded as: [0]
+     *
+     * @param arrays Byte arrays to join.
      * @return Joined byte array.
      */
-    public static byte[] join(byte[]... args) {
+    public static byte[] concatWithSizes(byte[]... arrays) {
         byte[] result = new byte[0];
-        for (byte[] component : args) {
+        for (byte[] component : arrays) {
             if (component != null) {
-                result = concat(result, encode(component.length), component);
+                result = concat(result, encodeInt(component.length), component);
             } else {
-                result = concat(result, encode(0));
+                result = concat(result, encodeInt(0));
             }
         }
         return result;
@@ -68,17 +65,17 @@ public final class ByteUtils {
 
     /**
      * Join multiple strings and convert them into a byte array, include each string length.
-     * @param args Strings to join.
+     * @param strings Strings to join.
      * @return Byte array with joined strings.
      */
-    public static byte[] joinStrings(String... args) {
+    public static byte[] joinStrings(String... strings) {
         byte[] result = new byte[0];
-        for (String component : args) {
+        for (String component : strings) {
             if (component != null) {
-                byte[] componentBytes = encode(component);
-                result = ByteUtils.concat(result, encode(componentBytes.length), componentBytes);
+                byte[] componentBytes = encodeString(component);
+                result = concat(result, encodeInt(componentBytes.length), componentBytes);
             } else {
-                result = ByteUtils.concat(result, encode(0));
+                result = concat(result, encodeInt(0));
             }
         }
         return result;
@@ -89,7 +86,7 @@ public final class ByteUtils {
      * @param n Short number to encode.
      * @return Byte array.
      */
-    public static byte[] encode(short n) {
+    public static byte[] encodeShort(short n) {
         return ByteBuffer.allocate(2).putShort(n).array();
     }
 
@@ -98,7 +95,7 @@ public final class ByteUtils {
      * @param n Int number to encode.
      * @return Byte array.
      */
-    public static byte[] encode(int n) {
+    public static byte[] encodeInt(int n) {
         return ByteBuffer.allocate(4).putInt(n).array();
     }
 
@@ -107,7 +104,7 @@ public final class ByteUtils {
      * @param n Long number to encode.
      * @return Byte array.
      */
-    public static byte[] encode(long n) {
+    public static byte[] encodeLong(long n) {
         return ByteBuffer.allocate(8).putLong(n).array();
     }
 
@@ -116,8 +113,32 @@ public final class ByteUtils {
      * @param s String to encode.
      * @return Byte array.
      */
-    public static byte[] encode(String s) {
+    public static byte[] encodeString(String s) {
         return s.getBytes(StandardCharsets.UTF_8);
     }
 
+    /**
+     * Returns the values from each provided array combined into a single array. For example, {@code
+     * concat(new byte[] {a, b}, new byte[] {}, new byte[] {c}} returns the array {@code {a, b, c}}.
+     *
+     * @param arrays zero or more {@code byte} arrays
+     * @return a single array containing all the values from the source arrays, in order
+     */
+    private static byte[] concatInternal(byte[]... arrays) {
+        int length = 0;
+        for (byte[] array : arrays) {
+            if (array != null) {
+                length += array.length;
+            }
+        }
+        byte[] result = new byte[length];
+        int pos = 0;
+        for (byte[] array : arrays) {
+            if (array != null) {
+                System.arraycopy(array, 0, result, pos, array.length);
+                pos += array.length;
+            }
+        }
+        return result;
+    }
 }
