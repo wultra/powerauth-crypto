@@ -44,7 +44,7 @@ public final class ByteUtils {
     /**
      * Concatenate multiple byte arrays, including each component size.
      *
-     * Sample structure output byte array structure: [size1][array1][size2][array2]
+     * Sample output byte array structure: [size1][array1][size2][array2]
      *
      * In case byte array is empty, each empty component is encoded as: [0]
      *
