@@ -89,7 +89,7 @@ public class EciesEncryptorTest {
                 useIv = true;
                 if ((i & 2) == 2) {
                     // Protocol V3.2+
-                    associatedData = ByteUtils.joinStrings("3.2", "test_secret");
+                    associatedData = ByteUtils.concatStrings("3.2", "test_secret");
                 } else {
                     associatedData = null;
                 }
@@ -151,7 +151,7 @@ public class EciesEncryptorTest {
                 useIv = true;
                 if ((i & 2) == 2) {
                     // Protocol V3.2+
-                    associatedData = ByteUtils.joinStrings("3.2", "test_key");
+                    associatedData = ByteUtils.concatStrings("3.2", "test_key");
                 } else {
                     associatedData = null;
                 }

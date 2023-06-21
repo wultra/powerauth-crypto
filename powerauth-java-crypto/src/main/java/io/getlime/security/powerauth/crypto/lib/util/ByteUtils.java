@@ -42,7 +42,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Contact multiple byte arrays, including each component size.
+     * Concatenate multiple byte arrays, including each component size.
      *
      * Sample structure output byte array structure: [size1][array1][size2][array2]
      *
@@ -64,11 +64,11 @@ public final class ByteUtils {
     }
 
     /**
-     * Join multiple strings and convert them into a byte array, include each string length.
+     * Concatenate multiple strings and convert them into a byte array, include each string length.
      * @param strings Strings to join.
      * @return Byte array with joined strings.
      */
-    public static byte[] joinStrings(String... strings) {
+    public static byte[] concatStrings(String... strings) {
         byte[] result = new byte[0];
         for (String component : strings) {
             if (component != null) {
