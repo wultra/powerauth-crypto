@@ -16,8 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import java.nio.ByteBuffer;
-
 /**
  * A utility class for handling ECIES data.
  *
@@ -32,27 +30,14 @@ public final class EciesUtils {
     }
 
     /**
-     * Resolve MAC data for ECIES request or response MAC validation.
+     * Generate MAC data for ECIES request or response MAC validation.
      *
-     * @param sharedInfo2        Parameter sharedInfo2 for ECIES.
-     * @param encryptedData      Encypted data.
-     * @param nonce              Nonce, required for protocol V3.1+.
-     * @param associatedData     Data associated with ECIES request or response, required for protocol V3.2+
-     * @param timestamp     ECIES request timestamp bytes, required for protocol V3.2+
-     * @param ephemeralKeyPublic Ephemeral public key.
+     * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
+     * @param encryptedData Encrypted data
      * @return Resolved MAC data.
      */
-    public static byte[] resolveMacData(byte[] sharedInfo2, byte[] encryptedData, byte[] nonce,
-                                        byte[] associatedData, Long timestamp, byte[] ephemeralKeyPublic) {
-        // Resolve MAC data based on protocol version
-        if (timestamp == null) {
-            // Protocol V3.1 and older
-            return ByteUtils.concat(encryptedData, sharedInfo2);
-        }
-        // Protocol V3.2+
-        final byte[] timestampBytes = ByteBuffer.allocate(8).putLong(timestamp).array();
-        final byte[] ad = ByteUtils.concat(associatedData, ByteUtils.concatWithSizes(nonce, timestampBytes, ephemeralKeyPublic));
-        return ByteUtils.concat(ad, encryptedData, sharedInfo2);
+    public static byte[] generateMacData(final byte[] sharedInfo2, final byte[] encryptedData) {
+        return ByteUtils.concat(encryptedData, sharedInfo2);
     }
 
     /**

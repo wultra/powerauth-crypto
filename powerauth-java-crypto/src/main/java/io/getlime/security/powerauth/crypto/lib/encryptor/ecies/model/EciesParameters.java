@@ -19,18 +19,17 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model;
 import lombok.*;
 
 /**
- * The EciesCryptogram structure represents cryptogram transmitted over the network.
+ * The EciesParameters structure represents additional ECIES parameters transmitted over the network.
  *
- * @author Petr Dvorak, petr@wultra.com
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 @Builder
 @Value
 @AllArgsConstructor
-public class EciesCryptogram {
+public class EciesParameters {
 
-    byte[] ephemeralPublicKey;
-    byte[] mac;
-    byte[] encryptedData;
+    byte[] nonce;
+    byte[] associatedData;
+    Long timestamp;
 
 }

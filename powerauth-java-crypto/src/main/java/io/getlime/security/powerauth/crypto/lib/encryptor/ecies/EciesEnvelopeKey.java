@@ -70,7 +70,7 @@ public class EciesEnvelopeKey {
      * @param secretKey Derived secret key.
      * @param ephemeralPublicKey Ephemeral public key.
      */
-    public EciesEnvelopeKey(byte[] secretKey, byte[] ephemeralPublicKey) {
+    public EciesEnvelopeKey(final byte[] secretKey, final byte[] ephemeralPublicKey) {
         this.secretKey = secretKey;
         this.ephemeralKeyPublic = ephemeralPublicKey;
     }
@@ -83,7 +83,7 @@ public class EciesEnvelopeKey {
      * @return ECIES envelope key.
      * @throws EciesException Thrown when key derivation fails.
      */
-    static EciesEnvelopeKey fromPublicKey(PublicKey publicKey, byte[] sharedInfo1) throws EciesException {
+    static EciesEnvelopeKey fromPublicKey(final PublicKey publicKey, final byte[] sharedInfo1) throws EciesException {
         try {
             // Generate ephemeral key pair
             final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
@@ -119,7 +119,7 @@ public class EciesEnvelopeKey {
      * @return ECIES envelope key.
      * @throws EciesException Thrown when key derivation fails.
      */
-    static EciesEnvelopeKey fromPrivateKey(PrivateKey ephemeralKeyPrivate, byte[] ephemeralPublicKeyBytes, byte[] sharedInfo1) throws EciesException {
+    static EciesEnvelopeKey fromPrivateKey(final PrivateKey ephemeralKeyPrivate, final byte[] ephemeralPublicKeyBytes, final byte[] sharedInfo1) throws EciesException {
         try {
             // Convert public key bytes to public key
             final PublicKey ephemeralPublicKey = keyConvertor.convertBytesToPublicKey(ephemeralPublicKeyBytes);
@@ -193,7 +193,7 @@ public class EciesEnvelopeKey {
      * @return Derived initialization vector.
      * @throws EciesException In case that nonce is not valid, or HMAC calculation failed.
      */
-    public byte[] deriveIvForNonce(byte[] nonce) throws EciesException {
+    public byte[] deriveIvForNonce(final byte[] nonce) throws EciesException {
         if (nonce == null) {
             throw new EciesException("Nonce for IV derivation is missing");
         }

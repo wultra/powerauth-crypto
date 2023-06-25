@@ -18,6 +18,8 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCryptogram;
+import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesParameters;
+import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesPayload;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -64,7 +66,7 @@ public class EciesDecryptor {
      *
      * @param encryptionPrivateKey Private key to be used for decryption.
      */
-    public EciesDecryptor(ECPrivateKey encryptionPrivateKey) {
+    public EciesDecryptor(final ECPrivateKey encryptionPrivateKey) {
         this(encryptionPrivateKey, null, null);
     }
 
@@ -75,7 +77,7 @@ public class EciesDecryptor {
      * @param sharedInfo1 Additional shared information used during key derivation.
      * @param sharedInfo2 Additional shared information used during decryption.
      */
-    public EciesDecryptor(ECPrivateKey encryptionPrivateKey, byte[] sharedInfo1, byte[] sharedInfo2) {
+    public EciesDecryptor(final ECPrivateKey encryptionPrivateKey, final byte[] sharedInfo1, final byte[] sharedInfo2) {
         this.privateKey = encryptionPrivateKey;
         this.sharedInfo1 = sharedInfo1;
         this.sharedInfo2 = sharedInfo2;
@@ -90,7 +92,7 @@ public class EciesDecryptor {
      * @param envelopeKey ECIES envelope key.
      * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
      */
-    public EciesDecryptor(EciesEnvelopeKey envelopeKey, byte[] sharedInfo2) {
+    public EciesDecryptor(final EciesEnvelopeKey envelopeKey, final byte[] sharedInfo2) {
         this.privateKey = null;
         this.envelopeKey = envelopeKey;
         this.sharedInfo1 = null;
@@ -109,7 +111,7 @@ public class EciesDecryptor {
      * @param ephemeralPublicKeyBytes Ephemeral public key for ECIES.
      * @throws EciesException In case envelope key initialization fails.
      */
-    public void initEnvelopeKey(byte[] ephemeralPublicKeyBytes) throws EciesException {
+    public void initEnvelopeKey(final byte[] ephemeralPublicKeyBytes) throws EciesException {
         envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
         // Invalidate this decryptor for decryption
         canDecryptData = false;
@@ -120,18 +122,20 @@ public class EciesDecryptor {
     }
 
     /**
-     * Decrypt request data from cryptogram.
+     * Decrypt request data from ECIES payload.
      *
-     * @param cryptogram ECIES cryptogram.
+     * @param payload ECIES payload.
      * @param requireIv Determines whether non-zero IV is used for decryption and encryption. This is required for protocol V3.1 and later.
      * @return Decrypted data.
      * @throws EciesException In case request decryption fails.
      */
-    public byte[] decryptRequest(EciesCryptogram cryptogram, boolean requireIv) throws EciesException {
+    public byte[] decryptRequest(final EciesPayload payload, final boolean requireIv) throws EciesException {
+        final EciesCryptogram cryptogram = payload.getCryptogram();
+        final EciesParameters parameters = payload.getParameters();
         if (cryptogram == null || cryptogram.getEncryptedData() == null || cryptogram.getMac() == null || (envelopeKey == null && cryptogram.getEphemeralPublicKey() == null)) {
             throw new EciesException("Parameter cryptogram for request decryption is invalid");
         }
-        if (requireIv && cryptogram.getNonce() == null) {
+        if (requireIv && parameters.getNonce() == null) {
             throw new EciesException("Nonce parameter in cryptogram is invalid.");
         }
         if (!canDecryptRequest()) {
@@ -141,31 +145,31 @@ public class EciesDecryptor {
         if (envelopeKey == null) {
             envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, cryptogram.getEphemeralPublicKey(), sharedInfo1);
         }
-        return decrypt(cryptogram, requireIv);
+        return decrypt(payload, requireIv);
     }
 
     /**
      * Decrypt request data from cryptogram. The function automatically determines whether the cryptogram contains
      * the nonce parameter and then selects an appropriate configuration for initialization vector.
      *
-     * @param cryptogram ECIES cryptogram.
+     * @param payload ECIES payload.
      * @return Decrypted data.
      * @throws EciesException In case request decryption fails.
      */
-    public byte[] decryptRequest(EciesCryptogram cryptogram) throws EciesException {
-        return decryptRequest(cryptogram, cryptogram.getNonce() != null);
+    public byte[] decryptRequest(final EciesPayload payload) throws EciesException {
+        return decryptRequest(payload, payload.getParameters().getNonce() != null);
     }
 
     /**
-     * Encrypt response data and construct ECIES cryptogram. Use when the {@link #decryptRequest} method was
+     * Encrypt response data and construct ECIES payload. Use when the {@link #decryptRequest} method was
      * already called and the ECIES envelope key is already derived.
      *
      * @param data Response data to encrypt.
      * @param associatedData Associated data, required for protocol V3.2+.
-     * @return ECIES cryptogram.
+     * @return ECIES payload.
      * @throws EciesException In case response encryption fails.
      */
-    public EciesCryptogram encryptResponse(byte[] data, byte[] associatedData) throws EciesException {
+    public EciesPayload encryptResponse(final byte[] data, final byte[] associatedData) throws EciesException {
         if (data == null) {
             throw new EciesException("Parameter data for response encryption is null");
         }
@@ -213,16 +217,17 @@ public class EciesDecryptor {
     /**
      * Decrypt provided encrypted cryptogram.
      *
-     * @param cryptogram ECIES cryptogram to be decrypted.
+     * @param payload ECIES payload to be decrypted.
      * @param requireIv Determines whether non-zero IV is used for decryption and encryption. This is required for protocol V3.1 and later.
      * @return Decrypted data.
      * @throws EciesException In case MAC value is invalid or AES decryption fails.
      */
-    private byte[] decrypt(EciesCryptogram cryptogram, boolean requireIv) throws EciesException {
+    private byte[] decrypt(final EciesPayload payload, final boolean requireIv) throws EciesException {
         try {
             // Resolve MAC data based on protocol version
-            final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, cryptogram.getEncryptedData(), cryptogram.getNonce(),
-                    cryptogram.getAssociatedData(), cryptogram.getTimestamp(), envelopeKey.getEphemeralKeyPublic());
+            final EciesCryptogram cryptogram = payload.getCryptogram();
+            final EciesParameters parameters = payload.getParameters();
+            final byte[] macData = EciesUtils.generateMacData(sharedInfo2, cryptogram.getEncryptedData());
 
             // Validate data MAC value
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
@@ -233,14 +238,14 @@ public class EciesDecryptor {
             // Decrypt the data with AES
             final byte[] encKeyBytes = envelopeKey.getEncKey();
             final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
-            final byte[] iv = requireIv ? envelopeKey.deriveIvForNonce(cryptogram.getNonce()) : new byte[16];
+            final byte[] iv = requireIv ? envelopeKey.deriveIvForNonce(parameters.getNonce()) : new byte[16];
 
             // Invalidate this decryptor for decryption
             canDecryptData = false;
             canEncryptData = true;
             useIv = requireIv;
             ivForEncryption = iv;
-            useTimestamp = cryptogram.getTimestamp() != null;
+            useTimestamp = parameters.getTimestamp() != null;
 
             return aes.decrypt(cryptogram.getEncryptedData(), iv, encKey);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
@@ -254,10 +259,10 @@ public class EciesDecryptor {
      * "request/response" cycle of the app.
      *
      * @param data Data to be encrypted.
-     * @return Encrypted data as ECIES cryptogram.
+     * @return Encrypted data as ECIES payload.
      * @throws EciesException In case AES encryption fails.
      */
-    private EciesCryptogram encrypt(byte[] data, byte[] associatedData) throws EciesException {
+    private EciesPayload encrypt(final byte[] data, final byte[] associatedData) throws EciesException {
         try {
             // Encrypt the data with AES using specified IV
             final byte[] encKeyBytes = envelopeKey.getEncKey();
@@ -277,8 +282,7 @@ public class EciesDecryptor {
             }
 
             // Resolve MAC data based on protocol version
-            final byte[] macData = EciesUtils.resolveMacData(sharedInfo2, encryptedData, nonce,
-                    associatedData, timestamp, envelopeKey.getEphemeralKeyPublic());
+            final byte[] macData = EciesUtils.generateMacData(sharedInfo2, encryptedData);
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
 
             // Invalidate this decryptor
@@ -286,13 +290,17 @@ public class EciesDecryptor {
             ivForEncryption = null;
 
             // Return encrypted payload
-            return EciesCryptogram.builder()
+            final EciesCryptogram cryptogram = EciesCryptogram.builder()
+                    .ephemeralPublicKey(envelopeKey.getEphemeralKeyPublic())
                     .mac(mac)
                     .encryptedData(encryptedData)
+                    .build();
+            final EciesParameters parameters = EciesParameters.builder()
                     .nonce(nonce)
                     .associatedData(associatedData)
                     .timestamp(timestamp)
                     .build();
+            return new EciesPayload(cryptogram, parameters);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new EciesException("Response encryption failed", ex);
