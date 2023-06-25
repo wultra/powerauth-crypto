@@ -44,6 +44,8 @@ public class EciesFactory {
      * @param publicKey Public key used for ECIES.
      * @param applicationSecret Application secret.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
+     * @param eciesParameters ECIES parameters for protocol V3.2+.
+     * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES encryptor.
      * @throws GenericCryptoException In case encryptor could not be initialized.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
@@ -61,7 +63,7 @@ public class EciesFactory {
      * @param applicationSecret Application secret.
      * @param transportKey Transport key.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
-     * @param eciesParameters ECIES parameters.
+     * @param eciesParameters ECIES parameters for protocol V3.2+.
      * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES encryptor.
      * @throws GenericCryptoException In case encryptor could not be initialized.
@@ -109,6 +111,8 @@ public class EciesFactory {
      * @param privateKey Private key used for ECIES.
      * @param applicationSecret Application secret.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
+     * @param eciesParameters ECIES parameters for protocol V3.2+.
+     * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES decryptor.
      * @throws GenericCryptoException In case decryptor could not be initialized.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
@@ -126,6 +130,8 @@ public class EciesFactory {
      * @param applicationSecret Application secret.
      * @param transportKey Transport key.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
+     * @param eciesParameters ECIES parameters for protocol V3.2+.
+     * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES decryptor.
      * @throws GenericCryptoException In case decryptor could not be initialized.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
@@ -168,10 +174,10 @@ public class EciesFactory {
 
     /**
      * Generate SharedInfo2 parameter for ECIES.
-     * @param eciesScope Ecies scope.
+     * @param eciesScope ECIES scope.
      * @param applicationSecret Application secret.
      * @param transportKey Transport key.
-     * @param eciesParameters Ecies parameters.
+     * @param eciesParameters ECIES parameters for protocol V3.2+.
      * @param ephemeralPublicKey Ephemeral public key.
      * @return SharedInfo2 parameter for ECIES.
      * @throws GenericCryptoException In case of invalid ECIES scope.
