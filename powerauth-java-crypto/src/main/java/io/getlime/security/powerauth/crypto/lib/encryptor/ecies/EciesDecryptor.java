@@ -20,7 +20,6 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesE
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesCryptogram;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesParameters;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesPayload;
-import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.*;
@@ -93,6 +92,21 @@ public class EciesDecryptor {
         this.sharedInfo2 = sharedInfo2;
         // Allow decrypt to support decryption with provided envelope key and sharedInfo2 and response encryption
         this.canDecryptData = true;
+    }
+
+    /**
+     * Initialize envelope key for decryptor using provided ephemeral public key. This method is used either when
+     * there is no incoming encrypted request to decrypt which would initialize the envelope key or the decryptor
+     * parameters are transported over network and the decryptor is reconstructed on another server using envelope key
+     * and sharedInfo2 parameter.
+     *
+     * @param ephemeralPublicKeyBytes Ephemeral public key for ECIES.
+     * @throws EciesException In case envelope key initialization fails.
+     */
+    public void initEnvelopeKey(byte[] ephemeralPublicKeyBytes) throws EciesException {
+        envelopeKey = EciesEnvelopeKey.fromPrivateKey(privateKey, ephemeralPublicKeyBytes, sharedInfo1);
+        // Invalidate this decryptor for decryption
+        canDecryptData = false;
     }
 
     /**
