@@ -122,7 +122,7 @@ public class EciesEncryptorTest {
             System.out.println();
 
             final EciesDecryptor decryptorRequest = eciesFactory.getEciesDecryptorForApplication(privateKey, applicationSecret, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC,
-                    eciesParametersRequest, publicKeyBytes);
+                    eciesParametersRequest, cryptogram.getEphemeralPublicKey());
             final byte[] originalBytesRequest = decryptorRequest.decrypt(payloadRequest);
 
             assertArrayEquals(request, originalBytesRequest);
@@ -133,7 +133,7 @@ public class EciesEncryptorTest {
                     .timestamp(timestampResponse)
                     .build();
             final EciesEncryptor encryptorResponse = eciesFactory.getEciesEncryptor(EciesScope.APPLICATION_SCOPE,
-                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, publicKeyBytes);
+                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse);
 
             final EciesPayload payloadResponse = encryptorResponse.encrypt(response, eciesParametersResponse);
             System.out.println("# RESPONSE");
@@ -147,7 +147,7 @@ public class EciesEncryptorTest {
             System.out.println();
 
             final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(EciesScope.APPLICATION_SCOPE,
-                    encryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, publicKeyBytes);
+                    encryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, cryptogram.getEphemeralPublicKey());
             final byte[] originalBytesResponse = decryptorResponse.decrypt(payloadResponse);
 
             assertArrayEquals(response, originalBytesResponse);
@@ -231,7 +231,7 @@ public class EciesEncryptorTest {
                     .timestamp(timestampResponse)
                     .build();
             final EciesEncryptor encryptorResponse = eciesFactory.getEciesEncryptor(EciesScope.APPLICATION_SCOPE,
-                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, publicKeyBytes);
+                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse);
 
             final EciesPayload payloadResponse = encryptorResponse.encrypt(response, eciesParametersResponse);
             System.out.println("# RESPONSE");
