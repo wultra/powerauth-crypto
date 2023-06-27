@@ -87,6 +87,23 @@ public class EciesFactory {
     }
 
     /**
+     * Get ECIES encryptor for existing envelope key and ECIES parameters.
+     *
+     * @param envelopeKey ECIES envelope key.
+     * @param applicationSecret Application secret.
+     * @param transportKey Transport key.
+     * @param eciesParameters ECIES parameters for protocol V3.2+.
+     * @param ephemeralPublicKey Ephemeral public key.
+     * @return Initialized ECIES encryptor.
+     */
+    public EciesEncryptor getEciesEncryptor(final EciesEnvelopeKey envelopeKey, final EciesScope eciesScope,
+                                            final byte[] applicationSecret, final byte[] transportKey,
+                                            final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
+        final byte[] sharedInfo2 = generateSharedInfo2(eciesScope, applicationSecret, transportKey, eciesParameters, ephemeralPublicKey);
+        return new EciesEncryptor(envelopeKey, sharedInfo2);
+    }
+
+    /**
      * Get ECIES encryptor instance for given scope and parameters. Parameter sharedInfo2 is derived based on ECIES scope.
      *
      * @param eciesScope ECIES scope.
@@ -154,6 +171,23 @@ public class EciesFactory {
     }
 
     /**
+     * Get ECIES decrypto for existing envelope key and ECIES parameters.
+     *
+     * @param envelopeKey ECIES envelope key.
+     * @param applicationSecret Application secret.
+     * @param transportKey Transport key.
+     * @param eciesParameters ECIES parameters for protocol V3.2+.
+     * @param ephemeralPublicKey Ephemeral public key.
+     * @return Initialized ECIES encryptor.
+     */
+    public EciesDecryptor getEciesDecryptor(final EciesEnvelopeKey envelopeKey, final EciesScope eciesScope,
+                                            final byte[] applicationSecret, final byte[] transportKey,
+                                            final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
+        final byte[] sharedInfo2 = generateSharedInfo2(eciesScope, applicationSecret, transportKey, eciesParameters, ephemeralPublicKey);
+        return new EciesDecryptor(envelopeKey, sharedInfo2);
+    }
+
+    /**
      * Get ECIES decryptor instance for given scope and parameters. Parameter sharedInfo2 is derived based on ECIES scope.
      *
      * @param eciesScope ECIES scope.
@@ -183,7 +217,7 @@ public class EciesFactory {
      * @throws GenericCryptoException In case of invalid ECIES scope.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] generateSharedInfo2(final EciesScope eciesScope, final byte[] applicationSecret, final byte[] transportKey,
+    private byte[] generateSharedInfo2(final EciesScope eciesScope, final byte[] applicationSecret, final byte[] transportKey,
                                        final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo2;
         switch (eciesScope) {
