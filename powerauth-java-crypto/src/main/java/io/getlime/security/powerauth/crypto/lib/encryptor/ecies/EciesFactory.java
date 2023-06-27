@@ -96,6 +96,8 @@ public class EciesFactory {
      * @param eciesParameters ECIES parameters for protocol V3.2+.
      * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES encryptor.
+     * @throws GenericCryptoException In case encryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public EciesEncryptor getEciesEncryptor(final EciesScope eciesScope, final EciesEnvelopeKey envelopeKey,
                                             final byte[] applicationSecret, final byte[] transportKey,
@@ -181,6 +183,8 @@ public class EciesFactory {
      * @param eciesParameters ECIES parameters for protocol V3.2+.
      * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES encryptor.
+     * @throws GenericCryptoException In case encryptor could not be initialized.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public EciesDecryptor getEciesDecryptor(final EciesScope eciesScope, final EciesEnvelopeKey envelopeKey,
                                             final byte[] applicationSecret, final byte[] transportKey,
