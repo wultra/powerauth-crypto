@@ -45,8 +45,7 @@ import java.security.interfaces.ECPublicKey;
 import java.util.Base64;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test to validate functionality of {@link EciesEncryptor}
@@ -702,6 +701,10 @@ public class EciesEncryptorTest {
 
             assertArrayEquals(expectedResponsePayload.getCryptogram().getEncryptedData(), responsePayload.getCryptogram().getEncryptedData());
             assertArrayEquals(expectedResponsePayload.getCryptogram().getMac(), responsePayload.getCryptogram().getMac());
+            assertArrayEquals(expectedResponsePayload.getCryptogram().getEphemeralPublicKey(), responsePayload.getCryptogram().getEphemeralPublicKey());
+            assertArrayEquals(expectedResponsePayload.getParameters().getNonce(), responsePayload.getParameters().getNonce());
+            assertArrayEquals(expectedResponsePayload.getParameters().getAssociatedData(), responsePayload.getParameters().getAssociatedData());
+            assertEquals(expectedResponsePayload.getParameters().getTimestamp(), responsePayload.getParameters().getTimestamp());
         }
     }
 
