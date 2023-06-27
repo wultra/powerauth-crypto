@@ -148,7 +148,7 @@ public class EciesEncryptorTest {
             System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(payloadResponse.getCryptogram().getEphemeralPublicKey()));
             System.out.println();
 
-            final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(decryptorRequest.getEnvelopeKey(), sharedInfo2);
+            final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(encryptorRequest.getEnvelopeKey(), sharedInfo2);
             final byte[] originalBytesResponse = decryptorResponse.decrypt(payloadResponse);
 
             assertArrayEquals(response, originalBytesResponse);
