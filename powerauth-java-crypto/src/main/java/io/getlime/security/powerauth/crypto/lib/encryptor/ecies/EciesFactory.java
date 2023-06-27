@@ -183,7 +183,7 @@ public class EciesFactory {
      * @throws GenericCryptoException In case of invalid ECIES scope.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private byte[] generateSharedInfo2(final EciesScope eciesScope, final byte[] applicationSecret, final byte[] transportKey,
+    public byte[] generateSharedInfo2(final EciesScope eciesScope, final byte[] applicationSecret, final byte[] transportKey,
                                        final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo2;
         switch (eciesScope) {

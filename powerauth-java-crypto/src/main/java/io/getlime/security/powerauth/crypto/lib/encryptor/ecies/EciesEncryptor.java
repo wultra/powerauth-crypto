@@ -56,9 +56,6 @@ public class EciesEncryptor {
 
     // Lifecycle management
     private boolean canEncryptData;
-    private boolean canDecryptData;
-    private byte[] ivForDecryption;
-
 
     /**
      * Construct a new encryptor with null sharedInfo1 and sharedInfo2.
@@ -81,13 +78,11 @@ public class EciesEncryptor {
         this.sharedInfo1 = sharedInfo1;
         this.sharedInfo2 = sharedInfo2;
         this.canEncryptData = true;
-        this.canDecryptData = false;
     }
 
     /**
      * Construct an encryptor from existing ECIES envelope key and sharedInfo2 parameter. The derivation of
-     * envelope key is skipped. The privateKey and sharedInfo1 values are unknown. The encryptor can be only
-     * used for decrypting the response.
+     * envelope key is skipped. The privateKey and sharedInfo1 values are unknown.
      *
      * @param envelopeKey ECIES envelope key.
      * @param sharedInfo2 Parameter sharedInfo2 for ECIES.
@@ -97,50 +92,66 @@ public class EciesEncryptor {
         this.envelopeKey = envelopeKey;
         this.sharedInfo1 = null;
         this.sharedInfo2 = sharedInfo2;
-        // Allow decrypt only to avoid accidentally reusing the same encryptor for encryption, a new envelope key with
-        // a new ephemeral keypair is always generated for encryption.
-        this.canEncryptData = false;
-        this.canDecryptData = true;
+        this.canEncryptData = true;
     }
 
     /**
-     * Encrypt request data.
+     * Encrypt data.
      *
      * @param data Request data.
      * @param useIv Controls whether encryption uses non-zero initialization vector for protocol V3.1+.
      * @param useTimestamp Controls whether encryption uses timestamp for protocol V3.2+.
      * @param associatedData Associated data for protocol V3.2+ or null for previous protocol versions.
      * @return ECIES payload.
-     * @throws EciesException In case request encryption fails.
+     * @throws EciesException In case encryption fails.
      */
-    public EciesPayload encryptRequest(final byte[] data, final boolean useIv, final boolean useTimestamp, final byte[] associatedData) throws EciesException {
+    public EciesPayload encrypt(final byte[] data, final boolean useIv, final boolean useTimestamp, final byte[] associatedData) throws EciesException {
         if (data == null) {
-            throw new EciesException("Parameter data for request encryption is null");
+            throw new EciesException("Parameter data for encryption is null");
         }
-        if (!canEncryptRequest()) {
-            throw new EciesException("Request encryption is not allowed");
+        if (!canEncrypt()) {
+            throw new EciesException("Encryption is not allowed");
+        }
+        if (publicKey == null) {
+            throw new EciesException("Public key for encryption is missing");
         }
         envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
-        return encrypt(data, useIv, useTimestamp, associatedData);
+        // Generate nonce in case IV is required
+        final byte[] nonce = generateNonce(useIv);
+        // Generate timestamp in case it is required
+        Long timestamp = null;
+        if (useTimestamp) {
+            timestamp = EciesUtils.generateTimestamp();
+        }
+        return encryptInternal(data, nonce, timestamp, associatedData);
     }
 
     /**
-     * Decrypt response data.
+     * Encrypt data with provided ECIES parameters.
      *
-     * @param payload ECIES payload.
-     * @return Decrypted data.
-     * @throws EciesException In case response decryption fails.
+     * @param data Request data.
+     * @param eciesParameters ECIES parameters.
+     * @return ECIES payload.
+     * @throws EciesException In case encryption fails.
      */
-    public byte[] decryptResponse(final EciesPayload payload) throws EciesException {
-        if (payload == null || payload.getCryptogram().getEncryptedData() == null || payload.getCryptogram().getMac() == null) {
-            throw new EciesException("Parameter cryptogram for response decryption is invalid");
+    public EciesPayload encrypt(final byte[] data, final EciesParameters eciesParameters) throws EciesException {
+        if (data == null) {
+            throw new EciesException("Parameter data for encryption is null");
         }
-        if (!canDecryptResponse()) {
-            throw new EciesException("Response decryption is not allowed");
+        if (eciesParameters == null) {
+            throw new EciesException("Parameter eciesParameters for encryption is null");
         }
-        return decrypt(payload);
+        if (!canEncrypt()) {
+            throw new EciesException("Encryption is not allowed");
+        }
+        // Derive envelope key, but only in case it does not exist yet
+        if (envelopeKey == null) {
+            envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
+        }
+        final byte[] associatedData = eciesParameters.getAssociatedData();
+        final Long timestamp = eciesParameters.getTimestamp();
+        return encryptInternal(data, eciesParameters.getNonce(), timestamp, associatedData);
     }
-
     /**
      * Get parameter sharedInfo2 for ECIES.
      * @return Parameter sharedInfo2 for ECIES.
@@ -162,53 +173,33 @@ public class EciesEncryptor {
      *
      * @return Whether request data can be encrypted.
      */
-    private boolean canEncryptRequest() {
-        return canEncryptData && publicKey != null;
-    }
-
-    /**
-     * Get whether response data can be decrypted.
-     *
-     * @return Whether response data can be decrypted.
-     */
-    private boolean canDecryptResponse() {
-        return canDecryptData && envelopeKey.isValid() && ivForDecryption != null;
+    private boolean canEncrypt() {
+        return canEncryptData && (publicKey != null || (envelopeKey != null && envelopeKey.isValid()));
     }
 
     /**
      * Encrypt data using ECIES and construct ECIES payload.
      *
      * @param data Data to be encrypted.
-     * @param useIv Controls whether encryption uses non-zero initialization vector for protocol V3.1+.
-     * @param useTimestamp Controls whether encryption uses timestamp for protocol V3.2+.
+     * @param nonce Nonce for protocol V3.1+ or null for previous protocol versions.
+     * @param timestamp Timestamp for protocol V3.2+ or null for previous protocol versions.
      * @param associatedData Associated data for protocol V3.2+ or null for previous protocol versions.
      * @return ECIES payload.
      * @throws EciesException In case AES encryption fails.
      */
-    private EciesPayload encrypt(final byte[] data, final boolean useIv, final boolean useTimestamp, final byte[] associatedData) throws EciesException {
+    private EciesPayload encryptInternal(final byte[] data, final byte[] nonce, final Long timestamp, final byte[] associatedData) throws EciesException {
         try {
-            // Prepare nonce & IV
-            final byte[] nonce;
-            final byte[] iv;
-            if (useIv) {
-                // V3.1+, generate random nonce and calculate IV
-                nonce = keyGenerator.generateRandomBytes(16);
-                iv = envelopeKey.deriveIvForNonce(nonce);
-            } else {
-                // V2.x, V3.0, use zero IV
-                nonce = null;
-                iv = new byte[16];
-            }
+
             // Encrypt the data with
             byte[] encKeyBytes = envelopeKey.getEncKey();
             final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
-            final byte[] encryptedData = aes.encrypt(data, iv, encKey);
-
-            // Generate timestamp in case it is required
-            Long timestamp = null;
-            if (useTimestamp) {
-                timestamp = EciesUtils.generateTimestamp();
+            byte[] iv;
+            if (nonce != null) {
+                iv = envelopeKey.deriveIvForNonce(nonce);
+            } else {
+                iv = new byte[16];
             }
+            final byte[] encryptedData = aes.encrypt(data, iv, encKey);
 
             // Resolve MAC data based on protocol version
             final byte[] macData = EciesUtils.generateMacData(sharedInfo2, encryptedData);
@@ -216,10 +207,8 @@ public class EciesEncryptor {
             // Compute data MAC
             final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
 
-            // Invalidate this encryptor for encryption
+            // Invalidate this encryptor
             canEncryptData = false;
-            canDecryptData = true;
-            ivForDecryption = iv;
 
             // Return encrypted payload
             final EciesCryptogram cryptogram = EciesCryptogram.builder()
@@ -235,43 +224,28 @@ public class EciesEncryptor {
             return new EciesPayload(cryptogram, parameters);
         } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);
-            throw new EciesException("Request encryption failed", ex);
+            throw new EciesException("Encryption failed", ex);
         }
     }
 
     /**
-     * Decrypt provided payload using ECIES algorithm and the same secret key as in previous encrypt call, useful for
-     * request-response cycle.
-     *
-     * @param payload ECIES payload to be decrypted.
-     * @return Decrypted data.
-     * @throws EciesException In case MAC value is invalid or AES decryption fails.
+     * Generate nonce based on requirement to use non-null IV.
+     * @param useIv Whether non-null IV should be used.
+     * @return Nonce.
+     * @throws EciesException Thrown in case nonce could not be generated.
      */
-    private byte[] decrypt(final EciesPayload payload) throws EciesException {
-        try {
-            // Resolve MAC data based on protocol version
-            final EciesCryptogram cryptogram = payload.getCryptogram();
-            final byte[] macData = EciesUtils.generateMacData(sharedInfo2, cryptogram.getEncryptedData());
-
-            // Validate data MAC value
-            final byte[] mac = hmac.hash(envelopeKey.getMacKey(), macData);
-            if (!SideChannelUtils.constantTimeAreEqual(mac, cryptogram.getMac())) {
-                throw new EciesException("Invalid MAC");
+    private byte[] generateNonce(boolean useIv) throws EciesException {
+        if (useIv) {
+            // V3.1+, generate random nonce and calculate IV
+            try {
+                return keyGenerator.generateRandomBytes(16);
+            } catch (CryptoProviderException ex) {
+                logger.warn(ex.getMessage(), ex);
+                throw new EciesException("Encryption failed", ex);
             }
-
-            // Decrypt the data with AES using specified IV
-            final byte[] encKeyBytes = envelopeKey.getEncKey();
-            final SecretKey encKey = keyConvertor.convertBytesToSharedSecretKey(encKeyBytes);
-            final byte[] iv = ivForDecryption;
-
-            // Invalidate the encryptor
-            canDecryptData = false;
-            ivForDecryption = null;
-
-            return aes.decrypt(cryptogram.getEncryptedData(), iv, encKey);
-        } catch (InvalidKeyException | GenericCryptoException | CryptoProviderException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new EciesException("Response decryption failed", ex);
         }
+        // V2.x, V3.0, use zero IV
+        return null;
     }
+
 }
