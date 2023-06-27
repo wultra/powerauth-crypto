@@ -573,7 +573,8 @@ public class EciesEncryptorTest {
                         Base64.getDecoder().decode("fqJZ6k2efCCpuAjBiAYQH3IpAtgO6yt7hFfnpt9N604="),
                         Base64.getDecoder().decode("NiE9TJk0VsXxPb/6zxdGBA=="),
                         Base64.getDecoder().decode("9plefnOayDXfiQrqiIdnww==")
-                )        };
+                )
+        };
 
         EciesPayload[] encryptedResponse = {
                 new EciesPayload(
@@ -633,5 +634,75 @@ public class EciesEncryptorTest {
         }
     }
 
-    // TODO - generate ECIES protocol V3.2 test vectors
+    /**
+     * Test for matching client side generated test vectors for ECIES, for protocol V3.2+
+     *
+     * @throws Exception When test fails.
+     */
+    @Test
+    public void testVectorsV3_2() throws Exception {
+
+        // TODO - replace test vectors from mobile SDK, add the sign bit
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(Base64.getDecoder().decode("AJWdxPdpgoqJL7luO9Aiv/ciKIPsbXBFh+O+3N6aB9o4")));
+        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BMeiW4f6EbfRPMGYslbjhFP2o8+JdfyFkddyFvC94cJrgwcsLJ4xmn8ttvhrwfPInH3gvl9x9198ztSpZoCB32Q="));
+
+        byte[][] request = {
+                Base64.getDecoder().decode("SGVsbG8gQWxpY2Uu")
+        };
+        byte[][] response = {
+                Base64.getDecoder().decode("SGVsbG8gQm9i")
+        };
+        byte[][] sharedInfo1 = {
+                Base64.getDecoder().decode("L3BhL2dlbmVyaWMvYXBwbGljYXRpb24=")
+        };
+        byte[][] sharedInfo2Request = {
+                Base64.getDecoder().decode("AAAAIFK/0t4KLmnf9FF1GFkKwypGvXZgbsIqJY+ZWEpucKyiAAAAEGF19I4p7WLSN3kXX2SfXj4AAAAIAAABiPxwnnEAAABBBMeiW4f6EbfRPMGYslbjhFP2o8+JdfyFkddyFvC94cJrgwcsLJ4xmn8ttvhrwfPInH3gvl9x9198ztSpZoCB32QAAAAWAAAAAzMuMgAAAAt0ZXN0X3NlY3JldA==")
+        };
+        byte[][] sharedInfo2Response = {
+                Base64.getDecoder().decode("AAAAIFK/0t4KLmnf9FF1GFkKwypGvXZgbsIqJY+ZWEpucKyiAAAAEC+F10wNrdRU3cVmuW21OXUAAAAIAAABiPxwnnIAAABBBMeiW4f6EbfRPMGYslbjhFP2o8+JdfyFkddyFvC94cJrgwcsLJ4xmn8ttvhrwfPInH3gvl9x9198ztSpZoCB32QAAAAWAAAAAzMuMgAAAAt0ZXN0X3NlY3JldA==")
+        };
+        EciesPayload[] encryptedRequest = {
+                new EciesPayload(
+                        Base64.getDecoder().decode("BGDB4IYlmtFudJPVWWuVMO0/Au9z1CmyXLTmXle1VfnRaUuPhR++ClxdaG98wPRtX0lrYKB4ZWmTX2N04qKgwPg="),
+                        Base64.getDecoder().decode("zX3ci+m2K3YGBQgkajEt5HcPdHpg6RI13jJL0lIxaVg="),
+                        Base64.getDecoder().decode("r5bmDZK5SfMatTWWKOxswQ=="),
+                        Base64.getDecoder().decode("YXX0jintYtI3eRdfZJ9ePg=="),
+                        Base64.getDecoder().decode("AAAAAzMuMgAAAAt0ZXN0X3NlY3JldA=="),
+                        1687862419057L
+                ),
+        };
+
+        EciesPayload[] encryptedResponse = {
+                new EciesPayload(
+                        Base64.getDecoder().decode("BGDB4IYlmtFudJPVWWuVMO0/Au9z1CmyXLTmXle1VfnRaUuPhR++ClxdaG98wPRtX0lrYKB4ZWmTX2N04qKgwPg="),
+                        Base64.getDecoder().decode("zf0Nge37fcIlClyhR8IZEGJw+hhmsmljA15VtoyYHck="),
+                        Base64.getDecoder().decode("q61XmihKKG29jbQeLAMz4g=="),
+                        Base64.getDecoder().decode("L4XXTA2t1FTdxWa5bbU5dQ=="),
+                        Base64.getDecoder().decode("AAAAAzMuMgAAAAt0ZXN0X3NlY3JldA=="),
+                        1687862419058L
+                )
+        };
+
+        for (int i = 0; i < request.length; i++) {
+            EciesPayload requestPayload = encryptedRequest[i];
+
+            EciesDecryptor decryptor = new EciesDecryptor((ECPrivateKey) privateKey, sharedInfo1[i], sharedInfo2Request[i]);
+
+            final byte[] decryptedRequest = decryptor.decrypt(requestPayload);
+            assertArrayEquals(decryptedRequest, request[i]);
+
+            EciesEncryptor encryptor = new EciesEncryptor(decryptor.getEnvelopeKey(), sharedInfo2Response[i]);
+            EciesPayload expectedResponsePayload = encryptedResponse[i];
+            EciesParameters parameters = EciesParameters.builder()
+                    .nonce(encryptedResponse[i].getParameters().getNonce())
+                    .associatedData(encryptedResponse[i].getParameters().getAssociatedData())
+                    .timestamp(encryptedResponse[i].getParameters().getTimestamp())
+                    .build();
+            final EciesPayload responsePayload = encryptor.encrypt(response[i], parameters);
+
+            assertArrayEquals(expectedResponsePayload.getCryptogram().getEncryptedData(), responsePayload.getCryptogram().getEncryptedData());
+            assertArrayEquals(expectedResponsePayload.getCryptogram().getMac(), responsePayload.getCryptogram().getMac());
+        }
+    }
+
 }
