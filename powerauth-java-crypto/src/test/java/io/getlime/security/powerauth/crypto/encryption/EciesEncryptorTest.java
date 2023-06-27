@@ -133,8 +133,8 @@ public class EciesEncryptorTest {
                     .associatedData(associatedData)
                     .timestamp(timestampResponse)
                     .build();
-            final EciesEncryptor encryptorResponse = eciesFactory.getEciesEncryptor(decryptorRequest.getEnvelopeKey(),
-                    EciesScope.APPLICATION_SCOPE, applicationSecret, null, eciesParametersResponse, publicKeyBytes);
+            final EciesEncryptor encryptorResponse = eciesFactory.getEciesEncryptor(EciesScope.APPLICATION_SCOPE,
+                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, publicKeyBytes);
 
             final EciesPayload payloadResponse = encryptorResponse.encrypt(response, eciesParametersResponse);
             System.out.println("# RESPONSE");
@@ -147,8 +147,8 @@ public class EciesEncryptorTest {
             System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(payloadResponse.getCryptogram().getEphemeralPublicKey()));
             System.out.println();
 
-            final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(encryptorRequest.getEnvelopeKey(),
-                    EciesScope.APPLICATION_SCOPE, applicationSecret, null, eciesParametersResponse, publicKeyBytes);
+            final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(EciesScope.APPLICATION_SCOPE,
+                    encryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, publicKeyBytes);
             final byte[] originalBytesResponse = decryptorResponse.decrypt(payloadResponse);
 
             assertArrayEquals(response, originalBytesResponse);
@@ -232,8 +232,8 @@ public class EciesEncryptorTest {
                     .associatedData(associatedData)
                     .timestamp(timestampResponse)
                     .build();
-            final EciesEncryptor encryptorResponse = eciesFactory.getEciesEncryptor(decryptorRequest.getEnvelopeKey(),
-                    EciesScope.APPLICATION_SCOPE, applicationSecret, null, eciesParametersResponse, publicKeyBytes);
+            final EciesEncryptor encryptorResponse = eciesFactory.getEciesEncryptor(EciesScope.APPLICATION_SCOPE,
+                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, publicKeyBytes);
 
             final EciesPayload payloadResponse = encryptorResponse.encrypt(response, eciesParametersResponse);
             System.out.println("# RESPONSE");
@@ -254,8 +254,8 @@ public class EciesEncryptorTest {
                     .build();
             final EciesPayload payloadBrokenResponse = new EciesPayload(cryptogramBrokenResponse, parameters);
 
-            final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(decryptorRequest.getEnvelopeKey(),
-                    EciesScope.APPLICATION_SCOPE, applicationSecret, null, eciesParametersResponse, publicKeyBytes);
+            final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(EciesScope.APPLICATION_SCOPE,
+                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, publicKeyBytes);
             try {
                 decryptorResponse.decrypt(payloadBrokenResponse);
                 fail("Invalid MAC was provided in response and should have been rejected");

@@ -89,6 +89,7 @@ public class EciesFactory {
     /**
      * Get ECIES encryptor for existing envelope key and ECIES parameters.
      *
+     * @param eciesScope ECIES scope.
      * @param envelopeKey ECIES envelope key.
      * @param applicationSecret Application secret.
      * @param transportKey Transport key.
@@ -96,7 +97,7 @@ public class EciesFactory {
      * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES encryptor.
      */
-    public EciesEncryptor getEciesEncryptor(final EciesEnvelopeKey envelopeKey, final EciesScope eciesScope,
+    public EciesEncryptor getEciesEncryptor(final EciesScope eciesScope, final EciesEnvelopeKey envelopeKey,
                                             final byte[] applicationSecret, final byte[] transportKey,
                                             final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
         final byte[] sharedInfo2 = generateSharedInfo2(eciesScope, applicationSecret, transportKey, eciesParameters, ephemeralPublicKey);
@@ -173,6 +174,7 @@ public class EciesFactory {
     /**
      * Get ECIES decrypto for existing envelope key and ECIES parameters.
      *
+     * @param eciesScope ECIES scope.
      * @param envelopeKey ECIES envelope key.
      * @param applicationSecret Application secret.
      * @param transportKey Transport key.
@@ -180,7 +182,7 @@ public class EciesFactory {
      * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES encryptor.
      */
-    public EciesDecryptor getEciesDecryptor(final EciesEnvelopeKey envelopeKey, final EciesScope eciesScope,
+    public EciesDecryptor getEciesDecryptor(final EciesScope eciesScope, final EciesEnvelopeKey envelopeKey,
                                             final byte[] applicationSecret, final byte[] transportKey,
                                             final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
         final byte[] sharedInfo2 = generateSharedInfo2(eciesScope, applicationSecret, transportKey, eciesParameters, ephemeralPublicKey);
