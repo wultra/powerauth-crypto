@@ -24,6 +24,7 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
+import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 
 import java.nio.ByteBuffer;
 import java.security.interfaces.ECPrivateKey;
@@ -37,6 +38,7 @@ import java.security.interfaces.ECPublicKey;
 public class EciesFactory {
 
     private final HMACHashUtilities hmacHashUtilities = new HMACHashUtilities();
+    private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
      * Get ECIES encryptor instance for application scope.
@@ -45,15 +47,14 @@ public class EciesFactory {
      * @param applicationSecret Application secret.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @param eciesParameters ECIES parameters for protocol V3.2+.
-     * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES encryptor.
      * @throws GenericCryptoException In case encryptor could not be initialized.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public EciesEncryptor getEciesEncryptorForApplication(final ECPublicKey publicKey, final byte[] applicationSecret, final EciesSharedInfo1 sharedInfo1,
-                                                          final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
+                                                          final EciesParameters eciesParameters) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.APPLICATION_SCOPE_GENERIC.value() : sharedInfo1.value();
-        return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, sharedInfo1Value, eciesParameters, ephemeralPublicKey);
+        return getEciesEncryptor(EciesScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, sharedInfo1Value, eciesParameters);
     }
 
     /**
@@ -64,15 +65,14 @@ public class EciesFactory {
      * @param transportKey Transport key.
      * @param sharedInfo1 Additional information for sharedInfo1 parameter using pre-defined constants.
      * @param eciesParameters ECIES parameters for protocol V3.2+.
-     * @param ephemeralPublicKey Ephemeral public key.
      * @return Initialized ECIES encryptor.
      * @throws GenericCryptoException In case encryptor could not be initialized.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public EciesEncryptor getEciesEncryptorForActivation(final ECPublicKey publicKey, final byte[] applicationSecret, final byte[] transportKey,
-                                                         final EciesSharedInfo1 sharedInfo1, final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
+                                                         final EciesSharedInfo1 sharedInfo1, final EciesParameters eciesParameters) throws GenericCryptoException, CryptoProviderException {
         byte[] sharedInfo1Value = sharedInfo1 == null ? EciesSharedInfo1.ACTIVATION_SCOPE_GENERIC.value() : sharedInfo1.value();
-        return getEciesEncryptor(EciesScope.ACTIVATION_SCOPE, publicKey, applicationSecret, transportKey, sharedInfo1Value, eciesParameters, ephemeralPublicKey);
+        return getEciesEncryptor(EciesScope.ACTIVATION_SCOPE, publicKey, applicationSecret, transportKey, sharedInfo1Value, eciesParameters);
     }
 
     /**
@@ -120,8 +120,9 @@ public class EciesFactory {
      */
     private EciesEncryptor getEciesEncryptor(final EciesScope eciesScope, final ECPublicKey publicKey, final byte[] applicationSecret,
                                              final byte[] transportKey, final byte[] sharedInfo1,
-                                             final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
-        final byte[] sharedInfo2 = generateSharedInfo2(eciesScope, applicationSecret, transportKey, eciesParameters, ephemeralPublicKey);
+                                             final EciesParameters eciesParameters) throws GenericCryptoException, CryptoProviderException {
+        final byte[] publicKeyBytes = keyConvertor.convertPublicKeyToBytes(publicKey);
+        final byte[] sharedInfo2 = generateSharedInfo2(eciesScope, applicationSecret, transportKey, eciesParameters, publicKeyBytes);
         return new EciesEncryptor(publicKey, sharedInfo1, sharedInfo2);
     }
 
@@ -208,6 +209,7 @@ public class EciesFactory {
     private EciesDecryptor getEciesDecryptor(final EciesScope eciesScope, final ECPrivateKey privateKey, final byte[] applicationSecret,
                                              final byte[] transportKey, final byte[] sharedInfo1, final EciesParameters eciesParameters,
                                              final byte[] ephemeralPublickey) throws GenericCryptoException, CryptoProviderException {
+
         final byte[] sharedInfo2 = generateSharedInfo2(eciesScope, applicationSecret, transportKey, eciesParameters, ephemeralPublickey);
         return new EciesDecryptor(privateKey, sharedInfo1, sharedInfo2);
     }

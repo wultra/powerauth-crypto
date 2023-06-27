@@ -107,8 +107,7 @@ public class EciesEncryptorTest {
                     .associatedData(associatedData)
                     .timestamp(timestampRequest)
                     .build();
-            final EciesEncryptor encryptorRequest = eciesFactory.getEciesEncryptorForApplication(publicKey, applicationSecret, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC,
-                    eciesParametersRequest, publicKeyBytes);
+            final EciesEncryptor encryptorRequest = eciesFactory.getEciesEncryptorForApplication(publicKey, applicationSecret, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC, eciesParametersRequest);
             final EciesPayload payloadRequest = encryptorRequest.encrypt(request, eciesParametersRequest);
             final EciesCryptogram cryptogram = payloadRequest.getCryptogram();
             final EciesParameters parameters = payloadRequest.getParameters();
@@ -193,8 +192,7 @@ public class EciesEncryptorTest {
                     .associatedData(associatedData)
                     .timestamp(timestampRequest)
                     .build();
-            final EciesEncryptor encryptorRequest = eciesFactory.getEciesEncryptorForApplication(publicKey, applicationSecret, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC,
-                    eciesParametersRequest, publicKeyBytes);
+            final EciesEncryptor encryptorRequest = eciesFactory.getEciesEncryptorForApplication(publicKey, applicationSecret, EciesSharedInfo1.APPLICATION_SCOPE_GENERIC, eciesParametersRequest);
             final EciesPayload payloadRequest = encryptorRequest.encrypt(request, eciesParametersRequest);
             final EciesCryptogram cryptogram = payloadRequest.getCryptogram();
             final EciesParameters parameters = payloadRequest.getParameters();
