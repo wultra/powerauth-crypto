@@ -119,7 +119,7 @@ public class EciesDecryptor {
     public byte[] decrypt(final EciesPayload payload) throws EciesException {
         final EciesCryptogram cryptogram = payload.getCryptogram();
         final EciesParameters parameters = payload.getParameters();
-        final boolean requireIv = payload.getParameters().getNonce() != null;
+        final boolean requireIv = parameters.getNonce() != null;
         if (cryptogram == null || cryptogram.getEncryptedData() == null || cryptogram.getMac() == null || (envelopeKey == null && cryptogram.getEphemeralPublicKey() == null)) {
             throw new EciesException("Parameter cryptogram for decryption is invalid");
         }
