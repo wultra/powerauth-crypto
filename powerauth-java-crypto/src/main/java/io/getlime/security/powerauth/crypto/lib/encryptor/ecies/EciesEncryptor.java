@@ -96,6 +96,20 @@ public class EciesEncryptor {
     }
 
     /**
+     * Initialize envelope key for encryptor using provided ephemeral public key. This method is used when the encryptor
+     * parameters are transported over network and the encryptor is reconstructed on another server using envelope key
+     * and sharedInfo2 parameter.
+     *
+     * @param ephemeralPublicKeyBytes Ephemeral public key for ECIES.
+     * @throws EciesException In case envelope key initialization fails.
+     */
+    public void initEnvelopeKey(byte[] ephemeralPublicKeyBytes) throws EciesException {
+        envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
+        // Invalidate this encryptor for encryption
+        canEncryptData = false;
+    }
+
+    /**
      * Encrypt data.
      *
      * @param data Request data.
