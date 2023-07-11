@@ -126,10 +126,10 @@ public class EciesEncryptor {
         if (!canEncrypt()) {
             throw new EciesException("Encryption is not allowed");
         }
-        if (publicKey == null) {
-            throw new EciesException("Public key for encryption is missing");
+        // Derive envelope key, but only in case it does not exist yet
+        if (envelopeKey == null) {
+            envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
         }
-        envelopeKey = EciesEnvelopeKey.fromPublicKey(publicKey, sharedInfo1);
         // Generate nonce in case IV is required
         final byte[] nonce = generateNonce(useIv);
         // Generate timestamp in case it is required
