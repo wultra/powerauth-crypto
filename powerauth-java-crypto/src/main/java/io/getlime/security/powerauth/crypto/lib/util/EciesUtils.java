@@ -16,6 +16,8 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
+import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesScope;
+
 /**
  * A utility class for handling ECIES data.
  *
@@ -49,4 +51,25 @@ public final class EciesUtils {
         // Protocol V3.2+
         return System.currentTimeMillis();
     }
+
+    /**
+     * Derive associated data for ECIES.
+     * @param eciesScope ECIES scope.
+     * @param version Protocol version.
+     * @param applicationKey Application key.
+     * @param activationId Activation ID.
+     * @return Derived associated data.
+     */
+    public static byte[] deriveAssociatedData(EciesScope eciesScope, String version, String applicationKey, String activationId) {
+        if ("3.2".equals(version)) {
+            if (eciesScope == EciesScope.ACTIVATION_SCOPE) {
+                return ByteUtils.concatStrings(version, applicationKey, activationId);
+            } else {
+                return ByteUtils.concatStrings(version, applicationKey);
+            }
+        } else {
+            return null;
+        }
+    }
+
 }
