@@ -26,6 +26,7 @@ import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
+import io.getlime.security.powerauth.crypto.lib.util.EciesUtils;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -651,8 +652,8 @@ public class EciesEncryptorTest {
         final String applicationSecret = "ZlOlwx+gLWHb7QpuzxWzAw==";
         final byte[] transportKey = Base64.getDecoder().decode("BsKjSjlaKQOUHtYG98aY1w==");
         // associated data
-        final byte[] adApplicationScope = deriveAssociatedData(EciesScope.APPLICATION_SCOPE, "3.2", applicationKey, null);
-        final byte[] adActivationScope = deriveAssociatedData(EciesScope.ACTIVATION_SCOPE, "3.2", applicationKey, activationId);
+        final byte[] adApplicationScope = EciesUtils.deriveAssociatedData(EciesScope.APPLICATION_SCOPE, "3.2", applicationKey, null);
+        final byte[] adActivationScope = EciesUtils.deriveAssociatedData(EciesScope.ACTIVATION_SCOPE, "3.2", applicationKey, activationId);
         // Original request data
         final byte[][] plainRequestData = {
                 Base64.getDecoder().decode("YaU82ZVtxeIGpVVmG6Isi0ONK8L+/39cgtMrNvl0wHU1/5UI6f6Q5wf3lAUQ7Anjsp491JrA/3pUnxgoFeYPgCccU6+km7Nk/IFoGCG+Z9xifMyc0LTKe0QQ"),
@@ -1021,19 +1022,6 @@ public class EciesEncryptorTest {
             assertArrayEquals(response.getCryptogram().getMac(), encryptedPayload.getCryptogram().getMac());
             assertArrayEquals(response.getParameters().getNonce(), encryptedPayload.getParameters().getNonce());
             assertEquals(response.getParameters().getTimestamp(), encryptedPayload.getParameters().getTimestamp());
-        }
-    }
-
-    // TODO: This is a temporary solution, we should use similar function provided by this library.
-    byte[] deriveAssociatedData(EciesScope eciesScope, String version, String applicationKey, String activationId) {
-        if ("3.2".equals(version)) {
-            if (eciesScope == EciesScope.ACTIVATION_SCOPE) {
-                return ByteUtils.concatStrings(version, applicationKey, activationId);
-            } else {
-                return ByteUtils.concatStrings(version, applicationKey);
-            }
-        } else {
-            return null;
         }
     }
 }
