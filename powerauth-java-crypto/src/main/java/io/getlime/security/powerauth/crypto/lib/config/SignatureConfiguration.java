@@ -45,6 +45,12 @@ public abstract class SignatureConfiguration {
         return signatureFormat;
     }
 
+    /**
+     * Convert PowerAuth signature format to signature configuration.
+     * @param format PowerAuth signature format.
+     * @return Signature configuration.
+     * @throws CryptoProviderException In case of invalid signature format.
+     */
     public static SignatureConfiguration forFormat(PowerAuthSignatureFormat format) throws CryptoProviderException {
         switch (format) {
             case BASE64 -> {

@@ -16,12 +16,12 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
-import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
 import io.getlime.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class EciesEnvelopeKey {
      * @param secretKey Derived secret key.
      * @param ephemeralPublicKey Ephemeral public key.
      */
-    public EciesEnvelopeKey(byte[] secretKey, byte[] ephemeralPublicKey) {
+    public EciesEnvelopeKey(final byte[] secretKey, final byte[] ephemeralPublicKey) {
         this.secretKey = secretKey;
         this.ephemeralKeyPublic = ephemeralPublicKey;
     }
@@ -83,7 +83,7 @@ public class EciesEnvelopeKey {
      * @return ECIES envelope key.
      * @throws EciesException Thrown when key derivation fails.
      */
-    static EciesEnvelopeKey fromPublicKey(PublicKey publicKey, byte[] sharedInfo1) throws EciesException {
+    static EciesEnvelopeKey fromPublicKey(final PublicKey publicKey, final byte[] sharedInfo1) throws EciesException {
         try {
             // Generate ephemeral key pair
             final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
@@ -97,7 +97,7 @@ public class EciesEnvelopeKey {
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, publicKey, true);
 
             // Construct final data for parameter sharedInfo1
-            byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : Bytes.concat(sharedInfo1, ephemeralPublicKeyBytes);
+            byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : ByteUtils.concat(sharedInfo1, ephemeralPublicKeyBytes);
 
             // Derive secret key using KDF function
             byte[] secretKey = KdfX9_63.derive(keyConvertor.convertSharedSecretKeyToBytes(ephemeralSecretKey), info1Data, ENVELOPE_KEY_SIZE);
@@ -119,7 +119,7 @@ public class EciesEnvelopeKey {
      * @return ECIES envelope key.
      * @throws EciesException Thrown when key derivation fails.
      */
-    static EciesEnvelopeKey fromPrivateKey(PrivateKey ephemeralKeyPrivate, byte[] ephemeralPublicKeyBytes, byte[] sharedInfo1) throws EciesException {
+    static EciesEnvelopeKey fromPrivateKey(final PrivateKey ephemeralKeyPrivate, final byte[] ephemeralPublicKeyBytes, final byte[] sharedInfo1) throws EciesException {
         try {
             // Convert public key bytes to public key
             final PublicKey ephemeralPublicKey = keyConvertor.convertBytesToPublicKey(ephemeralPublicKeyBytes);
@@ -128,7 +128,7 @@ public class EciesEnvelopeKey {
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, ephemeralPublicKey, true);
 
             // Construct final data for parameter sharedInfo1
-            byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : Bytes.concat(sharedInfo1, ephemeralPublicKeyBytes);
+            byte[] info1Data = sharedInfo1 == null ? ephemeralPublicKeyBytes : ByteUtils.concat(sharedInfo1, ephemeralPublicKeyBytes);
 
             // Derive secret key using KDF function
             byte[] secretKey = KdfX9_63.derive(keyConvertor.convertSharedSecretKeyToBytes(ephemeralSecretKey), info1Data, ENVELOPE_KEY_SIZE);
@@ -193,7 +193,7 @@ public class EciesEnvelopeKey {
      * @return Derived initialization vector.
      * @throws EciesException In case that nonce is not valid, or HMAC calculation failed.
      */
-    public byte[] deriveIvForNonce(byte[] nonce) throws EciesException {
+    public byte[] deriveIvForNonce(final byte[] nonce) throws EciesException {
         if (nonce == null) {
             throw new EciesException("Nonce for IV derivation is missing");
         }
