@@ -40,36 +40,6 @@ public class PowerAuthServerVault {
     private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
-     * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using
-     * a correct KEY_ENCRYPTION_VAULT_TRANSPORT.
-     *
-     * <p><b>PowerAuth protocol versions:</b>
-     * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
-     * </ul>
-     *
-     * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE
-     * @param devicePublicKey Device public key KEY_DEVICE_PUBLIC
-     * @param ctr Counter data.
-     * @return Encrypted vault encryption key.
-     * @throws InvalidKeyException In case a provided key is incorrect.
-     * @throws GenericCryptoException In case encryption fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     */
-    public byte[] encryptVaultEncryptionKey(PrivateKey serverPrivateKey, PublicKey devicePublicKey, byte[] ctr) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        SecretKey keyMasterSecret = keyGenerator.computeSharedKey(serverPrivateKey, devicePublicKey);
-        SecretKey keyMasterTransport = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.TRANSPORT.getIndex());
-        SecretKey keyVaultEncryptionTransport = keyGenerator.deriveSecretKey(keyMasterTransport, ctr);
-        SecretKey keyVaultEncryption = keyGenerator.deriveSecretKey(keyMasterSecret, PowerAuthDerivedKey.ENCRYPTED_VAULT.getIndex());
-
-        byte[] keyVaultEncryptionBytes = keyConvertor.convertSharedSecretKeyToBytes(keyVaultEncryption);
-        byte[] iv = new byte[16];
-        AESEncryptionUtils aes = new AESEncryptionUtils();
-        return aes.encrypt(keyVaultEncryptionBytes, iv, keyVaultEncryptionTransport);
-    }
-
-    /**
      * Return encrypted vault encryption key KEY_ENCRYPTION_VAULT using KEY_TRANSPORT.
      *
      * <p><b>PowerAuth protocol versions:</b>
