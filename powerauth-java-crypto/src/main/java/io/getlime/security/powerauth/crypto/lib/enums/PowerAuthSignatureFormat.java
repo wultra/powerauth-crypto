@@ -69,8 +69,6 @@ public enum PowerAuthSignatureFormat {
             stringToEnumMap.put(format.toString(), format);
         }
         // Prepare version to enumeration mapping
-        versionToEnumMap.put("2.0", DECIMAL);
-        versionToEnumMap.put("2.1", DECIMAL);
         versionToEnumMap.put("3.0", DECIMAL);
         versionToEnumMap.put("3.1", BASE64);
     }
