@@ -52,7 +52,7 @@ public class ValueTypeValidator {
      * Admissible protocol versions in the header.
      */
     private static final Set<String> PROTOCOL_VERSIONS = new HashSet<>(Arrays.asList(
-            "3.1", "3.0"
+private static final Set<String> PROTOCOL_VERSIONS = Set.of("3.1", "3.0");
     ));
 
     /**
