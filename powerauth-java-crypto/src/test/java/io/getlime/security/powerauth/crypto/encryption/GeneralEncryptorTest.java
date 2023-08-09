@@ -85,6 +85,7 @@ public class GeneralEncryptorTest {
     /**
      * Configure required cryptographic keys before the test.
      */
+    @BeforeEach
     public void configureKeys() throws Exception {
         APPLICATION_KEY = Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16));
         APPLICATION_SECRET = Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16));
@@ -114,7 +115,6 @@ public class GeneralEncryptorTest {
      * @throws Exception In case of failure.
      */
     void testGenericEncryptor(String version, RequestResponseValidator validator) throws Exception {
-        configureKeys(); // @BeforeEach doesnt work in Maven
         for (EncryptorId encryptorId : encryptorIds) {
             final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
             // Create client encryptor
