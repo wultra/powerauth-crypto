@@ -18,7 +18,7 @@
 package io.getlime.security.powerauth.crypto.lib.encryptor.exception;
 
 /**
- *
+ * Exception used for handling incorrect general encryption / decryption states.
  */
 public class EncryptorException extends Exception {
     /**
