@@ -28,6 +28,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncrypt
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.util.EciesUtils;
+import lombok.Getter;
 
 import java.util.Base64;
 
@@ -46,15 +47,24 @@ public class ClientEciesEncryptor implements ClientEncryptor {
 
     private final EncryptorId encryptorId;
     private final EncryptorParameters encryptorParameters;
+    private final EciesRequestResponseValidator validator;
     private final byte[] associatedData;        // non-null for V3.2+
-    private final boolean useNonceForRequest;   // True for V3.1+
-    private final boolean useTimestamp;         // True for V3.2+
 
     // Variables altered after configureKeys() call.
     private ClientEncryptorSecrets encryptorSecrets;
+
+    /**
+     * Get SharedInfo2 base bytes. The function should be used only for the testing purposes.
+     */
+    @Getter
     private byte[] sharedInfo2Base;
 
     // Variables created in encrypt method
+
+    /**
+     * Get ECIES envelope key. The function should be used only for the testing purposes.
+     */
+    @Getter
     private EciesEnvelopeKey envelopeKey;
     private byte[] requestNonce;
 
@@ -62,18 +72,18 @@ public class ClientEciesEncryptor implements ClientEncryptor {
      * Construct ECIES encryptor that implements encryption for PowerAuth Clients.
      * @param encryptorId Encryptor identifier.
      * @param parameters Encryptor parameters.
+     * @throws EncryptorException In case that protocol is not supported.
      */
-    public ClientEciesEncryptor(EncryptorId encryptorId, EncryptorParameters parameters) {
+    public ClientEciesEncryptor(EncryptorId encryptorId, EncryptorParameters parameters) throws EncryptorException {
         this.encryptorId = encryptorId;
         this.encryptorParameters = parameters;
+        this.validator = new EciesRequestResponseValidator(parameters.getProtocolVersion());
         this.associatedData = EciesUtils.deriveAssociatedData(
                 encryptorId.getScope(),
                 parameters.getProtocolVersion(),
                 parameters.getApplicationKey(),
                 parameters.getActivationIdentifier()
         );
-        this.useNonceForRequest = "3.1".equals(parameters.getProtocolVersion()) || "3.2".equals(parameters.getProtocolVersion());
-        this.useTimestamp = "3.2".equals(parameters.getProtocolVersion());
     }
 
     @Override
@@ -122,7 +132,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         );
         // Prepare nonce and timestamp for the request, if required.
         final byte[] requestNonce = generateRequestNonce();
-        final Long requestTimestamp = useTimestamp ? EciesUtils.generateTimestamp() : null;
+        final Long requestTimestamp = validator.isUseTimestamp() ? EciesUtils.generateTimestamp() : null;
         // Prepare sharedInfo2 with all available information.
         final byte[] sharedInfo2 = EciesUtils.deriveSharedInfo2(
                 encryptorParameters.getProtocolVersion(),
@@ -141,13 +151,13 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         );
         // Keep envelope key and nonce used for the request if protocol require use the same nonce also for the response.
         this.envelopeKey = envelopeKey;
-        this.requestNonce = useTimestamp ? null : requestNonce;
+        this.requestNonce = validator.isUseTimestamp() ? null : requestNonce;
 
         return new EncryptedRequest(
                 Base64.getEncoder().encodeToString(eciesPayload.getCryptogram().getEphemeralPublicKey()),
                 Base64.getEncoder().encodeToString(eciesPayload.getCryptogram().getEncryptedData()),
                 Base64.getEncoder().encodeToString(eciesPayload.getCryptogram().getMac()),
-                useNonceForRequest ? Base64.getEncoder().encodeToString(requestNonce) : null,
+                validator.isUseNonceForRequest() ? Base64.getEncoder().encodeToString(requestNonce) : null,
                 requestTimestamp
         );
     }
@@ -163,27 +173,15 @@ public class ClientEciesEncryptor implements ClientEncryptor {
             throw new EncryptorException("Encryptor is not ready for response decryption.");
         }
 
-        // Decode and validate response payload
-        if (response.getEncryptedData() == null) {
-            throw new EciesException("Missing encryptedData in response data");
-        }
-        if (response.getMac() == null) {
-            throw new EciesException("Missing responseMac in response data");
-        }
-        if (useTimestamp) {
-            // 3.2+
-            if (response.getNonce() == null) {
-                throw new EciesException("Missing nonce in response data");
-            }
-            if (response.getTimestamp() == null) {
-                throw new EciesException("Missing timestamp in response data");
-            }
+        // Validate and decode response payload
+        if (!validator.validateEncryptedResponse(response)) {
+            throw new EncryptorException("Invalid encrypted response object");
         }
 
         final byte[] mac = Base64.getDecoder().decode(response.getMac());
         final byte[] encryptedData = Base64.getDecoder().decode(response.getEncryptedData());
-        final byte[] responseNonce = useTimestamp ? Base64.getDecoder().decode(response.getNonce()) : requestNonce;
-        final Long responseTimestamp = useTimestamp ? response.getTimestamp() : null;
+        final byte[] responseNonce = validator.isUseTimestamp() ? Base64.getDecoder().decode(response.getNonce()) : requestNonce;
+        final Long responseTimestamp = validator.isUseTimestamp() ? response.getTimestamp() : null;
 
         // Build sharedInfo2 with parameters received from the request.
         final byte[] sharedInfo2 = EciesUtils.deriveSharedInfo2(
@@ -215,27 +213,9 @@ public class ClientEciesEncryptor implements ClientEncryptor {
      */
     private byte[] generateRequestNonce() throws EciesException {
         try {
-            return useNonceForRequest ? keyGenerator.generateRandomBytes(16) : null;
+            return validator.isUseNonceForRequest() ? keyGenerator.generateRandomBytes(16) : null;
         } catch (CryptoProviderException e) {
             throw new EciesException("Failed to generate request nonce", e);
         }
-    }
-
-    // Testing
-
-    /**
-     * Get ECIES envelope key. The function should be used only for the testing purposes.
-     * @return ECIES envelope key or null if such key is not created yet.
-     */
-    public EciesEnvelopeKey getEnvelopeKey() {
-        return envelopeKey;
-    }
-
-    /**
-     * Get SharedInfo2 base bytes. The function should be used only for the testing purposes.
-     * @return SharedInfo2 base bytes or null if not calculated yet.
-     */
-    public byte[] getSharedInfo2Base() {
-        return sharedInfo2Base;
     }
 }

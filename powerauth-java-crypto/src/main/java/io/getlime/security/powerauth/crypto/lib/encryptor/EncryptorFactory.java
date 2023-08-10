@@ -18,6 +18,7 @@
 package io.getlime.security.powerauth.crypto.lib.encryptor;
 
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.ClientEciesEncryptor;
+import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesRequestResponseValidator;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.ServerEciesEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorId;
@@ -66,11 +67,11 @@ public class EncryptorFactory {
         validateParameters(encryptorId, encryptorParameters);
         final ClientEncryptor encryptor;
         switch (encryptorParameters.getProtocolVersion()) {
-            case "3.0", "3.1", "3.2" -> {
+            case "3.2", "3.1", "3.0" -> {
                 encryptor = new ClientEciesEncryptor(encryptorId, encryptorParameters);
             }
             default -> {
-                throw new EncryptorException("Unsupported protocol: " + encryptorParameters.getProtocolVersion());
+                throw new EncryptorException("Unsupported protocol version: " + encryptorParameters.getProtocolVersion());
             }
         }
         if (encryptorSecrets != null) {
@@ -110,11 +111,11 @@ public class EncryptorFactory {
         validateParameters(encryptorId, encryptorParameters);
         final ServerEncryptor encryptor;
         switch (encryptorParameters.getProtocolVersion()) {
-            case "3.0", "3.1", "3.2" -> {
+            case "3.2", "3.1", "3.0" -> {
                 encryptor = new ServerEciesEncryptor(encryptorId, encryptorParameters);
             }
             default -> {
-                throw new EncryptorException("Unsupported protocol: " + encryptorParameters.getProtocolVersion());
+                throw new EncryptorException("Unsupported protocol version: " + encryptorParameters.getProtocolVersion());
             }
         }
         if (encryptorSecrets != null) {
@@ -144,6 +145,26 @@ public class EncryptorFactory {
         }
         if (encryptorId.getScope() == EncryptorScope.ACTIVATION_SCOPE && parameters.getActivationIdentifier() == null) {
             throw new EncryptorException("Missing activationIdentifier property in encryptorParameters");
+        }
+    }
+
+    /**
+     * Get request or response data validator for given protocol version.
+     * @param protocolVersion Protocol version.
+     * @return Object implementing {@link RequestResponseValidator} interface.
+     * @throws EncryptorException In case that protocol is unsupported or not specified.
+     */
+    public RequestResponseValidator getRequestResponseValidator(String protocolVersion) throws EncryptorException {
+        if (protocolVersion == null) {
+            throw new EncryptorException("Missing protocolVersion parameter");
+        }
+        switch (protocolVersion) {
+            case "3.2", "3.1", "3.0" -> {
+                return new EciesRequestResponseValidator(protocolVersion);
+            }
+            default -> {
+                throw new EncryptorException("Unsupported protocol version: " + protocolVersion);
+            }
         }
     }
 }

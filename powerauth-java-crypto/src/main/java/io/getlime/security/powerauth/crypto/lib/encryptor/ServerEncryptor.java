@@ -51,6 +51,20 @@ public interface ServerEncryptor {
     boolean canDecryptRequest();
 
     /**
+     * Build encryptor secrets that can be used in the external encryptor to decrypt the provided request. The external
+     * encryptor is typically running in a different application java environment without knowing the private keys.
+     * The best example is cooperation between the PowerAuth Server and our PowerAuth Integration libraries for RESTful API.
+     * The server is using this function to calculate the shared secret that can be used in the integration library to
+     * actually decrypt the request from the client.
+     *
+     * @param request Request to encrypt in the external server encryptor. The request object should contain all parameters
+     *                except the {@code encryptedData} and {@code mac} properties.
+     * @return Object containing encrypted secrets for the external encryptor.
+     * @throws EncryptorException In case of failure.
+     */
+    EncryptorSecrets calculateSecretsForExternalEncryptor(EncryptedRequest request) throws EncryptorException;
+
+    /**
      * Decrypt encrypted request data.
      * @param request Object representing an encrypted request.
      * @return Decrypted data.

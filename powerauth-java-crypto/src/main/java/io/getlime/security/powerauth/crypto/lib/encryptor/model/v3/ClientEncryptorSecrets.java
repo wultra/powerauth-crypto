@@ -21,7 +21,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorSecrets
 import lombok.Data;
 import lombok.Getter;
 
-import java.security.interfaces.ECPublicKey;
+import java.security.PublicKey;
 
 /**
  * The {@code ClientEncryptorSecrets} class provides secret values for client side encryptor using ECIES scheme.
@@ -38,7 +38,7 @@ public class ClientEncryptorSecrets implements EncryptorSecrets {
     /**
      * Server's public key.
      */
-    private final ECPublicKey serverPublicKey;
+    private final PublicKey serverPublicKey;
     /**
      * Application secret.
      */
@@ -59,7 +59,7 @@ public class ClientEncryptorSecrets implements EncryptorSecrets {
      * @param serverPublicKey Server's public key.
      * @param applicationSecret Application's secret string.
      */
-    public ClientEncryptorSecrets(ECPublicKey serverPublicKey, String applicationSecret) {
+    public ClientEncryptorSecrets(PublicKey serverPublicKey, String applicationSecret) {
         this.serverPublicKey = serverPublicKey;
         this.applicationSecret= applicationSecret;
         this.transportKey = null;
@@ -74,7 +74,7 @@ public class ClientEncryptorSecrets implements EncryptorSecrets {
      * @param transportKey Transport key. The value is required for activation scoped encryptor. If null is provided,
      *                     then such secrets can be used for application scoped encryptor only.
      */
-    public ClientEncryptorSecrets(ECPublicKey serverPublicKey, String applicationSecret, byte[] transportKey) {
+    public ClientEncryptorSecrets(PublicKey serverPublicKey, String applicationSecret, byte[] transportKey) {
         this.serverPublicKey = serverPublicKey;
         this.applicationSecret = applicationSecret;
         this.transportKey = transportKey;
@@ -87,7 +87,7 @@ public class ClientEncryptorSecrets implements EncryptorSecrets {
      * @param serverPublicKey Server's public key.
      * @param sharedInfo2Base Precalculated SharedInfo2 base.
      */
-    public ClientEncryptorSecrets(ECPublicKey serverPublicKey, byte[] sharedInfo2Base) {
+    public ClientEncryptorSecrets(PublicKey serverPublicKey, byte[] sharedInfo2Base) {
         this.serverPublicKey = serverPublicKey;
         this.applicationSecret = null;
         this.transportKey = null;

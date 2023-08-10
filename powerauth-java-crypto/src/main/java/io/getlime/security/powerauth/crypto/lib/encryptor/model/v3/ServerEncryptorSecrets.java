@@ -21,7 +21,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorSecrets
 import lombok.Data;
 import lombok.Getter;
 
-import java.security.interfaces.ECPrivateKey;
+import java.security.PrivateKey;
 
 /**
  * The {@code ServerEncryptorSecrets} class provides secret values for server side encryptor using ECIES scheme.
@@ -38,7 +38,7 @@ public class ServerEncryptorSecrets implements EncryptorSecrets {
     /**
      * Server's private key.
      */
-    private final ECPrivateKey serverPrivateKey;
+    private final PrivateKey serverPrivateKey;
     /**
      * Application's secret.
      */
@@ -64,7 +64,7 @@ public class ServerEncryptorSecrets implements EncryptorSecrets {
      * @param transportKey Transport key. The value is required for activation scoped encryptor. If null is provided,
      *                     then such secrets can be used for application scoped encryptor only.
      */
-    public ServerEncryptorSecrets(ECPrivateKey serverPrivateKey, String applicationSecret, byte[] transportKey) {
+    public ServerEncryptorSecrets(PrivateKey serverPrivateKey, String applicationSecret, byte[] transportKey) {
         this.serverPrivateKey = serverPrivateKey;
         this.envelopeKey = null;
         this.transportKey = transportKey;
@@ -78,7 +78,7 @@ public class ServerEncryptorSecrets implements EncryptorSecrets {
      * @param serverPrivateKey Server's private key.
      * @param applicationSecret Application's secret.
      */
-    public ServerEncryptorSecrets(ECPrivateKey serverPrivateKey, String applicationSecret) {
+    public ServerEncryptorSecrets(PrivateKey serverPrivateKey, String applicationSecret) {
         this.serverPrivateKey = serverPrivateKey;
         this.envelopeKey = null;
         this.transportKey = null;

@@ -18,6 +18,7 @@
 package io.getlime.security.powerauth.crypto.encryption;
 
 import io.getlime.security.powerauth.crypto.lib.encryptor.EncryptorFactory;
+import io.getlime.security.powerauth.crypto.lib.encryptor.RequestResponseValidator;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ServerEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ClientEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.*;
@@ -36,8 +37,6 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 
 import java.util.Base64;
 import java.util.List;
@@ -97,7 +96,7 @@ public class GeneralEncryptorTest {
 
     // Generic tests
 
-    interface RequestResponseValidator {
+    interface DataValidator {
         /**
          * Validate whether request data looks OK.
          */
@@ -114,55 +113,263 @@ public class GeneralEncryptorTest {
      * @param validator Request and response validation.
      * @throws Exception In case of failure.
      */
-    void testGenericEncryptor(String version, RequestResponseValidator validator) throws Exception {
+    void testGenericEncryptor(String version, DataValidator validator) throws Exception {
         for (EncryptorId encryptorId : encryptorIds) {
-            final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
-            // Create client encryptor
-            final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters);
-            assertFalse(clientEncryptor.canEncryptRequest());
-            assertFalse(clientEncryptor.canDecryptResponse());
-            // Apply secrets
-            clientEncryptor.configureSecrets(getClientSecrets(encryptorId, version));
-            assertTrue(clientEncryptor.canEncryptRequest());
-            assertFalse(clientEncryptor.canDecryptResponse());
-            // Encrypt request
-            final byte[] requestDataOriginal = generateRandomData();
-            final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
-            assertTrue(clientEncryptor.canEncryptRequest());
-            assertTrue(clientEncryptor.canDecryptResponse());
-            validator.validateRequest(request);
-
-            // Create server encryptor
-            final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters);
-            assertFalse(serverEncryptor.canDecryptRequest());
-            assertFalse(serverEncryptor.canEncryptResponse());
-            // Apply secrets
-            serverEncryptor.configureSecrets(getServerSecrets(encryptorId, version));
-            assertTrue(serverEncryptor.canDecryptRequest());
-            assertFalse(serverEncryptor.canEncryptResponse());
-            // Decrypt request on server
-            final byte[] requestDataDecrypted = serverEncryptor.decryptRequest(request);
-            assertTrue(serverEncryptor.canDecryptRequest());
-            assertTrue(serverEncryptor.canEncryptResponse());
-            assertArrayEquals(requestDataOriginal, requestDataDecrypted);
-            // Encrypt response
-            final byte[] responseDataOriginal = generateRandomData();
-            final EncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
-            assertTrue(serverEncryptor.canDecryptRequest());
-            assertFalse(serverEncryptor.canEncryptResponse());
-            validator.validateResponse(response);
-
-            // Decrypt response on client
-            final byte[] responseDataDecrypted = clientEncryptor.decryptResponse(response);
-            assertTrue(clientEncryptor.canEncryptRequest());
-            assertFalse(clientEncryptor.canDecryptResponse());
-            assertArrayEquals(responseDataOriginal, responseDataDecrypted);
+            testRegularEncryptDecryptWithConfigureSecrets(version, validator, encryptorId);
+            testRegularEncryptDecryptWithKnownSecrets(version, validator, encryptorId);
+            testEncryptDecryptWithExternalEncryptor(version, validator, encryptorId);
+            testRequestResponseObjectValidation(version, encryptorId);
         };
+    }
+
+    /**
+     * Function run one standard loop between server and client (e.g. encrypt request, decrypt request on server, encrypt response,
+     * decrypt response on client). The client and server encryptors are constructed with no secrets; secrets are configured separately.
+     * @param version Version of protocol.
+     * @param dataValidator Request and response validator.
+     * @param encryptorId Encryptor to use.
+     * @throws Exception In case of failure.
+     */
+    void testRegularEncryptDecryptWithConfigureSecrets(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
+        final RequestResponseValidator validator = encryptorFactory.getRequestResponseValidator(version);
+        final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
+        // Create client encryptor
+        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters);
+        assertFalse(clientEncryptor.canEncryptRequest());
+        assertFalse(clientEncryptor.canDecryptResponse());
+        // Apply secrets
+        clientEncryptor.configureSecrets(getClientSecrets(encryptorId, version));
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertFalse(clientEncryptor.canDecryptResponse());
+        // Encrypt request
+        final byte[] requestDataOriginal = generateRandomData();
+        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertTrue(clientEncryptor.canDecryptResponse());
+        dataValidator.validateRequest(request);
+
+        // Create server encryptor
+        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters);
+        assertFalse(serverEncryptor.canDecryptRequest());
+        assertFalse(serverEncryptor.canEncryptResponse());
+        // Apply secrets
+        serverEncryptor.configureSecrets(getServerSecrets(encryptorId, version));
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertFalse(serverEncryptor.canEncryptResponse());
+        // Decrypt request on server
+        assertTrue(validator.validateEncryptedRequest(request));
+        final byte[] requestDataDecrypted = serverEncryptor.decryptRequest(request);
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertTrue(serverEncryptor.canEncryptResponse());
+        assertArrayEquals(requestDataOriginal, requestDataDecrypted);
+        // Encrypt response
+        final byte[] responseDataOriginal = generateRandomData();
+        final EncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertFalse(serverEncryptor.canEncryptResponse());
+        dataValidator.validateResponse(response);
+
+        // Decrypt response on client
+        assertTrue(validator.validateEncryptedResponse(response));
+        final byte[] responseDataDecrypted = clientEncryptor.decryptResponse(response);
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertFalse(clientEncryptor.canDecryptResponse());
+        assertArrayEquals(responseDataOriginal, responseDataDecrypted);
+    }
+
+    /**
+     * Function run one standard loop between server and client (e.g. encrypt request, decrypt request on server, encrypt response,
+     * decrypt response on client). The client and server encryptors are constructed with known secrets.
+     * @param version Version of protocol.
+     * @param dataValidator Request and response validator.
+     * @param encryptorId Encryptor to use.
+     * @throws Exception In case of failure.
+     */
+    void testRegularEncryptDecryptWithKnownSecrets(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
+        final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
+        // Create client encryptor
+        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertFalse(clientEncryptor.canDecryptResponse());
+        // Encrypt request
+        final byte[] requestDataOriginal = generateRandomData();
+        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertTrue(clientEncryptor.canDecryptResponse());
+        dataValidator.validateRequest(request);
+
+        // Create server encryptor
+        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertFalse(serverEncryptor.canEncryptResponse());
+        // Decrypt request on server
+        final byte[] requestDataDecrypted = serverEncryptor.decryptRequest(request);
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertTrue(serverEncryptor.canEncryptResponse());
+        assertArrayEquals(requestDataOriginal, requestDataDecrypted);
+        // Encrypt response
+        final byte[] responseDataOriginal = generateRandomData();
+        final EncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertFalse(serverEncryptor.canEncryptResponse());
+        dataValidator.validateResponse(response);
+
+        // Decrypt response on client
+        final byte[] responseDataDecrypted = clientEncryptor.decryptResponse(response);
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertFalse(clientEncryptor.canDecryptResponse());
+        assertArrayEquals(responseDataOriginal, responseDataDecrypted);
+    }
+
+    /**
+     * Function run one standard loop between server and client (e.g. encrypt request, decrypt request on server, encrypt response,
+     * decrypt response on client). In this test the external encryptor is used on the server side to actual data decryption.
+     * @param version Version of protocol.
+     * @param dataValidator Request and response validator.
+     * @param encryptorId Encryptor to use.
+     * @throws Exception In case of failure.
+     */
+    void testEncryptDecryptWithExternalEncryptor(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
+        final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
+        // Create client encryptor
+        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertFalse(clientEncryptor.canDecryptResponse());
+        // Encrypt request
+        final byte[] requestDataOriginal = generateRandomData();
+        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertTrue(clientEncryptor.canDecryptResponse());
+        dataValidator.validateRequest(request);
+
+        // Create server encryptor
+        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertFalse(serverEncryptor.canEncryptResponse());
+        final EncryptorSecrets secretsForExternalEncryptor = serverEncryptor.calculateSecretsForExternalEncryptor(request);
+        // The state of encryptor should not be changed.
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertFalse(serverEncryptor.canEncryptResponse());
+
+        // Now create external encryptor
+        final ServerEncryptor externalServerEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, secretsForExternalEncryptor);
+        assertTrue(externalServerEncryptor.canDecryptRequest());
+        assertFalse(externalServerEncryptor.canEncryptResponse());
+
+        // Decrypt request on server
+        final byte[] requestDataDecrypted = externalServerEncryptor.decryptRequest(request);
+        assertTrue(externalServerEncryptor.canDecryptRequest());
+        assertTrue(externalServerEncryptor.canEncryptResponse());
+        assertArrayEquals(requestDataOriginal, requestDataDecrypted);
+        // Encrypt response
+        final byte[] responseDataOriginal = generateRandomData();
+        final EncryptedResponse response = externalServerEncryptor.encryptResponse(responseDataOriginal);
+        assertTrue(externalServerEncryptor.canDecryptRequest());
+        assertFalse(externalServerEncryptor.canEncryptResponse());
+        dataValidator.validateResponse(response);
+
+        // Decrypt response on client
+        final byte[] responseDataDecrypted = clientEncryptor.decryptResponse(response);
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertFalse(clientEncryptor.canDecryptResponse());
+        assertArrayEquals(responseDataOriginal, responseDataDecrypted);
+    }
+
+    /**
+     * Function test whether RequestResponseValidator implementation works correctly.
+     * @param version Protocol version to test.
+     * @param encryptorId Encryptor identifier.
+     * @throws Exception In case of failure.
+     */
+    void testRequestResponseObjectValidation(String version, EncryptorId encryptorId) throws Exception {
+        final RequestResponseValidator validator = encryptorFactory.getRequestResponseValidator(version);
+        final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
+        // Create client encryptor
+        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        final EncryptedRequest validRequest = clientEncryptor.encryptRequest(new byte[0]);
+        serverEncryptor.decryptRequest(validRequest);
+        final EncryptedResponse validResponse = serverEncryptor.encryptResponse(new byte[0]);
+
+        // Test for invalid requests
+
+        assertTrue(validator.validateEncryptedRequest(validRequest));
+
+        EncryptedRequest request = copyRequest(validRequest);
+        request.setMac(null);
+        assertFalse(validator.validateEncryptedRequest(request));
+        request = copyRequest(validRequest);
+        request.setEncryptedData(null);
+        assertFalse(validator.validateEncryptedRequest(request));
+        request = copyRequest(validRequest);
+        request.setEphemeralPublicKey(null);
+        assertFalse(validator.validateEncryptedRequest(request));
+
+        if ("3.1".equals(version) || "3.2".equals(version)) {
+            request = copyRequest(validRequest);
+            request.setNonce(null);
+            assertFalse(validator.validateEncryptedRequest(request));
+        }
+        if ("3.2".equals(version)) {
+            request = copyRequest(validRequest);
+            request.setTimestamp(null);
+            assertFalse(validator.validateEncryptedRequest(request));
+        }
+        // Additional data in older protocols
+        if ("3.0".equals(version)) {
+            request = copyRequest(validRequest);
+            request.setNonce("AAA");
+            assertFalse(validator.validateEncryptedRequest(request));
+            request = copyRequest(validRequest);
+            request.setTimestamp(128L);
+            assertFalse(validator.validateEncryptedRequest(request));
+        }
+        if ("3.1".equals(version)) {
+            request = copyRequest(validRequest);
+            request.setTimestamp(128L);
+            assertFalse(validator.validateEncryptedRequest(request));
+        }
+
+        // Test for invalid responses
+
+        assertTrue(validator.validateEncryptedResponse(validResponse));
+
+        EncryptedResponse response = copyResponse(validResponse);
+        response.setMac(null);
+        assertFalse(validator.validateEncryptedResponse(response));
+        response = copyResponse(validResponse);
+        response.setEncryptedData(null);
+        assertFalse(validator.validateEncryptedResponse(response));
+        if ("3.2".equals(version)) {
+            response = copyResponse(validResponse);
+            response.setTimestamp(null);
+            assertFalse(validator.validateEncryptedResponse(response));
+            response = copyResponse(validResponse);
+            response.setNonce(null);
+            assertFalse(validator.validateEncryptedResponse(response));
+        }
+        // Additional data in older protocols
+        if ("3.0".equals(version) || "3.1".equals(version)) {
+            response = copyResponse(validResponse);
+            response.setNonce("AAA");
+            assertFalse(validator.validateEncryptedResponse(response));
+            response = copyResponse(validResponse);
+            response.setTimestamp(123L);
+            assertFalse(validator.validateEncryptedResponse(response));
+        }
+    }
+
+    private EncryptedResponse copyResponse(EncryptedResponse response) {
+        return new EncryptedResponse(response.getEncryptedData(), response.getMac(), response.getNonce(), response.getTimestamp());
+    }
+
+    private EncryptedRequest copyRequest(EncryptedRequest request) {
+        return new EncryptedRequest(request.getEphemeralPublicKey(), request.getEncryptedData(), request.getMac(), request.getNonce(), request.getTimestamp());
     }
 
     @Test
     public void testEncryptDecryptV30() throws Exception {
-        testGenericEncryptor("3.0", new RequestResponseValidator() {
+        testGenericEncryptor("3.0", new DataValidator() {
             @Override
             public void validateRequest(EncryptedRequest request) throws Exception {
                 assertNotNull(request);
@@ -186,7 +393,7 @@ public class GeneralEncryptorTest {
 
     @Test
     public void testEncryptDecryptV31() throws Exception {
-        testGenericEncryptor("3.1", new RequestResponseValidator() {
+        testGenericEncryptor("3.1", new DataValidator() {
             @Override
             public void validateRequest(EncryptedRequest request) throws Exception {
                 assertNotNull(request);
@@ -210,7 +417,7 @@ public class GeneralEncryptorTest {
 
     @Test
     public void testEncryptDecryptV32() throws Exception {
-        testGenericEncryptor("3.2", new RequestResponseValidator() {
+        testGenericEncryptor("3.2", new DataValidator() {
             @Override
             public void validateRequest(EncryptedRequest request) throws Exception {
                 assertNotNull(request);
@@ -238,7 +445,7 @@ public class GeneralEncryptorTest {
     public void testVectors_3_2() throws Exception {
         // Paste vectors here (generated by iOS unit tests)
         // ----------------------------
-// Shared constants
+        // Shared constants
         final PrivateKey masterServerPrivateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(new byte[1], Base64.getDecoder().decode("QvfZMNMXw7fMn1XCdMtgznw13flO++GiemMfi/nh7nI=")));
         final PublicKey masterServerPublicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("A4lTJ9UdVYu65PtTTqqJoCNY6yBB6g6oYRzzZlwXaTUK"));
         final PrivateKey serverPrivateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(new byte[1], Base64.getDecoder().decode("pf622NCVyYy52Lh9r+zt1th89Rw4W6vSCS2hBRidIUE=")));
@@ -247,7 +454,7 @@ public class GeneralEncryptorTest {
         final String applicationKey = "Dj6YQz1rnkfePdb0Vjiq4A==";
         final String applicationSecret = "OOV55et3yLDjEu/rTCsFhA==";
         final byte[] transportKey = Base64.getDecoder().decode("aBo9FxL6Mm1dfqXXNh4Dow==");
-// Original request data
+        // Original request data
         final byte[][] plainRequestData = {
                 Base64.getDecoder().decode("cyQcF5vShP3SJeHF/aXPQIESgdyGuLla0N2rdu2fw4DKnG22pVsYr1wZWapA2PrBEJtuS085wQmRMiJDJCUz18XQh5Rk3uyQEBJX+zKWUGFvD357QLw682X6vW7y"),
                 Base64.getDecoder().decode("r/TEcBJxkXcaMT9jndECLFhthkZjHHrk41RQ2RnXbtZ+DICHVo8xJvsMQfeidmCdx4ao0C0KRCKRQyLTI6Wu/piL2RyGZXfesVKtUvTbB8953uGHyUt0Y/cvPqxSBaVOpZauZlAoIYcA3erlQWAD"),
@@ -266,7 +473,7 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("sFmD4nrLgc96XVUGAM9LY6h7gvLR/qLEIJ4euZc6/4IkoV9kqxW/K64zK4YxTmWC1siSvc4N6DlcBrEO9ZYF/0l8yk32"),
                 Base64.getDecoder().decode("L32KCTHlS8lfzZETnb0QG9lu/jqz4mmIumaZdZJSsGbhkA=="),
         };
-// Original response data
+        // Original response data
         final byte[][] plainResponseData = {
                 Base64.getDecoder().decode("rz7tKte/OR7SnBic1RwqtfnVG4m1nHtHeOakSHQkSV1fAVyhPlYw2g=="),
                 Base64.getDecoder().decode("dDcoC98K2TvLNxCsMJRQoTvQxziA81JhZpla+xS55HANRxoYWVBgTFQEUQdraN/7jLuVbVX/TNJDP4DyJr9usieWiGdCyCIF5Kb+Bd7X+AMNKsOm5Pm7jl7y8FoNv3JLEOETVFU7QVFdpLXNLGBxWZK2bW47t0sr7g=="),
@@ -285,7 +492,7 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("scpkYabifHvdpeWHGhB1uKpCoSZetNV1uLOlpDUlxYUVezCYPXcTFxnOg2bis2Ybq/OZzfqFtE0WyKU3SgLDeoILaICcnEUxrFt5pAWrnINX9JoRTzuKxdhH1i7OcWIZBORGx7rP6ZTvUo2AvN23gSk6uQ/NrYIk2Y7PgQ=="),
                 Base64.getDecoder().decode("ILj8xKFUivFN8XdzGc2ozs8nOhZFC5UET2k2hN2m9tTMXeNxO+3oiqHP5Bj9rA+KuqbGrubdzKy96EaCNbmOv7m3XLmVIIRjevbxsc0mUpKBVQ=="),
         };
-// EncryptorIds
+        // EncryptorIds
         final EncryptorId[] encryptorIds = {
                 EncryptorId.APPLICATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_SCOPE_GENERIC,
@@ -304,7 +511,7 @@ public class GeneralEncryptorTest {
                 EncryptorId.APPLICATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_SCOPE_GENERIC,
         };
-// Associated data
+        // Associated data
         final byte[][] associatedData = {
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhEajZZUXoxcm5rZmVQZGIwVmppcTRBPT0="),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhEajZZUXoxcm5rZmVQZGIwVmppcTRBPT0AAAAkNTNGMEY1QTgtNEQxOC00ODhDLTk0QzYtNUJEQTM2NDJCNUJB"),
@@ -323,7 +530,7 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhEajZZUXoxcm5rZmVQZGIwVmppcTRBPT0="),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhEajZZUXoxcm5rZmVQZGIwVmppcTRBPT0AAAAkNTNGMEY1QTgtNEQxOC00ODhDLTk0QzYtNUJEQTM2NDJCNUJB"),
         };
-// Envelope keys
+        // Envelope keys
         final byte[][] envelopeKeys = {
                 Base64.getDecoder().decode("8xvY05NTCrh1ORZYpzXRwlhSCnmexG2/Vrl+TIyyqRlCK3C/VinAOekMI2KJ+Tl5"),
                 Base64.getDecoder().decode("cMaC48GSYVF0ypCLmFonLZZC5SqOC5gQizZL+weShg7hPExsrrAyQ7OffWICn1bQ"),
@@ -342,7 +549,7 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("i0S0VYCOhb8Hy8bJxQzDicdz+Xb8kf5iB21fRkJcH4SwVgfUt4ZeAa2Zr4xHT2LT"),
                 Base64.getDecoder().decode("7Hwtd6tg1MbYZkLiwlX0+hTS36KTNumlMhpUX0cL4Hv/W0vUyODXmh8sK/RAA+LP"),
         };
-// Requests
+        // Requests
         final EncryptedRequest[] encryptedRequest = {
                 new EncryptedRequest(
                         "A52X2J6Kv3Pk9pzBrS9DkGWe+VWtja97Qc2x4tScxijp",
@@ -457,7 +664,7 @@ public class GeneralEncryptorTest {
                         1691574778934L
                 ),
         };
-// Responses
+        // Responses
         final EncryptedResponse[] encryptedResponse = {
                 new EncryptedResponse(
                         "EAxa4WSgWUORLDswy5ZkcwRrFXDJLd0XWRx7+fim9GeaWOWllF4Mkpa0OBpI2qSz",
@@ -574,12 +781,12 @@ public class GeneralEncryptorTest {
             if (scope == EncryptorScope.APPLICATION_SCOPE) {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
                         new EncryptorParameters("3.2", applicationKey, null),
-                        new ServerEncryptorSecrets((ECPrivateKey) masterServerPrivateKey, applicationSecret)
+                        new ServerEncryptorSecrets(masterServerPrivateKey, applicationSecret)
                 );
             } else {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
                         new EncryptorParameters("3.2", applicationKey, activationId),
-                        new ServerEncryptorSecrets((ECPrivateKey) serverPrivateKey, applicationSecret, transportKey)
+                        new ServerEncryptorSecrets(serverPrivateKey, applicationSecret, transportKey)
                 );
             }
             // Decrypt request and compare to the expected value.
@@ -601,7 +808,7 @@ public class GeneralEncryptorTest {
         final boolean appScope = encryptorId.getScope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
             return new ClientEncryptorSecrets(
-                    (ECPublicKey) (appScope ? KEY_MASTER_SERVER.getPublic() : KEY_SERVER.getPublic()),
+                    appScope ? KEY_MASTER_SERVER.getPublic() : KEY_SERVER.getPublic(),
                     APPLICATION_SECRET,
                     appScope ? null : KEY_TRANSPORT
             );
@@ -613,7 +820,7 @@ public class GeneralEncryptorTest {
         final boolean appScope = encryptorId.getScope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
             return new ServerEncryptorSecrets(
-                    (ECPrivateKey) (appScope ? KEY_MASTER_SERVER.getPrivate() : KEY_SERVER.getPrivate()),
+                    appScope ? KEY_MASTER_SERVER.getPrivate() : KEY_SERVER.getPrivate(),
                     APPLICATION_SECRET,
                     appScope ? null : KEY_TRANSPORT
             );
