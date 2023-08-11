@@ -187,7 +187,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         final byte[] sharedInfo2 = EciesUtils.deriveSharedInfo2(
                 encryptorParameters.getProtocolVersion(),
                 sharedInfo2Base,
-                envelopeKey.getEphemeralKeyPublic(),
+                null,
                 responseNonce,
                 responseTimestamp,
                 associatedData

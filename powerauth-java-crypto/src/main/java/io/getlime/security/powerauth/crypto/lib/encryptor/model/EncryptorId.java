@@ -96,6 +96,12 @@ public enum EncryptorId {
      * @return Bytes of sharedInfo1 parameter for ECIES scheme.
      */
     public byte[] getEciesSharedInfo1(String protocolVersion) {
-        return value.getBytes(StandardCharsets.UTF_8);
+        final byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
+        // 3.0, 3.1 or if version is unspecified, return value bytes
+        if (protocolVersion == null || "3.0".equals(protocolVersion) || "3.1".equals(protocolVersion)) {
+            return valueBytes;
+        }
+        // 3.2+ use protocol version as prefix to value
+        return ByteUtils.concat(protocolVersion.getBytes(StandardCharsets.UTF_8), valueBytes);
     }
 }

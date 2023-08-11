@@ -121,7 +121,7 @@ public final class EciesUtils {
      * Derive final SharedInfo2 constant for ECIES encryption scheme.
      * @param protocolVersion Protocol's version.
      * @param sharedInfo2Base SharedInfo2 base, calculated by {@link #deriveSharedInfo2Base(EncryptorScope, String, byte[])} function.
-     * @param ephemeralPublicKey Ephemeral public key.
+     * @param ephemeralPublicKey Ephemeral public key. Value is null for response encryption / decryption.
      * @param nonce Nonce for request or response.
      * @param timestamp Timestamp for request or response.
      * @param associatedData Associated data.
@@ -133,9 +133,6 @@ public final class EciesUtils {
             throw new EciesException("Missing sharedInfo2Base parameter");
         }
         if ("3.2".equals(protocolVersion)) {
-            if (ephemeralPublicKey == null) {
-                throw new EciesException("Missing ephemeralPublicKey parameter");
-            }
             if (nonce == null) {
                 throw new EciesException("Missing nonce parameter");
             }
