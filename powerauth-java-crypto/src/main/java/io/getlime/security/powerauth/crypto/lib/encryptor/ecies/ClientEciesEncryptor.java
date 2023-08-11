@@ -79,7 +79,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         this.encryptorParameters = parameters;
         this.validator = new EciesRequestResponseValidator(parameters.getProtocolVersion());
         this.associatedData = EciesUtils.deriveAssociatedData(
-                encryptorId.getScope(),
+                encryptorId.scope(),
                 parameters.getProtocolVersion(),
                 parameters.getApplicationKey(),
                 parameters.getActivationIdentifier()
@@ -106,7 +106,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
             sharedInfo2Base = clientSecrets.getSharedInfo2Base();
         } else {
             sharedInfo2Base = EciesUtils.deriveSharedInfo2Base(
-                    encryptorId.getScope(),
+                    encryptorId.scope(),
                     clientSecrets.getApplicationSecret(),
                     clientSecrets.getTransportKey()
             );
@@ -128,7 +128,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         // Prepare new envelope key. The function internally generate new ephemeral public key.
         final EciesEnvelopeKey envelopeKey = EciesEnvelopeKey.fromPublicKey(
                 encryptorSecrets.getServerPublicKey(),
-                encryptorId.getEciesSharedInfo1()
+                encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion())
         );
         // Prepare nonce and timestamp for the request, if required.
         final byte[] requestNonce = generateRequestNonce();

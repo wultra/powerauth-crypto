@@ -54,7 +54,7 @@ public class EciesFactory {
      */
     public EciesEncryptor getEciesEncryptorForApplication(final ECPublicKey publicKey, final byte[] applicationSecret, final EncryptorId encryptorId,
                                                           final EciesParameters eciesParameters) throws GenericCryptoException, CryptoProviderException, EciesException {
-        byte[] sharedInfo1Value = encryptorId == null ? EncryptorId.APPLICATION_SCOPE_GENERIC.getEciesSharedInfo1() : encryptorId.getEciesSharedInfo1();
+        byte[] sharedInfo1Value = encryptorId == null ? EncryptorId.APPLICATION_SCOPE_GENERIC.getEciesSharedInfo1(null) : encryptorId.getEciesSharedInfo1(null);
         return getEciesEncryptor(EncryptorScope.APPLICATION_SCOPE, publicKey, applicationSecret, null, sharedInfo1Value, eciesParameters);
     }
 
@@ -73,7 +73,7 @@ public class EciesFactory {
      */
     public EciesEncryptor getEciesEncryptorForActivation(final ECPublicKey publicKey, final byte[] applicationSecret, final byte[] transportKey,
                                                          final EncryptorId encryptorId, final EciesParameters eciesParameters) throws GenericCryptoException, CryptoProviderException, EciesException {
-        byte[] sharedInfo1Value = encryptorId == null ? EncryptorId.ACTIVATION_SCOPE_GENERIC.getEciesSharedInfo1() : encryptorId.getEciesSharedInfo1();
+        byte[] sharedInfo1Value = encryptorId == null ? EncryptorId.ACTIVATION_SCOPE_GENERIC.getEciesSharedInfo1(null) : encryptorId.getEciesSharedInfo1(null);
         return getEciesEncryptor(EncryptorScope.ACTIVATION_SCOPE, publicKey, applicationSecret, transportKey, sharedInfo1Value, eciesParameters);
     }
 
@@ -142,7 +142,7 @@ public class EciesFactory {
      */
     public EciesDecryptor getEciesDecryptorForApplication(final ECPrivateKey privateKey, final byte[] applicationSecret, final EncryptorId encryptorId,
                                                           final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException, EciesException {
-        byte[] sharedInfo1Value = encryptorId == null ? EncryptorId.APPLICATION_SCOPE_GENERIC.getEciesSharedInfo1() : encryptorId.getEciesSharedInfo1();
+        byte[] sharedInfo1Value = encryptorId == null ? EncryptorId.APPLICATION_SCOPE_GENERIC.getEciesSharedInfo1(null) : encryptorId.getEciesSharedInfo1(null);
         return getEciesDecryptor(EncryptorScope.APPLICATION_SCOPE, privateKey, applicationSecret, null, sharedInfo1Value, eciesParameters, ephemeralPublicKey);    }
 
     /**
@@ -160,7 +160,7 @@ public class EciesFactory {
      */
     public EciesDecryptor getEciesDecryptorForActivation(final ECPrivateKey privateKey, final byte[] applicationSecret, final byte[] transportKey, final EncryptorId encryptorId,
                                                          final EciesParameters eciesParameters, final byte[] ephemeralPublicKey) throws GenericCryptoException, CryptoProviderException {
-        byte[] sharedInfo1Value = encryptorId == null ? EncryptorId.ACTIVATION_SCOPE_GENERIC.getEciesSharedInfo1() : encryptorId.getEciesSharedInfo1();
+        byte[] sharedInfo1Value = encryptorId == null ? EncryptorId.ACTIVATION_SCOPE_GENERIC.getEciesSharedInfo1(null) : encryptorId.getEciesSharedInfo1(null);
         return getEciesDecryptor(EncryptorScope.ACTIVATION_SCOPE, privateKey, applicationSecret, transportKey, sharedInfo1Value, eciesParameters, ephemeralPublicKey);
     }
 

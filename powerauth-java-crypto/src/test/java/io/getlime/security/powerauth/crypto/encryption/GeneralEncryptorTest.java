@@ -771,8 +771,8 @@ public class GeneralEncryptorTest {
             final EncryptedRequest request = encryptedRequest[i];
             final EncryptedResponse response = encryptedResponse[i];
             final EncryptorId eid = encryptorIds[i];
-            final EncryptorScope scope = eid.getScope();
-            final byte[] sharedInfo1 = eid.getEciesSharedInfo1();
+            final EncryptorScope scope = eid.scope();
+            final byte[] sharedInfo1 = eid.getEciesSharedInfo1("3.2");
             final byte[] appSecret = applicationSecret.getBytes(StandardCharsets.UTF_8);
             final byte[] envelopeKey = envelopeKeys[i];
 
@@ -797,7 +797,7 @@ public class GeneralEncryptorTest {
 
 
     private EncryptorParameters getParametersForEncryptor(EncryptorId encryptorId, String protocolVersion) {
-        if (encryptorId.getScope() == EncryptorScope.ACTIVATION_SCOPE) {
+        if (encryptorId.scope() == EncryptorScope.ACTIVATION_SCOPE) {
             return new EncryptorParameters(protocolVersion, APPLICATION_KEY, ACTIVATION_ID);
         } else {
             return new EncryptorParameters(protocolVersion, APPLICATION_KEY, null);
@@ -805,7 +805,7 @@ public class GeneralEncryptorTest {
     }
 
     private EncryptorSecrets getClientSecrets(EncryptorId encryptorId, String protocolVersion) throws Exception {
-        final boolean appScope = encryptorId.getScope() == EncryptorScope.APPLICATION_SCOPE;
+        final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
             return new ClientEncryptorSecrets(
                     appScope ? KEY_MASTER_SERVER.getPublic() : KEY_SERVER.getPublic(),
@@ -817,7 +817,7 @@ public class GeneralEncryptorTest {
     }
 
     private EncryptorSecrets getServerSecrets(EncryptorId encryptorId, String protocolVersion) throws Exception {
-        final boolean appScope = encryptorId.getScope() == EncryptorScope.APPLICATION_SCOPE;
+        final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
             return new ServerEncryptorSecrets(
                     appScope ? KEY_MASTER_SERVER.getPrivate() : KEY_SERVER.getPrivate(),

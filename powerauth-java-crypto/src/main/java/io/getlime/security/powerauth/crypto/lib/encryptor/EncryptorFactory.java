@@ -143,7 +143,7 @@ public class EncryptorFactory {
         if (parameters.getApplicationKey() == null) {
             throw new EncryptorException("Missing applicationKey property in encryptorParameters");
         }
-        if (encryptorId.getScope() == EncryptorScope.ACTIVATION_SCOPE && parameters.getActivationIdentifier() == null) {
+        if (encryptorId.scope() == EncryptorScope.ACTIVATION_SCOPE && parameters.getActivationIdentifier() == null) {
             throw new EncryptorException("Missing activationIdentifier property in encryptorParameters");
         }
     }

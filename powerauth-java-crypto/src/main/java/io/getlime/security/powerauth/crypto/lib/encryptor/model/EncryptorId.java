@@ -17,6 +17,8 @@
 
 package io.getlime.security.powerauth.crypto.lib.encryptor.model;
 
+import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
+
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -84,15 +86,16 @@ public enum EncryptorId {
      * Get encryptor's scope;
      * @return Encryptor's scope;
      */
-    public EncryptorScope getScope() {
+    public EncryptorScope scope() {
         return scope;
     }
 
     /**
      * Get bytes of sharedInfo1 parameter for ECIES scheme.
+     * @param protocolVersion Version of protocol.
      * @return Bytes of sharedInfo1 parameter for ECIES scheme.
      */
-    public byte[] getEciesSharedInfo1() {
+    public byte[] getEciesSharedInfo1(String protocolVersion) {
         return value.getBytes(StandardCharsets.UTF_8);
     }
 }

@@ -81,7 +81,7 @@ public class ServerEciesEncryptor implements ServerEncryptor {
         this.encryptorParameters = parameters;
         this.validator = new EciesRequestResponseValidator(parameters.getProtocolVersion());
         this.associatedData = EciesUtils.deriveAssociatedData(
-                encryptorId.getScope(),
+                encryptorId.scope(),
                 parameters.getProtocolVersion(),
                 parameters.getApplicationKey(),
                 parameters.getActivationIdentifier()
@@ -108,7 +108,7 @@ public class ServerEciesEncryptor implements ServerEncryptor {
             sharedInfo2Base = serverSecrets.getSharedInfo2Base();
         } else {
             sharedInfo2Base = EciesUtils.deriveSharedInfo2Base(
-                    encryptorId.getScope(),
+                    encryptorId.scope(),
                     serverSecrets.getApplicationSecret(),
                     serverSecrets.getTransportKey()
             );
@@ -140,7 +140,7 @@ public class ServerEciesEncryptor implements ServerEncryptor {
             envelopeKey = EciesEnvelopeKey.fromPrivateKey(
                     encryptorSecrets.getServerPrivateKey(),
                     ephemeralPublicKey,
-                    encryptorId.getEciesSharedInfo1()
+                    encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion())
             );
         }
         // Return secrets object with the precalculated keys.
@@ -173,7 +173,7 @@ public class ServerEciesEncryptor implements ServerEncryptor {
             envelopeKey = EciesEnvelopeKey.fromPrivateKey(
                     encryptorSecrets.getServerPrivateKey(),
                     ephemeralPublicKey,
-                    encryptorId.getEciesSharedInfo1()
+                    encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion())
             );
         }
         // Prepare sharedInfo2 for all available information.
