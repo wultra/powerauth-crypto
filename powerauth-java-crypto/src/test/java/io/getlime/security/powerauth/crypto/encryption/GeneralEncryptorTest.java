@@ -21,6 +21,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.EncryptorFactory;
 import io.getlime.security.powerauth.crypto.lib.encryptor.RequestResponseValidator;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ServerEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ClientEncryptor;
+import io.getlime.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.*;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncryptorSecrets;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncryptorSecrets;
@@ -118,6 +119,8 @@ public class GeneralEncryptorTest {
             testRegularEncryptDecryptWithConfigureSecrets(version, validator, encryptorId);
             testRegularEncryptDecryptWithKnownSecrets(version, validator, encryptorId);
             testEncryptDecryptWithExternalEncryptor(version, validator, encryptorId);
+            testInvalidMacInRequest(version, validator, encryptorId);
+            testInvalidMacInResponse(version, validator, encryptorId);
             testRequestResponseObjectValidation(version, encryptorId);
         };
     }
@@ -276,6 +279,75 @@ public class GeneralEncryptorTest {
     }
 
     /**
+     * Test whether we can catch invalid MAC in request.
+     * @param version Version of protocol.
+     * @param dataValidator Request and response validator.
+     * @param encryptorId Encryptor to use.
+     * @throws Exception In case of failure.
+     */
+    void testInvalidMacInRequest(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
+        final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
+        // Create client encryptor
+        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertFalse(clientEncryptor.canDecryptResponse());
+        // Encrypt request
+        final byte[] requestDataOriginal = generateRandomData();
+        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        request.setMac(Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)));
+        assertTrue(clientEncryptor.canEncryptRequest());
+        assertTrue(clientEncryptor.canDecryptResponse());
+        dataValidator.validateRequest(request);
+
+        // Create server encryptor
+        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        assertTrue(serverEncryptor.canDecryptRequest());
+        assertFalse(serverEncryptor.canEncryptResponse());
+        // Decrypt request on server
+        try {
+            serverEncryptor.decryptRequest(request);
+            fail("Request should not be decrypted");
+        } catch (EncryptorException exception) {
+            System.out.println("!!! Invalid MAC correctly detected in request");
+        }
+    }
+
+    /**
+     * Test whether we can catch invalid MAC in response.
+     * @param version Version of protocol.
+     * @param dataValidator Request and response validator.
+     * @param encryptorId Encryptor to use.
+     * @throws Exception In case of failure.
+     */
+    void testInvalidMacInResponse(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
+        final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
+        // Create client encryptor
+        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        // Encrypt request
+        final byte[] requestDataOriginal = generateRandomData();
+        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        dataValidator.validateRequest(request);
+
+        // Create server encryptor
+        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        // Decrypt request on server
+        serverEncryptor.decryptRequest(request);
+        // Encrypt response
+        final byte[] responseDataOriginal = generateRandomData();
+        final EncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
+        response.setMac(Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)));
+        dataValidator.validateResponse(response);
+
+        // Decrypt response on client
+        try {
+            clientEncryptor.decryptResponse(response);
+            fail("Response should not be decrypted");
+        } catch (EncryptorException exception) {
+            System.out.println("!!! Invalid MAC correctly detected in response");
+        }
+    }
+
+    /**
      * Function test whether RequestResponseValidator implementation works correctly.
      * @param version Protocol version to test.
      * @param encryptorId Encryptor identifier.
@@ -359,14 +431,27 @@ public class GeneralEncryptorTest {
         }
     }
 
+    /**
+     * Make new instance of encrypted response object with identical values copied from the provided object.
+     * @param response Response object to copy.
+     * @return Copy of provided response object.
+     */
     private EncryptedResponse copyResponse(EncryptedResponse response) {
         return new EncryptedResponse(response.getEncryptedData(), response.getMac(), response.getNonce(), response.getTimestamp());
     }
 
-    private EncryptedRequest copyRequest(EncryptedRequest request) {
+    /**
+     * Make new instance of encrypted request object with identical values copied from the provided object.
+     * @param request Request object to copy.
+     * @return Copy of provided request object.
+     */    private EncryptedRequest copyRequest(EncryptedRequest request) {
         return new EncryptedRequest(request.getEphemeralPublicKey(), request.getEncryptedData(), request.getMac(), request.getNonce(), request.getTimestamp());
     }
 
+    /**
+     * Test general encrypt-decrypt routines with using protocol 3.0.
+     * @throws Exception In case of failure.
+     */
     @Test
     public void testEncryptDecryptV30() throws Exception {
         testGenericEncryptor("3.0", new DataValidator() {
@@ -391,6 +476,10 @@ public class GeneralEncryptorTest {
         });
     }
 
+    /**
+     * Test general encrypt-decrypt routines with using protocol 3.1
+     * @throws Exception In case of failure.
+     */
     @Test
     public void testEncryptDecryptV31() throws Exception {
         testGenericEncryptor("3.1", new DataValidator() {
@@ -415,6 +504,10 @@ public class GeneralEncryptorTest {
         });
     }
 
+    /**
+     * Test general encrypt-decrypt routines with using protocol 3.2.
+     * @throws Exception In case of failure.
+     */
     @Test
     public void testEncryptDecryptV32() throws Exception {
         testGenericEncryptor("3.2", new DataValidator() {
@@ -441,6 +534,10 @@ public class GeneralEncryptorTest {
 
     // Tests against mobile SDK vectors
 
+    /**
+     * Test encryptor with using test vectors generated by PowerAuth Mobile SDK (iOS). The protocol version is fixed to 3.2.
+     * @throws Exception In case of failure.
+     */
     @Test
     public void testVectors_3_2() throws Exception {
         // Paste vectors here (generated by iOS unit tests)
@@ -797,6 +894,12 @@ public class GeneralEncryptorTest {
     }
 
 
+    /**
+     * Construct EncryptorParameters for given encryptor and protocol version.
+     * @param encryptorId Encryptor identifier.
+     * @param protocolVersion Protocol version.
+     * @return Instance of EncryptorParameters.
+     */
     private EncryptorParameters getParametersForEncryptor(EncryptorId encryptorId, String protocolVersion) {
         if (encryptorId.scope() == EncryptorScope.ACTIVATION_SCOPE) {
             return new EncryptorParameters(protocolVersion, APPLICATION_KEY, ACTIVATION_ID);
@@ -805,6 +908,13 @@ public class GeneralEncryptorTest {
         }
     }
 
+    /**
+     * Construct encryptor secrets for given client encryptor and protocol version.
+     * @param encryptorId Encryptor identifier.
+     * @param protocolVersion Protocol version.
+     * @return Instance of EncryptorSecrets suitable for client encryptor.
+     * @throws Exception In case of failure.
+     */
     private EncryptorSecrets getClientSecrets(EncryptorId encryptorId, String protocolVersion) throws Exception {
         final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
@@ -817,6 +927,13 @@ public class GeneralEncryptorTest {
         throw new Exception("Unsupported version " + protocolVersion);
     }
 
+    /**
+     * Construct encryptor secrets for given server encryptor and protocol version.
+     * @param encryptorId Encryptor identifier.
+     * @param protocolVersion Protocol version.
+     * @return Instance of EncryptorSecrets suitable for server encryptor.
+     * @throws Exception In case of failure.
+     */
     private EncryptorSecrets getServerSecrets(EncryptorId encryptorId, String protocolVersion) throws Exception {
         final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
@@ -829,6 +946,11 @@ public class GeneralEncryptorTest {
         throw new Exception("Unsupported version " + protocolVersion);
     }
 
+    /**
+     * Generate random data with random length.
+     * @return Random data.
+     * @throws Exception In case that crypto provider is not properly configured.
+     */
     private byte[] generateRandomData() throws Exception {
         byte[] randomSizeBytes = keyGenerator.generateRandomBytes(1);
         int randomSize = 3 + 128 + randomSizeBytes[0];

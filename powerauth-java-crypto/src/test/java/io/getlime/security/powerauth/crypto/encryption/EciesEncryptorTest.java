@@ -16,19 +16,15 @@
  */
 package io.getlime.security.powerauth.crypto.encryption;
 
+import io.getlime.security.powerauth.crypto.lib.encryptor.EncryptorFactory;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesDecryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesEncryptor;
-import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesFactory;
-import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.*;
-import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorId;
-import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorScope;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
-import io.getlime.security.powerauth.crypto.lib.util.EciesUtils;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -39,14 +35,11 @@ import org.junit.jupiter.api.Test;
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 import java.util.Base64;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,7 +54,7 @@ public class EciesEncryptorTest {
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private final EciesFactory eciesFactory = new EciesFactory();
+    private final EncryptorFactory encryptorFactory = new EncryptorFactory();
 
     /**
      * Add crypto providers.
@@ -70,202 +63,6 @@ public class EciesEncryptorTest {
     public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-    }
-
-    /**
-     * Test that data that go from encryptor can be processed by decryptor and vice versa.
-     * @throws Exception When test fails.
-     */
-    @Test
-    public void testEncryptDecrypt() throws Exception {
-
-        final KeyPair fixedKeyPair = keyGenerator.generateKeyPair();
-        final ECPrivateKey privateKey = (ECPrivateKey) fixedKeyPair.getPrivate();
-        final ECPublicKey publicKey = (ECPublicKey) fixedKeyPair.getPublic();
-        final byte[] publicKeyBytes = keyConvertor.convertPublicKeyToBytes(publicKey);
-
-        final byte[] request = "Hello Alice.".getBytes(StandardCharsets.UTF_8);
-        final byte[] response = "Hello Bob".getBytes(StandardCharsets.UTF_8);
-        final byte[] applicationSecret = "test_secret".getBytes(StandardCharsets.UTF_8);
-        for (int i = 0; i < 100; i++) {
-            byte[] nonceRequest = null;
-            Long timestampRequest = null;
-            byte[] nonceResponse = null;
-            Long timestampResponse = null;
-            byte[] associatedData = null;
-            if ((i & 1) == 1) {
-                // Protocol V3.1+
-                nonceRequest = keyGenerator.generateRandomBytes(16);
-                nonceResponse = keyGenerator.generateRandomBytes(16);
-                if ((i & 2) == 2) {
-                    // Protocol V3.2+
-                    associatedData = ByteUtils.concatStrings("3.2", "test_secret");
-                    timestampRequest = new Date().getTime();
-                    timestampResponse = new Date().getTime() + 1;
-                }
-            }
-
-            final EciesParameters eciesParametersRequest = EciesParameters.builder()
-                    .nonce(nonceRequest)
-                    .associatedData(associatedData)
-                    .timestamp(timestampRequest)
-                    .build();
-            final EciesEncryptor encryptorRequest = eciesFactory.getEciesEncryptorForApplication(publicKey, applicationSecret, EncryptorId.APPLICATION_SCOPE_GENERIC, eciesParametersRequest);
-            final EciesPayload payloadRequest = encryptorRequest.encrypt(request, eciesParametersRequest);
-            final EciesCryptogram cryptogram = payloadRequest.getCryptogram();
-            final EciesParameters parameters = payloadRequest.getParameters();
-            System.out.println("# REQUEST");
-            System.out.println("- Original data: " + Base64.getEncoder().encodeToString(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
-            System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(cryptogram.getEncryptedData()));
-            System.out.println("- MAC: " + Base64.getEncoder().encodeToString(cryptogram.getMac()));
-            System.out.println("- Nonce: " + (nonceRequest != null ? Base64.getEncoder().encodeToString(parameters.getNonce()) : "null"));
-            System.out.println("- Timestamp: " + (timestampRequest != null ? parameters.getTimestamp() : "null"));
-            System.out.println("- Associated data: " + (timestampRequest != null ? Base64.getEncoder().encodeToString(parameters.getAssociatedData()) : "null"));
-            System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(cryptogram.getEphemeralPublicKey()));
-            System.out.println();
-
-            final EciesDecryptor decryptorRequest = eciesFactory.getEciesDecryptorForApplication(privateKey, applicationSecret, EncryptorId.APPLICATION_SCOPE_GENERIC,
-                    eciesParametersRequest, cryptogram.getEphemeralPublicKey());
-            final byte[] originalBytesRequest = decryptorRequest.decrypt(payloadRequest);
-
-            assertArrayEquals(request, originalBytesRequest);
-
-            final EciesParameters eciesParametersResponse = EciesParameters.builder()
-                    .nonce(nonceResponse)
-                    .associatedData(associatedData)
-                    .timestamp(timestampResponse)
-                    .build();
-            final EciesEncryptor encryptorResponse = eciesFactory.getEciesEncryptor(EncryptorScope.APPLICATION_SCOPE,
-                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse);
-
-            final EciesPayload payloadResponse = encryptorResponse.encrypt(response, eciesParametersResponse);
-            System.out.println("# RESPONSE");
-            System.out.println("- Original data: " + Base64.getEncoder().encodeToString(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
-            System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadResponse.getCryptogram().getEncryptedData()));
-            System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadResponse.getCryptogram().getMac()));
-            System.out.println("- Nonce: " + (nonceResponse != null ? Base64.getEncoder().encodeToString(payloadResponse.getParameters().getNonce()) : "null"));
-            System.out.println("- Timestamp: " + (timestampResponse != null ? payloadResponse.getParameters().getTimestamp() : "null"));
-            System.out.println("- Associated data: " + (timestampResponse != null ? Base64.getEncoder().encodeToString(payloadResponse.getParameters().getAssociatedData()) : "null"));
-            System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(payloadResponse.getCryptogram().getEphemeralPublicKey()));
-            System.out.println();
-
-            final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(EncryptorScope.APPLICATION_SCOPE,
-                    encryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, cryptogram.getEphemeralPublicKey());
-            final byte[] originalBytesResponse = decryptorResponse.decrypt(payloadResponse);
-
-            assertArrayEquals(response, originalBytesResponse);
-        }
-    }
-
-    /**
-     * Test that invalid MAC causes message rejection.
-     * @throws Exception When test fails.
-     */
-    @Test
-    public void testInvalidMacReject() throws Exception {
-
-        final KeyPair fixedKeyPair = keyGenerator.generateKeyPair();
-        final ECPrivateKey privateKey = (ECPrivateKey) fixedKeyPair.getPrivate();
-        final ECPublicKey publicKey = (ECPublicKey) fixedKeyPair.getPublic();
-        final byte[] publicKeyBytes = keyConvertor.convertPublicKeyToBytes(publicKey);
-
-        final byte[] request = "Hello Alice.".getBytes(StandardCharsets.UTF_8);
-        final byte[] response = "Hello Bob".getBytes(StandardCharsets.UTF_8);
-        final byte[] applicationSecret = "test_secret".getBytes(StandardCharsets.UTF_8);
-        for (int i = 0; i < 100; i++) {
-            byte[] nonceRequest = null;
-            Long timestampRequest = null;
-            byte[] nonceResponse = null;
-            Long timestampResponse = null;
-            byte[] associatedData = null;
-            if ((i & 1) == 1) {
-                // Protocol V3.1+
-                nonceRequest = keyGenerator.generateRandomBytes(16);
-                nonceResponse = keyGenerator.generateRandomBytes(16);
-                if ((i & 2) == 2) {
-                    // Protocol V3.2+
-                    associatedData = ByteUtils.concatStrings("3.2", "test_secret");
-                    timestampRequest = new Date().getTime();
-                    timestampResponse = new Date().getTime() + 1;
-                }
-            }
-
-            final EciesParameters eciesParametersRequest = EciesParameters.builder()
-                    .nonce(nonceRequest)
-                    .associatedData(associatedData)
-                    .timestamp(timestampRequest)
-                    .build();
-            final EciesEncryptor encryptorRequest = eciesFactory.getEciesEncryptorForApplication(publicKey, applicationSecret, EncryptorId.APPLICATION_SCOPE_GENERIC, eciesParametersRequest);
-            final EciesPayload payloadRequest = encryptorRequest.encrypt(request, eciesParametersRequest);
-            final EciesCryptogram cryptogram = payloadRequest.getCryptogram();
-            final EciesParameters parameters = payloadRequest.getParameters();
-            System.out.println("# REQUEST");
-            System.out.println("- Original data: " + Base64.getEncoder().encodeToString(request) + " (" + new String(request, StandardCharsets.UTF_8) + ")");
-            System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(cryptogram.getEncryptedData()));
-            System.out.println("- MAC: " + Base64.getEncoder().encodeToString(cryptogram.getMac()));
-            System.out.println("- Nonce: " + (nonceRequest != null ? Base64.getEncoder().encodeToString(parameters.getNonce()) : "null"));
-            System.out.println("- Timestamp: " + (timestampRequest != null ? parameters.getTimestamp() : "null"));
-            System.out.println("- Associated data: " + (timestampRequest != null ? Base64.getEncoder().encodeToString(parameters.getAssociatedData()) : "null"));
-            System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(cryptogram.getEphemeralPublicKey()));
-            System.out.println();
-
-            final byte[] macBrokenRequest = keyGenerator.generateRandomBytes(16);
-            final EciesCryptogram cryptogramBrokenRequest = EciesCryptogram.builder()
-                    .ephemeralPublicKey(cryptogram.getEphemeralPublicKey())
-                    .encryptedData(cryptogram.getEncryptedData())
-                    .mac(macBrokenRequest)
-                    .build();
-            final EciesPayload payloadBrokenRequest = new EciesPayload(cryptogramBrokenRequest, parameters);
-            final EciesDecryptor decryptorRequest = eciesFactory.getEciesDecryptorForApplication(privateKey, applicationSecret, EncryptorId.APPLICATION_SCOPE_GENERIC,
-                    eciesParametersRequest, publicKeyBytes);
-
-            try {
-                decryptorRequest.decrypt(payloadBrokenRequest);
-                fail("Invalid MAC was provided in request and should have been rejected");
-            } catch (EciesException e) {
-                // OK
-                System.out.println("!!! Invalid MAC correctly detected in request");
-                System.out.println();
-            }
-
-            final EciesParameters eciesParametersResponse = EciesParameters.builder()
-                    .nonce(nonceResponse)
-                    .associatedData(associatedData)
-                    .timestamp(timestampResponse)
-                    .build();
-            final EciesEncryptor encryptorResponse = eciesFactory.getEciesEncryptor(EncryptorScope.APPLICATION_SCOPE,
-                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse);
-
-            final EciesPayload payloadResponse = encryptorResponse.encrypt(response, eciesParametersResponse);
-            System.out.println("# RESPONSE");
-            System.out.println("- Original data: " + Base64.getEncoder().encodeToString(response) + " (" + new String(response, StandardCharsets.UTF_8) + ")");
-            System.out.println("- Encrypted data: " + Base64.getEncoder().encodeToString(payloadResponse.getCryptogram().getEncryptedData()));
-            System.out.println("- MAC: " + Base64.getEncoder().encodeToString(payloadResponse.getCryptogram().getMac()));
-            System.out.println("- Nonce: " + (nonceResponse != null ? Base64.getEncoder().encodeToString(payloadResponse.getParameters().getNonce()) : "null"));
-            System.out.println("- Timestamp: " + (timestampResponse != null ? payloadResponse.getParameters().getTimestamp() : "null"));
-            System.out.println("- Associated data: " + (timestampResponse != null ? Base64.getEncoder().encodeToString(payloadResponse.getParameters().getAssociatedData()) : "null"));
-            System.out.println("- Ephemeral public key: " + Base64.getEncoder().encodeToString(payloadResponse.getCryptogram().getEphemeralPublicKey()));
-            System.out.println();
-
-            final byte[] macBrokenResponse = keyGenerator.generateRandomBytes(16);
-            final EciesCryptogram cryptogramBrokenResponse = EciesCryptogram.builder()
-                    .ephemeralPublicKey(cryptogram.getEphemeralPublicKey())
-                    .encryptedData(cryptogram.getEncryptedData())
-                    .mac(macBrokenResponse)
-                    .build();
-            final EciesPayload payloadBrokenResponse = new EciesPayload(cryptogramBrokenResponse, parameters);
-
-            final EciesDecryptor decryptorResponse = eciesFactory.getEciesDecryptor(EncryptorScope.APPLICATION_SCOPE,
-                    decryptorRequest.getEnvelopeKey(), applicationSecret, null, eciesParametersResponse, publicKeyBytes);
-            try {
-                decryptorResponse.decrypt(payloadBrokenResponse);
-                fail("Invalid MAC was provided in response and should have been rejected");
-            } catch (EciesException e) {
-                // OK
-                System.out.println("!!! Invalid MAC correctly detected in response");
-                System.out.println();
-            }
-        }
     }
 
     /**
