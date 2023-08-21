@@ -28,6 +28,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncrypt
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
+import lombok.AllArgsConstructor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,12 +67,17 @@ public class GeneralEncryptorTest {
             EncryptorId.CONFIRM_RECOVERY_CODE
     );
 
-    private String APPLICATION_KEY;
-    private String APPLICATION_SECRET;
-    private byte[] KEY_TRANSPORT;
-    private String ACTIVATION_ID;
-    private KeyPair KEY_MASTER_SERVER;
-    private KeyPair KEY_SERVER;
+    @AllArgsConstructor
+    private static class TestConfiguration {
+        final String applicationKey;
+        final String applicationSecret;
+        final byte[] keyTransport;
+        final String activationId;
+        final KeyPair keyMasterServer;
+        final KeyPair keyServer;
+    }
+
+    private TestConfiguration configuration;
 
     /**
      * Add crypto providers.
@@ -87,12 +93,14 @@ public class GeneralEncryptorTest {
      */
     @BeforeEach
     public void configureKeys() throws Exception {
-        APPLICATION_KEY = Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16));
-        APPLICATION_SECRET = Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16));
-        KEY_TRANSPORT = keyGenerator.generateRandomBytes(16);
-        ACTIVATION_ID = UUID.randomUUID().toString();
-        KEY_MASTER_SERVER = keyGenerator.generateKeyPair();
-        KEY_SERVER = keyGenerator.generateKeyPair();
+        configuration = new TestConfiguration(
+                Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)),
+                Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)),
+                keyGenerator.generateRandomBytes(16),
+                UUID.randomUUID().toString(),
+                keyGenerator.generateKeyPair(),
+                keyGenerator.generateKeyPair()
+        );
     }
 
     // Generic tests
@@ -902,9 +910,9 @@ public class GeneralEncryptorTest {
      */
     private EncryptorParameters getParametersForEncryptor(EncryptorId encryptorId, String protocolVersion) {
         if (encryptorId.scope() == EncryptorScope.ACTIVATION_SCOPE) {
-            return new EncryptorParameters(protocolVersion, APPLICATION_KEY, ACTIVATION_ID);
+            return new EncryptorParameters(protocolVersion, configuration.applicationKey, configuration.activationId);
         } else {
-            return new EncryptorParameters(protocolVersion, APPLICATION_KEY, null);
+            return new EncryptorParameters(protocolVersion, configuration.applicationKey, null);
         }
     }
 
@@ -919,9 +927,9 @@ public class GeneralEncryptorTest {
         final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
             return new ClientEncryptorSecrets(
-                    appScope ? KEY_MASTER_SERVER.getPublic() : KEY_SERVER.getPublic(),
-                    APPLICATION_SECRET,
-                    appScope ? null : KEY_TRANSPORT
+                    appScope ? configuration.keyMasterServer.getPublic() : configuration.keyServer.getPublic(),
+                    configuration.applicationSecret,
+                    appScope ? null : configuration.keyTransport
             );
         }
         throw new Exception("Unsupported version " + protocolVersion);
@@ -938,9 +946,9 @@ public class GeneralEncryptorTest {
         final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
             return new ServerEncryptorSecrets(
-                    appScope ? KEY_MASTER_SERVER.getPrivate() : KEY_SERVER.getPrivate(),
-                    APPLICATION_SECRET,
-                    appScope ? null : KEY_TRANSPORT
+                    appScope ? configuration.keyMasterServer.getPrivate() : configuration.keyServer.getPrivate(),
+                    configuration.applicationSecret,
+                    appScope ? null : configuration.keyTransport
             );
         }
         throw new Exception("Unsupported version " + protocolVersion);
