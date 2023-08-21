@@ -28,7 +28,6 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncrypt
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.util.EciesUtils;
-import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Base64;
@@ -56,17 +55,15 @@ public class ServerEciesEncryptor implements ServerEncryptor {
     private ServerEncryptorSecrets encryptorSecrets;
 
     /**
-     * Get SharedInfo2 base bytes. The function should be used only for the testing purposes.
+     * SharedInfo2 base bytes.
      */
-    @Getter
     private byte[] sharedInfo2Base;
 
     // Variables created in encrypt method
 
     /**
-     * Get ECIES envelope key. The function should be used only for the testing purposes.
+     * ECIES envelope key.
      */
-    @Getter
     private EciesEnvelopeKey envelopeKey;
     private byte[] requestNonce;
 

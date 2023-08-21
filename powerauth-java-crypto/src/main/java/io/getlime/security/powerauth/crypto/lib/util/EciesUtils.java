@@ -68,10 +68,10 @@ public final class EciesUtils {
      * @throws EciesException In case that activation ID is required but is missing.
      */
     public static byte[] deriveAssociatedData(EncryptorScope scope, String protocolVersion, String applicationKey, String activationId) throws EciesException {
+        if (protocolVersion == null) {
+            throw new EciesException("Protocol version is missing");
+        }
         if ("3.2".equals(protocolVersion)) {
-            if (protocolVersion == null) {
-                throw new EciesException("Protocol version is missing");
-            }
             if (applicationKey == null) {
                 throw new EciesException("Application key is missing");
             }
