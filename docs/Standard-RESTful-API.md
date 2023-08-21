@@ -199,7 +199,7 @@ The `activationData` contains an encrypted level 2 response. So, the JSON respon
 ```
 
 <!-- begin box info -->
-The `activationRecovery` response element is optional and depends on whether the [Activation Recovery](Activation-Recovery.md) feature is enabled on the PowerAuth Server or not.
+The `activationRecovery` response element is optional and depends on whether the [Activation Recovery](Activation-via-Recovery-Code.md) feature is enabled on the PowerAuth Server or not.
 <!-- end -->
 <!-- end -->
 
