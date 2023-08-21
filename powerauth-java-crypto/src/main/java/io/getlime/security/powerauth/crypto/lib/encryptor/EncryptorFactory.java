@@ -32,11 +32,6 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorParamet
  */
 public class EncryptorFactory {
     /**
-     * Default constructor.
-     */
-    public EncryptorFactory() {}
-
-    /**
      * Create client-side encryptor that can encrypt the request and decrypt response from the server. To use the encryptor
      * properly, you have to call {@link ClientEncryptor#configureSecrets(EncryptorSecrets)} function later on the constructed
      * encryptor to make it ready for the cryptographic tasks.

@@ -20,6 +20,7 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.model.v3;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorSecrets;
 import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.security.PrivateKey;
 
@@ -34,6 +35,7 @@ import java.security.PrivateKey;
  */
 @Getter
 @Data
+@ToString(onlyExplicitlyIncluded = true)
 public class ServerEncryptorSecrets implements EncryptorSecrets {
     /**
      * Server's private key.
