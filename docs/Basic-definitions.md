@@ -64,9 +64,56 @@ These functions are used in the pseudo-codes:
 - Utility functions.
   - `byte[] zeroBytes = ByteUtils.zeroBytes(int N)` - Generate buffer with N zero bytes.
   - `byte[] truncatedBytes = ByteUtils.truncate(byte[] bytes, int N)` - Get last N bytes of given byte array.
-  - `int integer = ByteUtils.getInt(byte[4] bytes)` - Get integer from 4 byte long byte array.
-  - `long value = ByteUtils.getLong(byte[8] bytes)` - Get long value from 8 byte long byte array.
-  - `byte[] result = ByteUtils.concat(byte[] a, byte[] b)` - Concatenate two byte arrays - append `b` after `a`.
+  - `int integer = ByteUtils.getInt(byte[4] bytes)` - Get integer from big endian encoded byte array.
+  - `long value = ByteUtils.getLong(byte[8] bytes)` - Get long value from big endian encoded byte array.
+  - `byte[] encodedShort = ByteUtils.encode(short n)` - encode number into sequence of bytes in big endian order.
+  - `byte[] encodedInt = ByteUtils.encode(int n)` - encode number into sequence of bytes in big endian order.
+  - `byte[] encodedLong = ByteUtils.encode(long n)` - encode number into sequence of bytes in big endian order.
+  - `byte[] encodedString = ByteUtils.encode(String s)` - convert string into sequence of bytes with UTF-8 encoding.
+  - `byte[] result = ByteUtils.concat(byte[]... args)` - concatenate multiple byte arrays:
+    ```java
+    byte[] concat(byte[]... args) {
+        byte[] result = new byte[0];
+        for (byte[] component : args) {
+            if (component != null) {
+                result = ByteUtils.concat(result, component);
+            }
+        }
+        return result;
+    }
+    ```
+  - `byte[] result = ByteUtils.concatWithSizes(byte[]... args)` - concatenate multiple byte array elements and prepend the length of each element:
+    ```java
+    byte[] concatWithSizes(byte[]... args) {
+        byte[] result = new byte[0];
+        for (byte[] component : args) {
+            if (component != null) {
+                result = ByteUtils.concat(result, ByteUtils.encode(component.length), component);
+            } else {
+                result = ByteUtils.concat(result, ByteUtils.encode((int)0));
+            }
+        }
+        return result;
+    }
+    ```
+  - `byte[] result = ByteUtils.concatWithSizes(String... args)` - concatenate multiple string elements and prepend the length of each element: 
+    ```java
+    byte[] concatWithSizes(String... args) {
+        byte[] result = new byte[0];
+        for (String component : args) {
+            if (component != null) {
+                byte[] componentBytes = ByteUtils.encode(component);
+                result = ByteUtils.concat(result, ByteUtils.encode(componentBytes.length), componentBytes);
+            } else {
+                result = ByteUtils.concat(result, ByteUtils.encode((int)0));
+            }
+        }
+        return result;
+    }
+    ```
   - `byte[] result = ByteUtils.convert32Bto16B(byte[] bytes32)` - Converts 32b long byte array to 16b long array by xor-ing the first 16b with the second 16b, byte-by-byte.
   - `byte[] result = ByteUtils.subarray(byte[] bytes, int startIndex, int length)` - Obtain subarray of a byte array, starting with index `startIndex` with a given length.
   - `ByteUtils.copy(byte[] source, int sourcePosition, byte[] destination, int destinationPosition, int length)` - Copies `length` of bytes from the specified source array of bytes, beginning at the specified position, to the specified position of the destination array.
+
+- Other functions.
+  - `long timestamp = Time.getTimestamp()` - Get UNIX timestamp in milliseconds, since 1.1.1970
