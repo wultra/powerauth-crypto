@@ -132,7 +132,7 @@ X-PowerAuth-Authorization: PowerAuth
 	pa_nonce="kYjzVBB8Y0ZFabxSWbWovY==",
 	pa_signature_type="possession_knowledge"
 	pa_signature="MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=",
-	pa_version="3.1"
+	pa_version="3.2"
 ```
 
 ### Offline Signature
@@ -187,7 +187,7 @@ The following constants and variables are involved in the signature validation:
 - `CTR_DATA`, hash based signature counter
   - Introduced in the protocol version `3`, now is used in the signature calculation.
   - It's randomly initialized and exchanged during the activation, or in the protocol upgrade process.
-  - In protocol version `3.1`, the client can synchronize its counter with the server.
+  - In protocol version `3.1+`, the client can synchronize its counter with the server.
 - `CTR_LOOK_AHEAD`, tolerance set on server to overcome ahead clients
   - Server is trying to calculate and validate the signature ahead in time, in half-closed interval defined by this tolerance: `[CTR, CTR + CTR_LOOK_AHEAD)`.
   - Default value is `20`

@@ -113,7 +113,7 @@ After receiving the response, PowerAuth Client decrypts both layers of response 
 ##### Encryption Headers
 
 ```
-X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ=="
+X-PowerAuth-Encryption: PowerAuth version="3.2", application_key="UNfS0VZX3JhbmRvbQ=="
 ```
 
 ##### Body
