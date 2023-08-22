@@ -123,7 +123,7 @@ Assume we have a public key `KEY_ENC_PUB`, data `PLAINTEXT` to be encrypted, `AS
     EciesPayload payload = (DATA_ENCRYPTED, MAC, KEY_EPH_PUB, NONCE, TIMESTAMP)
     ```
 
-If this is a response encryption, then we omit `KEY_EPH_PUB` and set it to `null` in steps 3 and 9 to make the response shorter. For example, `SHARED_INFO_2` is then calculated as:
+If this is a response encryption, then we omit `KEY_EPH_PUB` and set it to `null` in steps 3. and 9. to make the response shorter. For example, `SHARED_INFO_2` is then calculated as:
 
 ```java
 byte[] SHARED_INFO_2 = ByteUtils.concatWithSizes(SHARED_INFO_2_BASE, NONCE, TIMESTAMP_BYTES, null, ASSOCIATED_DATA);
@@ -142,9 +142,10 @@ Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of th
     ```java
     SecretKey KEY_BASE = ECDH.phase(KEY_ENC_PRIV, KEY_EPH_PUB)
     ```
-1. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
+1. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `VERSION`, `SHARED_INFO_1` together with `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
     ```java
-    byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
+    byte[] VERSION_BYTES = ByteUtils.encode(VERSION);
+    byte[] INFO = Bytes.concat(VERSION_BYTES, SHARED_INFO_1, KEY_EPH_PUB);
     SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO, 48)
     ```
 1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final part is a key for IV derivation `KEY_IV`.
@@ -167,6 +168,8 @@ Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of th
     byte[] IV = KDF_INTERNAL.derive(KEY_IV, NONCE);
     byte[] PLAINTEXT = AES.decrypt(DATA_ENCRYPTED, IV, KEY_ENC)
     ```
+
+If this is a response decryption, then we omit `KEY_EPH_PUB` and set it to `null` in step 1.
 
 ### Client-Server Implementation
 
