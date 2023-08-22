@@ -4,7 +4,7 @@
 
 PowerAuth supports a standard ECIES encryption (integrated encryption scheme that uses elliptic curve cryptography) with the P256r1 curve and standard X9.63 (SHA256) KDF function (that produces 48 bytes long key).
 
-### Basic definitions
+### Basic Definitions
 
 Assume we have the following constants and variables defined in our scheme:
 
@@ -35,7 +35,7 @@ PowerAuth protocol defines two basic usage scopes for ECIES encryption:
 - In "application scope", ECIES encryption is available for a whole PowerAuth Client lifetime. In other words, your application can use this mode anytime in its lifetime.
 - In "activation scope", ECIES encryption is available once the PowerAuth Client has a valid activation. In this mode, the encryptor is cryptographically bound to keys exchanged during the activation process.
 
-#### Application scope
+#### Application Scope
 
 ECIES in application scope has following configuration of parameters:
 
@@ -50,9 +50,11 @@ ECIES in application scope has following configuration of parameters:
   byte[] ASSOCIATED_DATA = ByteUtils.concatWithSizes(VERSION, APPLICATION_KEY);
   ```
 
-*Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.*
+<!-- begin box warning -->
+Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.
+<!-- end -->
 
-#### Activation scope
+#### Activation Scope
 
 ECIES in activation scope has following configuration of parameters:
 
@@ -67,8 +69,9 @@ ECIES in activation scope has following configuration of parameters:
   byte[] ASSOCIATED_DATA = ByteUtils.concatWithSizes(VERSION, APPLICATION_KEY, ACTIVATION_ID);
   ```
 
-*Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.*
-
+<!-- begin box warning -->
+Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.
+<!-- end -->
 
 ### ECIES Encryption
 
@@ -177,30 +180,29 @@ Since the client and server use the same encryption context, the ephemeral publi
 
 Each encryption context can only be used once, for a single request-response cycle.
 
-#### Structure of EciesPayload
+### Structure of `EciesPayload`
 
 The structure of the `EciesPayload` is following:
 
 ```java
 public class EciesPayload {
-    byte[] encryptedData;
-    byte[] mac;
-    byte[] ephemeralPublicKey;
-    byte[] nonce;
-    Long timestamp;
+    private byte[] encryptedData;
+    private byte[] mac;
+    private byte[] ephemeralPublicKey;
+    private byte[] nonce;
 }
 ```
 
-#### Encrypted request
+#### Encrypted Request
 
 The typical JSON encoded request is following:
 
 ```json
 {
-    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
-    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
-    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-    "nonce" : "v1y015uEP5RuT2g9RS6LIw==",
+    "ephemeralPublicKey" : "A97NlW0JPLJfpG0AUvaRHRGSHh+quZu+u0c+yxsK7Xji",
+    "encryptedData" : "qYLONkDWFpXefTKPbaKTA/PWdRYH5pk9uvGjUqSYbeK7Q0aOohK2MknTyviyNuSp",
+    "mac" : "DNlZdsM1wgH8v2mAROjj3vmQu4DI4ZJnuTBzQMrHsew=",
+    "nonce" : "ZQxUjy/hSRyJ3xBtqyXBeQ==",
     "timestamp" : 1691762307382
 }
 ```
@@ -209,32 +211,35 @@ HTTP header example:
 
 - Application scoped header:
   ```
-  X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ=="
+  X-PowerAuth-Encryption: PowerAuth version="3.2",
+      application_key="UNfS0VZX3JhbmRvbQ=="
   ```
-
 - Activation scoped header:
   ```
-  X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+  X-PowerAuth-Encryption: PowerAuth version="3.2",
+      application_key="UNfS0VZX3JhbmRvbQ==",
+      activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
   ```
-  Note, that the header must not be added to the request, when ECIES encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
+<!-- begin box warning -->
+Note, that the header must not be added to the request, when activation scoped encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
+<!-- end -->
 
-
-#### Encrypted response
+#### Encrypted Response
 
 The JSON response is similar, but without `ephemeralPublicKey` field:
 
 ```json
 {
-    "encryptedData" : "Q/7Pu29LRw5ymqkqVx+6IQ==",
-    "mac" : "oBPnpQ1r6YU4VtMB8sKEX4uXqdGGNzCnyLSCQrg659E=",
-    "nonce" : "6p2OQ20Ezjd+RcCAr2w34w==",
+    "encryptedData" : "6gIBzx28iqPFxtI/UjSLnR8FoFB6xFyshfMsCzOShY/5FN6rcKLtkD2r9M0ihKKW2bviC4HmLUJWXZtDUog9LA==",
+    "mac" : "/giQrgL3pX+ziYaWBgLCLUiPH/D5/f31A5lRxVA12sI=",
+    "nonce" : "kpgl9EC9+4KiKsUFlwLidw==",
     "timestamp": 1691762307385
 }
 ```
 
 The response doesn't use HTTP headers.
 
-### Pre-shared constants
+### Pre-Shared Constants
 
 PowerAuth protocol defines following `SHARED_INFO_1` (also called as `sh1` or `sharedInfo1`) constants for its own internal purposes:
 

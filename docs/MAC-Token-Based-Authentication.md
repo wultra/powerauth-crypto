@@ -25,9 +25,9 @@ In order to create a new token, the client application must call a PowerAuth Sta
 
 This endpoint must be called with a standard PowerAuth signature. It can be any type of a signature - 1FA, 2FA or 3FA. The token then implicitly carries the information about the signature it was issued with. Using the PowerAuth signature assures authenticity and integrity of the request data.
 
-The endpoint then uses the same request and response encryption principles as described in a dedicated chapter for [End-to-End Encryption](./End-To-End-Encryption.md). 
+The endpoint then uses the same request and response encryption principles as described in a dedicated chapter for [End-to-End Encryption](./End-To-End-Encryption.md).
 
-Upon receiving and successfully validating a request authenticated using PowerAuth signature, server generates a new token for given activation ID. Information about used signature type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client. 
+Upon receiving and successfully validating a request authenticated using PowerAuth signature, server generates a new token for given activation ID. Information about used signature type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client.
 
 The decrypted response data payload contains following raw response format:
 
@@ -110,4 +110,3 @@ In case the signature validation is successful and after validating that the tok
     }
 }
 ```
-
