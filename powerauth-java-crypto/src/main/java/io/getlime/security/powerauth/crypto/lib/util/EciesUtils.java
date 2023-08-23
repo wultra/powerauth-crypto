@@ -16,7 +16,13 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.EciesScope;
+import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
+import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorScope;
+import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A utility class for handling ECIES data.
@@ -54,22 +60,96 @@ public final class EciesUtils {
 
     /**
      * Derive associated data for ECIES.
-     * @param eciesScope ECIES scope.
-     * @param version Protocol version.
+     * @param scope Encryptor's scope.
+     * @param protocolVersion Protocol version.
      * @param applicationKey Application key.
      * @param activationId Activation ID.
      * @return Derived associated data.
+     * @throws EciesException In case that activation ID is required but is missing.
      */
-    public static byte[] deriveAssociatedData(EciesScope eciesScope, String version, String applicationKey, String activationId) {
-        if ("3.2".equals(version)) {
-            if (eciesScope == EciesScope.ACTIVATION_SCOPE) {
-                return ByteUtils.concatStrings(version, applicationKey, activationId);
+    public static byte[] deriveAssociatedData(EncryptorScope scope, String protocolVersion, String applicationKey, String activationId) throws EciesException {
+        if (protocolVersion == null) {
+            throw new EciesException("Protocol version is missing");
+        }
+        if ("3.2".equals(protocolVersion)) {
+            if (applicationKey == null) {
+                throw new EciesException("Application key is missing");
+            }
+            if (scope == EncryptorScope.ACTIVATION_SCOPE) {
+                if (activationId == null) {
+                    throw new EciesException("Activation ID is missing in ACTIVATION_SCOPE");
+                }
+                return ByteUtils.concatStrings(protocolVersion, applicationKey, activationId);
             } else {
-                return ByteUtils.concatStrings(version, applicationKey);
+                return ByteUtils.concatStrings(protocolVersion, applicationKey);
             }
         } else {
             return null;
         }
+    }
+
+    /**
+     * Derive base for SharedInfo2 calculation for ECIES encryption scheme.
+     * @param scope Scope of the encryptor.
+     * @param applicationSecret Application's secret.
+     * @param transportKey Transport key, required when scope is {@link EncryptorScope#ACTIVATION_SCOPE}.
+     * @return Bytes representing SharedInfo2 base.
+     * @throws EciesException In case of some required parameter is missing or if underlying cryptographic primitive fail.
+     */
+    public static byte[] deriveSharedInfo2Base(EncryptorScope scope, String applicationSecret, byte[] transportKey) throws EciesException {
+        if (applicationSecret == null) {
+            throw new EciesException("Missing applicationSecret parameter");
+        }
+        final byte[] applicationSecretBytes = applicationSecret.getBytes(StandardCharsets.UTF_8);
+        if (scope == EncryptorScope.APPLICATION_SCOPE) {
+            // Application scope
+            return Hash.sha256(applicationSecretBytes);
+        } else {
+            // Activation scope
+            if (transportKey == null || transportKey.length != 16) {
+                throw new EciesException("Invalid or missing transportKey");
+            }
+            try {
+                return new HMACHashUtilities().hash(transportKey, applicationSecretBytes);
+            } catch (Throwable t) {
+                throw new EciesException("HMAC calculation failed", t);
+            }
+        }
+    }
+
+    /**
+     * Derive final SharedInfo2 constant for ECIES encryption scheme.
+     * @param protocolVersion Protocol's version.
+     * @param sharedInfo2Base SharedInfo2 base, calculated by {@link #deriveSharedInfo2Base(EncryptorScope, String, byte[])} function.
+     * @param ephemeralPublicKey Ephemeral public key. Value is null for response encryption / decryption.
+     * @param nonce Nonce for request or response.
+     * @param timestamp Timestamp for request or response.
+     * @param associatedData Associated data.
+     * @return Bytes representing SharedInfo2 parameter for ECIES encryption.
+     * @throws EciesException In case that some required parameter is missing.
+     */
+    public static byte[] deriveSharedInfo2(String protocolVersion, byte[] sharedInfo2Base, byte[] ephemeralPublicKey, byte[] nonce, Long timestamp, byte[] associatedData) throws EciesException {
+        if (sharedInfo2Base == null) {
+            throw new EciesException("Missing sharedInfo2Base parameter");
+        }
+        if ("3.2".equals(protocolVersion)) {
+            if (nonce == null) {
+                throw new EciesException("Missing nonce parameter");
+            }
+            if (timestamp == null) {
+                throw new EciesException("Missing nonce parameter");
+            }
+            if (associatedData == null) {
+                throw new EciesException("Missing associatedData parameter");
+            }
+            return ByteUtils.concatWithSizes(
+                    sharedInfo2Base,
+                    nonce,
+                    ByteBuffer.allocate(Long.BYTES).putLong(timestamp).array(),
+                    ephemeralPublicKey,
+                    associatedData);
+        }
+        return sharedInfo2Base;
     }
 
 }

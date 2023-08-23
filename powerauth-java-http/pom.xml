@@ -33,6 +33,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.getlime.security</groupId>
+			<artifactId>powerauth-java-crypto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>

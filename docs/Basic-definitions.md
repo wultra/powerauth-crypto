@@ -273,28 +273,96 @@ Get last N bytes of given byte array.
 byte[] truncatedBytes = ByteUtils.truncate(byte[] bytes, int N);
 ```
 
-#### Get Int From Byte Array
+#### Get Numbers From Byte Array
 
-Get integer from 4 byte long byte array.
+Get integer value from big endian encoded byte array.
 
 ```java
 int integer = ByteUtils.getInt(byte[4] bytes);
 ```
 
-#### Get Long From Byte Array
-
-Get long value from 8 byte long byte array.
+Get long value from big endian encoded byte array.
 
 ```java
 long value = ByteUtils.getLong(byte[8] bytes);
 ```
 
-#### Concatenate Arrays
+#### Encode Primitive Types To Byte Array
 
-Concatenate two byte arrays - append `b` after `a`.
+Encode short value into byte array in big endian order.
 
 ```java
-byte[] result = ByteUtils.concat(byte[] a, byte[] b);
+byte[] encoded = ByteUtils.encode(short n);
+```
+
+Encode int value into byte array in big endian order.
+
+```java
+byte[] encoded = ByteUtils.encode(int n);
+```
+
+Encode long value into byte array in big endian order.
+
+```java
+byte[] encoded = ByteUtils.encode(long n);
+```
+
+Encode string into sequence of bytes with UTF-8 encoding.
+
+```java
+byte[] encoded = ByteUtils.encode(String s);
+```
+
+#### Concatenate Data
+
+Concatenate two or more byte arrays.
+
+```java
+byte[] ByteUtils.concat(byte[]... args) {
+    byte[] result = new byte[0];
+    for (byte[] component : args) {
+        if (component != null && component.length > 0) {
+          byte[] tmp = new byte[result.length + component.length];
+          ByteUtils.copy(result, 0, tmp, 0, result.length);
+          ByteUtils.copy(component, 0, tmp, result.length, component.length);
+          result = tmp;
+        }
+    }
+    return result;
+}
+```
+
+Concatenate multiple byte array elements and prepend the length of each element.
+
+```java
+byte[] ByteUtils.concatWithSizes(byte[]... args) {
+    byte[] result = new byte[0];
+    for (byte[] component : args) {
+        if (component != null) {
+            result = ByteUtils.concat(result, ByteUtils.encode(component.length), component);
+        } else {
+            result = ByteUtils.concat(result, ByteUtils.encode((int)0));
+        }
+    }
+    return result;
+}
+```
+
+Concatenate multiple string elements and prepend the length of each element.
+
+```java
+byte[] ByteUtils.concatWithSizes(String... args) {
+    byte[] result = new byte[0];
+    for (String component : args) {
+        if (component != null) {
+            byte[] componentBytes = ByteUtils.encode(component);
+            result = ByteUtils.concat(result, ByteUtils.encode(componentBytes.length), componentBytes);
+        } else {
+            result = ByteUtils.concat(result, ByteUtils.encode((int)0));
+        }
+    }
+    return result;
+}
 ```
 
 #### Convert 32b Array to 16b
@@ -319,4 +387,12 @@ Copies `length` of bytes from the specified source array of bytes, beginning at 
 
 ```java
 ByteUtils.copy(byte[] source, int sourcePosition, byte[] destination, int destinationPosition, int length);
+```
+
+#### Current Time
+
+Get UNIX timestamp in milliseconds, since 1.1.1970.
+
+```java
+long timestamp = Time.getTimestamp();
 ```

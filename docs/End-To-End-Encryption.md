@@ -2,24 +2,104 @@
 
 ## Standard ECIES Based End-to-End Encryption
 
-PowerAuth supports a standard ECIES encryption (integrated encryption scheme that uses elliptic curve cryptography) with the P256r1 curve and standard X9.63 (SHA256) KDF function (that produces 32B long keys).
+PowerAuth supports a standard ECIES encryption (integrated encryption scheme that uses elliptic curve cryptography) with the P256r1 curve and standard X9.63 (SHA256) KDF function (that produces 48 bytes long key).
+
+### Basic Definitions
+
+Assume we have the following constants and variables defined in our scheme:
+
+**Constants**
+
+- `KEY_ENC_PUB` - Elliptic curve public key for ECDH key agreement.
+- `KEY_ENC_PRIV` - Elliptic curve private key for ECDH key agreement.
+- `VERSION` - String with the current version of the protocol.
+- `SHARED_INFO_1` - is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
+- `SHARED_INFO_2_BASE` - is a value calculated from parameters known for both parties.
+
+**Variables**
+
+- `PLAINTEXT` - Data to be encrypted.
+- `ASSOCIATED_DATA` - Data transmitted as plaintext and included in MAC calculation.
+- `TIMESTAMP` - Unix timestamp with milliseconds precision.
+- `NONCE` - Unique nonce generated for each encryption.
+- `EPH_KEYPAIR` - Ephemeral elliptic curve key-pair for ECDH key agreement.
+- `KEY_EPH_PRIV` - Private part of `EPH_KEYPAIR`.
+- `KEY_EPH_PUB` - Public part of `EPH_KEYPAIR`.
+- `SHARED_INFO_2` - Input parameter to MAC calculation.
+
+
+### Encryption Scope
+
+PowerAuth protocol defines two basic usage scopes for ECIES encryption:
+
+- In "application scope", ECIES encryption is available for a whole PowerAuth Client lifetime. In other words, your application can use this mode anytime in its lifetime.
+- In "activation scope", ECIES encryption is available once the PowerAuth Client has a valid activation. In this mode, the encryptor is cryptographically bound to keys exchanged during the activation process.
+
+#### Application Scope
+
+ECIES in application scope has following configuration of parameters:
+
+- `KEY_ENC_PUB` is `KEY_SERVER_MASTER_PUBLIC`
+- `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
+- `SHARED_INFO_2_BASE` is calculated from `APPLICATION_SECRET`:
+  ```java
+  byte[] SHARED_INFO_2_BASE = Hash.sha256(APPLICATION_SECRET);
+  ```
+- `ASSOCIATED_DATA` is calculated as:
+  ```java
+  byte[] ASSOCIATED_DATA = ByteUtils.concatWithSizes(VERSION, APPLICATION_KEY);
+  ```
+
+<!-- begin box warning -->
+Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.
+<!-- end -->
+
+#### Activation Scope
+
+ECIES in activation scope has following configuration of parameters:
+
+- `KEY_ENC_PUB` is `KEY_SERVER_PUBLIC` (e.g. key which is unique for each activation)
+- `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
+- `SHARED_INFO_2_BASE` is calculated from `APPLICATION_SECRET` and `KEY_TRANSPORT`:
+  ```java
+  byte[] SHARED_INFO_2_BASE = Mac.hmacSha256(KEY_TRANSPORT, APPLICATION_SECRET);
+  ```
+- `ASSOCIATED_DATA` is calculated as:
+  ```java
+  byte[] ASSOCIATED_DATA = ByteUtils.concatWithSizes(VERSION, APPLICATION_KEY, ACTIVATION_ID);
+  ```
+
+<!-- begin box warning -->
+Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.
+<!-- end -->
 
 ### ECIES Encryption
 
-Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and a `SHARED_INFO_1` and `SHARED_INFO_2` constants (`byte[]`) as encryption parameters. ECIES encryption works in a following way:
+Assume we have a public key `KEY_ENC_PUB`, data `PLAINTEXT` to be encrypted, `ASSOCIATED_DATA` to be included in mac calculation and a `SHARED_INFO_1` and `SHARED_INFO_2_BASE` constants (`byte[]`) as encryption parameters. ECIES encryption works in a following way:
 
 1. Generate an ephemeral key pair:
     ```java
-    EPH_KEYPAIR = (KEY_EPH_PRIV, KEY_EPH_PUB).
+    EPH_KEYPAIR = (KEY_EPH_PRIV, KEY_EPH_PUB);
     ```
+1. Generate `NONCE` and `TIMESTAMP`:
+   ```java
+   byte[] NONCE = Generator.randomBytes(16);
+   long TIMESTAMP = Time.getTimestamp();
+   ```
+1. Prepare `SHARED_INFO_2` parameter for MAC calculation:
+   ```java
+   byte[] TIMESTAMP_BYTES = ByteUtils.encode(TIMESTAMP);
+   byte[] SHARED_INFO_2 = ByteUtils.concatWithSizes(SHARED_INFO_2_BASE, NONCE, TIMESTAMP_BYTES, KEY_EPH_PUB, ASSOCIATED_DATA);
+   ```
 1. Derive base secret key (in this step, we do not trim the key to 16b only, we keep all 32b).
     ```java
-    SecretKey KEY_BASE = ECDH.phase(KEY_EPH_PRIV, KEY_ENC_PUB)
+    SecretKey KEY_BASE = ECDH.phase(KEY_EPH_PRIV, KEY_ENC_PUB);
     ```
-1. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `SHARED_INFO_1` together with `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
+1. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `VERSION`, `SHARED_INFO_1` together with `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
     ```java
-    byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
-    SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO, 48)
+    byte[] VERSION_BYTES = ByteUtils.encode(VERSION);
+    byte[] INFO = Bytes.concat(VERSION_BYTES, SHARED_INFO_1, KEY_EPH_PUB);
+    SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO, 48);
     ```
 1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final part is a key for IV derivation `KEY_IV`.
     ```java
@@ -28,14 +108,10 @@ Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and 
     SecretKey KEY_MAC = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET, 16, 16));
     SecretKey KEY_IV = KeyConversion.secretKeyFromBytes(ByteUtils.subarray(KEY_SECRET, 32, 16));
     ```
-1. Generate random `NONCE` and derive `IV` for encryption.
+1. Derive `IV` from `NONCE` and encrypt ata using AES.
     ```java
-    byte[] NONCE = Generator.randomBytes(16);
     byte[] IV = KDF_INTERNAL.derive(KEY_IV, NONCE);
-    ```
-1. Compute the encrypted data using AES, with `iv` value.
-    ```java
-    byte[] DATA_ENCRYPTED = AES.encrypt(DATA_ORIG, IV, KEY_ENC)
+    byte[] DATA_ENCRYPTED = AES.encrypt(PLAINTEXT, IV, KEY_ENC)
     ```
 1. Compute the MAC of encrypted data, include `SHARED_INFO_2`.
     ```java
@@ -44,20 +120,32 @@ Assume we have a public key `KEY_ENC_PUB`, data `DATA_ORIG` to be encrypted and 
     ```
 1. Prepare ECIES payload.
     ```java
-    EciesPayload payload = (DATA_ENCRYPTED, MAC, KEY_EPH_PUB, NONCE)
+    EciesPayload payload = (DATA_ENCRYPTED, MAC, KEY_EPH_PUB, NONCE, TIMESTAMP)
     ```
+
+If this is a response encryption, then we omit `KEY_EPH_PUB` and set it to `null` in steps 3. and 9. to make the response shorter. For example, `SHARED_INFO_2` is then calculated as:
+
+```java
+byte[] SHARED_INFO_2 = ByteUtils.concatWithSizes(SHARED_INFO_2_BASE, NONCE, TIMESTAMP_BYTES, null, ASSOCIATED_DATA);
+```
 
 ### ECIES Decryption
 
-Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of the ECIES payload `(DATA_ENCRYPTED, MAC, KEY_EPH_PUB, NONCE)` and a `SHARED_INFO_1` and `SHARED_INFO_2` constants (`byte[]`) as decryption parameters. ECIES decryption works in a following way:
+Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of the ECIES payload `(DATA_ENCRYPTED, MAC, KEY_EPH_PUB, NONCE, TIMESTAMP)`, `ASSOCIATED_DATA` to be included in MAC calculation, and a `SHARED_INFO_1` and `SHARED_INFO_2_BASE` constants (`byte[]`) as decryption parameters. ECIES decryption works in a following way:
 
+1. Prepare `SHARED_INFO_2` parameter for MAC calculation:
+   ```java
+   byte[] TIMESTAMP_BYTES = ByteUtils.encode(TIMESTAMP);
+   byte[] SHARED_INFO_2 = ByteUtils.concatWithSizes(SHARED_INFO_2_BASE, NONCE, TIMESTAMP_BYTES, KEY_EPH_PUB, ASSOCIATED_DATA);
+   ```
 1. Derive base secret key from the private key and ephemeral public key from the ECIES payload (in this step, we do not trim the key to 16b only, we keep all 32b).
     ```java
     SecretKey KEY_BASE = ECDH.phase(KEY_ENC_PRIV, KEY_EPH_PUB)
     ```
-1. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
+1. Derive a secret key using X9.63 KDF function (using SHA256 internally). When calling the KDF, we use `VERSION`, `SHARED_INFO_1` together with `KEY_EPH_PUB` value (as raw `byte[]`) as an `info` parameter.
     ```java
-    byte[] INFO = Bytes.concat(SHARED_INFO_1, KEY_EPH_PUB);
+    byte[] VERSION_BYTES = ByteUtils.encode(VERSION);
+    byte[] INFO = Bytes.concat(VERSION_BYTES, SHARED_INFO_1, KEY_EPH_PUB);
     SecretKey KEY_SECRET = KDF_X9_63_SHA256.derive(KEY_BASE, INFO, 48)
     ```
 1. Split the 48 bytes long `KEY_SECRET` to three 16B keys. The first part is used as an encryption key `KEY_ENC`. The second part is used as MAC key `KEY_MAC`. The final part is a key for IV derivation `KEY_IV`.
@@ -78,8 +166,10 @@ Assume we have a private key `KEY_ENC_PRIV`, encrypted data as an instance of th
 1. Decrypt the data using AES, with `IV` value derived from `NONCE`.
     ```java
     byte[] IV = KDF_INTERNAL.derive(KEY_IV, NONCE);
-    byte[] DATA_ORIG = AES.decrypt(DATA_ENCRYPTED, IV, KEY_ENC)
+    byte[] PLAINTEXT = AES.decrypt(DATA_ENCRYPTED, IV, KEY_ENC)
     ```
+
+If this is a response decryption, then we omit `KEY_EPH_PUB` and set it to `null` in step 1.
 
 ### Client-Server Implementation
 
@@ -106,79 +196,51 @@ public class EciesPayload {
 }
 ```
 
+#### Encrypted Request
+
 The typical JSON encoded request is following:
 
 ```json
 {
-    "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
-    "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
-    "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-    "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
+    "ephemeralPublicKey" : "A97NlW0JPLJfpG0AUvaRHRGSHh+quZu+u0c+yxsK7Xji",
+    "encryptedData" : "qYLONkDWFpXefTKPbaKTA/PWdRYH5pk9uvGjUqSYbeK7Q0aOohK2MknTyviyNuSp",
+    "mac" : "DNlZdsM1wgH8v2mAROjj3vmQu4DI4ZJnuTBzQMrHsew=",
+    "nonce" : "ZQxUjy/hSRyJ3xBtqyXBeQ==",
+    "timestamp" : 1691762307382
 }
 ```
 
-The JSON response is similar, but without `ephemeralPublicKey` and `nonce` fields:
+HTTP header example:
+
+- Application scoped header:
+  ```
+  X-PowerAuth-Encryption: PowerAuth version="3.2",
+      application_key="UNfS0VZX3JhbmRvbQ=="
+  ```
+- Activation scoped header:
+  ```
+  X-PowerAuth-Encryption: PowerAuth version="3.2",
+      application_key="UNfS0VZX3JhbmRvbQ==",
+      activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+  ```
+<!-- begin box warning -->
+Note, that the header must not be added to the request, when activation scoped encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
+<!-- end -->
+
+#### Encrypted Response
+
+The JSON response is similar, but without `ephemeralPublicKey` field:
 
 ```json
 {
-    "encryptedData" : "Q/7Pu29LRw5ymqkqVx+6IQ==",
-    "mac" : "oBPnpQ1r6YU4VtMB8sKEX4uXqdGGNzCnyLSCQrg659E="
+    "encryptedData" : "6gIBzx28iqPFxtI/UjSLnR8FoFB6xFyshfMsCzOShY/5FN6rcKLtkD2r9M0ihKKW2bviC4HmLUJWXZtDUog9LA==",
+    "mac" : "/giQrgL3pX+ziYaWBgLCLUiPH/D5/f31A5lRxVA12sI=",
+    "nonce" : "kpgl9EC9+4KiKsUFlwLidw==",
+    "timestamp": 1691762307385
 }
 ```
 
-## ECIES Scopes
-
-PowerAuth protocol defines two basic usage scopes for ECIES encryption:
-
-- In "application scope", ECIES encryption is available for a whole PowerAuth Client lifetime. In other words, your application can use this mode anytime in its lifetime.
-- In "activation scope", ECIES encryption is available once the PowerAuth Client has a valid activation. In this mode, the encryptor is cryptographically bound to keys exchanged during the activation process.
-
-### Application Scope
-
-ECIES in application scope has the following configuration of parameters:
-
-- `KEY_ENC_PUB` is `KEY_SERVER_MASTER_PUBLIC`
-- `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
-- `SHARED_INFO_2` is calculated from `APPLICATION_SECRET`:
-  ```java
-  byte[] SHARED_INFO_2 = Hash.sha256(APPLICATION_SECRET);
-  ```
-
-<!-- begin box warning -->
-Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.
-<!-- end -->
-
-HTTP header example:
-
-```
-X-PowerAuth-Encryption: PowerAuth version="3.1",
-    application_key="UNfS0VZX3JhbmRvbQ=="
-```
-
-### Activation Scope
-
-ECIES in activation scope has the following configuration of parameters:
-
-- `KEY_ENC_PUB` is `KEY_SERVER_PUBLIC` (e.g. key which is unique for each activation)
-- `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
-- `SHARED_INFO_2` is calculated from `APPLICATION_SECRET` and `KEY_TRANSPORT`:
-  ```java
-  byte[] SHARED_INFO_2 = Mac.hmacSha256(KEY_TRANSPORT, APPLICATION_SECRET);
-  ```
-
-<!-- begin box warning -->
-Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to reinterpret that string as a sequence of ASCII encoded bytes.
-<!-- end -->
-
-HTTP header example:
-
-```
-X-PowerAuth-Encryption: PowerAuth version="3.1",
-    application_key="UNfS0VZX3JhbmRvbQ==",
-    activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
-```
-
-Note, that the header must not be added to the request, when ECIES encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
+The response doesn't use HTTP headers.
 
 ### Pre-Shared Constants
 

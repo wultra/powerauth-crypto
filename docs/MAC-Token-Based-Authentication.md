@@ -76,7 +76,7 @@ X-PowerAuth-Token: PowerAuth token_id="${TOKEN_ID}"
     token_digest="${TOKEN_DIGEST}"
     nonce="${NONCE}"
     timestamp="${TIMESTAMP}"
-    version="3.1"
+    version="3.2"
 ```
 
 Transport representation of the HTTP header properties is following:

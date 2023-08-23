@@ -1,6 +1,6 @@
 /*
  * PowerAuth Crypto Library
- * Copyright 2018 Wultra s.r.o.
+ * Copyright 2023 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception;
 
-import io.getlime.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
+package io.getlime.security.powerauth.crypto.lib.encryptor.exception;
 
 /**
- * Exception used for handling incorrect ECIES encryption / decryption states.
- *
- * @author Petr Dvorak, petr@wultra.com
+ * Exception used for handling incorrect general encryption / decryption states.
  */
-public class EciesException extends EncryptorException {
-
+public class EncryptorException extends Exception {
     /**
      * Default constructor.
      */
-    public EciesException() {
+    public EncryptorException() {
     }
 
     /**
      * Constructor with message.
      * @param message Message.
      */
-    public EciesException(String message) {
+    public EncryptorException(String message) {
         super(message);
     }
 
@@ -44,7 +40,7 @@ public class EciesException extends EncryptorException {
      * @param message Message.
      * @param cause Cause.
      */
-    public EciesException(String message, Throwable cause) {
+    public EncryptorException(String message, Throwable cause) {
         super(message, cause);
     }
 }
