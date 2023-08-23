@@ -24,7 +24,6 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.model.*;
  * The {@code ClientEncryptor} interface provides End-To-End Encryption for PowerAuth Clients.
  */
 public interface ServerEncryptor {
-
     /**
      * Get this encryptor's identifier.
      * @return This encryptor's identifier.

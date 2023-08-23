@@ -84,7 +84,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
     }
 
     @Override
-    public EncryptorParameters getParameters() {
+    public EncryptorParameters getEncryptorParameters() {
         return encryptorParameters;
     }
 
@@ -141,11 +141,10 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         );
         // Once we have SharedInfo2 prepared, we can construct an encryptor.
         final EciesEncryptor eciesEncryptor = new EciesEncryptor(envelopeKey, sharedInfo2);
+        // Prepare EciesParameters
+        final EciesParameters eciesParameters = new EciesParameters(requestNonce, associatedData, requestTimestamp);
         // If everything is OK, then encrypt the data.
-        final EciesPayload eciesPayload = eciesEncryptor.encrypt(
-                data,
-                new EciesParameters(requestNonce, associatedData, requestTimestamp)
-        );
+        final EciesPayload eciesPayload = eciesEncryptor.encrypt(data,eciesParameters);
         // Keep envelope key and nonce used for the request if protocol require use the same nonce also for the response.
         this.envelopeKey = envelopeKey;
         this.requestNonce = validator.isUseTimestamp() ? null : requestNonce;
@@ -191,11 +190,12 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         );
         // Build decryptor object.
         final EciesDecryptor decryptor = new EciesDecryptor(envelopeKey, sharedInfo2);
-        // Prepare EciesPayload and try to decrypt data.
-        final byte[] plaintext = decryptor.decrypt(new EciesPayload(
-                new EciesCryptogram(envelopeKey.getEphemeralKeyPublic(), mac, encryptedData),
-                new EciesParameters(responseNonce, associatedData, responseTimestamp)
-        ));
+        // Prepare EciesPayload
+        final EciesCryptogram eciesCryptogram = new EciesCryptogram(envelopeKey.getEphemeralKeyPublic(), mac, encryptedData);
+        final EciesParameters eciesParameters = new EciesParameters(responseNonce, associatedData, responseTimestamp);
+        final EciesPayload eciesPayload = new EciesPayload(eciesCryptogram, eciesParameters);
+        // Try to decrypt data.
+        final byte[] plaintext = decryptor.decrypt(eciesPayload);
         // If everything's OK, then reset the state to do not allow decrypt with the same keys again.
         this.envelopeKey = null;
         this.requestNonce = null;

@@ -184,11 +184,12 @@ public class ServerEciesEncryptor implements ServerEncryptor {
         );
         // Once we have SharedInfo2 prepared, we can construct a decryptor.
         final EciesDecryptor eciesDecryptor = new EciesDecryptor(envelopeKey, sharedInfo2);
-        // Prepare EciesPayload and try to decrypt data.
-        final byte[] plaintext = eciesDecryptor.decrypt(new EciesPayload(
-                new EciesCryptogram(ephemeralPublicKey, mac, encryptedData),
-                new EciesParameters(requestNonce, associatedData, requestTimestamp)
-        ));
+        // Prepare EciesPayload
+        final EciesCryptogram eciesCryptogram = new EciesCryptogram(ephemeralPublicKey, mac, encryptedData);
+        final EciesParameters eciesParameters = new EciesParameters(requestNonce, associatedData, requestTimestamp);
+        final EciesPayload eciesPayload = new EciesPayload(eciesCryptogram, eciesParameters);
+        // Try to decrypt data.
+        final byte[] plaintext = eciesDecryptor.decrypt(eciesPayload);
         // Keep envelope key and nonce used for the request if protocol require use the same nonce also for the response.
         this.envelopeKey = envelopeKey;
         this.requestNonce = validator.isUseTimestamp() ? null : requestNonce;
@@ -220,12 +221,11 @@ public class ServerEciesEncryptor implements ServerEncryptor {
         );
         // Once we have SharedInfo2 prepared, we can construct an encryptor.
         final EciesEncryptor eciesEncryptor = new EciesEncryptor(envelopeKey, sharedInfo2);
+        // Prepare EciesParameters
+        final EciesParameters eciesParameters = new EciesParameters(responseNonce, associatedData, responseTimestamp);
         // If everything is OK, then encrypt data.
-        final EciesPayload eciesPayload = eciesEncryptor.encrypt(
-                data,
-                new EciesParameters(responseNonce, associatedData, responseTimestamp)
-        );
-        // If everything's OK, then reset the state to do not allow encrypt with the same keys again.
+        final EciesPayload eciesPayload = eciesEncryptor.encrypt(data, eciesParameters);
+        // If everything's OK, then reset the state to do not allow to encrypt with the same keys again.
         this.envelopeKey = null;
         this.requestNonce = null;
 
