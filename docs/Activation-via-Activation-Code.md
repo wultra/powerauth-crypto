@@ -43,7 +43,7 @@ This diagram shows how the Activation Code Delivery Application requests the act
    KeyPair keyPair = KeyGenerator.randomKeyPair()
    PrivateKey KEY_SERVER_PRIVATE = keyPair.getPrivate()
    PublicKey KEY_SERVER_PUBLIC = keyPair.getPublic()
-   byte[] DATA = ACTIVATION_CODE.getBytes("UTF-8")
+   byte[] DATA = ByteUtils.encode(ACTIVATION_CODE)
    byte[] ACTIVATION_SIGNATURE = ECDSA.sign(DATA, KEY_SERVER_MASTER_PRIVATE)
    ```
 
@@ -67,7 +67,7 @@ The Activation Code Delivery Application plays no active role in the process of 
 
 1. PowerAuth Mobile SDK verifies the `ACTIVATION_SIGNATURE` against `ACTIVATION_CODE` using `KEY_SERVER_MASTER_PUBLIC` and if the signature matches, it proceeds.
    ```java
-   byte[] DATA = ACTIVATION_CODE.getBytes("UTF-8")
+   byte[] DATA = ByteUtils.encode(ACTIVATION_CODE)
    boolean isOK = ECDSA.verify(DATA, ACTIVATION_SIGNATURE, KEY_SERVER_MASTER_PUBLIC)
    ```
 
@@ -121,9 +121,9 @@ Finally, the last diagram shows how the Activation Code Delivery Application pro
 
 1. PowerAuth Mobile SDK displays `H_K_DEVICE_PUBLIC`, so that a user can visually verify the device public key correctness by comparing the `H_K_DEVICE_PUBLIC` value displayed in the Master Front-End Application.
    ```java
-   byte[] activationIdBytes = ACTIVATION_ID.getBytes("UTF-8")
-   byte[] fingerprintBytes = ByteUtils.concat(K_DEVICE_PUBLIC_BYTES, ByteUtils.concat(activationIdBytes, K_SERVER_PUBLIC_BYTES))
-   byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(KeyConversion.getBytes(fingerprintBytes), 4)
+   byte[] activationIdBytes = ByteUtils.encode(ACTIVATION_ID)
+   byte[] fingerprintBytes = ByteUtils.concat(K_DEVICE_PUBLIC_BYTES, activationIdBytes, K_SERVER_PUBLIC_BYTES)
+   byte[] truncatedBytes = ByteUtils.truncate(Hash.sha256(fingerprintBytes), 4)
    int H_K_DEVICE_PUBLIC = ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (10 ^ 8)
    ```
    <!-- begin box info -->
