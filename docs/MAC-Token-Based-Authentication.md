@@ -52,15 +52,15 @@ The `token_digest` value is computed using a following algorithm:
 // '$timestamp' is a unix timestamp in milliseconds (to achieve required time
 //             precision) converted to string and then to byte[] using UTF-8
 //             encoding
-long unix_timestamp = getCurrentUnixTimestamp();
-byte[] timestamp = String.valueOf(unix_timestamp).getBytes("UTF-8");
+long timestamp = Time.getTimestamp();
+byte[] timestamp_bytes = ByteUtils.encode(String.valueOf(timestamp));
 
 // '$nonce' value is 16B of random data
 byte[] nonce = Generator.randomBytes(16);
 
 // '$nonce' is concatenated to '$timestamp' using '&' character:
 //    $nonce + '&' + $timestamp
-byte[] data = ByteUtils.concat(ByteUtils.concat(nonce, '&'), timestamp);
+byte[] data = ByteUtils.concat(nonce, ByteUtils.encode("&"), timestamp_bytes);
 
 // 'token_secret' is 16B of random data
 SecretKey key = KeyConversion.secretKeyFromBytes(token_secret);
