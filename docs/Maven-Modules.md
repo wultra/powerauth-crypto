@@ -11,7 +11,7 @@ PowerAuth source code includes following Maven modules:
 
 PowerAuth backend services are composed of following applications:
 
-- `powerauth-java-server` - A server application implementing a PowerAuth Server. It is responsible for publishing PowerAuth Server SOAP methods and RESTful API, and also for persistence of the data in a database.
+- `powerauth-java-server` - A server application implementing a PowerAuth Server. It is responsible for publishing PowerAuth Server RESTful API, and also for persistence of the data in a database.
 - `enrollment-server` - A server application publishing the PowerAuth Standard RESTful API and allowing customization of the activation process.
 - `powerauth-admin` - A server application providing web user interface for managing PowerAuth applications and activations.
 - `powerauth-push-server` - A server application used for delivering push messages to iOS and Android devices.
