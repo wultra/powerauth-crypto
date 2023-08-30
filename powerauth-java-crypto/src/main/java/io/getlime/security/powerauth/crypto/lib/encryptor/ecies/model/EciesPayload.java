@@ -32,7 +32,7 @@ public class EciesPayload {
     EciesParameters parameters;
 
     /**
-     * Constructor for V3.1 protocol version ECIES structure.
+     * Constructor for V3.0 and V3.1 protocol versions of ECIES structure.
      * @param ephemeralPublicKey Ephemeral public key.
      * @param mac Message authentication code.
      * @param encryptedData Encrypted data.
@@ -44,7 +44,7 @@ public class EciesPayload {
     }
 
     /**
-     * Constructor for V3.2 protocol version ECIES structure.
+     * Constructor for V3.2 protocol version of ECIES structure.
      * @param ephemeralPublicKey Ephemeral public key.
      * @param mac Message authentication code.
      * @param encryptedData Encrypted data.
