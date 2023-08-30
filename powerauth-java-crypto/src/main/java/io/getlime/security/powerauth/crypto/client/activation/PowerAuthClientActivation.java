@@ -112,6 +112,8 @@ public class PowerAuthClientActivation {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @param devicePublicKey Device public key.

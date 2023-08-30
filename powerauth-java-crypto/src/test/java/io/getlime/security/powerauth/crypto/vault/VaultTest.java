@@ -60,6 +60,8 @@ public class VaultTest {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws Exception In case the test fails.

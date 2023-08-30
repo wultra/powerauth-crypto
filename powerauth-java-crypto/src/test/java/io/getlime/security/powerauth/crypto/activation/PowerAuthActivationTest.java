@@ -67,7 +67,9 @@ public class PowerAuthActivationTest {
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
-     * <li>3.0</li>
+     *    <li>3.0</li>
+     *    <li>3.1</li>
+     *    <li>3.2</li>
      * </ul>
      *
      * @throws Exception In case test fails
@@ -125,7 +127,9 @@ public class PowerAuthActivationTest {
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
-     * <li>3.0</li>
+     *    <li>3.0</li>
+     *    <li>3.1</li>
+     *    <li>3.2</li>
      * </ul>
      *
      * @throws Exception When test fails.
