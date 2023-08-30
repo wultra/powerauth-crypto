@@ -202,12 +202,13 @@ public class PowerAuthSignatureTest {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws java.lang.Exception If the test fails.
      */
     @Test
-    public void testSignatureForDataV31() throws Exception {
+    public void testSignatureForDataV31Plus() throws Exception {
         System.out.println("# PowerAuth Signature");
         System.out.println();
 
@@ -336,12 +337,13 @@ public class PowerAuthSignatureTest {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws java.lang.Exception If the test fails.
      */
     @Test
-    public void testOfflineSignatureForDataV31() throws Exception {
+    public void testOfflineSignatureForDataV31Plus() throws Exception {
         System.out.println("# PowerAuth Offline Signature");
         System.out.println();
 

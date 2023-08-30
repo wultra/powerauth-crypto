@@ -36,7 +36,7 @@ public enum PowerAuthSignatureFormat {
      * <p>
      * This type of formatting is currently used in the following scenarios:
      * <ul>
-     *     <li>For legacy {@code 2.0}, {@code 2.1} and {@code 3.0} versions of online signatures.</li>
+     *     <li>For legacy {@code 3.0} version of online signatures.</li>
      *     <li>For all versions of offline signatures.</li>
      * </ul>
      */

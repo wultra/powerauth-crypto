@@ -125,9 +125,9 @@ public class GenerateVectorDataTest {
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
      *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
@@ -163,9 +163,9 @@ public class GenerateVectorDataTest {
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
      *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
@@ -323,12 +323,13 @@ public class GenerateVectorDataTest {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
      */
     @Test
-    public void testSignatureValidationV31() throws Exception {
+    public void testSignatureValidationV31Plus() throws Exception {
 
         TestSet testSet = new TestSet("signatures-v31.json", "Client must be able to compute PowerAuth signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
 
@@ -528,6 +529,8 @@ public class GenerateVectorDataTest {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
@@ -575,6 +578,7 @@ public class GenerateVectorDataTest {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
@@ -609,6 +613,7 @@ public class GenerateVectorDataTest {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
