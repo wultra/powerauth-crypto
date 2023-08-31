@@ -159,7 +159,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
                 base64Encoder.encodeToString(eciesCryptogram.getEphemeralPublicKey()),
                 base64Encoder.encodeToString(eciesCryptogram.getEncryptedData()),
                 base64Encoder.encodeToString(eciesCryptogram.getMac()),
-                validator.isUseNonceForRequest() ? base64Encoder.encodeToString(requestNonce) : null,
+                validator.isUseNonceForRequest() && requestNonce != null ? base64Encoder.encodeToString(requestNonce) : null,
                 requestTimestamp
         );
     }
