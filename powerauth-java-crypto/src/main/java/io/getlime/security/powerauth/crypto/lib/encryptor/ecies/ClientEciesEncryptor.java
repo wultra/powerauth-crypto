@@ -149,11 +149,17 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         this.envelopeKey = envelopeKey;
         this.requestNonce = validator.isUseTimestamp() ? null : requestNonce;
 
+        final Base64.Encoder base64Encoder = Base64.getEncoder();
+        final EciesCryptogram eciesCryptogram = eciesPayload.getCryptogram();
+        if (eciesCryptogram == null) {
+            throw new EncryptorException("The cryptogram value is null.");
+        }
+
         return new EncryptedRequest(
-                Base64.getEncoder().encodeToString(eciesPayload.getCryptogram().getEphemeralPublicKey()),
-                Base64.getEncoder().encodeToString(eciesPayload.getCryptogram().getEncryptedData()),
-                Base64.getEncoder().encodeToString(eciesPayload.getCryptogram().getMac()),
-                validator.isUseNonceForRequest() ? Base64.getEncoder().encodeToString(requestNonce) : null,
+                base64Encoder.encodeToString(eciesCryptogram.getEphemeralPublicKey()),
+                base64Encoder.encodeToString(eciesCryptogram.getEncryptedData()),
+                base64Encoder.encodeToString(eciesCryptogram.getMac()),
+                validator.isUseNonceForRequest() ? base64Encoder.encodeToString(requestNonce) : null,
                 requestTimestamp
         );
     }
@@ -174,9 +180,10 @@ public class ClientEciesEncryptor implements ClientEncryptor {
             throw new EncryptorException("Invalid encrypted response object");
         }
 
-        final byte[] mac = Base64.getDecoder().decode(response.getMac());
-        final byte[] encryptedData = Base64.getDecoder().decode(response.getEncryptedData());
-        final byte[] responseNonce = validator.isUseTimestamp() ? Base64.getDecoder().decode(response.getNonce()) : requestNonce;
+        final Base64.Decoder base64Decoder = Base64.getDecoder();
+        final byte[] mac = base64Decoder.decode(response.getMac());
+        final byte[] encryptedData = base64Decoder.decode(response.getEncryptedData());
+        final byte[] responseNonce = validator.isUseTimestamp() ? base64Decoder.decode(response.getNonce()) : requestNonce;
         final Long responseTimestamp = validator.isUseTimestamp() ? response.getTimestamp() : null;
 
         // Build sharedInfo2 with parameters received from the request.
