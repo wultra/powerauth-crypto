@@ -16,9 +16,11 @@
  */
 package io.getlime.security.powerauth.http.validator;
 
-import com.google.common.io.BaseEncoding;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +30,8 @@ import java.util.Set;
  * @author Petr Dvorak, petr@wultra.com
  */
 public class ValueTypeValidator {
+
+    private static final Logger logger = LoggerFactory.getLogger(ValueTypeValidator.class);
 
     /**
      * Regexp for validating UUID values.
@@ -47,9 +51,7 @@ public class ValueTypeValidator {
     /**
      * Admissible protocol versions in the header.
      */
-    private static final Set<String> PROTOCOL_VERSIONS = new HashSet<>(Arrays.asList(
-            "3.1", "3.0", "2.1", "2.0"
-    ));
+    private static final Set<String> PROTOCOL_VERSIONS = Set.of("3.2", "3.1", "3.0");
 
     /**
      * Admissible signature types in the header.
@@ -80,13 +82,16 @@ public class ValueTypeValidator {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidBase64OfLength(String base64candidate, int expectedLength) {
-        final BaseEncoding base64 = BaseEncoding.base64();
-        if (base64candidate != null && base64.canDecode(base64candidate)) {
-            byte[] bytes = base64.decode(base64candidate);
-            return bytes.length == expectedLength;
-        } else {
-            return false;
+        if (base64candidate != null) {
+            try {
+                byte[] bytes = Base64.getDecoder().decode(base64candidate);
+                return bytes.length == expectedLength;
+            } catch (IllegalArgumentException e) {
+                logger.trace("Given string '{}' is not in base64 format.", base64candidate, e);
+            }
         }
+
+        return false;
     }
 
     /**
@@ -99,13 +104,16 @@ public class ValueTypeValidator {
      * false otherwise.
      */
     public static boolean isValidBase64OfLengthRange(String base64candidate, int from, int to) {
-        final BaseEncoding base64 = BaseEncoding.base64();
-        if (base64candidate != null && base64.canDecode(base64candidate)) {
-            byte[] bytes = base64.decode(base64candidate);
-            return bytes.length >= from && bytes.length <= to;
-        } else {
-            return false;
+        if (base64candidate != null) {
+            try {
+                byte[] bytes = Base64.getDecoder().decode(base64candidate);
+                return bytes.length >= from && bytes.length <= to;
+            } catch (IllegalArgumentException e) {
+                logger.trace("Given string '{}' is not in base64 format.", base64candidate, e);
+            }
         }
+
+        return false;
     }
 
     /**
@@ -125,21 +133,20 @@ public class ValueTypeValidator {
     public static boolean isValidSignatureValue(String signature) {
         if (signature != null) {
             switch (signature.length()) {
-                case 8:
-                case 17:
-                case 26:
-                    // "2.0", "2.1", "3.0" signature version uses "DECIMAL" format
+                case 8, 17, 26 -> {
+                    // "3.0" signature version uses "DECIMAL" format
                     return signature.matches(SIGNATURE_REGEX);
-                case 24:
-                case 44:
-                case 64:
+                }
+                case 24, 44, 64 -> {
                     // "3.1" and later signatures uses "BASE64" format.
                     // We don't need to validate an exact number of encoded bytes. This is due to fact,
                     // that if input string length can only be 24, 44 or 64, then the encoded output length
                     // must be 16, 32 or 48.
                     return isValidBase64OfLengthRange(signature, 16, 48);
-                default:
-                    break;
+                }
+                default -> {
+                    return false;
+                }
             }
         }
         return false;

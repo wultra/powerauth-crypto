@@ -104,6 +104,45 @@ public class KeyConvertor {
     }
 
     /**
+     * Converts provided byte array representing X coordinate of an EC public key.
+     *
+     * @param xBytes X coordinate.
+     * @param yBytes Y coordinate.
+     * @return Public key with provided coordinates.
+     * @throws InvalidKeySpecException When provided bytes are not a correct key representation.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     * @throws GenericCryptoException  When public key is invalid.
+     */
+    public PublicKey convertPointBytesToPublicKey(byte[] xBytes, byte[] yBytes) throws InvalidKeySpecException, CryptoProviderException, GenericCryptoException {
+        try {
+            // Make sure the values are interpreted as positive integer.
+            final BigInteger x = new BigInteger(1, xBytes);
+            final BigInteger y = new BigInteger(1, yBytes);
+
+            // Validate the point is correct
+            final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
+            if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
+                throw new CryptoProviderException("Crypto provider does not support the secp256r1 curve");
+            }
+            final org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().createPoint(x, y);
+            publicKeyValidator.validate(ecSpec.getCurve(), point);
+
+            // Generate public key using Java security API
+            final AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            parameters.init(new ECGenParameterSpec("secp256r1"));
+            final ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
+
+            final ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
+            return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(ecPublicKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (IllegalArgumentException ex) {
+            throw new GenericCryptoException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
      * Converts an EC private key to bytes by encoding the D number parameter (S in Java Security).
      *
      * @param privateKey An EC private key to be converted to bytes.

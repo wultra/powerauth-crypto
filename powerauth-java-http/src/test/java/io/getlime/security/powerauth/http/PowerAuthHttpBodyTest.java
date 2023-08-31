@@ -16,10 +16,10 @@
  */
 package io.getlime.security.powerauth.http;
 
-import com.google.common.io.BaseEncoding;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,7 +39,7 @@ public class PowerAuthHttpBodyTest {
         } catch (NoSuchAlgorithmException e) {
             // ignore
         }
-        System.out.println("\"" + BaseEncoding.base64().encode(nonce) + "\"");
+        System.out.println("\"" + Base64.getEncoder().encodeToString(nonce) + "\"");
         return nonce;
     }**/
 
@@ -63,40 +63,40 @@ public class PowerAuthHttpBodyTest {
 
         method = "POST";
         resourceId = "/pa/login";
-        nonce = BaseEncoding.base64().decode("vkueT796IGqdXlfVIJrB9A==");
+        nonce = Base64.getDecoder().decode("vkueT796IGqdXlfVIJrB9A==");
         body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "POST&L3BhL2xvZ2lu&vkueT796IGqdXlfVIJrB9A==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "GET";
         resourceId = "/pa/login";
-        nonce = BaseEncoding.base64().decode("t5W/nUcGPKAVUjA11ydJeQ==");
+        nonce = Base64.getDecoder().decode("t5W/nUcGPKAVUjA11ydJeQ==");
         body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "GET&L3BhL2xvZ2lu&t5W/nUcGPKAVUjA11ydJeQ==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "POST";
-        nonce = BaseEncoding.base64().decode("oXcwuuRCCEHiw/pFiIg4bA==");
+        nonce = Base64.getDecoder().decode("oXcwuuRCCEHiw/pFiIg4bA==");
         body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, null, nonce, body);
         assertEquals(signatureBaseString, "POST&&oXcwuuRCCEHiw/pFiIg4bA==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "POST";
         resourceId = "/pa/login";
-        nonce = BaseEncoding.base64().decode("U2EjaQ2N7KMlrghn7KL+3A==");
+        nonce = Base64.getDecoder().decode("U2EjaQ2N7KMlrghn7KL+3A==");
         body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "POST&L3BhL2xvZ2lu&U2EjaQ2N7KMlrghn7KL+3A==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         method = "POST";
         resourceId = "/pa/login";
-        nonce = BaseEncoding.base64().decode("UWtQ9nMNGtJQbZ9zx/J3FQ==");
+        nonce = Base64.getDecoder().decode("UWtQ9nMNGtJQbZ9zx/J3FQ==");
         body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(method, resourceId, nonce, body);
         assertEquals(signatureBaseString, "POST&L3BhL2xvZ2lu&UWtQ9nMNGtJQbZ9zx/J3FQ==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");
 
         resourceId = "/pa/login";
-        nonce = BaseEncoding.base64().decode("UWtQ9nMNGtJQbZ9zx/J3FQ==");
+        nonce = Base64.getDecoder().decode("UWtQ9nMNGtJQbZ9zx/J3FQ==");
         body = "{\"Platform\": \"A\",\"LanguageCode\": \"ENG\"}".getBytes(StandardCharsets.UTF_8);
         signatureBaseString = PowerAuthHttpBody.getSignatureBaseString(null, resourceId, nonce, body);
         assertEquals(signatureBaseString, "GET&L3BhL2xvZ2lu&UWtQ9nMNGtJQbZ9zx/J3FQ==&eyJQbGF0Zm9ybSI6ICJBIiwiTGFuZ3VhZ2VDb2RlIjogIkVORyJ9");

@@ -21,7 +21,6 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>powerauth-java-http</artifactId>
-	<version>1.4.0</version>
 	<name>powerauth-java-http</name>
 	<description>PowerAuth utility module for HTTP support</description>
 	<packaging>jar</packaging>
@@ -29,13 +28,22 @@
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-crypto-parent</artifactId>
-		<version>1.4.0</version>
+		<version>1.5.0</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
+			<groupId>io.getlime.security</groupId>
+			<artifactId>powerauth-java-crypto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

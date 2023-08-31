@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.server.activation;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
@@ -37,6 +36,7 @@ import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
+import java.util.Base64;
 
 /**
  * Class implementing cryptography used on a server side in order to assure
@@ -87,7 +87,7 @@ public class PowerAuthServerActivation {
 
     /**
      * Generate signature for the activation code.
-     *
+     * <p>
      * Signature is then computed using the master private key.
      *
      * @param activationCode Short activation ID.
@@ -111,131 +111,6 @@ public class PowerAuthServerActivation {
      */
     public byte[] generateActivationNonce() throws CryptoProviderException {
         return keyGenerator.generateRandomBytes(16);
-    }
-
-    /**
-     * Method validates the signature of the activation data in order to prove that a correct
-     * client application is attempting to complete the activation.
-     *
-     * <p><b>PowerAuth protocol versions:</b>
-     * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
-     * </ul>
-     *
-     * This method is obsolete for PowerAuth protocol version 3.0 and will be deprecated in a future release.
-     *
-     * @param activationIdShort Short activation ID.
-     * @param activationNonce Client activation nonce.
-     * @param encryptedDevicePublicKey Encrypted device public key.
-     * @param applicationKey Application identifier.
-     * @param applicationSecret Application secret.
-     * @param signature Signature to be checked against.
-     * @return True if the signature is correct, false otherwise.
-     * @throws GenericCryptoException In case signature computation fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     */
-    public boolean validateApplicationSignature(String activationIdShort, byte[] activationNonce, byte[] encryptedDevicePublicKey, byte[] applicationKey, byte[] applicationSecret, byte[] signature) throws GenericCryptoException, CryptoProviderException {
-        String signatureBaseString = activationIdShort + "&"
-                + BaseEncoding.base64().encode(activationNonce) + "&"
-                + BaseEncoding.base64().encode(encryptedDevicePublicKey) + "&"
-                + BaseEncoding.base64().encode(applicationKey);
-        byte[] signatureExpected = new HMACHashUtilities().hash(applicationSecret, signatureBaseString.getBytes(StandardCharsets.UTF_8));
-        return Arrays.equals(signatureExpected, signature);
-    }
-
-    /**
-     * Decrypt the device public key using activation OTP.
-     *
-     * <p><b>PowerAuth protocol versions:</b>
-     * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
-     * </ul>
-     *
-     * @param C_devicePublicKey Encrypted device public key.
-     * @param activationIdShort Short activation ID.
-     * @param masterPrivateKey Server master private key.
-     * @param ephemeralPublicKey Ephemeral public key. 
-     * @param activationOTP Activation OTP value.
-     * @param activationNonce Activation nonce, used as an initialization vector
-     * for AES encryption.
-     * @return A decrypted public key.
-     * @throws GenericCryptoException In case decryption fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     */
-    public PublicKey decryptDevicePublicKey(byte[] C_devicePublicKey, String activationIdShort, PrivateKey masterPrivateKey, PublicKey ephemeralPublicKey, String activationOTP, byte[] activationNonce) throws GenericCryptoException, CryptoProviderException {
-        try {
-            // Derive longer key from short activation ID and activation OTP
-            byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
-            SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP, activationIdShortBytes);
-
-            if (ephemeralPublicKey != null) { // is an extra ephemeral key encryption included?
-
-                // Compute ephemeral secret key
-                SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(masterPrivateKey, ephemeralPublicKey);
-
-                // Decrypt device public key
-                AESEncryptionUtils aes = new AESEncryptionUtils();
-                byte[] decryptedTMP = aes.decrypt(C_devicePublicKey, activationNonce, ephemeralSymmetricKey);
-                byte[] decryptedPublicKeyBytes = aes.decrypt(decryptedTMP, activationNonce, otpBasedSymmetricKey);
-                return keyConvertor.convertBytesToPublicKey(decryptedPublicKeyBytes);
-
-            } else { // extra encryption is not present, only OTP based key is used
-
-                // Decrypt device public key
-                AESEncryptionUtils aes = new AESEncryptionUtils();
-                byte[] decryptedPublicKeyBytes = aes.decrypt(C_devicePublicKey, activationNonce, otpBasedSymmetricKey);
-                return keyConvertor.convertBytesToPublicKey(decryptedPublicKeyBytes);
-
-            }
-
-        } catch (InvalidKeySpecException | InvalidKeyException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * Encrypt the server public key using activation OTP and device public key.
-     * As a technical component for public key encryption, an ephemeral private
-     * key is used (in order to deduce ephemeral symmetric key using ECDH).
-     *
-     * <p><b>PowerAuth protocol versions:</b>
-     * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
-     * </ul>
-     *
-     * @param serverPublicKey Server public key to be encrypted.
-     * @param devicePublicKey Device public key used for encryption.
-     * @param ephemeralPrivateKey Ephemeral private key.
-     * @param activationOTP Activation OTP value.
-     * @param activationIdShort Short activation ID.
-     * @param activationNonce Activation nonce, used as an initialization vector
-     * for AES encryption.
-     * @return Encrypted server public key.
-     * @throws InvalidKeyException In case some of the provided keys is invalid.
-     * @throws GenericCryptoException In case encryption fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     */
-    public byte[] encryptServerPublicKey(PublicKey serverPublicKey, PublicKey devicePublicKey,
-                                         PrivateKey ephemeralPrivateKey, String activationOTP, String activationIdShort, byte[] activationNonce)
-            throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        // Convert public key to bytes
-        byte[] serverPublicKeyBytes = keyConvertor.convertPublicKeyToBytes(serverPublicKey);
-
-        // Generate symmetric keys
-        SecretKey ephemeralSymmetricKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, devicePublicKey);
-
-        byte[] activationIdShortBytes = activationIdShort.getBytes(StandardCharsets.UTF_8);
-        SecretKey otpBasedSymmetricKey = keyGenerator.deriveSecretKeyFromPassword(activationOTP,
-                activationIdShortBytes);
-
-        // Encrypt the data
-        AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] encryptedTmp = aes.encrypt(serverPublicKeyBytes, activationNonce, otpBasedSymmetricKey);
-        return aes.encrypt(encryptedTmp, activationNonce, ephemeralSymmetricKey);
     }
 
     /**
@@ -335,28 +210,10 @@ public class PowerAuthServerActivation {
     public byte[] computeServerDataSignature(String activationId, byte[] C_serverPublicKey, PrivateKey masterPrivateKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-        String activationIdBytesBase64 = BaseEncoding.base64().encode(activationIdBytes);
-        String C_serverPublicKeyBase64 = BaseEncoding.base64().encode(C_serverPublicKey);
+        String activationIdBytesBase64 = Base64.getEncoder().encodeToString(activationIdBytes);
+        String C_serverPublicKeyBase64 = Base64.getEncoder().encodeToString(C_serverPublicKey);
         byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
         return signatureUtils.computeECDSASignature(result, masterPrivateKey);
-    }
-
-    /**
-     * Compute a fingerprint for the version 2 activation. The fingerprint can be used for visual validation of exchanged device public key.
-     *
-     * <p><b>PowerAuth protocol versions:</b>
-     * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
-     * </ul>
-     *
-     * @param devicePublicKey Public key for computing fingerprint.
-     * @return Fingerprint of the public key.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     * @throws GenericCryptoException In case fingerprint could not be calculated.
-     */
-    public String computeActivationFingerprint(PublicKey devicePublicKey) throws GenericCryptoException, CryptoProviderException {
-        return computeActivationFingerprint(devicePublicKey, null, null, ActivationVersion.VERSION_2);
     }
 
     /**
@@ -365,6 +222,8 @@ public class PowerAuthServerActivation {
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @param devicePublicKey Device public key.

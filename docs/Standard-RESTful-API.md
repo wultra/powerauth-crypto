@@ -113,7 +113,7 @@ After receiving the response, PowerAuth Client decrypts both layers of response 
 ##### Encryption Headers
 
 ```
-X-PowerAuth-Encryption: PowerAuth version="3.1", application_key="UNfS0VZX3JhbmRvbQ=="
+X-PowerAuth-Encryption: PowerAuth version="3.2", application_key="UNfS0VZX3JhbmRvbQ=="
 ```
 
 ##### Body
@@ -199,7 +199,7 @@ The `activationData` contains an encrypted level 2 response. So, the JSON respon
 ```
 
 <!-- begin box info -->
-The `activationRecovery` response element is optional and depends on whether the [Activation Recovery](Activation-Recovery.md) feature is enabled on the PowerAuth Server or not.
+The `activationRecovery` response element is optional and depends on whether the [Activation Recovery](Activation-via-Recovery-Code.md) feature is enabled on the PowerAuth Server or not.
 <!-- end -->
 <!-- end -->
 

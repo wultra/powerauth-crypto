@@ -25,11 +25,11 @@
 
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-crypto-parent</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <packaging>pom</packaging>
 
     <inceptionYear>2016</inceptionYear>
-    <url>http://powerauth.com/</url>
+    <url>https://powerauth.com/</url>
 
     <organization>
         <name>Wultra s.r.o.</name>
@@ -39,7 +39,7 @@
     <licenses>
         <license>
             <name>Apache 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -71,15 +71,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
-        <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
+        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <guava.version>31.1-jre</guava.version>
-        <slf4j.version>2.0.5</slf4j.version>
-        <junit.version>5.9.1</junit.version>
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+        <guava.version>32.1.2-jre</guava.version>
+        <slf4j.version>2.0.7</slf4j.version>
+        <junit.version>5.9.2</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -106,6 +107,14 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -151,6 +160,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven-deploy-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
