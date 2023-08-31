@@ -16,8 +16,8 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf;
 
-import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
 import io.getlime.security.powerauth.crypto.lib.util.Hash;
 
 import java.nio.ByteBuffer;
@@ -64,7 +64,7 @@ public class KdfX9_63 {
                 break;
             }
             // Append working batch to result
-            result = Bytes.concat(result, temp);
+            result = ByteUtils.concat(result, temp);
             ++i;
         }
         // Trim the array to the desired length

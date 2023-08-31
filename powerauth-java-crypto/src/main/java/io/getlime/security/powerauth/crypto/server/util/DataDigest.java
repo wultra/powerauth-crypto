@@ -101,7 +101,7 @@ public class DataDigest {
      * Data digest of the list with string elements. Data is first normalized (items concatenated
      * by '&amp;' character), then a random key is generated and hash (HMAC-SHA256) is computed. Finally,
      * the resulting MAC is decimalized to the signature of a length 8 numeric digits.
-     *
+     * <p>
      * In case the digest could not be computed, null value is returned.
      *
      * @param items Items to be serialized into digest.

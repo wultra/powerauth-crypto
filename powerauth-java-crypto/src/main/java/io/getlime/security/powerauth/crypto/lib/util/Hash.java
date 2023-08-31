@@ -26,9 +26,9 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Simple utility class that provides the basic hash methods.
- *
+ * <p>
  * Supported methods:
- *
+ * <p>
  * - SHA256
  *
  * @author Petr Dvorak, petr@wultra.com

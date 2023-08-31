@@ -16,12 +16,14 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception;
 
+import io.getlime.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
+
 /**
  * Exception used for handling incorrect ECIES encryption / decryption states.
  *
  * @author Petr Dvorak, petr@wultra.com
  */
-public class EciesException extends Exception {
+public class EciesException extends EncryptorException {
 
     /**
      * Default constructor.

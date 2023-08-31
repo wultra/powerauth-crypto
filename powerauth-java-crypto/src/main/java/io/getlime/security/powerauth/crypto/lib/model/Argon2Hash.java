@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.model;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.util.SideChannelUtils;
 
 import java.io.IOException;
@@ -68,8 +67,8 @@ public class Argon2Hash {
             // Version parameter is missing in version 16, use null value
             // Parameters use syntax "m=[memoryInBytes],t=[iterations],p=[parallelism]"
             hash.setParameters(extractParameters(parts[2]));
-            hash.setSalt(BaseEncoding.base64().decode(parts[3]));
-            hash.setDigest(BaseEncoding.base64().decode(parts[4]));
+            hash.setSalt(Base64.getDecoder().decode(parts[3]));
+            hash.setDigest(Base64.getDecoder().decode(parts[4]));
             return hash;
         }
         if (input.matches("\\$argon2(?:i|d|id)?\\$v=[0-9]+\\$m=[0-9]+,t=[0-9]+,p=[0-9]+\\$[A-Za-z0-9+/]+\\$[A-Za-z0-9+/]+")) {
@@ -84,8 +83,8 @@ public class Argon2Hash {
             }
             // Parameters use syntax "m=[memoryInBytes],t=[iterations],p=[parallelism]"
             hash.setParameters(extractParameters(parts[3]));
-            hash.setSalt(BaseEncoding.base64().decode(parts[4]));
-            hash.setDigest(BaseEncoding.base64().decode(parts[5]));
+            hash.setSalt(Base64.getDecoder().decode(parts[4]));
+            hash.setDigest(Base64.getDecoder().decode(parts[5]));
             return hash;
         }
         throw new IOException("Invalid Argon2 hash syntax");
@@ -320,7 +319,7 @@ public class Argon2Hash {
         return "$" + algorithm
                 + (version != null ? "$" + versionToString() : "")
                 + "$" + parametersToString()
-                + "$" + BaseEncoding.base64().omitPadding().encode(salt)
-                + "$" + BaseEncoding.base64().omitPadding().encode(digest);
+                + "$" + Base64.getEncoder().withoutPadding().encodeToString(salt)
+                + "$" + Base64.getEncoder().withoutPadding().encodeToString(digest);
     }
 }

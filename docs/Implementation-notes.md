@@ -20,8 +20,7 @@ KDF (Key Derivation Function) is an algorithm used for deriving a secret key fro
 public SecretKey kdfDeriveSecretKey(SecretKey secret, long index) {
     byte[] bytes = ByteBuffer.allocate(16).putLong(index).array();
     byte[] iv = new byte[16];
-    byte[] encryptedBytes = AES.encrypt(bytes, iv, secret);
-    byte[] newKeyBytes = ByteUtil.convert32Bto16B(derivedKey32);
+    byte[] newKeyBytes = AES.encrypt(bytes, iv, secret);
     return KeyConversion.secretKeyFromBytes(newKeyBytes);
 }
 ```
@@ -68,16 +67,16 @@ Example of activation ID:
 c564e700-7e86-4a87-b6c8-a5a0cc89683f
 ```
 
-_Note: A single UUID for an activation in CREATED state must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most)._
-
-Since the UUID is too long and inconvenient for practical applications, `ACTIVATION_ID` is exchanged between client and server automatically, using `ACTIVATION_CODE` - a shorter and more convenient identifier of an activation. This is the identifier user can rewrite or scan via the QR code. The next chapter explains more details about the code.
+<!-- begin box warning -->
+A single UUID for an activation in `CREATED` or `PENDING_COMMIT` state must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most).
+<!-- end -->
 
 
 ## Activation Code
 
-The `ACTIVATION_CODE` is a Base32 string 4 x 5 characters. The code is randomly generated and contains CRC-16 checksum which can detect a few typing errors in the code. For more details, check a [dedicated document](./Activation-Code.md) about the code construction and validation. 
+The `ACTIVATION_CODE` is a Base32 string of 4 x 5 characters. The code is randomly generated and contains CRC-16 checksum which can detect a few typing errors in the code. For more details, check a [dedicated document](./Activation-Code.md) about the code construction and validation.
 
-A single `ACTIVATION_CODE` must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most). Also, the activation code can be used only once - the moment client application sends and receives the encrypted public keys, it must be marked as "already used".
+A single `ACTIVATION_CODE` must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most). Also, the activation code can be used only once. The moment a client application sends and receives the encrypted public keys, it must be marked as already used.
 
 ```sql
 DO {
@@ -92,15 +91,15 @@ Example of activation code:
 MMMMM-MMMMM-MMMMM-MUTOA
 ```
 
-## Application ID and Application Secret
+## Application Key and Application Secret
 
-In order to explicitly bind a client application with the cryptography, an application ID and application secret are introduced. Both values follow the same format - 16B encoded as Base64, application ID must be unique.
+In order to explicitly bind a client application with the cryptography, an application key and application secret are introduced. Both values follow the same format - 16B encoded as Base64, application ID must be unique.
 
 Both identifiers are embedded in the PowerAuth Client application (for example, defined as a constants in the source code).
 
-Application ID is sent with every PowerAuth Signature as `pa_applicationId`.
+Application key is sent with every PowerAuth Signature as `pa_application_key`.
 
-Application secret is a part of the PowerAuth signature (sent in `pa_signature`), it enters the algorithm in final HMAC_SHA256 as a part of the DATA.
+Application secret enters the signature algorithm in final HMAC_SHA256 as a part of the `DATA` and hence it is a part of the PowerAuth signature (sent implicitly in `pa_signature`). It never travels from the application in plain text format.
 
 ## Entering Values in Client Application
 
@@ -116,7 +115,9 @@ Example concatenated string:
 MMMMM-MMMMM-MMMMM-MUTOA#1234567890
 ```
 
-*You can also check [Activation Code](./Activation-Code.md) document to get a more details about an activation code.*
+<!-- begin box info -->
+You can also check [Activation Code](./Activation-Code.md) document to get a more details about an activation code.
+<!-- end -->
 
 ## Generating Key Pairs
 
@@ -132,7 +133,7 @@ public KeyPair generateKeyPair() {
 ```
 ## Shared Key Derivation (ECDH)
 
-Shared key `KEY_MASTER_SECRET` is generated using following algorithm (ECDH):
+Shared key `KEY_MASTER_SECRET` is generated using the following algorithm (ECDH):
 
 ```java
 public SecretKey generateSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
@@ -152,13 +153,13 @@ public SecretKey generateSharedKey(PrivateKey privateKey, PublicKey publicKey) t
 
 All communication should be carried over a properly secured channel, such as HTTPS with correct server configuration and certificate issued with a trusted certificate authority. Client may implement certificate pinning to achieve better transport level security.
 
-## Lifecycle of the "Master key pair"
+## Lifecycle of the "Master Server Key Pair"
 
-Server sends it's encrypted public key `C_KEY_SERVER_PUBLIC` to the client with a signature `SERVER_DATA_SIGNATURE`. This signature is created using the server's "Master Private Key" `KEY_SERVER_MASTER_PRIVATE`. Since the same key is used for all activations, the "latent private key fingerprints" may accumulate over the time, making it simpler to attack the private key. Therefore, it is important to select the proper trusted certification authority to issue the keys and renew the key after certain time period. Usually, this also requires timely update of the clients that bundle the "Master Public Key".
+Since the same `KEY_SERVER_MASTER_PRIVATE` key is used for all activations, the "latent private key fingerprints" may accumulate over the time, providing hints to attack the private key. While these hints are impractical from the attacker's perspective, it is recommended to renew the key after certain time period. Usually, this also requires timely update of the clients that bundle the "Master Server Public Key".
 
-## Signing Data Using Master Private Key
+## Signing Data Using Master Server Private Key
 
-The master key pair is generated using the same algorithm as normal key pair, see above (with P256 curve).
+The master server key pair is generated using the same algorithm as a normal key pair, see above (with P256 curve).
 
 In order to generate the signature for given bytes (obtained from string by conversion using UTF-8 encoding), following code is used:
 

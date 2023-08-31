@@ -38,39 +38,13 @@ public class PowerAuthClientVault {
     private final KeyConvertor keyConvertor = new KeyConvertor();
 
     /**
-     * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using a transport key
-     * KEY_ENCRYPTION_VAULT_TRANSPORT.
-     *
-     *
-     * <p><b>PowerAuth protocol versions:</b>
-     * <ul>
-     *     <li>2.0</li>
-     *     <li>2.1</li>
-     * </ul>
-     *
-     * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.
-     * @param masterTransportKey Master transport key used for deriving a transport key, used for decrypting vault encryption key.
-     * @param ctr Counter data used for key derivation.
-     * @return Original KEY_ENCRYPTION_VAULT
-     * @throws InvalidKeyException In case invalid key is provided.
-     * @throws GenericCryptoException In case decryption fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     */
-    public SecretKey decryptVaultEncryptionKey(byte[] cVaultEncryptionKey, SecretKey masterTransportKey, byte[] ctr) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        AESEncryptionUtils aes = new AESEncryptionUtils();
-        KeyGenerator keyGen = new KeyGenerator();
-        SecretKey vaultEncryptionTransportKey = keyGen.deriveSecretKey(masterTransportKey, ctr);
-        byte[] zeroBytes = new byte[16];
-        byte[] keyBytes = aes.decrypt(cVaultEncryptionKey, zeroBytes, vaultEncryptionTransportKey);
-        return keyConvertor.convertBytesToSharedSecretKey(keyBytes);
-    }
-
-    /**
      * Decrypts the vault encryption key KEY_ENCRYPTION_VAULT using KEY_TRANSPORT.
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
      * </ul>
      *
      * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.

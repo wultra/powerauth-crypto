@@ -162,12 +162,12 @@ To describe the steps more precisely, the recovery activation process is perform
 
 1. PowerAuth Client uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
    ```java
-   KEY_MASTER_SECRET = ECDH.phase(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC)
+   KEY_MASTER_SECRET = ByteUtils.convert32Bto16B(ECDH.phase(KEY_DEVICE_PRIVATE, KEY_SERVER_PUBLIC))
    ```
 
 1. PowerAuth Server uses `KEY_DEVICE_PUBLIC` and `KEY_SERVER_PRIVATE` to deduce `KEY_MASTER_SECRET` using ECDH.
    ```java
-   KEY_MASTER_SECRET = ECDH.phase(KEY_SERVER_PRIVATE, KEY_DEVICE_PUBLIC)
+   KEY_MASTER_SECRET = ByteUtils.convert32Bto16B(ECDH.phase(KEY_SERVER_PRIVATE, KEY_DEVICE_PUBLIC))
    ```
 
 
@@ -240,3 +240,12 @@ The format of Recovery PUK is very simple:
 - 10 digits long number, for example `1234567890`.
 - Zero padded, when number is less than 10<sup>9</sup>. For example `0123456789`.
 - Printed or displayed PUK can be split into two block, five digits long each, with dash as a separator. For example `12345-67890`
+
+## Related Topics
+
+- [Recovery Postcard](./Recovery-Postcard.md)
+- [Activation via Activation Code](./Activation-via-Activation-Code.md)
+- [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
+- [Checking Activation Status](./Activation-Status.md)
+- [Key Derivation](./Key-derivation.md)
+- [Additional Activation OTP](Additional-Activation-OTP.md)

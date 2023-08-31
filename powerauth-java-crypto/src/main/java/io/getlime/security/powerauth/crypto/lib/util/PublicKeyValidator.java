@@ -44,8 +44,8 @@ public class PublicKeyValidator {
             throw new GenericCryptoException("Invalid public key with point equal to the point at infinity");
         }
 
-        BigInteger n = curve.getOrder();
-        ECPoint calculatedPoint = ECAlgorithms.referenceMultiply(point, n);
+        final BigInteger n = curve.getOrder();
+        final ECPoint calculatedPoint = ECAlgorithms.referenceMultiply(point, n);
         if (!calculatedPoint.isInfinity()) {
             throw new GenericCryptoException("Point order does not match the order defined in EC curve");
         }

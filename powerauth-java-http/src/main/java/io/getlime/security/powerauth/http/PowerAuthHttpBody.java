@@ -16,9 +16,8 @@
  */
 package io.getlime.security.powerauth.http;
 
-import com.google.common.io.BaseEncoding;
-
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * Helper class simplifying working with HTTP request body in context of PowerAuth protocol.
@@ -41,17 +40,17 @@ public class PowerAuthHttpBody {
         String requestUriHash = "";
         if (requestUri != null) {
             byte[] bytes = requestUri.getBytes(StandardCharsets.UTF_8);
-            requestUriHash = BaseEncoding.base64().encode(bytes);
+            requestUriHash = Base64.getEncoder().encodeToString(bytes);
         }
 
         String dataBase64 = "";
         if (data != null) {
-            dataBase64 = BaseEncoding.base64().encode(data);
+            dataBase64 = Base64.getEncoder().encodeToString(data);
         }
 
         String nonceBase64 = "";
         if (nonce != null) {
-            nonceBase64 = BaseEncoding.base64().encode(nonce);
+            nonceBase64 = Base64.getEncoder().encodeToString(nonce);
         }
 
         return (httpMethod != null ? httpMethod.toUpperCase() : "GET")
