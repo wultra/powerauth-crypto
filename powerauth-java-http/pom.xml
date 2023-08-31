@@ -28,10 +28,15 @@
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-crypto-parent</artifactId>
-		<version>1.5.0-SNAPSHOT</version>
+		<version>1.5.0</version>
 	</parent>
 
 	<dependencies>
+		<dependency>
+			<groupId>io.getlime.security</groupId>
+			<artifactId>powerauth-java-crypto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>

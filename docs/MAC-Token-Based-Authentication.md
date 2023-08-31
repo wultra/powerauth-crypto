@@ -25,9 +25,9 @@ In order to create a new token, the client application must call a PowerAuth Sta
 
 This endpoint must be called with a standard PowerAuth signature. It can be any type of a signature - 1FA, 2FA or 3FA. The token then implicitly carries the information about the signature it was issued with. Using the PowerAuth signature assures authenticity and integrity of the request data.
 
-The endpoint then uses the same request and response encryption principles as described in a dedicated chapter for [End-to-End Encryption](./End-To-End-Encryption.md). 
+The endpoint then uses the same request and response encryption principles as described in a dedicated chapter for [End-to-End Encryption](./End-To-End-Encryption.md).
 
-Upon receiving and successfully validating a request authenticated using PowerAuth signature, server generates a new token for given activation ID. Information about used signature type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client. 
+Upon receiving and successfully validating a request authenticated using PowerAuth signature, server generates a new token for given activation ID. Information about used signature type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client.
 
 The decrypted response data payload contains following raw response format:
 
@@ -52,15 +52,15 @@ The `token_digest` value is computed using a following algorithm:
 // '$timestamp' is a unix timestamp in milliseconds (to achieve required time
 //             precision) converted to string and then to byte[] using UTF-8
 //             encoding
-long unix_timestamp = getCurrentUnixTimestamp();
-byte[] timestamp = String.valueOf(unix_timestamp).getBytes("UTF-8");
+long timestamp = Time.getTimestamp();
+byte[] timestamp_bytes = ByteUtils.encode(String.valueOf(timestamp));
 
 // '$nonce' value is 16B of random data
 byte[] nonce = Generator.randomBytes(16);
 
 // '$nonce' is concatenated to '$timestamp' using '&' character:
 //    $nonce + '&' + $timestamp
-byte[] data = ByteUtils.concat(ByteUtils.concat(nonce, '&'), timestamp);
+byte[] data = ByteUtils.concat(nonce, ByteUtils.encode("&"), timestamp_bytes);
 
 // 'token_secret' is 16B of random data
 SecretKey key = KeyConversion.secretKeyFromBytes(token_secret);
@@ -76,7 +76,7 @@ X-PowerAuth-Token: PowerAuth token_id="${TOKEN_ID}"
     token_digest="${TOKEN_DIGEST}"
     nonce="${NONCE}"
     timestamp="${TIMESTAMP}"
-    version="3.1"
+    version="3.2"
 ```
 
 Transport representation of the HTTP header properties is following:
@@ -110,4 +110,3 @@ In case the signature validation is successful and after validating that the tok
     }
 }
 ```
-

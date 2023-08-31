@@ -16,80 +16,21 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model;
 
+import lombok.*;
+
 /**
  * The EciesCryptogram structure represents cryptogram transmitted over the network.
  *
  * @author Petr Dvorak, petr@wultra.com
  * @author Roman Strobl, roman.strobl@wultra.com
  */
+@Builder
+@Value
+@AllArgsConstructor
 public class EciesCryptogram {
 
-    private final byte[] ephemeralPublicKey;
-    private final byte[] mac;
-    private final byte[] encryptedData;
-    private final byte[] nonce;
+    byte[] ephemeralPublicKey;
+    byte[] mac;
+    byte[] encryptedData;
 
-    /**
-     * Constructor for ECIES cryptogram used in encrypted requests.
-     *
-     * @param ephemeralPublicKey Ephemeral public key.
-     * @param mac MAC computed for key and data.
-     * @param encryptedData Encrypted data.
-     * @param nonce Nonce, required for protocol V3.1+
-     */
-    public EciesCryptogram(byte[] ephemeralPublicKey, byte[] mac, byte[] encryptedData, byte[] nonce) {
-        this.ephemeralPublicKey = ephemeralPublicKey;
-        this.mac = mac;
-        this.encryptedData = encryptedData;
-        this.nonce = nonce;
-    }
-
-    /**
-     * Constructor for ECIES cryptogram used in encrypted responses (ephemeral public key and nonce are omitted).
-     *
-     * @param mac MAC computed for key and data.
-     * @param encryptedData Encrypted data.
-     */
-    public EciesCryptogram(byte[] mac, byte[] encryptedData) {
-        this.ephemeralPublicKey = null;
-        this.mac = mac;
-        this.encryptedData = encryptedData;
-        this.nonce = null;
-    }
-
-    /**
-     * Get ephemeral public key bytes. The value is optional for response data.
-     *
-     * @return Ephemeral public key bytes.
-     */
-    public byte[] getEphemeralPublicKey() {
-        return ephemeralPublicKey;
-    }
-
-    /**
-     * Get the MAC computed for key and data.
-     *
-     * @return MAC computed for key and data.
-     */
-    public byte[] getMac() {
-        return mac;
-    }
-
-    /**
-     * Get the encrypted data.
-     *
-     * @return Encrypted data.
-     */
-    public byte[] getEncryptedData() {
-        return encryptedData;
-    }
-
-    /**
-     * Get nonce for IV derivation.
-     *
-     * @return Nonce for IV derivation.
-     */
-    public byte[] getNonce() {
-        return nonce;
-    }
 }

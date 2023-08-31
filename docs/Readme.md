@@ -1,48 +1,11 @@
 # PowerAuth
 
-PowerAuth is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or identity management applications. It defines all items that are required for a complete security solution: a used cryptography, a security scheme and standard RESTful API end-points.
+PowerAuth is a protocol for a key exchange and for subsequent request signing designed specifically for the purposes of applications with high security demands, such as banking applications or mobile identity applications. It defines all items that are required for a complete security solution: a used cryptography, associated processes, and standard RESTful API end-points.
 
-A typical use-case for PowerAuth protocol would be assuring the security of a mobile banking application. User usually downloads a "blank" (non-personalized) mobile banking app from the mobile application market. Then, user activates (personalizes, using a key-exchange algorithm) the mobile banking using some application that is assumed secure, for example via the internet banking or via the branch kiosk system. Finally, user can use activated mobile banking application to create signed requests - to log in to mobile banking, send a payment, certify contracts, etc.
+A typical use-case for PowerAuth protocol would be assuring the security of mobile banking application. Users usually download a "blank" (non-personalized) mobile banking app from the mobile application markets, such as Google Play or App Store. Then, they activate (personalize, register, ...) the mobile banking app using credentials that are assumed sufficient for this purpose, for example via the QR code displayed in the internet banking, the branch kiosk system, ATM, or hardware authenticator. Only after this process is completed, users can use activated mobile banking app to create signed requests - to log in to mobile banking, send payments, certify contracts, etc.
 
-## PowerAuth Specification
+The PowerAuth protocol also defines additional features, such as end-to-end encryption or secure storage through the secure vault. Unlike the authentication, these features do not constitute the protocol primary use-case and they mostly play a supportive role.
 
-- [Basic Definitions](./Basic-definitions.md)
-- [Activation](./Activation.md)
-- [Key Derivation](./Key-derivation.md)
-- [Checking Activation Status](./Activation-Status.md)
-- [Computing and Validating Signatures](./Computing-and-Validating-Signatures.md)
-- [MAC Token Based Authentication](./MAC-Token-Based-Authentication.md)
-- [End-To-End Encryption](./End-To-End-Encryption.md)
-- [Activation Recovery](Activation-Recovery.md)
-- [Additional Activation OTP](Additional-Activation-OTP.md)
-- [Standard RESTful API](./Standard-RESTful-API.md)
-- [Implementation Details](./Implementation-notes.md)
-    - [Activation Code](./Activation-Code.md)
-    - [Activation Upgrade](./Activation-Upgrade.md)
-- [List of Used Keys](./List-of-used-keys.md)
-
-## Tutorials
-- [Authentication in Mobile Banking Apps (SCA)](https://developers.wultra.com/products/mobile-security-suite/develop/tutorials/Authentication-in-Mobile-Apps)
-- [Verifying PowerAuth Signatures On The Server](https://developers.wultra.com/products/mobile-security-suite/develop/tutorials/Manual-Signature-Verification)
-
-## Deployment
-
-- [Deployment Checklist](./Deployment-Checklist.md)
-- [Architecture Overview](./Architecture-Overview.md)
-
-## Applications
-
-- [PowerAuth Server](https://github.com/wultra/powerauth-server)
-- [PowerAuth Admin](https://github.com/wultra/powerauth-admin)
-- [PowerAuth Push Server](https://github.com/wultra/powerauth-push-server)
-- [PowerAuth Command-Line Tool](https://github.com/wultra/powerauth-cmd-tool)
-- [PowerAuth Mobile SDK for iOS and Android](https://github.com/wultra/powerauth-mobile-sdk)
-- [Integration Libraries for RESTful APIs](https://github.com/wultra/powerauth-restful-integration)
-
-## Releases
-
-- [List of Releases](./Releases.md)
-
-# Development
-
-In order to start developing PowerAuth, read our [Developer documentation](./Development.md).
+<!-- begin box info -->
+For any questions related to the protocol, please write to [hello@wultra.com](mailto:hello@wultra.com). If you believe you have identified a security vulnerability with PowerAuth, you should report it as soon as possible via email to [support@wultra.com](mailto:support@wultra.com). Please do not post it to a public issue tracker.
+<!-- end -->

@@ -51,9 +51,7 @@ public class ValueTypeValidator {
     /**
      * Admissible protocol versions in the header.
      */
-    private static final Set<String> PROTOCOL_VERSIONS = new HashSet<>(Arrays.asList(
-            "3.1", "3.0", "2.1", "2.0"
-    ));
+    private static final Set<String> PROTOCOL_VERSIONS = Set.of("3.2", "3.1", "3.0");
 
     /**
      * Admissible signature types in the header.
@@ -136,7 +134,7 @@ public class ValueTypeValidator {
         if (signature != null) {
             switch (signature.length()) {
                 case 8, 17, 26 -> {
-                    // "2.0", "2.1", "3.0" signature version uses "DECIMAL" format
+                    // "3.0" signature version uses "DECIMAL" format
                     return signature.matches(SIGNATURE_REGEX);
                 }
                 case 24, 44, 64 -> {

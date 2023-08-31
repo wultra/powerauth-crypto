@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import com.google.common.primitives.Bytes;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -86,7 +85,7 @@ public class KeyDerivationUtils {
                 .array();
         final SecretKey transportIv = keyGenerator.deriveSecretKey(transportKey, derivationIndex);
         // Prepare STATUS_IV_DATA as CHALLENGE || NONCE
-        final byte[] ivData = Bytes.concat(challenge, nonce);
+        final byte[] ivData = ByteUtils.concat(challenge, nonce);
         // Derive IV from KEY_TRANSPORT_IV, CHALLENGE and NONCE
         final SecretKey ivKey = keyGenerator.deriveSecretKeyHmac(transportIv, ivData);
         return keyConvertor.convertSharedSecretKeyToBytes(ivKey);

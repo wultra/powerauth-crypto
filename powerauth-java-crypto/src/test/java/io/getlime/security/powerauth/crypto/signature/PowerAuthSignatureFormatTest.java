@@ -31,8 +31,6 @@ public class PowerAuthSignatureFormatTest {
     @Test
     public void testValidVersions() throws Exception {
         // Transformation from version string.
-        assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("2.0"));
-        assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("2.1"));
         assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0"));
         assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1"));
         assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.2"));
