@@ -92,14 +92,17 @@ public class TokenUtils {
      * Compute the digest of provided token information using given token secret.
      * @param nonce Token nonce, 16 random bytes.
      * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (string representation).
+     * @param version Protocol version.
      * @param tokenSecret Token secret, 16 random bytes.
      * @return Token digest computed using provided data bytes with given token secret.
      * @throws GenericCryptoException In case digest computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
-        byte[] amp = "&".getBytes(StandardCharsets.UTF_8);
-        byte[] data = ByteUtils.concat(nonce, amp, timestamp);
+    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] version, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
+        final byte[] amp = "&".getBytes(StandardCharsets.UTF_8);
+        final byte[] data = (version != null)
+                ? ByteUtils.concat(nonce, amp, timestamp, amp, version)
+                : ByteUtils.concat(nonce, amp, timestamp);
         return hmac.hash(tokenSecret, data);
     }
 
@@ -107,14 +110,15 @@ public class TokenUtils {
      * Validate provided token digest for given input data and provided token secret.
      * @param nonce Token nonce, 16 random bytes.
      * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (string representation).
+     * @param version Protocol version.
      * @param tokenSecret Token secret, 16 random bytes.
      * @param tokenDigest Token digest, 32 bytes to be validated.
      * @return Token digest computed using provided data bytes with given token secret.
      * @throws GenericCryptoException In case digest computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
-        return SideChannelUtils.constantTimeAreEqual(computeTokenDigest(nonce, timestamp, tokenSecret), tokenDigest);
+    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] version, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
+        return SideChannelUtils.constantTimeAreEqual(computeTokenDigest(nonce, timestamp, version, tokenSecret), tokenDigest);
     }
 
 }

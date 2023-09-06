@@ -51,7 +51,22 @@ public class ServerTokenVerifier {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
-        return tokenUtils.validateTokenDigest(nonce, timestamp, tokenSecret, tokenDigest);
+        return this.validateTokenDigest(nonce, timestamp, null, tokenSecret, tokenDigest);
+    }
+
+    /**
+     * Validate provided token digest for given input data and provided token secret.
+     * @param nonce Token nonce, 16 random bytes.
+     * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (from string representation).
+     * @param version Protocol version.
+     * @param tokenSecret Token secret, 16 random bytes.
+     * @param tokenDigest Token digest, 32 bytes to be validated.
+     * @return Token digest computed using provided data bytes with given token secret.
+     * @throws GenericCryptoException In case digest computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] version, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
+        return tokenUtils.validateTokenDigest(nonce, timestamp, version, tokenSecret, tokenDigest);
     }
 
 }
