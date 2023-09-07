@@ -102,8 +102,9 @@ public class TokenUtils {
         final byte[] amp = "&".getBytes(StandardCharsets.UTF_8);
         final byte[] data;
         switch (version) {
+            case "3.2" -> data = ByteUtils.concat(nonce, amp, timestamp, amp, version.getBytes(StandardCharsets.UTF_8));
             case "3.0", "3.1" -> data = ByteUtils.concat(nonce, amp, timestamp);
-            default -> data = ByteUtils.concat(nonce, amp, timestamp, amp, version.getBytes(StandardCharsets.UTF_8));
+            default -> throw new GenericCryptoException("Unsupported version value was specified: " + version);
         }
         return hmac.hash(tokenSecret, data);
     }
