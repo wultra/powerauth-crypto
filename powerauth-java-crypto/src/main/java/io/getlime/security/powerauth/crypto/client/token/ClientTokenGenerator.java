@@ -55,27 +55,13 @@ public class ClientTokenGenerator {
      *
      * @param nonce Token nonce, 16 random bytes.
      * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (from string representation).
-     * @param tokenSecret Token secret, 16 random bytes.
-     * @return Token digest computed using provided data bytes with given token secret.
-     * @throws GenericCryptoException In case digest computation fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     */
-    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
-        return this.computeTokenDigest(nonce, timestamp, null, tokenSecret);
-    }
-
-    /**
-     * Compute the digest of provided token information using given token secret.
-     *
-     * @param nonce Token nonce, 16 random bytes.
-     * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (from string representation).
      * @param version Protocol version.
      * @param tokenSecret Token secret, 16 random bytes.
      * @return Token digest computed using provided data bytes with given token secret.
      * @throws GenericCryptoException In case digest computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] version, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
+    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, String version, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
         return tokenUtils.computeTokenDigest(nonce, timestamp, version, tokenSecret);
     }
 

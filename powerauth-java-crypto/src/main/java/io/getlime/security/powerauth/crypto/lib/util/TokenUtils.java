@@ -98,11 +98,13 @@ public class TokenUtils {
      * @throws GenericCryptoException In case digest computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, byte[] version, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
+    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, String version, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
         final byte[] amp = "&".getBytes(StandardCharsets.UTF_8);
-        final byte[] data = (version != null)
-                ? ByteUtils.concat(nonce, amp, timestamp, amp, version)
-                : ByteUtils.concat(nonce, amp, timestamp);
+        final byte[] data;
+        switch (version) {
+            case "3.0", "3.1" -> data = ByteUtils.concat(nonce, amp, timestamp);
+            default -> data = ByteUtils.concat(nonce, amp, timestamp, amp, version.getBytes(StandardCharsets.UTF_8));
+        }
         return hmac.hash(tokenSecret, data);
     }
 
@@ -117,7 +119,7 @@ public class TokenUtils {
      * @throws GenericCryptoException In case digest computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, byte[] version, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
+    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, String version, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
         return SideChannelUtils.constantTimeAreEqual(computeTokenDigest(nonce, timestamp, version, tokenSecret), tokenDigest);
     }
 
