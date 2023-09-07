@@ -22,9 +22,9 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesRequestResp
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.ServerEciesEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorId;
+import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorParameters;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorScope;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorSecrets;
-import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorParameters;
 
 /**
  * The {@code EncryptorFactory} class provide high level encryptors for PowerAuth End-To-End encryption implementation.
