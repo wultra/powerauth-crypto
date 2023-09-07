@@ -16,7 +16,9 @@
  */
 package io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
 
 /**
  * The EciesCryptogram structure represents cryptogram transmitted over the network.

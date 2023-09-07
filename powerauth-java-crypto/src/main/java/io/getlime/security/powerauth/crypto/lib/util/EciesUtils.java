@@ -18,8 +18,6 @@ package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.EncryptorScope;
-import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
-import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -137,7 +135,7 @@ public final class EciesUtils {
                 throw new EciesException("Missing nonce parameter");
             }
             if (timestamp == null) {
-                throw new EciesException("Missing nonce parameter");
+                throw new EciesException("Missing timestamp parameter");
             }
             if (associatedData == null) {
                 throw new EciesException("Missing associatedData parameter");
