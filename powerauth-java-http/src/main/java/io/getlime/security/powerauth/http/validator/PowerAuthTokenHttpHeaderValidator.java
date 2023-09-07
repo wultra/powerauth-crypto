@@ -84,12 +84,12 @@ public class PowerAuthTokenHttpHeaderValidator {
         // Check that version is present
         final String version = header.getVersion();
         if (version == null || version.isEmpty()) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_EMPTY");
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_VERSION_EMPTY");
         }
 
         // Check that version is correct
         if (!ValueTypeValidator.isValidProtocolVersion(version)) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_ENCRYPTION_VERSION_INVALID");
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_TOKEN_VERSION_INVALID");
         }
 
     }
