@@ -11,7 +11,7 @@ There are a couple of very important things to keep in mind while using MAC Toke
 - **Data Integrity** - Since the resulting digest does not include any request data, it does not prevent data from being modified.
 - **Single Factor** - While the token has information about the factors used while the token was created, which is handy while distinguishing different grades of information (for example, some more sensitive info may require a token that was created using 2FA), the authentication as such uses only a single factor. It does not include PIN/password or biometric information at all.
 
-As a result, you must use MAC Token-Based Authentication for read-only operations only. In other words, use the MAC Token-Based Authentication to access resources, not to create or modify them. We recommend using the 1FA PowerAuth signature for active operations that create or modify resources but do not require user information. This way, you avoid having repeated or inconsistent data while allowing access to information that needs to be frequently accessed.
+As a result, you must use MAC Token-Based Authentication for read-only operations only. In other words, use the MAC Token-Based Authentication to access resources, not to create or modify them. We recommend using the 1FA PowerAuth signature for active operations that create or modify resources but do not require user's interaction. This way, you avoid having repeated or inconsistent data while allowing access to information that needs to be frequently accessed.
 
 Examples:
 
