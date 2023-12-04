@@ -21,7 +21,6 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>powerauth-java-http</artifactId>
-	<version>1.4.1-SNAPSHOT</version>
 	<name>powerauth-java-http</name>
 	<description>PowerAuth utility module for HTTP support</description>
 	<packaging>jar</packaging>
