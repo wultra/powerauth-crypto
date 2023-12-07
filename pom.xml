@@ -29,7 +29,7 @@
     <packaging>pom</packaging>
 
     <inceptionYear>2016</inceptionYear>
-    <url>http://powerauth.com/</url>
+    <url>https://powerauth.com/</url>
 
     <organization>
         <name>Wultra s.r.o.</name>
@@ -39,7 +39,7 @@
     <licenses>
         <license>
             <name>Apache 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -79,7 +79,7 @@
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <guava.version>31.1-jre</guava.version>
         <slf4j.version>2.0.5</slf4j.version>
-        <junit.version>5.9.1</junit.version>
+        <junit.version>5.9.2</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -105,6 +105,12 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
                 <version>${junit.version}</version>
             </dependency>
         </dependencies>
