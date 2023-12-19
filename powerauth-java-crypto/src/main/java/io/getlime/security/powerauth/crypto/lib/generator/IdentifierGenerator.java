@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.generator;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.model.RecoveryInfo;
 import io.getlime.security.powerauth.crypto.lib.model.RecoverySeed;
@@ -24,6 +23,7 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderEx
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.CRC16;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
+import org.bouncycastle.util.encoders.Base32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +67,8 @@ public class IdentifierGenerator {
      */
     private static final int PUK_DERIVATION_MAX_ATTEMPTS = 20;
 
+    private static final String PADDING = "====";
+
     private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
 
@@ -77,17 +79,6 @@ public class IdentifierGenerator {
      */
     public String generateActivationId() {
         return UUID.randomUUID().toString();
-    }
-
-    /**
-     * Generate a new string of a default length (5) with characters from Base32 encoding.
-     *
-     * @return New string with Base32 characters of a given length.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    private String generateBase32Token() throws CryptoProviderException {
-        byte[] randomBytes = keyGenerator.generateRandomBytes(BASE32_KEY_LENGTH);
-        return BaseEncoding.base32().omitPadding().encode(randomBytes).substring(0, BASE32_KEY_LENGTH);
     }
 
     /**
@@ -171,7 +162,7 @@ public class IdentifierGenerator {
         }
 
         // Decode the Base32 value
-        byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
+        byte[] activationCodeBytes = Base32.decode(activationCode.replace("-", "") + PADDING);
 
         // Verify byte array length
         if (activationCodeBytes.length != ACTIVATION_CODE_BYTES_LENGTH) {
@@ -367,9 +358,9 @@ public class IdentifierGenerator {
      * @param activationCodeBytes Raw activation code bytes.
      * @return Base32 String representation of activation code.
      */
-    private String encodeActivationCode(byte[] activationCodeBytes) {
-        // Generate Base32 representation from 12 activation code bytes, without padding characters.
-        String base32Encoded = BaseEncoding.base32().omitPadding().encode(activationCodeBytes);
+    private String encodeActivationCode(final byte[] activationCodeBytes) {
+        // Generate Base32 representation from 12 activation code bytes
+        final String base32Encoded = Base32.toBase32String(activationCodeBytes);
 
         // Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.
         return base32Encoded.substring(0, BASE32_KEY_LENGTH)

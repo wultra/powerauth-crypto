@@ -20,23 +20,25 @@ import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.RecoveryInfo;
 import io.getlime.security.powerauth.crypto.lib.model.RecoverySeed;
-import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
-import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
-import java.security.*;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
+ * Test for {@link IdentifierGenerator}.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class PowerAuthRecoveryCodeTest {
+class IdentifierGeneratorTest {
 
     private final IdentifierGenerator identifierGenerator = new IdentifierGenerator();
 
@@ -50,7 +52,7 @@ public class PowerAuthRecoveryCodeTest {
     }
 
     @Test
-    public void testRecoveryCodeDerivation() throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
+    void testRecoveryCodeDerivation() throws Exception {
         // Number of PUKs to test
         int pukCount = 100;
 
@@ -87,6 +89,16 @@ public class PowerAuthRecoveryCodeTest {
         for (int i = 1; i <= pukCount; i++) {
             assertEquals(recoveryInfo.getPuks().get(i), derivedRecoveryInfo.getPuks().get(i));
         }
+    }
+
+    @Test
+    void testGenerateActivationCode() throws Exception {
+        final IdentifierGenerator tested = new IdentifierGenerator();
+
+        final String result = tested.generateActivationCode(new byte[10]);
+
+        // Base32 is AAAAAAAAAAAAAAAAAAAA====
+        assertEquals("AAAAA-AAAAA-AAAAA-AAAAA", result);
     }
 
 }
