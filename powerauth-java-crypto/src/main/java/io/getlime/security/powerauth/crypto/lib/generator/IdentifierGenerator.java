@@ -57,6 +57,11 @@ public class IdentifierGenerator {
     private static final int ACTIVATION_CODE_BYTES_LENGTH = 12;
 
     /**
+     * When {@code ACTIVATION_CODE_BYTES_LENGTH = 12}, the Base32 padding is always {@code ====}.
+     */
+    private static final String ACTIVATION_CODE_PADDING = "====";
+
+    /**
      * Default length of random bytes used for Activation Code.
      * See {@link #generateActivationCode()} method for details.
      */
@@ -66,8 +71,6 @@ public class IdentifierGenerator {
      * Maximum number of attempts for PUK derivation.
      */
     private static final int PUK_DERIVATION_MAX_ATTEMPTS = 20;
-
-    private static final String PADDING = "====";
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
@@ -161,8 +164,8 @@ public class IdentifierGenerator {
             return false;
         }
 
-        // Decode the Base32 value
-        byte[] activationCodeBytes = Base32.decode(activationCode.replace("-", "") + PADDING);
+        // The activation code does not contain the padding, but it must be present in the Base32 value to be valid.
+        byte[] activationCodeBytes = Base32.decode(activationCode.replace("-", "") + ACTIVATION_CODE_PADDING);
 
         // Verify byte array length
         if (activationCodeBytes.length != ACTIVATION_CODE_BYTES_LENGTH) {
@@ -359,7 +362,7 @@ public class IdentifierGenerator {
      * @return Base32 String representation of activation code.
      */
     private String encodeActivationCode(final byte[] activationCodeBytes) {
-        // Generate Base32 representation from 12 activation code bytes
+        // Padding may be ignored; ACTIVATION_CODE_BYTES_LENGTH is set to 12 and the following substring takes only the first 20 characters.
         final String base32Encoded = Base32.toBase32String(activationCodeBytes);
 
         // Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.
