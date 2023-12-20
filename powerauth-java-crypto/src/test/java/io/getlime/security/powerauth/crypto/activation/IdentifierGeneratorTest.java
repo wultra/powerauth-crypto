@@ -93,9 +93,7 @@ class IdentifierGeneratorTest {
 
     @Test
     void testGenerateActivationCode() throws Exception {
-        final IdentifierGenerator tested = new IdentifierGenerator();
-
-        final String result = tested.generateActivationCode(new byte[10]);
+        final String result = identifierGenerator.generateActivationCode(new byte[10]);
 
         // Base32 is AAAAAAAAAAAAAAAAAAAA====
         assertEquals("AAAAA-AAAAA-AAAAA-AAAAA", result);
