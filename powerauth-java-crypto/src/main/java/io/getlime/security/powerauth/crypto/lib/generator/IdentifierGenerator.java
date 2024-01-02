@@ -57,11 +57,6 @@ public class IdentifierGenerator {
     private static final int ACTIVATION_CODE_BYTES_LENGTH = 12;
 
     /**
-     * When {@code ACTIVATION_CODE_BYTES_LENGTH = 12}, the Base32 padding is always {@code ====}.
-     */
-    private static final String ACTIVATION_CODE_PADDING = "====";
-
-    /**
      * Default length of random bytes used for Activation Code.
      * See {@link #generateActivationCode()} method for details.
      */
@@ -164,8 +159,8 @@ public class IdentifierGenerator {
             return false;
         }
 
-        // The activation code does not contain the padding, but it must be present in the Base32 value to be valid.
-        byte[] activationCodeBytes = Base32.decode(activationCode.replace("-", "") + ACTIVATION_CODE_PADDING);
+        final String activationCodeBase32 = fetchActivationCodeBase32(activationCode);
+        final byte[] activationCodeBytes = Base32.decode(activationCodeBase32);
 
         // Verify byte array length
         if (activationCodeBytes.length != ACTIVATION_CODE_BYTES_LENGTH) {
@@ -182,6 +177,32 @@ public class IdentifierGenerator {
 
         // Compare checksum values
         return expectedChecksum == actualChecksum;
+    }
+
+    /**
+     * Remove hyphens and calculate padding.
+     * <p>
+     * When {@code ACTIVATION_CODE_BYTES_LENGTH = 12}, the Base32 padding is always {@code ====}, but this method is safe to change the length in the future.
+     *
+     * @param activationCode activation code with hyphens
+     * @return base32 with padding
+     */
+    private static String fetchActivationCodeBase32(final String activationCode) {
+        final String activationCodeWithoutHyphens = activationCode.replace("-", "");
+        // The activation code does not contain the padding, but it must be present in the Base32 value to be valid.
+        final String activationCodePadding = switch (activationCodeWithoutHyphens.length() % 8) {
+            case 2:
+                yield "======";
+            case 4:
+                yield  "====";
+            case 5:
+                yield "===";
+            case 7:
+                yield "=";
+            default:
+                yield "";
+        };
+        return activationCodeWithoutHyphens + activationCodePadding;
     }
 
     /**
