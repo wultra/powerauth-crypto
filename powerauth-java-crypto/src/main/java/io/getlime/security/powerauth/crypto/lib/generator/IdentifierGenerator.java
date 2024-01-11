@@ -194,7 +194,7 @@ public class IdentifierGenerator {
             case 2:
                 yield "======";
             case 4:
-                yield  "====";
+                yield "====";
             case 5:
                 yield "===";
             case 7:
