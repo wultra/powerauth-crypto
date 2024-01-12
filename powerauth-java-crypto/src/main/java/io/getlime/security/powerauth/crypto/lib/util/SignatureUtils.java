@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.util;
 
-import com.google.common.base.Joiner;
 import io.getlime.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
@@ -164,7 +163,7 @@ public class SignatureUtils {
             signatureStringComponents[i] = String.format("%0" + signatureDecimalLength + "d", number);
         }
         // Join components with dash.
-        return Joiner.on("-").join(signatureStringComponents);
+        return String.join("-", signatureStringComponents);
     }
 
     /**
