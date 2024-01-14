@@ -28,6 +28,9 @@ For updating to 2023.12, please follow these migration guides:
 | Component | Application Name | Version | Description |
 |---|---|---|---|
 | PowerAuth Command Line Tool | `powerauth-java-cmd.jar` | 1.6.0 | Command line tool for integration testing. |
+| User Data Store | `user-data-store.war` | 1.1.0 | Server component which stores clients personal data securely. |
+| Mobile Utility Server | `mobile-utility-server.war` | 1.6.0 | Server component for dynamic SSL pinning, text localization, and other utilities. |
+| SSL Pinning Tool | `ssl-pinning-tool.jar` | 1.6.0 | A command line utility used to sign SSL certificates for dynamic SSL pinning. |
 
 ### Mobile Libraries
 
