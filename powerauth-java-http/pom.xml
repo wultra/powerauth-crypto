@@ -28,7 +28,7 @@
 	<parent>
 		<groupId>io.getlime.security</groupId>
 		<artifactId>powerauth-crypto-parent</artifactId>
-		<version>1.6.0</version>
+		<version>1.7.0</version>
 	</parent>
 
 	<dependencies>
@@ -36,10 +36,6 @@
 			<groupId>io.getlime.security</groupId>
 			<artifactId>powerauth-java-crypto</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

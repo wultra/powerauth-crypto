@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.generator;
 
-import com.google.common.io.BaseEncoding;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.model.RecoveryInfo;
 import io.getlime.security.powerauth.crypto.lib.model.RecoverySeed;
@@ -24,6 +23,7 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderEx
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.CRC16;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
+import org.bouncycastle.util.encoders.Base32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,17 +77,6 @@ public class IdentifierGenerator {
      */
     public String generateActivationId() {
         return UUID.randomUUID().toString();
-    }
-
-    /**
-     * Generate a new string of a default length (5) with characters from Base32 encoding.
-     *
-     * @return New string with Base32 characters of a given length.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    private String generateBase32Token() throws CryptoProviderException {
-        byte[] randomBytes = keyGenerator.generateRandomBytes(BASE32_KEY_LENGTH);
-        return BaseEncoding.base32().omitPadding().encode(randomBytes).substring(0, BASE32_KEY_LENGTH);
     }
 
     /**
@@ -170,8 +159,8 @@ public class IdentifierGenerator {
             return false;
         }
 
-        // Decode the Base32 value
-        byte[] activationCodeBytes = BaseEncoding.base32().decode(activationCode.replace("-", ""));
+        final String activationCodeBase32 = fetchActivationCodeBase32(activationCode);
+        final byte[] activationCodeBytes = Base32.decode(activationCodeBase32);
 
         // Verify byte array length
         if (activationCodeBytes.length != ACTIVATION_CODE_BYTES_LENGTH) {
@@ -188,6 +177,32 @@ public class IdentifierGenerator {
 
         // Compare checksum values
         return expectedChecksum == actualChecksum;
+    }
+
+    /**
+     * Remove hyphens and calculate padding.
+     * <p>
+     * When {@code ACTIVATION_CODE_BYTES_LENGTH = 12}, the Base32 padding is always {@code ====}, but this method is safe to change the length in the future.
+     *
+     * @param activationCode activation code with hyphens
+     * @return base32 with padding
+     */
+    private static String fetchActivationCodeBase32(final String activationCode) {
+        final String activationCodeWithoutHyphens = activationCode.replace("-", "");
+        // The activation code does not contain the padding, but it must be present in the Base32 value to be valid.
+        final String activationCodePadding = switch (activationCodeWithoutHyphens.length() % 8) {
+            case 2:
+                yield "======";
+            case 4:
+                yield "====";
+            case 5:
+                yield "===";
+            case 7:
+                yield "=";
+            default:
+                yield "";
+        };
+        return activationCodeWithoutHyphens + activationCodePadding;
     }
 
     /**
@@ -367,9 +382,9 @@ public class IdentifierGenerator {
      * @param activationCodeBytes Raw activation code bytes.
      * @return Base32 String representation of activation code.
      */
-    private String encodeActivationCode(byte[] activationCodeBytes) {
-        // Generate Base32 representation from 12 activation code bytes, without padding characters.
-        String base32Encoded = BaseEncoding.base32().omitPadding().encode(activationCodeBytes);
+    private String encodeActivationCode(final byte[] activationCodeBytes) {
+        // Padding may be ignored; ACTIVATION_CODE_BYTES_LENGTH is set to 12 and the following substring takes only the first 20 characters.
+        final String base32Encoded = Base32.toBase32String(activationCodeBytes);
 
         // Split Base32 string into 4 groups, each one contains 5 characters. Use "-" as separator.
         return base32Encoded.substring(0, BASE32_KEY_LENGTH)

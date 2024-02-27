@@ -16,7 +16,6 @@
  */
 package io.getlime.security.powerauth.crypto.lib.totp;
 
-import com.google.common.base.Strings;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
@@ -268,7 +267,7 @@ public final class Totp {
     }
 
     private static String padWithZeros(final String source, final int length) {
-        return Strings.padStart(source, length, '0');
+        return String.format("%1$" + length + "s", source).replace(' ', '0');
     }
 
     /**

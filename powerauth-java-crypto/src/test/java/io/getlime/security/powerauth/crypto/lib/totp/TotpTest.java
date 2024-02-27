@@ -36,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test for {@link Totp}.
  *
  * @author Lubos Racansky, lubos.racansky@wultra.com
- *
  */
 class TotpTest {
 
