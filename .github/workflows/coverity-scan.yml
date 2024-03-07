@@ -14,3 +14,4 @@ jobs:
       project-name: ${{ github.event.repository.name }}
       version: ${{ github.sha }}
       description: ${{ github.ref }}
+      java_version: 21

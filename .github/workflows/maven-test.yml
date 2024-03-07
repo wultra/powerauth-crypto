@@ -16,3 +16,5 @@ jobs:
   maven-tests:
     uses: wultra/wultra-infrastructure/.github/workflows/maven-test.yml@develop
     secrets: inherit
+    with:
+      java_version: 21
