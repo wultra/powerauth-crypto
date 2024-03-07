@@ -32,6 +32,7 @@ jobs:
     with:
       environment: internal-publish
       release_type: snapshot
+      java_version: 21
     secrets:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
@@ -43,6 +44,7 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       release_type: ${{ inputs.release_type }}
+      java_version: 21
     secrets:
       username: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
       password: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
