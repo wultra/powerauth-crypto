@@ -45,7 +45,7 @@ The first layer of encryption protects the data transfer between the mobile app 
 
 Detailed documentation of [End-to-End Encryption](./End-To-End-Encryption.md) is available in a dedicated chapter.
 
-A good place to review the exact request and response payload structure is in the [PowerAuth Standard RESTful API documentation](./Standard-RESTful-API.md#post-pav3activationcreate).
+A good place to review the exact request and response payload structure is in the [PowerAuth Standard RESTful API documentation](./Standard-RESTful-API.md#initiate-activation).
 
 ## Key Derivation
 
