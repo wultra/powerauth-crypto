@@ -1,6 +1,6 @@
 # Activation Status
 
-PowerAuth Client may need to check for an activation status, so that it can determine if it should display UI for non-activated state (registration form), blocked state (how to unblock tutorial) or active state (login screen). To facilitate this use-case, PowerAuth Standard RESTful API publishes a [/pa/v3/activation/status](./Standard-RESTful-API#post-pav3activationstatus) endpoint.
+PowerAuth Client may need to check for an activation status, so that it can determine if it should display UI for non-activated state (registration form), blocked state (how to unblock tutorial) or active state (login screen). To facilitate this use-case, PowerAuth Standard RESTful API publishes a [/pa/v3/activation/status](./Standard-RESTful-API#activation-status) endpoint.
 
 Checking for an activation status is simple. Client needs to prepare a HTTP request with an activation ID and random `STATUS_CHALLENGE`. Server processes the request and sends back the response with activation status blob and random `STATUS_NONCE`. Activation status blob is an encrypted binary blob that encodes the activation status. Key `KEY_TRANSPORT` and `STATUS_IV` is used to encrypt the activation blob.
 
