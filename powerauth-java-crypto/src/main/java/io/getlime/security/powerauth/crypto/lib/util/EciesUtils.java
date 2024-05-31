@@ -109,8 +109,8 @@ public final class EciesUtils {
             }
             try {
                 return new HMACHashUtilities().hash(transportKey, applicationSecretBytes);
-            } catch (Throwable t) {
-                throw new EciesException("HMAC calculation failed", t);
+            } catch (Exception e) {
+                throw new EciesException("HMAC calculation failed", e);
             }
         }
     }
