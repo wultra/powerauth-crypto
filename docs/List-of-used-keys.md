@@ -5,6 +5,7 @@ The following keys are used in the PowerAuth cryptography scheme.
 ## Application Scoped Keys
 
 | name                        | created as                               | purpose                                                                                                                                                             |
+|-----------------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `KEY_SERVER_MASTER_PRIVATE` | ECDH - private key                       | Embedded on server, used to assure authenticity of data during the transfer from server to client during application scoped use-cases (i.e., device activation).    |
 | `KEY_SERVER_MASTER_PUBLIC`  | ECDH - public key                        | Embedded in client app, used to verify authenticity of data while transferring from server to client during application scoped use-cases (i.e., device activation). |
 | `APP_KEY`                   | Application version key                  | Shared random ID between the server and client app, used to identify specific application version. The value travels in plain form over HTTPS channel.              |
