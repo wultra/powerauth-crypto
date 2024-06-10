@@ -18,4 +18,5 @@
 ## Directory-based project format:
 .idea/
 .mvn
+.vscode/
 dist/
