@@ -46,7 +46,7 @@ For updating to 2024.07, please follow these migration guides:
 | iOS App Extensions | `PowerAuth2ForExtensions`                         | 1.8.0   | A limited library for iOS App Extensions.   |
 | Android            | `com.wultra.android.powerauth:powerauth-sdk`      | 1.8.1   | A client library for Android.               |
 | React Native       | `react-native-powerauth-mobile-sdk`               | 2.5.1   | React Native wrapper library for PowerAuth. | 
-| mToken SDK iOS     | `WultraMobileTokenSDK`                            | 1.10.0  | Mobile Token SDK for the iOS platform.      |
+| mToken SDK iOS     | `WultraMobileTokenSDK`                            | 1.11.1  | Mobile Token SDK for the iOS platform.      |
 | mToken SDK Android | `com.wultra.android.mtokensdk:mtoken-sdk-android` | 1.11.0  | Mobile Token SDK for the Android platform.  |
 
 
