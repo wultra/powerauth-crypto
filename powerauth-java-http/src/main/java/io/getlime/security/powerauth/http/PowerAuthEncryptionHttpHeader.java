@@ -42,6 +42,11 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
         private static final String ACTIVATION_ID = "activation_id";
 
         /**
+         * Key representing the "temporary_key_id" in the PowerAuth encryption header.
+         */
+        private static final String TEMPORARY_KEY_ID = "temporary_key_id";
+
+        /**
          * Key representing the "version" in the PowerAuth encryption header.
          */
         private static final String VERSION = "version";
@@ -57,6 +62,11 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
      * Activation ID.
      */
     private String activationId;
+
+    /**
+     * Temporary Key ID.
+     */
+    private String temporaryKeyId;
 
     /**
      * PowerAuth protocol version.
@@ -109,6 +119,7 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
         Map<String, String> map = parseHttpHeader(headerValue);
         this.applicationKey = map.get(Key.APPLICATION_KEY);
         this.activationId = map.get(Key.ACTIVATION_ID);
+        this.temporaryKeyId = map.get(Key.TEMPORARY_KEY_ID);
         this.version = map.get(Key.VERSION);
         return this;
     }
@@ -122,6 +133,7 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
         return POWERAUTH_PREFIX
                 + headerField(Key.APPLICATION_KEY, this.applicationKey) + ", "
                 + (this.activationId == null ? "" : headerField(Key.ACTIVATION_ID, this.activationId) + ", ")
+                + (this.temporaryKeyId == null ? "" : headerField(Key.TEMPORARY_KEY_ID, this.temporaryKeyId) + ", ")
                 + headerField(Key.VERSION, this.version);
     }
 

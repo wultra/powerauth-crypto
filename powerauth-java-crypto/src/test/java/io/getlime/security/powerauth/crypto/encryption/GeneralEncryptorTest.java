@@ -886,12 +886,12 @@ public class GeneralEncryptorTest {
             final ServerEncryptor serverEncryptor;
             if (scope == EncryptorScope.APPLICATION_SCOPE) {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
-                        new EncryptorParameters("3.2", applicationKey, null),
+                        new EncryptorParameters("3.2", applicationKey, null, null),
                         new ServerEncryptorSecrets(masterServerPrivateKey, applicationSecret)
                 );
             } else {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
-                        new EncryptorParameters("3.2", applicationKey, activationId),
+                        new EncryptorParameters("3.2", applicationKey, activationId, null),
                         new ServerEncryptorSecrets(serverPrivateKey, applicationSecret, transportKey)
                 );
             }
@@ -910,9 +910,9 @@ public class GeneralEncryptorTest {
      */
     private EncryptorParameters getParametersForEncryptor(EncryptorId encryptorId, String protocolVersion) {
         if (encryptorId.scope() == EncryptorScope.ACTIVATION_SCOPE) {
-            return new EncryptorParameters(protocolVersion, configuration.applicationKey, configuration.activationId);
+            return new EncryptorParameters(protocolVersion, configuration.applicationKey, configuration.activationId, null);
         } else {
-            return new EncryptorParameters(protocolVersion, configuration.applicationKey, null);
+            return new EncryptorParameters(protocolVersion, configuration.applicationKey, null, null);
         }
     }
 

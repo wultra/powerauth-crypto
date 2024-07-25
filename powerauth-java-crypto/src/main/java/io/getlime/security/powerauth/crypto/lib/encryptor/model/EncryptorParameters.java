@@ -33,4 +33,5 @@ public class EncryptorParameters {
     private String protocolVersion;
     private String applicationKey;
     private String activationIdentifier;
+    private String temporaryKeyId;
 }

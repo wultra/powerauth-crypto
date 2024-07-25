@@ -62,10 +62,11 @@ public final class EciesUtils {
      * @param protocolVersion Protocol version.
      * @param applicationKey Application key.
      * @param activationId Activation ID.
+     * @param temporaryKeyId Temporary key ID.
      * @return Derived associated data.
      * @throws EciesException In case that activation ID is required but is missing.
      */
-    public static byte[] deriveAssociatedData(EncryptorScope scope, String protocolVersion, String applicationKey, String activationId) throws EciesException {
+    public static byte[] deriveAssociatedData(EncryptorScope scope, String protocolVersion, String applicationKey, String activationId, String temporaryKeyId) throws EciesException {
         if (protocolVersion == null) {
             throw new EciesException("Protocol version is missing");
         }
@@ -77,9 +78,17 @@ public final class EciesUtils {
                 if (activationId == null) {
                     throw new EciesException("Activation ID is missing in ACTIVATION_SCOPE");
                 }
-                return ByteUtils.concatStrings(protocolVersion, applicationKey, activationId);
+                if (temporaryKeyId != null) {
+                    return ByteUtils.concatStrings(protocolVersion, applicationKey, activationId, temporaryKeyId);
+                } else {
+                    return ByteUtils.concatStrings(protocolVersion, applicationKey, activationId);
+                }
             } else {
-                return ByteUtils.concatStrings(protocolVersion, applicationKey);
+                if (temporaryKeyId != null) {
+                    return ByteUtils.concatStrings(protocolVersion, applicationKey, temporaryKeyId);
+                } else {
+                    return ByteUtils.concatStrings(protocolVersion, applicationKey);
+                }
             }
         } else {
             return null;

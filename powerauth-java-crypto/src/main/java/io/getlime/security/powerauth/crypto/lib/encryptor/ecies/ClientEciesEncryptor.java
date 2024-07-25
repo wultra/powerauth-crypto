@@ -79,7 +79,8 @@ public class ClientEciesEncryptor implements ClientEncryptor {
                 encryptorId.scope(),
                 parameters.getProtocolVersion(),
                 parameters.getApplicationKey(),
-                parameters.getActivationIdentifier()
+                parameters.getActivationIdentifier(),
+                parameters.getTemporaryKeyId()
         );
     }
 
