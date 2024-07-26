@@ -89,10 +89,12 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
      *
      * @param applicationKey Application key.
      * @param version Version.
+     * @param temporaryKeyId Temporary key ID.
      */
-    public PowerAuthEncryptionHttpHeader(String applicationKey, String version) {
+    public PowerAuthEncryptionHttpHeader(String applicationKey, String version, String temporaryKeyId) {
         this.applicationKey = applicationKey;
         this.version = version;
+        this.temporaryKeyId = temporaryKeyId;
     }
 
     /**
@@ -101,11 +103,13 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
      * @param applicationKey Application key.
      * @param activationId Activation ID
      * @param version Version.
+     * @param temporaryKeyId Temporary key ID.
      */
-    public PowerAuthEncryptionHttpHeader(String applicationKey, String activationId, String version) {
+    public PowerAuthEncryptionHttpHeader(String applicationKey, String activationId, String version, String temporaryKeyId) {
         this.applicationKey = applicationKey;
         this.activationId = activationId;
         this.version = version;
+        this.temporaryKeyId = temporaryKeyId;
     }
 
     /**
