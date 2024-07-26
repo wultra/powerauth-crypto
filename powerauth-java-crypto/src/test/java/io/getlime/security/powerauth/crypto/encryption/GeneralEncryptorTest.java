@@ -385,12 +385,12 @@ public class GeneralEncryptorTest {
         request.setEphemeralPublicKey(null);
         assertFalse(validator.validateEncryptedRequest(request));
 
-        if ("3.1".equals(version) || "3.2".equals(version)) {
+        if ("3.1".equals(version) || "3.2".equals(version) || "3.3".equals(version)) {
             request = copyRequest(validRequest);
             request.setNonce(null);
             assertFalse(validator.validateEncryptedRequest(request));
         }
-        if ("3.2".equals(version)) {
+        if ("3.2".equals(version) || "3.3".equals(version)) {
             request = copyRequest(validRequest);
             request.setTimestamp(null);
             assertFalse(validator.validateEncryptedRequest(request));
@@ -420,7 +420,7 @@ public class GeneralEncryptorTest {
         response = copyResponse(validResponse);
         response.setEncryptedData(null);
         assertFalse(validator.validateEncryptedResponse(response));
-        if ("3.2".equals(version)) {
+        if ("3.2".equals(version) || "3.3".equals(version)) {
             response = copyResponse(validResponse);
             response.setTimestamp(null);
             assertFalse(validator.validateEncryptedResponse(response));
@@ -925,7 +925,7 @@ public class GeneralEncryptorTest {
      */
     private EncryptorSecrets getClientSecrets(EncryptorId encryptorId, String protocolVersion) throws Exception {
         final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
-        if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
+        if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion) || "3.3".equals(protocolVersion)) {
             return new ClientEncryptorSecrets(
                     appScope ? configuration.keyMasterServer.getPublic() : configuration.keyServer.getPublic(),
                     configuration.applicationSecret,
@@ -944,7 +944,7 @@ public class GeneralEncryptorTest {
      */
     private EncryptorSecrets getServerSecrets(EncryptorId encryptorId, String protocolVersion) throws Exception {
         final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
-        if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion)) {
+        if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion) || "3.3".equals(protocolVersion)) {
             return new ServerEncryptorSecrets(
                     appScope ? configuration.keyMasterServer.getPrivate() : configuration.keyServer.getPrivate(),
                     configuration.applicationSecret,

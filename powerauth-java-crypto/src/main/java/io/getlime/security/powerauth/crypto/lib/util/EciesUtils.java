@@ -70,28 +70,42 @@ public final class EciesUtils {
         if (protocolVersion == null) {
             throw new EciesException("Protocol version is missing");
         }
-        if ("3.2".equals(protocolVersion)) {
-            if (applicationKey == null) {
-                throw new EciesException("Application key is missing");
-            }
-            if (scope == EncryptorScope.ACTIVATION_SCOPE) {
-                if (activationId == null) {
-                    throw new EciesException("Activation ID is missing in ACTIVATION_SCOPE");
+        switch (protocolVersion) {
+            case "3.2": {
+                if (applicationKey == null) {
+                    throw new EciesException("Application key is missing");
                 }
-                if (temporaryKeyId != null) {
-                    return ByteUtils.concatStrings(protocolVersion, applicationKey, activationId, temporaryKeyId);
-                } else {
+                if (scope == EncryptorScope.ACTIVATION_SCOPE) {
+                    if (activationId == null) {
+                        throw new EciesException("Activation ID is missing in ACTIVATION_SCOPE");
+                    }
                     return ByteUtils.concatStrings(protocolVersion, applicationKey, activationId);
-                }
-            } else {
-                if (temporaryKeyId != null) {
-                    return ByteUtils.concatStrings(protocolVersion, applicationKey, temporaryKeyId);
                 } else {
                     return ByteUtils.concatStrings(protocolVersion, applicationKey);
                 }
             }
-        } else {
-            return null;
+            case "3.3": {
+                if (applicationKey == null) {
+                    throw new EciesException("Application key is missing");
+                }
+                if (scope == EncryptorScope.ACTIVATION_SCOPE) {
+                    if (activationId == null) {
+                        throw new EciesException("Activation ID is missing in ACTIVATION_SCOPE");
+                    }
+                    if (temporaryKeyId == null) {
+                        throw new EciesException("Missing temporary key identifier");
+                    }
+                    return ByteUtils.concatStrings(protocolVersion, applicationKey, activationId, temporaryKeyId);
+                } else {
+                    if (temporaryKeyId == null) {
+                        throw new EciesException("Missing temporary key identifier");
+                    }
+                    return ByteUtils.concatStrings(protocolVersion, applicationKey, temporaryKeyId);
+                }
+            }
+            default: {
+                return null;
+            }
         }
     }
 
@@ -139,24 +153,28 @@ public final class EciesUtils {
         if (sharedInfo2Base == null) {
             throw new EciesException("Missing sharedInfo2Base parameter");
         }
-        if ("3.2".equals(protocolVersion)) {
-            if (nonce == null) {
-                throw new EciesException("Missing nonce parameter");
+        switch (protocolVersion) {
+            case "3.3", "3.2": {
+                if (nonce == null) {
+                    throw new EciesException("Missing nonce parameter");
+                }
+                if (timestamp == null) {
+                    throw new EciesException("Missing timestamp parameter");
+                }
+                if (associatedData == null) {
+                    throw new EciesException("Missing associatedData parameter");
+                }
+                return ByteUtils.concatWithSizes(
+                        sharedInfo2Base,
+                        nonce,
+                        ByteBuffer.allocate(Long.BYTES).putLong(timestamp).array(),
+                        ephemeralPublicKey,
+                        associatedData);
             }
-            if (timestamp == null) {
-                throw new EciesException("Missing timestamp parameter");
+            default: {
+                return sharedInfo2Base;
             }
-            if (associatedData == null) {
-                throw new EciesException("Missing associatedData parameter");
-            }
-            return ByteUtils.concatWithSizes(
-                    sharedInfo2Base,
-                    nonce,
-                    ByteBuffer.allocate(Long.BYTES).putLong(timestamp).array(),
-                    ephemeralPublicKey,
-                    associatedData);
         }
-        return sharedInfo2Base;
     }
 
 }
