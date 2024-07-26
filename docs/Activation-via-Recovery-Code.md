@@ -111,7 +111,7 @@ After this step, PowerAuth Client performs Key Exchange with the PowerAuth Serve
 
 ### Key Exchange
 
-Following diagram shows how public keys are exchanged between PowerAuth Client and PowerAuth Server, and how master shared secret and PowerAuth Standard Keys are derived. The process is very similar to [Key Exchange](Activation.md#key-exchange) from a regular [Activation](Activation.md).
+Following diagram shows how public keys are exchanged between PowerAuth Client and PowerAuth Server, and how master shared secret and PowerAuth Standard Keys are derived. The process is very similar to [Key Derivation](Activation.md#key-derivation) from a regular [Activation](Activation.md).
 
 ![Activation via Recovery Code](resources/images/sequence_activation_recovery.png)
 

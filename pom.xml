@@ -25,7 +25,7 @@
 
     <groupId>io.getlime.security</groupId>
     <artifactId>powerauth-crypto-parent</artifactId>
-    <version>1.7.0</version>
+    <version>1.8.0</version>
     <packaging>pom</packaging>
 
     <inceptionYear>2016</inceptionYear>
@@ -74,14 +74,14 @@
         <java.version>17</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
 
-        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
-        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
-        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
-        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-        <slf4j.version>2.0.12</slf4j.version>
-        <junit.version>5.10.2</junit.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
+        <maven-javadoc-plugin.version>3.8.0</maven-javadoc-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
+        <slf4j.version>2.0.13</slf4j.version>
+        <junit.version>5.10.3</junit.version>
     </properties>
 
     <dependencyManagement>
