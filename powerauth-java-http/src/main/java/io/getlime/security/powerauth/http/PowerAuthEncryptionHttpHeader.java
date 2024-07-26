@@ -160,4 +160,12 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
     public String getVersion() {
         return version;
     }
+
+    /**
+     * Get temporary key ID.
+     * @return Temporary key ID.
+     */
+    public String getTemporaryKeyId() {
+        return temporaryKeyId;
+    }
 }
