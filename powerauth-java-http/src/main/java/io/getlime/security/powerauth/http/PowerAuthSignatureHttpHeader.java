@@ -52,11 +52,6 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
         private static final String SIGNATURE_TYPE = "pa_signature_type";
 
         /**
-         * Key representing the "pa_temporary_key_id" in the PowerAuth authorization header.
-         */
-        private static final String TEMPORARY_KEY_ID = "pa_temporary_key_id";
-
-        /**
          * Key representing the "pa_nonce" in the PowerAuth authorization header.
          */
         private static final String NONCE = "pa_nonce";
@@ -87,11 +82,6 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
      * Key representing signature type.
      */
     private String signatureType;
-
-    /**
-     * Field representing temporary key ID value.
-     */
-    private String temporaryKeyId;
 
     /**
      * Field representing nonce value.
@@ -145,7 +135,6 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
         this.nonce                = map.get(Key.NONCE);
         this.signatureType        = map.get(Key.SIGNATURE_TYPE);
         this.signature            = map.get(Key.SIGNATURE);
-        this.temporaryKeyId       = map.get(Key.TEMPORARY_KEY_ID);
         this.version              = map.get(Key.VERSION);
         return this;
     }
@@ -161,7 +150,6 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
                 + headerField(Key.NONCE, this.nonce) + ", "
                 + headerField(Key.SIGNATURE_TYPE, this.signatureType) + ", "
                 + headerField(Key.SIGNATURE, this.signature) + ", "
-                + ((temporaryKeyId != null) ? headerField(Key.TEMPORARY_KEY_ID, temporaryKeyId) + ", " : "")
                 + headerField(Key.VERSION, this.version);
     }
 
@@ -205,14 +193,6 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
      */
     public String getNonce() {
         return nonce;
-    }
-
-    /**
-     * Get temporary key ID.
-     * @return Temporary key ID.
-     */
-    public String getTemporaryKeyId() {
-        return temporaryKeyId;
     }
 
     /**

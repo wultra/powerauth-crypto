@@ -452,8 +452,9 @@ public class GeneralEncryptorTest {
      * Make new instance of encrypted request object with identical values copied from the provided object.
      * @param request Request object to copy.
      * @return Copy of provided request object.
-     */    private EncryptedRequest copyRequest(EncryptedRequest request) {
-        return new EncryptedRequest(request.getEphemeralPublicKey(), request.getEncryptedData(), request.getMac(), request.getNonce(), request.getTimestamp());
+     */
+    private EncryptedRequest copyRequest(EncryptedRequest request) {
+        return new EncryptedRequest(request.getTemporaryKeyId(), request.getEphemeralPublicKey(), request.getEncryptedData(), request.getMac(), request.getNonce(), request.getTimestamp());
     }
 
     /**
@@ -658,6 +659,7 @@ public class GeneralEncryptorTest {
         // Requests
         final EncryptedRequest[] encryptedRequest = {
                 new EncryptedRequest(
+                        null,
                         "Avlav7hfDwCA1zJq6gyczWtUn+MhNCebikIH7rkUkoHB",
                         "jZ1y4ZkJpvRTDHFXQ+J9jsWaFuV0AvqpUXFDCi3bH90YCutTufSamKXpEIhFfqBmhzYak2g6LBUfgmTJ7c74D+eOqGRn1EwZOcgVHKbaFjgthwSUnD8E7maEK9u5qmVdi52drt9vQ1Cye5jWn0vSTKmvSkfcQcmK42o/0r/8LXs=",
                         "ovJWPbaRr/+9nDLwHhej1u9iNVg0OVVNNO2zI88AM9g=",
@@ -665,6 +667,7 @@ public class GeneralEncryptorTest {
                         1691762307382L
                 ),
                 new EncryptedRequest(
+                        null,
                         "A97NlW0JPLJfpG0AUvaRHRGSHh+quZu+u0c+yxsK7Xji",
                         "qYLONkDWFpXefTKPbaKTA/PWdRYH5pk9uvGjUqSYbeK7Q0aOohK2MknTyviyNuSp",
                         "DNlZdsM1wgH8v2mAROjj3vmQu4DI4ZJnuTBzQMrHsew=",
@@ -672,6 +675,7 @@ public class GeneralEncryptorTest {
                         1691762307384L
                 ),
                 new EncryptedRequest(
+                        null,
                         "AtSsPjiwbh3GnWYjCOejGIGg0LEbl1X6SY4f1F77PG2I",
                         "px6h9Hu+wyH38YySO6istbinaF3ALyrBraad0qhTCJZrYrVlTv1bEnfvElBupQzGUx3SikSqaOjR+UKzj9TVfa2rw36LkSIVFZYk1gG6xW3U852ZvJpuTtw6h7WhFYks",
                         "bySXBDU/9mDx9T8i9DFWX7Xn4O6HZK2EMLpA+ogv3eM=",
@@ -679,6 +683,7 @@ public class GeneralEncryptorTest {
                         1691762307384L
                 ),
                 new EncryptedRequest(
+                        null,
                         "AnjhcBNyzpyUs8TnvW164zfwVk6UQjof8zueumjUADlB",
                         "rQDj9EseF9GvJY6a0YCExA==",
                         "Mpu0lek/SXf7JvxnlEngv/Bx8nFhxi54vHVrBr0f7H8=",
@@ -686,6 +691,7 @@ public class GeneralEncryptorTest {
                         1691762307385L
                 ),
                 new EncryptedRequest(
+                        null,
                         "Aqa/2aW4VuZTXaFoc0rcc67RotG0rbiqpvontLsdoLIe",
                         "ic3LxIfwgK9XbckAxivYvMdwuAL9nOC/Kdry4w/1xRw=",
                         "OyQcPCU8opsBN88vCE/9Km53a8sNqamIMIwxNfOOyto=",
@@ -693,6 +699,7 @@ public class GeneralEncryptorTest {
                         1691762307385L
                 ),
                 new EncryptedRequest(
+                        null,
                         "Aomhgt+8zAMsuRYgsVJMioFFPLP6eK+4omcLfftS/PHK",
                         "xNdtHsq28x+cFGxLGJbW6l7SscETdLRHejmXYETzU8670YyaqpiGOO5276vb3XDnxM6GjKHEztXruz8YBQzWKYqc6YVU4WqKMNHBu1A/9yKY8KGE+XsSxyrkZxoIM4oZuUp7p1ui+H87PPY8Vs/c9dMM5YUMYVUFZA1kBnzskKs=",
                         "z05w9DN9CKWtURAr0g7D5Kya8Jvp+CQFLNz2Fy1inaI=",
@@ -700,6 +707,7 @@ public class GeneralEncryptorTest {
                         1691762307385L
                 ),
                 new EncryptedRequest(
+                        null,
                         "AoCXG9cbmKBSPP2zi3pOuJQV6dENZ751dUhEGoDqLWVB",
                         "fqsJXWuIt2rwwsWLu8TbPnCxwha6PTGTpzmsLq/Tdynt5YcrEBk9wlRaQIXzWi0KbES20BjJbgL7JIaY2qj/XlFU+vxB+vybUnHrtpe2NaDthaYgdEecX3W1uzpyd745ogDSGe19gOqwXCFCRFLF+w==",
                         "T/tx0z+61zPosCa2Y0oJBepFOOfn0O1lrMKkr9RSVNY=",
@@ -707,6 +715,7 @@ public class GeneralEncryptorTest {
                         1691762307386L
                 ),
                 new EncryptedRequest(
+                        null,
                         "A/5KJP3Cb8DhNjo8Cs2juYLwpswsUBJe6XXdwowIelP7",
                         "wUXXg0vgkZjqvqIfJm7YPgk+7bwgWSttizi+uSKAE4z8dOY8zUp0uvsvsUqDIvnhisnc82IyS/kGhSg1QWyzjAdfr5rWehl+aS+e8GPIu3Ok8n0qNG9TJ1n/UxuD6Ok/WTCHsRW2QoU2I8vB6BAMUw==",
                         "J88D9JrcVVmVlUNe5g6IzEHd3m+PqfSzBNyCfEb+UXg=",
@@ -714,6 +723,7 @@ public class GeneralEncryptorTest {
                         1691762307386L
                 ),
                 new EncryptedRequest(
+                        null,
                         "A3TP+jPFrRgQd563V8goh2wJgvRS9eMpwjo9tOivLboN",
                         "8MjZ4+3cUC7IkwyNK09WSDMOrMpNwfHrXUM3A/19sjyOVZJIAl9HYJySlN8h9A2qrG7l0Eu6nFUwjDH8+NHfqBHCdOAnpncwgANE5GetzgA=",
                         "pmWeeMSroONdztB05rb6932llfAJJo6+uqLvwYq01dw=",
@@ -721,6 +731,7 @@ public class GeneralEncryptorTest {
                         1691762307386L
                 ),
                 new EncryptedRequest(
+                        null,
                         "A0w7WTl0Q3vhxlyKJWV1hM1YC484mysCqhjay9uFSmvG",
                         "K0Ep8dWNhD99yZm/mShFy53DYbTCntm582rlWwskPfcKTE7b/7gBFbXaGly1o9cmQ9Wv9RjBx8Ai4rda/KKbyMq3ZaX6ljAWFpOmqUIgMUQ=",
                         "Zr7vEn6WBYkFFZRAvq3UdRR/OWF2uOK0ABik9fytOUo=",
@@ -728,6 +739,7 @@ public class GeneralEncryptorTest {
                         1691762307387L
                 ),
                 new EncryptedRequest(
+                        null,
                         "A4o3ZVufjyXvJnc98rvHxTbQgCpY1dwMkJs4mKkT78up",
                         "8hYJGXgHLD8tH9sFrRlU6fxGWU/JdlSBpPkL178OFRdORMXTY/ReMRbajQD3bXKzXjmhdYR5X13fHsmiuvHIQVPRFB0ZyS43HT/uEDpWh8SWByKjNB5je6ftEySsmpKGp0KvmjXgiIRX7TiRzwJ03g==",
                         "VX9TB4hPM7/6U/NQvBNR6VaP1loyq2ZhcmEu4NWCU7g=",
@@ -735,6 +747,7 @@ public class GeneralEncryptorTest {
                         1691762307387L
                 ),
                 new EncryptedRequest(
+                        null,
                         "AhVR4QxfHA5resv8ppMANxzZwkaWphsmtA/EENi8Swjp",
                         "ASC8xiBSyjx8wGwf71U9Zk4nZT9w//8AafiZaT+9RtObUmb1HjguWv3Xpqejnf5kml3Z7sXDYgFemFYLklhL5A==",
                         "8wlb+Pz3UulREpbcBV4GfiY4bePugBPV6ywgaycvrpU=",
@@ -742,6 +755,7 @@ public class GeneralEncryptorTest {
                         1691762307387L
                 ),
                 new EncryptedRequest(
+                        null,
                         "A9ok7XXLWWWtQAxERdvFv3I31D+pgZuY3cVSbjpJHLda",
                         "+b0Ki6WcoaoGJhBrGR28zeMqS91XMmCCtO/HU3xaKNg=",
                         "jmkaGcZ+qnrMXtD1R7YhRmJJU+d3y6/nATjNno7DA0A=",
@@ -749,6 +763,7 @@ public class GeneralEncryptorTest {
                         1691762307388L
                 ),
                 new EncryptedRequest(
+                        null,
                         "A24fQipKuaW7sOmXbpZDW+QetW/aBmS+2fkrkSdNDlQe",
                         "GaXg6TBM+H4ru/E25gvV0g==",
                         "xV19DEuOG+SGpT22GU55mVQqU4I7/+vgWNFKDq6tK5k=",
@@ -756,6 +771,7 @@ public class GeneralEncryptorTest {
                         1691762307388L
                 ),
                 new EncryptedRequest(
+                        null,
                         "ArzfJWjDZrjndvQg3aFxZme6w/Z5P4uV4mBClCbURJuv",
                         "cbG2zh4dp5Ig65/Gdz97ZLm1vWeLfSUbIIoLWQXQm5pUVLkHJ55Mrl4TwdK6kTG0",
                         "lawZCFwh0NTpNafMwC92/ndMnkryG4yxfAvp/4q1F3Y=",
@@ -763,6 +779,7 @@ public class GeneralEncryptorTest {
                         1691762307388L
                 ),
                 new EncryptedRequest(
+                        null,
                         "At3TEHVJmtO+VPUtJ/ijXYhx1BAnjcDnQRk9AbhukeWa",
                         "4RPt1tswWfapZNWU7gFkuMyUADjsykdAQHQsMXHmghDE3l7dVYiMctKuj8RHFLAIsgI09toZelMAPRE1PLJz6g==",
                         "JgkwHwwwoDb14zokbecDQeqmOrJxRO0Lddv1sQp0bnQ=",
