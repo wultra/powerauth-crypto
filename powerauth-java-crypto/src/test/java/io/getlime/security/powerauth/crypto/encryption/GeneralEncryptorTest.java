@@ -1293,10 +1293,8 @@ public class GeneralEncryptorTest {
             final byte[] decryptedRequestData = serverEncryptor.decryptRequest(request);
             assertArrayEquals(plainRequestData[i], decryptedRequestData);
         }
-
     }
-
-
+    
     /**
      * Construct EncryptorParameters for given encryptor and protocol version.
      * @param encryptorId Encryptor identifier.
