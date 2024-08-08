@@ -75,6 +75,8 @@ public class GeneralEncryptorTest {
         final String activationId;
         final KeyPair keyMasterServer;
         final KeyPair keyServer;
+        final String tempKeyApplication;
+        final String tempKeyActivation;
     }
 
     private TestConfiguration configuration;
@@ -99,7 +101,9 @@ public class GeneralEncryptorTest {
                 keyGenerator.generateRandomBytes(16),
                 UUID.randomUUID().toString(),
                 keyGenerator.generateKeyPair(),
-                keyGenerator.generateKeyPair()
+                keyGenerator.generateKeyPair(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString()
         );
     }
 
@@ -467,6 +471,7 @@ public class GeneralEncryptorTest {
             @Override
             public void validateRequest(EncryptedRequest request) throws Exception {
                 assertNotNull(request);
+                assertNull(request.getTemporaryKeyId());
                 assertNotNull(request.getEphemeralPublicKey());
                 assertNotNull(request.getEncryptedData());
                 assertNotNull(request.getMac());
@@ -495,6 +500,7 @@ public class GeneralEncryptorTest {
             @Override
             public void validateRequest(EncryptedRequest request) throws Exception {
                 assertNotNull(request);
+                assertNull(request.getTemporaryKeyId());
                 assertNotNull(request.getEphemeralPublicKey());
                 assertNotNull(request.getEncryptedData());
                 assertNotNull(request.getMac());
@@ -523,6 +529,36 @@ public class GeneralEncryptorTest {
             @Override
             public void validateRequest(EncryptedRequest request) throws Exception {
                 assertNotNull(request);
+                assertNull(request.getTemporaryKeyId());
+                assertNotNull(request.getEphemeralPublicKey());
+                assertNotNull(request.getEncryptedData());
+                assertNotNull(request.getMac());
+                assertNotNull(request.getNonce());
+                assertNotNull(request.getTimestamp());
+            }
+
+            @Override
+            public void validateResponse(EncryptedResponse response) throws Exception {
+                assertNotNull(response);
+                assertNotNull(response.getEncryptedData());
+                assertNotNull(response.getMac());
+                assertNotNull(response.getNonce());
+                assertNotNull(response.getTimestamp());
+            }
+        });
+    }
+
+    /**
+     * Test general encrypt-decrypt routines with using protocol 3.3.
+     * @throws Exception In case of failure.
+     */
+    @Test
+    public void testEncryptDecryptV33() throws Exception {
+        testGenericEncryptor("3.3", new DataValidator() {
+            @Override
+            public void validateRequest(EncryptedRequest request) throws Exception {
+                assertNotNull(request);
+                assertNotNull(request.getTemporaryKeyId());
                 assertNotNull(request.getEphemeralPublicKey());
                 assertNotNull(request.getEncryptedData());
                 assertNotNull(request.getMac());
@@ -1294,7 +1330,7 @@ public class GeneralEncryptorTest {
             assertArrayEquals(plainRequestData[i], decryptedRequestData);
         }
     }
-    
+
     /**
      * Construct EncryptorParameters for given encryptor and protocol version.
      * @param encryptorId Encryptor identifier.
@@ -1303,9 +1339,11 @@ public class GeneralEncryptorTest {
      */
     private EncryptorParameters getParametersForEncryptor(EncryptorId encryptorId, String protocolVersion) {
         if (encryptorId.scope() == EncryptorScope.ACTIVATION_SCOPE) {
-            return new EncryptorParameters(protocolVersion, configuration.applicationKey, configuration.activationId, null);
+            final String tempKeyId = "3.3".equals(protocolVersion) ? configuration.tempKeyActivation : null;
+            return new EncryptorParameters(protocolVersion, configuration.applicationKey, configuration.activationId, tempKeyId);
         } else {
-            return new EncryptorParameters(protocolVersion, configuration.applicationKey, null, null);
+            final String tempKeyId = "3.3".equals(protocolVersion) ? configuration.tempKeyApplication : null;
+            return new EncryptorParameters(protocolVersion, configuration.applicationKey, null, tempKeyId);
         }
     }
 
