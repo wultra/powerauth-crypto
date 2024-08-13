@@ -88,18 +88,15 @@ public final class EciesUtils {
                 if (applicationKey == null) {
                     throw new EciesException("Application key is missing");
                 }
+                if (temporaryKeyId == null) {
+                    throw new EciesException("Missing temporary key identifier");
+                }
                 if (scope == EncryptorScope.ACTIVATION_SCOPE) {
                     if (activationId == null) {
                         throw new EciesException("Activation ID is missing in ACTIVATION_SCOPE");
                     }
-                    if (temporaryKeyId == null) {
-                        throw new EciesException("Missing temporary key identifier");
-                    }
                     return ByteUtils.concatStrings(protocolVersion, applicationKey, activationId, temporaryKeyId);
                 } else {
-                    if (temporaryKeyId == null) {
-                        throw new EciesException("Missing temporary key identifier");
-                    }
                     return ByteUtils.concatStrings(protocolVersion, applicationKey, temporaryKeyId);
                 }
             }
