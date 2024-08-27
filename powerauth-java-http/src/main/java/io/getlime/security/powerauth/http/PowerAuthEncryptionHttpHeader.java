@@ -148,4 +148,5 @@ public class PowerAuthEncryptionHttpHeader extends PowerAuthHttpHeader {
     public String getVersion() {
         return version;
     }
+
 }

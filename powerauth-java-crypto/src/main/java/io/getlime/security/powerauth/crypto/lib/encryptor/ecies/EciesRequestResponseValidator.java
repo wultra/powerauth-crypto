@@ -33,7 +33,7 @@ public class EciesRequestResponseValidator implements RequestResponseValidator {
     /**
      * Protocol versions supported in this validator.
      */
-    private final static Set<String> supportedVersions = Set.of("3.2", "3.1", "3.0");
+    private final static Set<String> supportedVersions = Set.of("3.3", "3.2", "3.1", "3.0");
 
     /**
      * Indicate that request and response must contain timestamp and nonce. This is valid for protocol V3.2+.
@@ -53,8 +53,8 @@ public class EciesRequestResponseValidator implements RequestResponseValidator {
         if (!supportedVersions.contains(protocolVersion)) {
             throw new EncryptorException("Unsupported protocol version " + protocolVersion);
         }
-        this.useTimestamp = "3.2".equals(protocolVersion);
-        this.useNonceForRequest = "3.2".equals(protocolVersion) || "3.1".equals(protocolVersion);
+        this.useTimestamp = "3.3".equals(protocolVersion) || "3.2".equals(protocolVersion);
+        this.useNonceForRequest = "3.3".equals(protocolVersion) || "3.2".equals(protocolVersion) || "3.1".equals(protocolVersion);
     }
 
     @Override

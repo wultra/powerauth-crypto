@@ -79,7 +79,8 @@ public class ClientEciesEncryptor implements ClientEncryptor {
                 encryptorId.scope(),
                 parameters.getProtocolVersion(),
                 parameters.getApplicationKey(),
-                parameters.getActivationIdentifier()
+                parameters.getActivationIdentifier(),
+                parameters.getTemporaryKeyId()
         );
     }
 
@@ -156,6 +157,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         }
 
         return new EncryptedRequest(
+                encryptorParameters.getTemporaryKeyId(),
                 base64Encoder.encodeToString(eciesCryptogram.getEphemeralPublicKey()),
                 base64Encoder.encodeToString(eciesCryptogram.getEncryptedData()),
                 base64Encoder.encodeToString(eciesCryptogram.getMac()),
