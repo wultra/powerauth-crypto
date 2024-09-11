@@ -61,7 +61,7 @@ Note that the `APPLICATION_SECRET` constant is in Base64 form, so we need to rei
 
 ECIES in activation scope has the following configuration of parameters:
 
-- `KEY_ENC_PUB` is a [temporary key](./Temporary-Encryption-Keys.md) with given `TEMP_KEY_ID` identifier fetched from the server associated with a specific application version and activation, and signed with `KEY_SERVER_PUBLIC` (the key which is unique for each activation, to prove it was intended for the activations cope).
+- `KEY_ENC_PUB` is a [temporary key](./Temporary-Encryption-Keys.md) with given `TEMP_KEY_ID` identifier fetched from the server associated with a specific application version and activation, and signed with `KEY_SERVER_PRIVATE` (the key which is unique for each activation, to prove it was intended for the activations cope).
 - `SHARED_INFO_1` is a pre-shared constant and is different for each endpoint (see [Pre-shared constants](#pre-shared-constants))
 - `SHARED_INFO_2_BASE` is calculated from `APPLICATION_SECRET` and `KEY_TRANSPORT`:
   ```java
