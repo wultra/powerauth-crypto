@@ -19,6 +19,7 @@
 **Encryption**
 
 - [End-To-End Encryption](./End-To-End-Encryption.md)
+- [Temporary Encryption Keys](./Temporary-Encryption-Keys.md)
 
 **Other Chapters**
 
