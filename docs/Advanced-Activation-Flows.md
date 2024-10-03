@@ -44,7 +44,7 @@ In this common scenario, it's expected that the PowerAuth activation is not yet 
 1. User is authenticated in Master Front-End Application and initiates the activation creation process:
 
    1. Master Front-End Application generates random activation OTP.
-   1. Master Front-End Application then asks PowerAuth server to create an activation using the init activation method ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation), `commitPhase` parameter is set to `ON_KEY_EXCHANGE` and `activationOtp` parameter is specified).
+   1. Master Front-End Application then asks PowerAuth server to create an activation using the init activation method ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation), `commitPhase` parameter is set to `ON_KEY_EXCHANGE` and the `activationOtp` value is set to previously generated OTP).
    1. Master Front-End Application then displays QR code, containing an activation code.
    1. At the same time, Master Front-End Application initiates the delivery of activation OTP. It's recommended to deliver such code via a dedicated out-of-band channel, for example, via SMS.
 
@@ -97,7 +97,7 @@ In this common scenario, an additional activation OTP helps with the final activ
 1. User is authenticated in Master Front-End Application and initiates the activation creation process:
 
    1. Master Front-End Application generates random activation OTP and keeps it temporarily in the database.
-   1. Master Front-End Application then asks PowerAuth server to create an activation, with using this OTP ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation) method, commit phase is not specified or set to `ON_COMMIT`).
+   1. Master Front-End Application then asks PowerAuth server to create an activation using the init activation method ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation) method, commit phase is not specified or set to `ON_COMMIT` and the `activationOtp` value is set to previously generated OTP).
    1. Master Front-End Application then displays QR code, containing an activation code.
 
 1. In the mobile application:
