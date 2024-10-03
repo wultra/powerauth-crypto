@@ -25,7 +25,7 @@
 
 - [Basic Definitions](./Basic-definitions.md)
 - [Activation Code Format](./Activation-Code.md)
-- [Additional Activation OTP](./Additional-Activation-OTP.md)
+- [Advanced Activation Flows](./Advanced-Activation-Flows)
 - [Implementation Details](./Implementation-notes.md)
 - [List of Used Algorithms](./List-of-Used-Algorithms.md)
 - [List of Used Keys](./List-of-used-keys.md)
