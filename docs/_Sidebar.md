@@ -28,7 +28,7 @@
 - [Additional Activation OTP](./Additional-Activation-OTP.md)
 - [Implementation Details](./Implementation-notes.md)
 - [List of Used Algorithms](./List-of-Used-Algorithms.md)
-- [List of Used Keys](./List-of-used-keys.md)
+- [List of Used Keys](./List-of-Used-Keys.md)
 
 **Tutorials**
 
