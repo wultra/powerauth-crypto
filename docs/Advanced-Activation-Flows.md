@@ -44,7 +44,7 @@ In this common scenario, it's expected that the PowerAuth activation is not yet 
 1. User is authenticated in Master Front-End Application and initiates the activation creation process:
 
    1. Master Front-End Application generates random activation OTP.
-   1. Master Front-End Application then asks PowerAuth server to create an activation using the init activation method ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation), `commitPhase` parameter is set to `ON_KEY_EXCHANGE`).
+   1. Master Front-End Application then asks PowerAuth server to create an activation using the init activation method ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation), `commitPhase` parameter is set to `ON_KEY_EXCHANGE` and `activationOtp` parameter is specified).
    1. Master Front-End Application then displays QR code, containing an activation code.
    1. At the same time, Master Front-End Application initiates the delivery of activation OTP. It's recommended to deliver such code via a dedicated out-of-band channel, for example, via SMS.
 
