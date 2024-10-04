@@ -117,6 +117,8 @@ Finally, the last diagram shows how the Activation Code Delivery Application pro
 
 ![Activation Commit](./resources/images/sequence_activation_commit.png)
 
+Note that the activation commit step can be skipped in case activation is committed during key exchange, as described in chapter [Advanced Activation Flows](./Advanced-Activation-Flows.md).
+
 #### Process Description
 
 1. PowerAuth Mobile SDK displays `H_K_DEVICE_PUBLIC`, so that a user can visually verify the device public key correctness by comparing the `H_K_DEVICE_PUBLIC` value displayed in the Master Front-End Application.
@@ -141,5 +143,5 @@ Finally, the last diagram shows how the Activation Code Delivery Application pro
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Checking Activation Status](./Activation-Status.md)
 - [Key Derivation](./Key-derivation.md)
-- [Additional Activation OTP](Additional-Activation-OTP.md)
+- [Advanced Activation Flows](Advanced-Activation-Flows)
 

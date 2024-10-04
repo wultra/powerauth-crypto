@@ -54,7 +54,7 @@ In the second scenario, the mobile application acts as a replacement for a typic
 
 For all cases, we recommend you to implement the following countermeasures:
 
-- Confirm the recovery activation with an [additional activation OTP](Additional-Activation-OTP.md).
+- Confirm the recovery activation with an OTP as described in chapter [Advanced Activation Flows](Advanced-Activation-Flows).
 - Your application should receive a push notification once the activation is recovered on another device.
 - You should also notify the user via other digital channel, like SMS or e-mail.
 - You should adequately inform the user about how sensitive Recovery Code and PUK are.
@@ -248,4 +248,4 @@ The format of Recovery PUK is very simple:
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Checking Activation Status](./Activation-Status.md)
 - [Key Derivation](./Key-derivation.md)
-- [Additional Activation OTP](Additional-Activation-OTP.md)
+- [Advanced Activation Flows](Advanced-Activation-Flows)
