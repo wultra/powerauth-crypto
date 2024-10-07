@@ -143,5 +143,5 @@ Note that the activation commit step can be skipped in case activation is commit
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Checking Activation Status](./Activation-Status.md)
 - [Key Derivation](./Key-derivation.md)
-- [Advanced Activation Flows](Advanced-Activation-Flows)
+- [Advanced Activation Flows](./Advanced-Activation-Flows.md)
 

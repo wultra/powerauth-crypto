@@ -1,4 +1,4 @@
-# [Advanced Activation Flows]
+# Advanced Activation Flows
 
 <!-- begin box info -->
 This part of the documentation describes in detail advanced customizations of the activation process: how the commit phase can be changed as well as usage of additional activation OTP. So, before you start, you should be familiar with actors and processes defined for the [regular activation](Activation.md).
