@@ -26,7 +26,7 @@ The server then takes the request, generates a random temporary encryption key p
 - `applicationKey` - back reference to the original data
 - `challenge` - back reference to the original data
 - `publicKey` - temporary encryption public key
-- `iss` / `iss_ms` - temporary key pair issuance timestamp
+- `iat` / `iat_ms` - temporary key pair issuance timestamp
 - `exp` / `exp_ms` - temporary key pair expiration timestamp
 
 The client app should process the response by verifying the signature and checking that the application key and challenge match the expected value. Then, the client app can accept the public key with given key identifier.
@@ -52,7 +52,7 @@ The server then takes the request, generates a random temporary encryption key p
 - `activationId` - back reference to the original data
 - `challenge` - back reference to the original data
 - `publicKey` - temporary encryption public key
-- `iss` / `iss_ms` - temporary key pair issuance timestamp
+- `iat` / `iat_ms` - temporary key pair issuance timestamp
 - `exp` / `exp_ms` - temporary key pair expiration timestamp
 
 The client app should process the response by verifying the signature and checking that the application key, activation ID and challenge match the expected value. Then, the client app can accept the public key with given key identifier.
