@@ -7,7 +7,7 @@ The PowerAuth protocol 3, defines a new version of activation code, where OTP<su
 - 96 out of possible 100 bits are used (80 random bits + 16 bits for CRC).
 
 > Notes:
-> 1. PowerAuth protocol V2 defines OTP as a part of activation code. It's completely unrelated to an OTP described in chapter [Advanced Activation Flows](Advanced-Activation-Flows).
+> 1. PowerAuth protocol V2 defines OTP as a part of activation code. It's completely unrelated to an OTP described in chapter [Advanced Activation Flows](./Advanced-Activation-Flows.md).
 
 ## Code Construction
 
