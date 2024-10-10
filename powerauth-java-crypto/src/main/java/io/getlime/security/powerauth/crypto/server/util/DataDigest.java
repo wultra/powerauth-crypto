@@ -108,7 +108,7 @@ public class DataDigest {
      * @return Digest fo provided data, including seed used to compute that digest.
      */
     public Result generateDigest(List<String> items) {
-        if (items.size() == 0) {
+        if (items.isEmpty()) {
             return null;
         }
         try {

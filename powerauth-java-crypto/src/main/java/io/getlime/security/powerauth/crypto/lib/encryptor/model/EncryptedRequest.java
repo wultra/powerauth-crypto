@@ -26,6 +26,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class EncryptedRequest {
+    private String temporaryKeyId;
     private String ephemeralPublicKey;
     private String encryptedData;
     private String mac;

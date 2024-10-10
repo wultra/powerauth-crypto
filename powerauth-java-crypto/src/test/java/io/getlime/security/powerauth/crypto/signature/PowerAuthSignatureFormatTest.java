@@ -34,6 +34,7 @@ public class PowerAuthSignatureFormatTest {
         assertEquals(PowerAuthSignatureFormat.DECIMAL, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0"));
         assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1"));
         assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.2"));
+        assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("3.3"));
         assertEquals(PowerAuthSignatureFormat.BASE64, PowerAuthSignatureFormat.getFormatForSignatureVersion("4.0"));
     }
 

@@ -82,4 +82,4 @@ The following diagram shows transitions between activation states:
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Checking Activation Status](./Activation-Status.md)
 - [Key Derivation](./Key-derivation.md)
-- [Additional Activation OTP](Additional-Activation-OTP.md)
+- [Advanced Activation Flows](./Advanced-Activation-Flows.md)

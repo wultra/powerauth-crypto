@@ -19,6 +19,7 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 - [`/pa/v3/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires encryption).
 - [`/pa/v3/upgrade/commit`](#upgrade-commit) - Commits a protocol upgrade (requires authentication).
 - [`/pa/v3/recovery/confirm`](#confirm-recovery) - Confirm a recovery code (requires authentication and encryption).
+- [`/pa/v3/keystore/create`](#create-new-key-pair) - Create a new temporary key pair for ECIES encryption.
 <!-- end -->
 
 ## Security Features
@@ -719,4 +720,87 @@ The JSON response after the decryption:
   "alreadyConfirmed" : false
 }
 ```
+<!-- end -->
+
+## Temporary Keys API
+
+<!-- begin api POST /pa/v3/keystore/create -->
+### Create New Key Pair 
+
+Create a new temporary key pair with either application or activation scope, and obtain the temporary public for subsequent ECIES encryption.
+
+<!-- begin remove -->
+| Request parameter | Value                                    |
+| ----------------- |------------------------------------------|
+| Method            | `POST`                                   |
+| Resource URI      | `/pa/v3/keystore/create`                 |
+<!-- end -->
+
+#### Request
+
+##### Body
+
+The JSON request contains an encoded JWT payload (signed with `HS256`) in a standard request envelope:
+
+```json
+{
+  "requestObject": {
+    "jwt": "..."
+  }
+}
+```
+
+The decoded content of the JWT payload is:
+
+```json
+{
+  "applicationKey" : "...",
+  "activationId" : "...",
+  "challenge" : "..."
+}
+```
+
+If the `activationId` is present (and represents an existing activation), the payload represents request for **activation scoped** temporary public key. Otherwise, the payload represents request for **application scoped** temporary public key. The scope determines how the JWT is signed. In both cases, the JWT is signed with standard `HS256` algorithm, with the following secret key:
+
+- Application scope: Secret key is application secret `APP_SECRET` (decoded to raw bytes).
+- Activation scope: Secret key is derived as `KDF_INTERNAL.derive(KEY_TRANSPORT, APP_SECRET)`.
+
+#### Response 200
+
+The JSON response contains an encoded JWT payload (signed with `ES256`) in a standard request envelope:
+
+```json
+{
+  "requestObject": {
+    "jwt": "..."
+  }
+}
+```
+
+The decoded content of the JWT payload is:
+
+```json
+{
+  "sub": "...",
+  "applicationKey" : "...",
+  "activationId" : "...",
+  "challenge" : "...",
+  "publicKey": "...",
+  "iat": "...",
+  "exp": "...",
+  "iat_ms": "...",
+  "exp_ms": "..."
+}
+```
+
+- The `sub` claim represents temporary key ID.
+- The `applicationKey`, `activationId` and `challenge` claims are the same as in the request, so that the client can validate the response from the server not only for correct signature, but also to ensure the response is related to the issued request.
+- The `publicKey` claim represents Base64 encoded temporary public key.
+- The `iat` and `exp` attributes are standard claims representing timestamp of JWT issue and expiration timestamp. To provide a millisecond precision, they are augmented with `iat_ms` and `exp_ms` claims.
+
+The issued public key can be related to either application or activation scope, based on the presence of `activationId` (see the request description for the details). In both cases, the JWT with the public key is signed using `ES256` algorithm, and the scope determines what key is used:
+
+- Application scope: Private key is the application-specific master server private key `KEY_SERVER_MASTER_PRIVATE`.
+- Activation scope: Private key is the activation-specific server private key `KEY_SERVER_PRIVATE`.
+
 <!-- end -->

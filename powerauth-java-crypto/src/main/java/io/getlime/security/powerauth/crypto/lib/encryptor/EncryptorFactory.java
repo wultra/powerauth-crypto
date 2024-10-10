@@ -62,7 +62,7 @@ public class EncryptorFactory {
         validateParameters(encryptorId, encryptorParameters);
         final ClientEncryptor encryptor;
         switch (encryptorParameters.getProtocolVersion()) {
-            case "3.2", "3.1", "3.0" -> {
+            case "3.3", "3.2", "3.1", "3.0" -> {
                 encryptor = new ClientEciesEncryptor(encryptorId, encryptorParameters);
             }
             default -> {
@@ -106,7 +106,7 @@ public class EncryptorFactory {
         validateParameters(encryptorId, encryptorParameters);
         final ServerEncryptor encryptor;
         switch (encryptorParameters.getProtocolVersion()) {
-            case "3.2", "3.1", "3.0" -> {
+            case "3.3", "3.2", "3.1", "3.0" -> {
                 encryptor = new ServerEciesEncryptor(encryptorId, encryptorParameters);
             }
             default -> {
@@ -154,7 +154,7 @@ public class EncryptorFactory {
             throw new EncryptorException("Missing protocolVersion parameter");
         }
         switch (protocolVersion) {
-            case "3.2", "3.1", "3.0" -> {
+            case "3.3", "3.2", "3.1", "3.0" -> {
                 return new EciesRequestResponseValidator(protocolVersion);
             }
             default -> {

@@ -1,22 +1,41 @@
-# Additional Activation OTP
+# Advanced Activation Flows
 
 <!-- begin box info -->
-This part of the documentation describes in detail how usage of additional activation OTP changes the activation process. So, before you start, you should be familiar with actors and processes defined for the [regular activation](Activation.md).
+This part of the documentation describes in detail advanced customizations of the activation process: how the commit phase can be changed as well as usage of additional activation OTP. So, before you start, you should be familiar with actors and processes defined for the [regular activation](Activation.md).
 <!-- end -->
 
-The purpose of additional activation OTP is to help with the user authentication, or with the activation confirmation. The additional OTP can be used either in the early stages of the activation or later when the activation is created and waits for the confirmation in the PENDING_COMMIT state.
+Following advanced activation flows are supported:
+- [Changing the commit phase of the activation](#changing-the-commit-phase-without-activation-otp)
+- [Verification of an additional activation OTP](#additional-user-authentication-using-activation-otp)
+
+By default, the activation is committed during the `PENDING_COMMIT` status. It is possible to change the activation flow, so that the activation is committed during the key exchange and so it skips the `PENDING_COMMIT` status transition completely and goes directly into `ACTIVE` state.
+
+The purpose of additional activation OTP is to help with the user authentication, or with the activation confirmation. The additional OTP can be used either in the early stages of the activation or later when the activation is created and waits for the confirmation in the `PENDING_COMMIT` state.
 
 We will describe each situation in detail in the separate chapters:
 
-1. [Additional user authentication](#additional-user-authentication)
+1. [Changing the commit phase](#changing-the-commit-phase) 
+2. [Additional user authentication using Activation OTP](#additional-user-authentication-using-activation-otp)
    - [Regular activation with OTP](#regular-activation-with-otp)
    - [Custom activation with OTP](#custom-activation-with-otp)
-2. [Activation confirmation](#activation-confirmation)
+3. [Activation confirmation using OTP](#activation-confirmation-using-otp)
    - [Confirm regular activation with OTP](#confirm-regular-activation-with-otp)
    - [Confirm custom activation with OTP](#confirm-custom-activation-with-otp)
    - [Confirm activation recovery with OTP](#confirm-activation-recovery-with-otp)
 
-## Additional User Authentication
+## Changing the Commit Phase
+
+As mentioned before, by default the activation is committed in the `PENDING_COMMIT` state.
+
+It is possible to change the activation flow, so that the `PENDING_COMMIT` state is skipped and activation becomes `ACTIVE` during key exchange.
+
+To do so, you can set the `commitPhase` parameter to `ON_KEY_EXCHANGE` when initializing the activation using the init activation method ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation).
+
+In case the `commitPhase` parameter is not specified, or the value is set to `ON_COMMIT`, the activation flow remains standard and waits for an additional commit step after the key exchange.
+
+The `commitPhase` can be chosen independently on the activation OTP verification. However, the OTP verification can be added as another extra option in either of the commit phases, as described below.
+
+## Additional User Authentication using Activation OTP
 
 In this common scenario, it's expected that the PowerAuth activation is not yet created so that the additional activation OTP can be used in the time of the activation creation as additional user authentication.
 
@@ -25,7 +44,7 @@ In this common scenario, it's expected that the PowerAuth activation is not yet 
 1. User is authenticated in Master Front-End Application and initiates the activation creation process:
 
    1. Master Front-End Application generates random activation OTP.
-   1. Master Front-End Application then asks PowerAuth server to create an activation, with using this OTP ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation) method, OTP validation set to ON_KEY_EXCHANGE).
+   1. Master Front-End Application then asks PowerAuth server to create an activation using the init activation method ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation), `commitPhase` parameter is set to `ON_KEY_EXCHANGE` and the `activationOtp` value is set to previously generated OTP).
    1. Master Front-End Application then displays QR code, containing an activation code.
    1. At the same time, Master Front-End Application initiates the delivery of activation OTP. It's recommended to deliver such code via a dedicated out-of-band channel, for example, via SMS.
 
@@ -39,7 +58,7 @@ In this common scenario, it's expected that the PowerAuth activation is not yet 
 1. Intermediate Server Application receives activation with activation code and OTP:
 
    1. The activation code and OTP are verified by the PowerAuth server in the [`prepareActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-prepareactivation) method.
-   1. If the method call succeeds, the activation is set to the ACTIVE state. There's no need to wait for the confirmation.
+   1. If the method call succeeds, the activation is set to the `ACTIVE` state. There's no need to wait for the confirmation.
    1. In case that received OTP is wrong, the user has a limited number of retry attempts. The activation will be removed after too many failures.
 
 1. The mobile application receives the response from the server and completes the activation on the mobile side.
@@ -69,7 +88,7 @@ There are multiple ways how to implement custom activation with an additional au
 
 1. The mobile application receives the response from the server and completes the activation on the mobile side.
 
-## Activation Confirmation
+## Activation Confirmation using OTP
 
 In this common scenario, an additional activation OTP helps with the final activation confirmation, so the OTP is required in the later stages of the activation process (during the commit). In this case, it doesn't matter how the activation process was initiated. You can confirm regular, custom and also recovery activations with the OTP.
 
@@ -78,7 +97,7 @@ In this common scenario, an additional activation OTP helps with the final activ
 1. User is authenticated in Master Front-End Application and initiates the activation creation process:
 
    1. Master Front-End Application generates random activation OTP and keeps it temporarily in the database.
-   1. Master Front-End Application then asks PowerAuth server to create an activation, with using this OTP ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation) method, OTP validation set to ON_COMMIT).
+   1. Master Front-End Application then asks PowerAuth server to create an activation using the init activation method ([`initActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-initactivation) method, commit phase is not specified or set to `ON_COMMIT` and the `activationOtp` value is set to previously generated OTP).
    1. Master Front-End Application then displays QR code, containing an activation code.
 
 1. In the mobile application:
@@ -116,7 +135,7 @@ There are multiple ways how to implement custom activation and confirm it with a
 1. Intermediate Server Application receives a custom activation request, with username and password:
 
    1. The username and password is verified by the Intermediate Server Application.
-   1. If everything's right, then Intermediate Server Application creates activation by calling [`createActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-createactivation). The activation must be set to the PENDING_COMMIT state.
+   1. If everything's right, then Intermediate Server Application creates activation by calling [`createActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-createactivation). The activation must be set to the `PENDING_COMMIT` state.
    1. Intermediate Server Application generates random activation OTP and update the activation record, by calling [`updateActivationOtp`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-updateactivationotp) method.
    1. At the same time, Intermediate Server Application initiates the delivery of activation OTP.
 

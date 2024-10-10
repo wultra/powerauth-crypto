@@ -81,7 +81,8 @@ public class ServerEciesEncryptor implements ServerEncryptor {
                 encryptorId.scope(),
                 parameters.getProtocolVersion(),
                 parameters.getApplicationKey(),
-                parameters.getActivationIdentifier()
+                parameters.getActivationIdentifier(),
+                parameters.getTemporaryKeyId()
         );
     }
 

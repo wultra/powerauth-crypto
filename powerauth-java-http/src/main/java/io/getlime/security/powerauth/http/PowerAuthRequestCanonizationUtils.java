@@ -95,7 +95,7 @@ public class PowerAuthRequestCanonizationUtils {
             signatureBaseString.append(URLEncoder.encode(val, StandardCharsets.UTF_8));
         }
 
-        return signatureBaseString.length() > 0 ? signatureBaseString.toString() : null;
+        return !signatureBaseString.isEmpty() ? signatureBaseString.toString() : null;
     }
 
 }
