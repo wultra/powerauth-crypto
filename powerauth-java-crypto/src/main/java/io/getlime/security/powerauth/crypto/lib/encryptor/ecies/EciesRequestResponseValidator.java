@@ -36,6 +36,10 @@ public class EciesRequestResponseValidator implements RequestResponseValidator {
     private final static Set<String> supportedVersions = Set.of("3.3", "3.2", "3.1", "3.0");
 
     /**
+     * Indicate that request must contain temporaryKeyId. This is valid for protocol V3.3+.
+     */
+    private final boolean useTemporaryKeys;
+    /**
      * Indicate that request and response must contain timestamp and nonce. This is valid for protocol V3.2+.
      */
     private final boolean useTimestamp;
@@ -53,6 +57,7 @@ public class EciesRequestResponseValidator implements RequestResponseValidator {
         if (!supportedVersions.contains(protocolVersion)) {
             throw new EncryptorException("Unsupported protocol version " + protocolVersion);
         }
+        this.useTemporaryKeys = "3.3".equals(protocolVersion);
         this.useTimestamp = "3.3".equals(protocolVersion) || "3.2".equals(protocolVersion);
         this.useNonceForRequest = "3.3".equals(protocolVersion) || "3.2".equals(protocolVersion) || "3.1".equals(protocolVersion);
     }
@@ -63,6 +68,9 @@ public class EciesRequestResponseValidator implements RequestResponseValidator {
             return false;
         }
         if (request.getEphemeralPublicKey() == null || request.getEncryptedData() == null || request.getMac() == null) {
+            return false;
+        }
+        if (useTemporaryKeys == (request.getTemporaryKeyId() == null)) {
             return false;
         }
         if (useNonceForRequest == (request.getNonce() == null)) {
