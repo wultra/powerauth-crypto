@@ -50,10 +50,10 @@ public class Kdf {
      */
     public static SecretKey derive(SecretKey key, long index, int outLength, byte[] context) throws GenericCryptoException {
         if (key == null) {
-            throw new GenericCryptoException("Missing secret key for key derivation.");
+            throw new GenericCryptoException("Missing secret key for key derivation");
         }
         if (index < 0L) {
-            throw new GenericCryptoException("Invalid index used for key derivation.");
+            throw new GenericCryptoException("Invalid index used for key derivation");
         }
         final byte[] indexBytes = ByteUtils.encodeLong(index);
         final byte[] data;
@@ -103,18 +103,18 @@ public class Kdf {
      */
     static byte[] kmac256(SecretKey key, byte[] data, int outLength, byte[] customString) throws GenericCryptoException {
         if (key == null) {
-            throw new GenericCryptoException("Missing secret key for KDF.");
+            throw new GenericCryptoException("Missing secret key for KDF");
         }
         if (data == null) {
-            throw new GenericCryptoException("Missing data for KDF.");
+            throw new GenericCryptoException("Missing data for KDF");
         }
         if (outLength <= 0) {
-            throw new GenericCryptoException("Invalid output length for KDF.");
+            throw new GenericCryptoException("Invalid output length for KDF");
         }
         final KMAC kmac = new KMAC(KMAC_BIT_LENGTH, customString);
         final byte[] keyBytes = key.getEncoded();
         if (keyBytes == null) {
-            throw new GenericCryptoException("Secret key encoding is null.");
+            throw new GenericCryptoException("Secret key encoding is null");
         }
         kmac.init(new KeyParameter(keyBytes));
         kmac.update(data, 0, data.length);
