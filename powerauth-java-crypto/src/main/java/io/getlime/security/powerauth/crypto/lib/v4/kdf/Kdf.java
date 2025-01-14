@@ -77,13 +77,13 @@ public class Kdf {
      */
     public static SecretKey derivePassword(String password, byte[] salt, int outLength) throws GenericCryptoException {
         if (password == null || password.isEmpty()) {
-            throw new GenericCryptoException("Missing password for key derivation.");
+            throw new GenericCryptoException("Missing password for key derivation");
         }
         if (salt == null) {
-            throw new GenericCryptoException("Missing salt for key derivation.");
+            throw new GenericCryptoException("Missing salt for key derivation");
         }
         if (salt.length < 32) {
-            throw new GenericCryptoException("Insufficient salt length.");
+            throw new GenericCryptoException("Insufficient salt length");
         }
         final byte[] passwordBytes = ByteUtils.encodeString(password);
         final SecretKey key = KEY_CONVERTOR.convertBytesToSharedSecretKey(passwordBytes);
