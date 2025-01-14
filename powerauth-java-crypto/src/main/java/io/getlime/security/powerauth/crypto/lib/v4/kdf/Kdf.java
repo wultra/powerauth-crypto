@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
 public class Kdf {
 
     private static final String CRYPTO4_KDF_CUSTOM_STRING = "PA4KDF";
-    private static final Integer KMAC_ALGORITHM_STRENGTH = 256;
+    private static final int KMAC_BIT_LENGTH = 256;
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
@@ -80,7 +80,7 @@ public class Kdf {
         if (outLength < 32) {
             throw new GenericCryptoException("Invalid output length for KDF.");
         }
-        final KMAC kmac = new KMAC(KMAC_ALGORITHM_STRENGTH, customString);
+        final KMAC kmac = new KMAC(KMAC_BIT_LENGTH, customString);
         final byte[] keyBytes = key.getEncoded();
         if (keyBytes == null) {
             throw new GenericCryptoException("Secret key encoding is null.");
