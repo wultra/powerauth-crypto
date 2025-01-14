@@ -40,6 +40,7 @@ public class Kdf {
 
     /**
      * Derive a secret key based on an input key, numeric key index, requested key size and optional context.
+     *
      * @param key Secret key to be used for key derivation.
      * @param index Key index (numeric).
      * @param outLength Requested derived key size.
@@ -48,6 +49,12 @@ public class Kdf {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     public static SecretKey derive(SecretKey key, long index, int outLength, byte[] context) throws GenericCryptoException {
+        if (key == null) {
+            throw new GenericCryptoException("Missing secret key for key derivation.");
+        }
+        if (index < 0L) {
+            throw new GenericCryptoException("Invalid index used for key derivation.");
+        }
         final byte[] indexBytes = ByteUtils.encodeLong(index);
         final byte[] data;
         if (context != null) {
