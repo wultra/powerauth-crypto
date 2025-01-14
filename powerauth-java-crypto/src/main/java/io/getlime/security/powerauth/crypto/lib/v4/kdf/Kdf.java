@@ -83,7 +83,7 @@ public class Kdf {
         if (data == null) {
             throw new GenericCryptoException("Missing data for KDF.");
         }
-        if (outLength < 32) {
+        if (outLength <= 0) {
             throw new GenericCryptoException("Invalid output length for KDF.");
         }
         final KMAC kmac = new KMAC(KMAC_BIT_LENGTH, customString);
