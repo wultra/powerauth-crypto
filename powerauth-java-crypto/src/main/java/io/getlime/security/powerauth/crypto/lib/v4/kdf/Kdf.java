@@ -70,7 +70,6 @@ public class Kdf {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     static byte[] kmac256(SecretKey key, byte[] data, int outLength, byte[] customString) throws GenericCryptoException {
-        // Validate inputs
         if (key == null) {
             throw new GenericCryptoException("Missing secret key for KDF.");
         }
