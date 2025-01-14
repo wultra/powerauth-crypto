@@ -67,6 +67,31 @@ public class Kdf {
     }
 
     /**
+     * Derive a key using password-based key derivation.
+     *
+     * @param password Password used for the key derivation.
+     * @param salt Salt used for the key derivation.
+     * @param outLength Requested output length.
+     * @return Derived secret key.
+     * @throws GenericCryptoException Thrown in case of any cryptography error.
+     */
+    public static SecretKey derivePassword(String password, byte[] salt, int outLength) throws GenericCryptoException {
+        if (password == null || password.isEmpty()) {
+            throw new GenericCryptoException("Missing password for key derivation.");
+        }
+        if (salt == null) {
+            throw new GenericCryptoException("Missing salt for key derivation.");
+        }
+        if (salt.length < 32) {
+            throw new GenericCryptoException("Insufficient salt length.");
+        }
+        final byte[] passwordBytes = ByteUtils.encodeString(password);
+        final SecretKey key = KEY_CONVERTOR.convertBytesToSharedSecretKey(passwordBytes);
+        final byte[] output = kmac256(key, salt, outLength, CRYPTO4_KDF_CUSTOM_STRING.getBytes(StandardCharsets.UTF_8));
+        return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
+    }
+
+    /**
      * Compute the KMAC256 of the given data using provided secret key, output length and optional customization string.
      *
      * @param key          The secret key, must be a valid {@link SecretKey} with a 256-bit key length.
