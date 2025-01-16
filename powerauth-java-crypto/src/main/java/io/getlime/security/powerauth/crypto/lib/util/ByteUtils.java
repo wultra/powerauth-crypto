@@ -133,7 +133,7 @@ public final class ByteUtils {
      */
     public static byte[] subarray(byte[] array, int start, int length) {
         if (array == null) {
-            throw new IllegalArgumentException("Parameter array cannot be null");
+            throw new IllegalArgumentException("Input array is null");
         }
         if (start < 0) {
             throw new IllegalArgumentException("Invalid start index");
