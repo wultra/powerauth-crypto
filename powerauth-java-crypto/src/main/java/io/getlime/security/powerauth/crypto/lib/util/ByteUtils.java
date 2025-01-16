@@ -107,12 +107,46 @@ public final class ByteUtils {
     }
 
     /**
+     * Generate zero bytes of given length.
+     * @param n Number of zero bytes.
+     * @return Byte aray.
+     */
+    public static byte[] zeroBytes(int n) {
+        return ByteBuffer.allocate(n).array();
+    }
+
+    /**
      * Encode a String into a byte array.
      * @param s String to encode.
      * @return Byte array.
      */
     public static byte[] encodeString(String s) {
         return s.getBytes(StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Return a subarray from an array.
+     * @param array Input array.
+     * @param start Subarray start index (included).
+     * @param length Subarray end index (excluded).
+     * @return Subarray.
+     */
+    public static byte[] subarray(byte[] array, int start, int length) {
+        if (array == null) {
+            throw new IllegalArgumentException("Parameter array cannot be null");
+        }
+        if (start < 0) {
+            throw new IllegalArgumentException("Invalid start index");
+        }
+        if (length <= 0) {
+            throw new IllegalArgumentException("Invalid length");
+        }
+        if (length > array.length - start) {
+            throw new IllegalArgumentException("Invalid slicing of subarray");
+        }
+        byte[] result = new byte[length];
+        System.arraycopy(array, start, result, 0, length);
+        return result;
     }
 
     /**

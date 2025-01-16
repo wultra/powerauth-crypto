@@ -20,8 +20,6 @@ package io.getlime.security.powerauth.crypto.lib.v4.kdf;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
-import org.bouncycastle.crypto.macs.KMAC;
-import org.bouncycastle.crypto.params.KeyParameter;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +33,6 @@ public class Kdf {
 
     private static final byte[] CRYPTO4_KDF_CUSTOM_BYTES = "PA4KDF".getBytes(StandardCharsets.UTF_8);
     private static final byte[] CRYPTO4_PBKDF_CUSTOM_BYTES = "PA4PBKDF".getBytes(StandardCharsets.UTF_8);
-    private static final int KMAC_BIT_LENGTH = 256;
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
@@ -63,7 +60,7 @@ public class Kdf {
         } else {
             data = indexBytes;
         }
-        final byte[] output = kmac256(key, data, outLength, CRYPTO4_KDF_CUSTOM_BYTES);
+        final byte[] output = Kmac.kmac256(key, data, outLength, CRYPTO4_KDF_CUSTOM_BYTES);
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 
@@ -88,40 +85,10 @@ public class Kdf {
         }
         final byte[] passwordBytes = ByteUtils.encodeString(password);
         final SecretKey key = KEY_CONVERTOR.convertBytesToSharedSecretKey(passwordBytes);
-        final byte[] output = kmac256(key, salt, outLength, CRYPTO4_PBKDF_CUSTOM_BYTES);
+        final byte[] output = Kmac.kmac256(key, salt, outLength, CRYPTO4_PBKDF_CUSTOM_BYTES);
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 
-    /**
-     * Compute the KMAC256 of the given data using provided secret key, output length and optional customization string.
-     *
-     * @param key          The secret key, must be a valid {@link SecretKey} with a 256-bit key length.
-     * @param data         The input data used for the KMAC.
-     * @param outLength    The length of generated output bytes.
-     * @param customString An optional customization string, use null value for no customization.
-     * @return KMAC256 output byte array.
-     * @throws GenericCryptoException Thrown in case of any cryptography error.
-     */
-    static byte[] kmac256(SecretKey key, byte[] data, int outLength, byte[] customString) throws GenericCryptoException {
-        if (key == null) {
-            throw new GenericCryptoException("Missing secret key for KDF");
-        }
-        if (data == null) {
-            throw new GenericCryptoException("Missing data for KDF");
-        }
-        if (outLength <= 0) {
-            throw new GenericCryptoException("Invalid output length for KDF");
-        }
-        final KMAC kmac = new KMAC(KMAC_BIT_LENGTH, customString);
-        final byte[] keyBytes = key.getEncoded();
-        if (keyBytes == null) {
-            throw new GenericCryptoException("Secret key encoding is null");
-        }
-        kmac.init(new KeyParameter(keyBytes));
-        kmac.update(data, 0, data.length);
-        final byte[] output = new byte[outLength];
-        kmac.doFinal(output, 0, outLength);
-        return output;
-    }
+
 
 }
