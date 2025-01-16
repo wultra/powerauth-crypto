@@ -33,7 +33,8 @@ import java.nio.charset.StandardCharsets;
  */
 public class Kdf {
 
-    private static final String CRYPTO4_KDF_CUSTOM_STRING = "PA4KDF";
+    private static final byte[] CRYPTO4_KDF_CUSTOM_BYTES = "PA4KDF".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] CRYPTO4_PBKDF_CUSTOM_BYTES = "PA4PBKDF".getBytes(StandardCharsets.UTF_8);
     private static final int KMAC_BIT_LENGTH = 256;
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
@@ -62,7 +63,32 @@ public class Kdf {
         } else {
             data = indexBytes;
         }
-        final byte[] output = kmac256(key, data, outLength, CRYPTO4_KDF_CUSTOM_STRING.getBytes(StandardCharsets.UTF_8));
+        final byte[] output = kmac256(key, data, outLength, CRYPTO4_KDF_CUSTOM_BYTES);
+        return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
+    }
+
+    /**
+     * Derive a key using password-based key derivation.
+     *
+     * @param password Password used for the key derivation.
+     * @param salt Salt used for the key derivation.
+     * @param outLength Requested output length.
+     * @return Derived secret key.
+     * @throws GenericCryptoException Thrown in case of any cryptography error.
+     */
+    public static SecretKey derivePassword(String password, byte[] salt, int outLength) throws GenericCryptoException {
+        if (password == null || password.isEmpty()) {
+            throw new GenericCryptoException("Missing password for key derivation");
+        }
+        if (salt == null) {
+            throw new GenericCryptoException("Missing salt for key derivation");
+        }
+        if (salt.length < 32) {
+            throw new GenericCryptoException("Insufficient salt length");
+        }
+        final byte[] passwordBytes = ByteUtils.encodeString(password);
+        final SecretKey key = KEY_CONVERTOR.convertBytesToSharedSecretKey(passwordBytes);
+        final byte[] output = kmac256(key, salt, outLength, CRYPTO4_PBKDF_CUSTOM_BYTES);
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 
