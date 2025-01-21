@@ -72,6 +72,7 @@ public class KeyGenerator {
     /**
      * Generate a new ECDH key pair using given EC curve.
      *
+     * @param curve EC curve.
      * @return A new key pair instance, or null in case of an error.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */

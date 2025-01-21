@@ -24,7 +24,14 @@ package io.getlime.security.powerauth.crypto.lib.enums;
  */
 public enum EcCurve {
 
+    /**
+     * Curve secp256r1.
+     */
     P256("secp256r1", "SHA256withECDSA"),
+
+    /**
+     * Curve secp384r1.
+     */
     P384("secp384r1", "SHA384withECDSA");
 
     private final String name;
