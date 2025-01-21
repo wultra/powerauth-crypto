@@ -60,8 +60,8 @@ public class ActivationStatusBlobInfoTest {
         final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         // Simulate generating of device and server key pairs
         final KeyGenerator keyGenerator = new KeyGenerator();
-        final KeyPair keyPairDevice = keyGenerator.generateKeyPair();
-        final KeyPair keyPairServer = keyGenerator.generateKeyPair();
+        final KeyPair keyPairDevice = keyGenerator.generateKeyPairP256();
+        final KeyPair keyPairServer = keyGenerator.generateKeyPairP256();
         // Compute shared master secret key
         final SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(keyPairServer.getPrivate(), keyPairDevice.getPublic());
         // Derive transport key
@@ -105,8 +105,8 @@ public class ActivationStatusBlobInfoTest {
         final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         // Simulate generating of device and server key pairs
         final KeyGenerator keyGenerator = new KeyGenerator();
-        final KeyPair keyPairDevice = keyGenerator.generateKeyPair();
-        final KeyPair keyPairServer = keyGenerator.generateKeyPair();
+        final KeyPair keyPairDevice = keyGenerator.generateKeyPairP256();
+        final KeyPair keyPairServer = keyGenerator.generateKeyPairP256();
         final byte[] challenge = keyGenerator.generateRandomBytes(16);
         final byte[] nonce = keyGenerator.generateRandomBytes(16);
         // Compute shared master secret key

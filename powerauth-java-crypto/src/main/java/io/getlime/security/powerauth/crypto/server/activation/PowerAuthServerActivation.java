@@ -81,7 +81,7 @@ public class PowerAuthServerActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public KeyPair generateServerKeyPair() throws CryptoProviderException {
-        return keyGenerator.generateKeyPair();
+        return keyGenerator.generateKeyPairP256();
     }
 
     /**
@@ -99,7 +99,7 @@ public class PowerAuthServerActivation {
     public byte[] generateActivationSignature(String activationCode,
                                               PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
-        return signatureUtils.computeECDSASignature(bytes, masterPrivateKey);
+        return signatureUtils.computeECDSASignatureP256(bytes, masterPrivateKey);
     }
 
     /**
@@ -212,7 +212,7 @@ public class PowerAuthServerActivation {
         String activationIdBytesBase64 = Base64.getEncoder().encodeToString(activationIdBytes);
         String C_serverPublicKeyBase64 = Base64.getEncoder().encodeToString(C_serverPublicKey);
         byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
-        return signatureUtils.computeECDSASignature(result, masterPrivateKey);
+        return signatureUtils.computeECDSASignatureP256(result, masterPrivateKey);
     }
 
     /**

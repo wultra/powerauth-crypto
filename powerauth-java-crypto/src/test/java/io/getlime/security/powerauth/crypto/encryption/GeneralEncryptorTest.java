@@ -100,8 +100,8 @@ public class GeneralEncryptorTest {
                 Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)),
                 keyGenerator.generateRandomBytes(16),
                 UUID.randomUUID().toString(),
-                keyGenerator.generateKeyPair(),
-                keyGenerator.generateKeyPair(),
+                keyGenerator.generateKeyPairP256(),
+                keyGenerator.generateKeyPairP256(),
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString()
         );
@@ -134,7 +134,7 @@ public class GeneralEncryptorTest {
             testInvalidMacInRequest(version, validator, encryptorId);
             testInvalidMacInResponse(version, validator, encryptorId);
             testRequestResponseObjectValidation(version, encryptorId);
-        };
+        }
     }
 
     /**

@@ -86,7 +86,7 @@ public class EciesEnvelopeKey {
     static EciesEnvelopeKey fromPublicKey(final PublicKey publicKey, final byte[] sharedInfo1) throws EciesException {
         try {
             // Generate ephemeral key pair
-            final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
+            final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPairP256();
             final PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
             final PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
 

@@ -74,7 +74,7 @@ public class KeyConversionUtilsTest {
 		PublicKey key = instance.convertBytesToPublicKey(Base64.getDecoder().decode("AsUaehWpuZseHUprd9immCELf62TTtHUGlTIXyCxY7h2"));
 
 		for (int i = 0; i < 1000; i++) {
-			KeyPair kp = keyGenerator.generateKeyPair();
+			KeyPair kp = keyGenerator.generateKeyPairP256();
 
 			PublicKey publicKey = kp.getPublic();
 			byte[] originalBytes = instance.convertPublicKeyToBytes(publicKey);
@@ -137,7 +137,7 @@ public class KeyConversionUtilsTest {
 
 		// random key test
 		for (int i = 0; i < 100; i++) {
-			final KeyPair keyPair = keyGenerator.generateKeyPair();
+			final KeyPair keyPair = keyGenerator.generateKeyPairP256();
 			final ECPublicKey publicKeyOrig = (ECPublicKey) keyPair.getPublic();
 			final byte[] bytes = instance.convertPublicKeyToBytes(publicKeyOrig);
 			final byte[] x = publicKeyOrig.getW().getAffineX().toByteArray();

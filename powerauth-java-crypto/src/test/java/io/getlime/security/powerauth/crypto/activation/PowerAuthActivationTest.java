@@ -57,7 +57,7 @@ public class PowerAuthActivationTest {
     @Test
     public void testGenerateKeys() throws CryptoProviderException {
         KeyGenerator keyGenerator = new KeyGenerator();
-        KeyPair kp = keyGenerator.generateKeyPair();
+        KeyPair kp = keyGenerator.generateKeyPairP256();
         System.out.println("Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
         System.out.println("Public Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(kp.getPublic())));
     }
@@ -83,7 +83,7 @@ public class PowerAuthActivationTest {
         KeyGenerator keyGenerator = new KeyGenerator();
         PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
-        KeyPair masterKeyPair = keyGenerator.generateKeyPair();
+        KeyPair masterKeyPair = keyGenerator.generateKeyPairP256();
 
         // Generate master keypair
         PrivateKey masterPrivateKey = masterKeyPair.getPrivate();

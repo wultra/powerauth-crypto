@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -224,10 +223,10 @@ public class GenerateVectorDataTest {
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
@@ -342,10 +341,10 @@ public class GenerateVectorDataTest {
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
@@ -450,10 +449,10 @@ public class GenerateVectorDataTest {
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             SignatureConfiguration signatureConfiguration = SignatureConfiguration.decimal(j);

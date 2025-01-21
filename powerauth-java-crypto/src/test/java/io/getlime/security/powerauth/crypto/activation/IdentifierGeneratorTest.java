@@ -58,9 +58,9 @@ class IdentifierGeneratorTest {
 
         // Generate random secret key using ECDH
         KeyGenerator keyGenerator = new KeyGenerator();
-        KeyPair keyPair1 = keyGenerator.generateKeyPair();
+        KeyPair keyPair1 = keyGenerator.generateKeyPairP256();
         PrivateKey privateKey1 = keyPair1.getPrivate();
-        KeyPair keyPair2 = keyGenerator.generateKeyPair();
+        KeyPair keyPair2 = keyGenerator.generateKeyPairP256();
         PublicKey publicKey2 = keyPair2.getPublic();
         SecretKey secretKey = keyGenerator.computeSharedKey(privateKey1, publicKey2, true);
 
