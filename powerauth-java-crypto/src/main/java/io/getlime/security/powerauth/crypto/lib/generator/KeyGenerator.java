@@ -76,7 +76,7 @@ public class KeyGenerator {
      */
     public KeyPair generateKeyPairP256() throws CryptoProviderException {
         try {
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             kpg.initialize(new ECGenParameterSpec("secp256r1"));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
@@ -86,14 +86,14 @@ public class KeyGenerator {
     }
 
     /**
-     * Generate a new ECDH key pair using P256r1 curve.
+     * Generate a new ECDH key pair using P384r1 curve.
      *
      * @return A new key pair instance, or null in case of an error.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
     public KeyPair generateKeyPairP384() throws CryptoProviderException {
         try {
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             kpg.initialize(new ECGenParameterSpec("secp384r1"));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
