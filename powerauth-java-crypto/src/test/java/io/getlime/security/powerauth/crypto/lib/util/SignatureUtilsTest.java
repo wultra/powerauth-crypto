@@ -17,6 +17,7 @@
 
 package io.getlime.security.powerauth.crypto.lib.util;
 
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,26 +58,26 @@ class SignatureUtilsTest {
     }
 
     @Test
-    void testComputeECDSASignatureP256_Success() throws Exception {
+    void testComputeECDSASignature_Success() throws Exception {
         byte[] data = "Test data".getBytes();
-        byte[] signature = signatureUtils.computeECDSASignatureP256(data, keyPairP256.getPrivate());
+        byte[] signature = signatureUtils.computeECDSASignature(EcCurve.P256, data, keyPairP256.getPrivate());
         assertNotNull(signature);
         assertTrue(signature.length > 0);
     }
 
     @Test
-    void testComputeECDSASignatureP256_InvalidKey() {
+    void testComputeECDSASignature_InvalidKey() {
         byte[] data = "Test data".getBytes();
         assertThrows(InvalidKeyException.class, () ->
-                signatureUtils.computeECDSASignatureP256(data, null)
+                signatureUtils.computeECDSASignature(EcCurve.P256, data, null)
         );
     }
 
     @Test
     void testValidateECDSASignatureP256_Success() throws Exception {
         byte[] data = "Test data".getBytes();
-        byte[] signature = signatureUtils.computeECDSASignatureP256(data, keyPairP256.getPrivate());
-        boolean isValid = signatureUtils.validateECDSASignatureP256(data, signature, keyPairP256.getPublic());
+        byte[] signature = signatureUtils.computeECDSASignature(EcCurve.P256, data, keyPairP256.getPrivate());
+        boolean isValid = signatureUtils.validateECDSASignature(EcCurve.P256, data, signature, keyPairP256.getPublic());
         assertTrue(isValid);
     }
 
@@ -84,14 +85,14 @@ class SignatureUtilsTest {
     void testValidateECDSASignatureP256_InvalidSignature() throws Exception {
         byte[] data = "Test data".getBytes();
         byte[] invalidSignature = Base64.getDecoder().decode("MEUCIGVJAnV+cjHkoO64iaxIUBsSJjc2C2aqEvfuGgzreXLrAiEAjTqgKeQS63QuF/xSfSTr2ru/Npv+f1pwc7aPv+b8zWY=");
-        boolean isValid = signatureUtils.validateECDSASignatureP256(data, invalidSignature, keyPairP256.getPublic());
+        boolean isValid = signatureUtils.validateECDSASignature(EcCurve.P256, data, invalidSignature, keyPairP256.getPublic());
         assertFalse(isValid);
     }
 
     @Test
     void testComputeECDSASignatureP384_Success() throws Exception {
         byte[] data = "Test data".getBytes();
-        byte[] signature = signatureUtils.computeECDSASignatureP384(data, keyPairP384.getPrivate());
+        byte[] signature = signatureUtils.computeECDSASignature(EcCurve.P384, data, keyPairP384.getPrivate());
         assertNotNull(signature);
         assertTrue(signature.length > 0);
     }
@@ -100,15 +101,15 @@ class SignatureUtilsTest {
     void testComputeECDSASignatureP384_InvalidKey() {
         byte[] data = "Test data".getBytes();
         assertThrows(InvalidKeyException.class, () ->
-                signatureUtils.computeECDSASignatureP384(data, null)
+                signatureUtils.computeECDSASignature(EcCurve.P384, data, null)
         );
     }
 
     @Test
     void testValidateECDSASignatureP384_Success() throws Exception {
         byte[] data = "Test data".getBytes();
-        byte[] signature = signatureUtils.computeECDSASignatureP384(data, keyPairP384.getPrivate());
-        boolean isValid = signatureUtils.validateECDSASignatureP384(data, signature, keyPairP384.getPublic());
+        byte[] signature = signatureUtils.computeECDSASignature(EcCurve.P384, data, keyPairP384.getPrivate());
+        boolean isValid = signatureUtils.validateECDSASignature(EcCurve.P384, data, signature, keyPairP384.getPublic());
         assertTrue(isValid);
     }
 
@@ -116,7 +117,7 @@ class SignatureUtilsTest {
     void testValidateECDSASignatureP384_InvalidSignature() throws Exception {
         byte[] data = "Test data".getBytes();
         byte[] invalidSignature = Base64.getDecoder().decode("MGUCMFxTfKSLjcEp7m9j+7kPG3g5+uCdINszFuNhTKQuxZJxd8UR4saU2mV8uVrnh1NSeQIxAOYHwlM1AUz5JGlZ/6K0ISgTgEsvV35U+flKtx6synobPc1hUhRDu9+c/lQFv0b/pg==");
-        boolean isValid = signatureUtils.validateECDSASignatureP384(data, invalidSignature, keyPairP384.getPublic());
+        boolean isValid = signatureUtils.validateECDSASignature(EcCurve.P384, data, invalidSignature, keyPairP384.getPublic());
         assertFalse(isValid);
     }
 

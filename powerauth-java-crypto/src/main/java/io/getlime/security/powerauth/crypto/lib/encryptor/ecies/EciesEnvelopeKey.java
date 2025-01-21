@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -86,7 +87,7 @@ public class EciesEnvelopeKey {
     static EciesEnvelopeKey fromPublicKey(final PublicKey publicKey, final byte[] sharedInfo1) throws EciesException {
         try {
             // Generate ephemeral key pair
-            final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPairP256();
+            final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             final PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
             final PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
 

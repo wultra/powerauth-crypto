@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.activation;
 
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.RecoveryInfo;
@@ -58,9 +59,9 @@ class IdentifierGeneratorTest {
 
         // Generate random secret key using ECDH
         KeyGenerator keyGenerator = new KeyGenerator();
-        KeyPair keyPair1 = keyGenerator.generateKeyPairP256();
+        KeyPair keyPair1 = keyGenerator.generateKeyPair(EcCurve.P256);
         PrivateKey privateKey1 = keyPair1.getPrivate();
-        KeyPair keyPair2 = keyGenerator.generateKeyPairP256();
+        KeyPair keyPair2 = keyGenerator.generateKeyPair(EcCurve.P256);
         PublicKey publicKey2 = keyPair2.getPublic();
         SecretKey secretKey = keyGenerator.computeSharedKey(privateKey1, publicKey2, true);
 

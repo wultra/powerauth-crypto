@@ -20,6 +20,7 @@ import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKey
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
@@ -79,14 +80,14 @@ public class PowerAuthSignatureTest {
         // Prepare data
         KeyGenerator keyGenerator = new KeyGenerator();
 
-        KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
+        KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
         PrivateKey serverPrivateKey = serverKeyPair.getPrivate();
         PublicKey serverPublicKey = serverKeyPair.getPublic();
 
         System.out.println("## Server Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(serverPrivateKey)));
         System.out.println("## Server Public Key:  " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(serverPublicKey)));
 
-        KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
+        KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
         PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
         PublicKey devicePublicKey = deviceKeyPair.getPublic();
 
@@ -214,14 +215,14 @@ public class PowerAuthSignatureTest {
         // Prepare data
         KeyGenerator keyGenerator = new KeyGenerator();
 
-        KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
+        KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
         PrivateKey serverPrivateKey = serverKeyPair.getPrivate();
         PublicKey serverPublicKey = serverKeyPair.getPublic();
 
         System.out.println("## Server Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(serverPrivateKey)));
         System.out.println("## Server Public Key:  " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(serverPublicKey)));
 
-        KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
+        KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
         PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
         PublicKey devicePublicKey = deviceKeyPair.getPublic();
 
@@ -349,14 +350,14 @@ public class PowerAuthSignatureTest {
         // Prepare data
         KeyGenerator keyGenerator = new KeyGenerator();
 
-        KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
+        KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
         PrivateKey serverPrivateKey = serverKeyPair.getPrivate();
         PublicKey serverPublicKey = serverKeyPair.getPublic();
 
         System.out.println("## Server Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(serverPrivateKey)));
         System.out.println("## Server Public Key:  " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(serverPublicKey)));
 
-        KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
+        KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
         PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
         PublicKey devicePublicKey = deviceKeyPair.getPublic();
 

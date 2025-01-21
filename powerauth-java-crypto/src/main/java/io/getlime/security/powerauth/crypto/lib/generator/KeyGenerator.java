@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
@@ -65,36 +66,19 @@ public class KeyGenerator {
      */
     @Deprecated
     public KeyPair generateKeyPair() throws CryptoProviderException {
-        return generateKeyPairP256();
+        return generateKeyPair(EcCurve.P256);
     }
 
     /**
-     * Generate a new ECDH key pair using P256r1 curve.
+     * Generate a new ECDH key pair using given EC curve.
      *
      * @return A new key pair instance, or null in case of an error.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public KeyPair generateKeyPairP256() throws CryptoProviderException {
+    public KeyPair generateKeyPair(EcCurve curve) throws CryptoProviderException {
         try {
             final KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            kpg.initialize(new ECGenParameterSpec("secp256r1"));
-            return kpg.generateKeyPair();
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new CryptoProviderException(ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * Generate a new ECDH key pair using P384r1 curve.
-     *
-     * @return A new key pair instance, or null in case of an error.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public KeyPair generateKeyPairP384() throws CryptoProviderException {
-        try {
-            final KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            kpg.initialize(new ECGenParameterSpec("secp384r1"));
+            kpg.initialize(new ECGenParameterSpec(curve.getName()));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
             logger.warn(ex.getMessage(), ex);

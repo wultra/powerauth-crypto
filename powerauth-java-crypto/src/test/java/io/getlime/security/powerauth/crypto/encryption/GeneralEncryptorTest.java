@@ -25,6 +25,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.exception.EncryptorExc
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.*;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncryptorSecrets;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncryptorSecrets;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
@@ -100,8 +101,8 @@ public class GeneralEncryptorTest {
                 Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)),
                 keyGenerator.generateRandomBytes(16),
                 UUID.randomUUID().toString(),
-                keyGenerator.generateKeyPairP256(),
-                keyGenerator.generateKeyPairP256(),
+                keyGenerator.generateKeyPair(EcCurve.P256),
+                keyGenerator.generateKeyPair(EcCurve.P256),
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString()
         );

@@ -22,6 +22,7 @@ import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientAct
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
 import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
 import io.getlime.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
@@ -223,10 +224,10 @@ public class GenerateVectorDataTest {
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
@@ -341,10 +342,10 @@ public class GenerateVectorDataTest {
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
@@ -449,10 +450,10 @@ public class GenerateVectorDataTest {
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPairP256();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPairP256();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
             SignatureConfiguration signatureConfiguration = SignatureConfiguration.decimal(j);

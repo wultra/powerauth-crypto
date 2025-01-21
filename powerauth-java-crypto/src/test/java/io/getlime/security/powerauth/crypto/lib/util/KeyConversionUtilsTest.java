@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jce.ECNamedCurveTable;
@@ -74,7 +75,7 @@ public class KeyConversionUtilsTest {
 		PublicKey key = instance.convertBytesToPublicKey(Base64.getDecoder().decode("AsUaehWpuZseHUprd9immCELf62TTtHUGlTIXyCxY7h2"));
 
 		for (int i = 0; i < 1000; i++) {
-			KeyPair kp = keyGenerator.generateKeyPairP256();
+			KeyPair kp = keyGenerator.generateKeyPair(EcCurve.P256);
 
 			PublicKey publicKey = kp.getPublic();
 			byte[] originalBytes = instance.convertPublicKeyToBytes(publicKey);
@@ -137,7 +138,7 @@ public class KeyConversionUtilsTest {
 
 		// random key test
 		for (int i = 0; i < 100; i++) {
-			final KeyPair keyPair = keyGenerator.generateKeyPairP256();
+			final KeyPair keyPair = keyGenerator.generateKeyPair(EcCurve.P256);
 			final ECPublicKey publicKeyOrig = (ECPublicKey) keyPair.getPublic();
 			final byte[] bytes = instance.convertPublicKeyToBytes(publicKeyOrig);
 			final byte[] x = publicKeyOrig.getW().getAffineX().toByteArray();

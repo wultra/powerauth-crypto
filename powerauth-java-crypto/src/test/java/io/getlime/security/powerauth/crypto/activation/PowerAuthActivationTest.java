@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.activation;
 
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
@@ -57,7 +58,7 @@ public class PowerAuthActivationTest {
     @Test
     public void testGenerateKeys() throws CryptoProviderException {
         KeyGenerator keyGenerator = new KeyGenerator();
-        KeyPair kp = keyGenerator.generateKeyPairP256();
+        KeyPair kp = keyGenerator.generateKeyPair(EcCurve.P256);
         System.out.println("Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
         System.out.println("Public Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(kp.getPublic())));
     }
@@ -83,7 +84,7 @@ public class PowerAuthActivationTest {
         KeyGenerator keyGenerator = new KeyGenerator();
         PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
-        KeyPair masterKeyPair = keyGenerator.generateKeyPairP256();
+        KeyPair masterKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
 
         // Generate master keypair
         PrivateKey masterPrivateKey = masterKeyPair.getPrivate();
