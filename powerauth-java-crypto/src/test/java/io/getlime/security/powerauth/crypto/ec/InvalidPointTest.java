@@ -144,9 +144,9 @@ public class InvalidPointTest {
     @Test
     public void testValidationInvalidPointCoordinatesOutsideFp_P256() {
         final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
-            keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("BGjj8wAErlEt1FNJzH8uhpWN2GSd9apNK0tWaDAN+Bukt5EwKZ6l3YzX475apYQdVbzmg0X2mRysqrvTEPRj8b8=")));
+            keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("BP////8AAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA/////wAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=")));
 
-        assertEquals("Invalid point coordinates", exception.getMessage());
+        assertEquals("x value invalid for SecP256R1FieldElement", exception.getMessage());
     }
 
     /**
@@ -155,9 +155,9 @@ public class InvalidPointTest {
     @Test
     public void testValidationInvalidPointCoordinatesOutsideFp_P384() {
         final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
-                keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("BH//////////////////////////////////////////f////4AAAAAAAAAAf////1VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU/////6qqqqqqqqqq/////w==")));
+                keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("BP/////////////////////////////////////////+/////wAAAAAAAAABAAAAAP/////////////////////////////////////////+/////wAAAAAAAAABAAAAAA==")));
 
-        assertEquals("Invalid point coordinates", exception.getMessage());
+        assertEquals("x value invalid for SecP384R1FieldElement", exception.getMessage());
     }
 
     /**
