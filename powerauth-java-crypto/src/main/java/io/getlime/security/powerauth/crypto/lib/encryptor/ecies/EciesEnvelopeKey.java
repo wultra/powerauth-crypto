@@ -92,7 +92,7 @@ public class EciesEnvelopeKey {
             final PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
 
             // Convert ephemeral key to bytes
-            final byte[] ephemeralPublicKeyBytes = keyConvertor.convertPublicKeyToBytes(ephemeralPublicKey);
+            final byte[] ephemeralPublicKeyBytes = keyConvertor.convertPublicKeyToBytes(EcCurve.P256, ephemeralPublicKey);
 
             // Compute ephemeral secret key using ECDH key agreement
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, publicKey, true);
@@ -123,7 +123,7 @@ public class EciesEnvelopeKey {
     static EciesEnvelopeKey fromPrivateKey(final PrivateKey ephemeralKeyPrivate, final byte[] ephemeralPublicKeyBytes, final byte[] sharedInfo1) throws EciesException {
         try {
             // Convert public key bytes to public key
-            final PublicKey ephemeralPublicKey = keyConvertor.convertBytesToPublicKey(ephemeralPublicKeyBytes);
+            final PublicKey ephemeralPublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, ephemeralPublicKeyBytes);
 
             // Compute ephemeral secret key using ECDH key agreement
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, ephemeralPublicKey, true);

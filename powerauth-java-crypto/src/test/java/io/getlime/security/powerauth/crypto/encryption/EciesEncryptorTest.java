@@ -21,6 +21,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesDecryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.EciesEncryptor;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.model.*;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -143,8 +144,8 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(signByte, Base64.getDecoder().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
-        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(signByte, Base64.getDecoder().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
+        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
 
         byte[][] request = {
                 Base64.getDecoder().decode("aGVsbG8gd29ybGQh"),
@@ -299,8 +300,8 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(signByte, Base64.getDecoder().decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
-        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(signByte, Base64.getDecoder().decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
+        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
 
         byte[][] request = {
                 Base64.getDecoder().decode("aGVsbG8gd29ybGQh"),

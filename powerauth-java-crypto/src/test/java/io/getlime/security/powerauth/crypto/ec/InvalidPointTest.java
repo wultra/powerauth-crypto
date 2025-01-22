@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.ec;
 
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
@@ -24,6 +25,7 @@ import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
+import org.bouncycastle.math.ec.custom.sec.SecP384R1Curve;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -53,103 +55,153 @@ public class InvalidPointTest {
     }
 
     /**
-     * Test of validation for point at infinity.
+     * Test of validation for point at infinity for curve P-256.
      */
     @Test
-    public void testInfinityValidation() {
+    public void testInfinityValidation_P256() {
         ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
         assertTrue(ecSpec.getCurve().getInfinity().isValid());
     }
 
     /**
-     * Test of usage of point at infinity as public key.
+     * Test of validation for point at infinity for curve P-384.
      */
     @Test
-    public void testInfinityAsPublicKey() throws InvalidKeySpecException, CryptoProviderException {
-        try {
-            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("AA=="));
-        } catch (GenericCryptoException ex) {
-            return;
-        }
-        fail("Infinity allowed as public key");
+    public void testInfinityValidation_P384() {
+        ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp384r1");
+        assertTrue(ecSpec.getCurve().getInfinity().isValid());
     }
 
     /**
-     * Test of validation for invalid point compression.
+     * Test of usage of point at infinity as public key for curve P-256.
      */
     @Test
-    public void testValidationInvalidPoint1() throws InvalidKeySpecException, CryptoProviderException {
-        try {
-            // Invalid point compression
-            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("ArcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/"));
-        } catch (GenericCryptoException ex) {
-            return;
-        }
-        fail("EC point validation is missing");
-    }
-
-    /**
-     * Test of validation for invalid encoding.
-     */
-    @Test
-    void testValidationInvalidPoint2() {
+    public void testInfinityAsPublicKey_P256() {
         final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
-                keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("Pes+/6wnmrjwVa2L9v2wqUDBYMCtq0qvQ7JIZ6+nZe6fsT+vr85+rUPunAIaK3tRAuIkIROUwYEvj/TlcemQ5Q==")),
-                "EC point validation is missing");
+            keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("AA==")));
+
+        assertEquals("Invalid public key with point equal to the point at infinity", exception.getMessage());
+    }
+
+    /**
+     * Test of usage of point at infinity as public key for curve P-384.
+     */
+    @Test
+    public void testInfinityAsPublicKey_P384() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("AA==")));
+
+        assertEquals("Invalid public key with point equal to the point at infinity", exception.getMessage());
+    }
+
+    /**
+     * Test of validation for invalid point compression for curve P-256.
+     */
+    @Test
+    public void testValidationInvalidPointCompression_P256() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+            keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("ArcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/")));
+
+        assertEquals("Invalid point compression", exception.getMessage());
+    }
+
+    /**
+     * Test of validation for invalid point compression for curve P-384.
+     */
+    @Test
+    public void testValidationInvalidPointCompression_P384() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("AgD//////////////////////////////////////////v////8AAAAAAAAAAQAAAAA=")));
+
+        assertEquals("Incorrect length for compressed encoding", exception.getMessage());
+    }
+
+    /**
+     * Test of validation for invalid encoding for curve P-256.
+     */
+    @Test
+    void testValidationInvalidPointEncoding_P256() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("Pes+/6wnmrjwVa2L9v2wqUDBYMCtq0qvQ7JIZ6+nZe6fsT+vr85+rUPunAIaK3tRAuIkIROUwYEvj/TlcemQ5Q==")));
 
         assertEquals("Invalid point encoding 0x3d", exception.getMessage());
     }
 
     /**
-     * Test of validation for point with invalid coordinates outside Fp.
+     * Test of validation for invalid encoding for curve P-384.
      */
     @Test
-    public void testValidationInvalidPoint3() throws InvalidKeySpecException, CryptoProviderException {
-        try {
-            // Invalid point coordinates
-            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BGjj8wAErlEt1FNJzH8uhpWN2GSd9apNK0tWaDAN+Bukt5EwKZ6l3YzX475apYQdVbzmg0X2mRysqrvTEPRj8b8="));
-        } catch (GenericCryptoException ex) {
-            return;
-        }
-        fail("EC point validation is missing");
+    void testValidationInvalidPointEncoding_P384() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                        keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("Pes+/6wnmrjwVa2L9v2wqUDBYMCtq0qvQ7JIZ6+nZe6fsT+vr85+rUPunAIaK3tRAuIkIROUwYEvj/TlcemQ5Q==")));
+
+        assertEquals("Invalid point encoding 0x3d", exception.getMessage());
     }
 
     /**
-     * Test of validation for point with invalid coordinates inside Fp.
+     * Test of validation for point with invalid coordinates outside Fp for curve P-256.
      */
     @Test
-    public void testValidationInvalidPoint4() throws InvalidKeySpecException, CryptoProviderException {
-        try {
-            // Invalid point coordinates
-            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BMa1eFhnJNtFLU6yFeFgcHMt9iPg074ZUKM9D8tX3nuNk7cKwTbbQG8uHItW8NxvPaMYo0WM87eV5Ud9dB3/14Q="));
-        } catch (GenericCryptoException ex) {
-            return;
-        }
-        fail("EC point validation is missing");
+    public void testValidationInvalidPointCoordinatesOutsideFp_P256() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+            keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("BGjj8wAErlEt1FNJzH8uhpWN2GSd9apNK0tWaDAN+Bukt5EwKZ6l3YzX475apYQdVbzmg0X2mRysqrvTEPRj8b8=")));
+
+        assertEquals("Invalid point coordinates", exception.getMessage());
+    }
+
+    /**
+     * Test of validation for point with invalid coordinates outside Fp for curve P-384.
+     */
+    @Test
+    public void testValidationInvalidPointCoordinatesOutsideFp_P384() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("BH//////////////////////////////////////////f////4AAAAAAAAAAf////1VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU/////6qqqqqqqqqq/////w==")));
+
+        assertEquals("Invalid point coordinates", exception.getMessage());
+    }
+
+    /**
+     * Test of validation for point with invalid coordinates inside Fp for curve P-256.
+     */
+    @Test
+    public void testValidationInvalidPointCoordinatesInsideFp_P256() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+            keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("BMa1eFhnJNtFLU6yFeFgcHMt9iPg074ZUKM9D8tX3nuNk7cKwTbbQG8uHItW8NxvPaMYo0WM87eV5Ud9dB3/14Q=")));
+
+        assertEquals("Invalid point coordinates", exception.getMessage());
+    }
+
+    /**
+     * Test of validation for point with invalid coordinates inside Fp for curve P-384.
+     */
+    @Test
+    public void testValidationInvalidCoordinatesInsideFp_P384() {
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("BH//////////////////////////////////////////f////4AAAAAAAAAAf////1VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU/////6qqqqqqqqqq/////w==")));
+
+        assertEquals("Invalid point coordinates", exception.getMessage());
     }
 
     /**
      * Test of validation for point from CVE-2018-5383.
      */
     @Test
-    public void testValidationInvalidPoint5() throws InvalidKeySpecException, CryptoProviderException {
-        try {
-            // Invalid point coordinates
-            // x: "82794344854243450371984501721340198645022926339504713863786955730156937886079"
-            // y: "33552521881581467670836617859178523407344471948513881718969729275859461829010"
-            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BLcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/Si4N7VelFWu4LrQxTDf9QVU5Wn5RmIryiczlMbnBcZI="));
-        } catch (GenericCryptoException ex) {
-            return;
-        }
-        fail("EC point validation is missing");
+    public void testValidationInvalidPoint_CVE_2018_5383() {
+        // Invalid point coordinates
+        // x: "82794344854243450371984501721340198645022926339504713863786955730156937886079"
+        // y: "33552521881581467670836617859178523407344471948513881718969729275859461829010"
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("BLcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/Si4N7VelFWu4LrQxTDf9QVU5Wn5RmIryiczlMbnBcZI=")));
+
+        assertEquals("Invalid point coordinates", exception.getMessage());
     }
 
     /**
-     * Test of validation for point order. The point is correct, however the curve parameters
+     * Test of validation for point order for curve P-256. The point is correct, however the curve parameters
      * have been altered to simulate an EC curve fault attack.
      */
     @Test
-    public void testValidationInvalidOrder() throws InvalidKeySpecException, CryptoProviderException, IllegalAccessException, NoSuchFieldException {
+    public void testValidationInvalidOrder_P256() throws IllegalAccessException, NoSuchFieldException {
         KeyConvertor keyConvertor = new KeyConvertor();
         SecP256R1Curve p256curve = (SecP256R1Curve) CustomNamedCurves.getByName("secp256r1").getCurve();
         Class<?> parentClass = p256curve.getClass().getSuperclass().getSuperclass();
@@ -157,14 +209,31 @@ public class InvalidPointTest {
         orderField.setAccessible(true);
         BigInteger orderValid = p256curve.getOrder();
         orderField.set(p256curve, orderValid.add(BigInteger.ONE));
-        try {
-            keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("BJBAcEeM25rL3lo5GIM9J4ygFzkkY3dPe6dKx6x17XNdG1Jy+FlH31rejjCHYVKcLs8lgKjJTKzyxrxMe+kK4KY="));
-        } catch (GenericCryptoException ex) {
-            // Revert the P-256 curve order change used only for fault attack simulation
-            orderField.set(p256curve, orderValid);
-            return;
-        }
-        fail("EC point validation is missing");
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+            keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("BJBAcEeM25rL3lo5GIM9J4ygFzkkY3dPe6dKx6x17XNdG1Jy+FlH31rejjCHYVKcLs8lgKjJTKzyxrxMe+kK4KY=")));
+
+        assertEquals("Point order does not match the order defined in EC curve", exception.getMessage());
+        orderField.set(p256curve, orderValid);
+    }
+
+    /**
+     * Test of validation for point order for curve P-384. The point is correct, however the curve parameters
+     * have been altered to simulate an EC curve fault attack.
+     */
+    @Test
+    public void testValidationInvalidOrder_P384() throws IllegalAccessException, NoSuchFieldException {
+        KeyConvertor keyConvertor = new KeyConvertor();
+        SecP384R1Curve p384curve = (SecP384R1Curve) CustomNamedCurves.getByName("secp384r1").getCurve();
+        Class<?> parentClass = p384curve.getClass().getSuperclass().getSuperclass();
+        Field orderField = parentClass.getDeclaredField("order");
+        orderField.setAccessible(true);
+        BigInteger orderValid = p384curve.getOrder();
+        orderField.set(p384curve, orderValid.add(BigInteger.ONE));
+        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
+                keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("BHeMuzGxIpretqc1qXwFOFVgBXhkJkuESepqW6gLIGlgDOqrP9uoNYv7kth9rCICs2/XW+sw/bu51Fhg4+VNrllfyOdXBZKHc8A/UUlL1ST5EUAmjzHerPld5IVn2r6oIg==")));
+
+        assertEquals("Point order does not match the order defined in EC curve", exception.getMessage());
+        orderField.set(p384curve, orderValid);
     }
 
 }
