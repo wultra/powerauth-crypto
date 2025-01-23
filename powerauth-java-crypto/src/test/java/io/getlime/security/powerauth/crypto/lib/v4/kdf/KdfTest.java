@@ -42,7 +42,7 @@ class KdfTest {
         int outputLength = 64;
         byte[] expectedOutput = Hex.decode("20C570C31346F703C9AC36C61C03CB64C3970D0CFC787E9B79599D273A68D2F7F69D4CC3DE9D104A351689F27CF6F5951F0103F33F4F24871024D9C27773A8DD");
         SecretKey secretKey = new SecretKeySpec(key, "AES");
-        byte[] output = Kdf.kmac256(secretKey, data, outputLength, customString);
+        byte[] output = Kmac.kmac256(secretKey, data, outputLength, customString);
         assertArrayEquals(expectedOutput, output, "KMAC256 output does not match expected output.");
     }
 
@@ -70,7 +70,7 @@ class KdfTest {
                 "589D27CF5E15369CBBFF8B9A4C2EB178" +
                 "00855D0235FF635DA82533EC6B759B69");
         SecretKey secretKey = new SecretKeySpec(key, "AES");
-        byte[] output = Kdf.kmac256(secretKey, data, outputLength, customString);
+        byte[] output = Kmac.kmac256(secretKey, data, outputLength, customString);
         assertArrayEquals(expectedOutput, output, "KMAC256 output does not match expected output.");
     }
 
@@ -98,7 +98,7 @@ class KdfTest {
                 "70FBACFDE50033AEA585F1A2708510C3" +
                 "2D07880801BD182898FE476876FC8965");
         SecretKey secretKey = new SecretKeySpec(key, "AES");
-        byte[] output = Kdf.kmac256(secretKey, data, outputLength, customString);
+        byte[] output = Kmac.kmac256(secretKey, data, outputLength, customString);
         assertArrayEquals(expectedOutput, output, "KMAC256 output does not match expected output.");
     }
 
