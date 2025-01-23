@@ -60,7 +60,7 @@ public class PowerAuthActivationTest {
         KeyGenerator keyGenerator = new KeyGenerator();
         KeyPair kp = keyGenerator.generateKeyPair(EcCurve.P256);
         System.out.println("Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
-        System.out.println("Public Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(kp.getPublic())));
+        System.out.println("Public Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, kp.getPublic())));
     }
 
     /**
@@ -166,8 +166,8 @@ public class PowerAuthActivationTest {
             byte[] devicePublicKeyBytes = Base64.getDecoder().decode(devicePublicKeysBase64[i]);
             byte[] serverPublicKeyBytes = Base64.getDecoder().decode(serverPublicKeysBase64[i]);
             String activation1 = activationId[i];
-            PublicKey devicePublicKey = keyConvertor.convertBytesToPublicKey(devicePublicKeyBytes);
-            PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(serverPublicKeyBytes);
+            PublicKey devicePublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, devicePublicKeyBytes);
+            PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, serverPublicKeyBytes);
             final String fingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             final String fingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             assertEquals(publicKeyFingerprint[i], fingerprintClient);

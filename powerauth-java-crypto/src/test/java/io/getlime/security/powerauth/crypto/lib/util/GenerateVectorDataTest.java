@@ -112,7 +112,7 @@ public class GenerateVectorDataTest {
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationCode", activationCode);
             input.put("masterPrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)));
-            input.put("masterPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(masterPublicKey)));
+            input.put("masterPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, masterPublicKey)));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("activationSignature", Base64.getEncoder().encodeToString(activationSignature));
             testSet.addData(input, output);
@@ -148,9 +148,9 @@ public class GenerateVectorDataTest {
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("devicePrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())));
-            input.put("devicePublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(deviceKeyPair.getPublic())));
+            input.put("devicePublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, deviceKeyPair.getPublic())));
             input.put("serverPrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(serverKeyPair.getPrivate())));
-            input.put("serverPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(serverKeyPair.getPublic())));
+            input.put("serverPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, serverKeyPair.getPublic())));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("masterSecretKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)));
             testSet.addData(input, output);
@@ -560,8 +560,8 @@ public class GenerateVectorDataTest {
             byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
 
             Map<String, String> input = new LinkedHashMap<>();
-            input.put("devicePublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
-            input.put("serverPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(serverPublicKey)));
+            input.put("devicePublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, devicePublicKey)));
+            input.put("serverPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, serverPublicKey)));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("devicePublicKeyCoordX", Base64.getEncoder().encodeToString(devicePublicKeyBytes));
             output.put("serverPublicKeyCoordX", Base64.getEncoder().encodeToString(serverPublicKeyBytes));

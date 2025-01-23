@@ -72,23 +72,23 @@ public class KeyConversionUtilsTest {
 		KeyGenerator keyGenerator = new KeyGenerator();
 		KeyConvertor instance = new KeyConvertor();
 
-		PublicKey key = instance.convertBytesToPublicKey(Base64.getDecoder().decode("AsUaehWpuZseHUprd9immCELf62TTtHUGlTIXyCxY7h2"));
+		PublicKey key = instance.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("AsUaehWpuZseHUprd9immCELf62TTtHUGlTIXyCxY7h2"));
 
 		for (int i = 0; i < 1000; i++) {
 			KeyPair kp = keyGenerator.generateKeyPair(EcCurve.P256);
 
 			PublicKey publicKey = kp.getPublic();
-			byte[] originalBytes = instance.convertPublicKeyToBytes(publicKey);
+			byte[] originalBytes = instance.convertPublicKeyToBytes(EcCurve.P256, publicKey);
 			String originalBase64 = Base64.getEncoder().encodeToString(originalBytes);
 			byte[] decodedBytes = Base64.getDecoder().decode(originalBase64);
-			PublicKey decodedPublicKey = instance.convertBytesToPublicKey(decodedBytes);
+			PublicKey decodedPublicKey = instance.convertBytesToPublicKey(EcCurve.P256, decodedBytes);
 			assertEquals(publicKey, decodedPublicKey);
 
 			PrivateKey privateKey = kp.getPrivate();
 			byte[] originalPrivateBytes = instance.convertPrivateKeyToBytes(privateKey);
 			String originalPrivateBase64 = Base64.getEncoder().encodeToString(originalPrivateBytes);
 			byte[] decodedPrivateBytes = Base64.getDecoder().decode(originalPrivateBase64);
-			PrivateKey decodedPrivateKey = instance.convertBytesToPrivateKey(decodedPrivateBytes);
+			PrivateKey decodedPrivateKey = instance.convertBytesToPrivateKey(EcCurve.P256, decodedPrivateBytes);
 			assertEquals(((BCECPrivateKey)privateKey).getD(), (((BCECPrivateKey)decodedPrivateKey).getD()));
 
 			KeyFactory kf = KeyFactory.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
@@ -99,7 +99,7 @@ public class KeyConversionUtilsTest {
 			originalPrivateBytes = instance.convertPrivateKeyToBytes(privateKey2);
 			originalPrivateBase64 = Base64.getEncoder().encodeToString(originalPrivateBytes);
 			decodedPrivateBytes = Base64.getDecoder().decode(originalPrivateBase64);
-			PrivateKey decodedPrivateKey2 = instance.convertBytesToPrivateKey(decodedPrivateBytes);
+			PrivateKey decodedPrivateKey2 = instance.convertBytesToPrivateKey(EcCurve.P256, decodedPrivateBytes);
 			assertEquals(privateKey2, decodedPrivateKey2);
 		}
 
@@ -131,8 +131,8 @@ public class KeyConversionUtilsTest {
 			final byte[] x = testVector.get(keyIndex);
 			final byte[] y = testVector.get(keyIndex + 1);
 			final byte[] encoded = testVector.get(keyIndex + 2);
-			final PublicKey publicKey = instance.convertPointBytesToPublicKey(x, y);
-			final PublicKey publicKeyExpected = instance.convertBytesToPublicKey(encoded);
+			final PublicKey publicKey = instance.convertPointBytesToPublicKey(EcCurve.P256, x, y);
+			final PublicKey publicKeyExpected = instance.convertBytesToPublicKey(EcCurve.P256, encoded);
 			assertEquals(publicKeyExpected, publicKey);
 		}
 
@@ -140,11 +140,11 @@ public class KeyConversionUtilsTest {
 		for (int i = 0; i < 100; i++) {
 			final KeyPair keyPair = keyGenerator.generateKeyPair(EcCurve.P256);
 			final ECPublicKey publicKeyOrig = (ECPublicKey) keyPair.getPublic();
-			final byte[] bytes = instance.convertPublicKeyToBytes(publicKeyOrig);
+			final byte[] bytes = instance.convertPublicKeyToBytes(EcCurve.P256, publicKeyOrig);
 			final byte[] x = publicKeyOrig.getW().getAffineX().toByteArray();
 			final byte[] y = publicKeyOrig.getW().getAffineY().toByteArray();
-			final PublicKey publicKey = instance.convertPointBytesToPublicKey(x, y);
-			final PublicKey publicKeyExpected = instance.convertBytesToPublicKey(bytes);
+			final PublicKey publicKey = instance.convertPointBytesToPublicKey(EcCurve.P256, x, y);
+			final PublicKey publicKeyExpected = instance.convertBytesToPublicKey(EcCurve.P256, bytes);
 			assertEquals(publicKeyExpected, publicKey);
 		}
 

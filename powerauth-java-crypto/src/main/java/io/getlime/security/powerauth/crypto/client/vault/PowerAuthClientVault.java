@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.client.vault;
 
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
@@ -92,7 +93,7 @@ public class PowerAuthClientVault {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] zeroBytes = new byte[16];
         byte[] keyBytes = aes.decrypt(cDevicePrivateKey, zeroBytes, vaultEncryptionKey);
-        return keyConvertor.convertBytesToPrivateKey(keyBytes);
+        return keyConvertor.convertBytesToPrivateKey(EcCurve.P256, keyBytes);
     }
 
 }

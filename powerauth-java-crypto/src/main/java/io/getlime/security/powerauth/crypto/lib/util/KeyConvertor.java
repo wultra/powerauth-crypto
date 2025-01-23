@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.util;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.ECNamedCurveTable;
@@ -46,18 +47,32 @@ public class KeyConvertor {
 
     /**
      * Converts an EC public key to a byte array by encoding Q point parameter (W in Java Security).
+     * @deprecated use {@link #convertBytesToPublicKey(EcCurve, byte[])}
      *
      * @param publicKey An EC public key to be converted.
      * @return A byte array representation of the EC public key.
      * @throws CryptoProviderException When crypto provider is incorrectly initialized.
      */
+    @Deprecated
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) throws CryptoProviderException {
+        return convertPublicKeyToBytes(EcCurve.P256, publicKey);
+    }
+    
+    /**
+     * Converts an EC public key to a byte array by encoding Q point parameter (W in Java Security).
+     *
+     * @param curve EC curve.
+     * @param publicKey An EC public key to be converted.
+     * @return A byte array representation of the EC public key.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     */
+    public byte[] convertPublicKeyToBytes(EcCurve curve, PublicKey publicKey) throws CryptoProviderException {
         // Extract public key point
         ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
         // Create EC point using Bouncy Castle library
-        ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
+        ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
         if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
-            throw new CryptoProviderException("Crypto provider does not support the secp256r1 curve");
+            throw new CryptoProviderException("Crypto provider does not support curve " + curve.getName());
         }
         org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().createPoint(ecPoint.getAffineX(), ecPoint.getAffineY());
         // Extract byte[] uncompressed representation
@@ -67,6 +82,7 @@ public class KeyConvertor {
     /**
      * Converts byte array to an EC public key, by decoding the Q point (W in Java Security).
      * parameter.
+     * @deprecated use {@link #convertBytesToPublicKey(EcCurve, byte[])}
      *
      * @param keyBytes Bytes to be converted to EC public key.
      * @return An instance of the EC public key on success, or null on failure.
@@ -75,12 +91,29 @@ public class KeyConvertor {
      * @throws CryptoProviderException When crypto provider is incorrectly initialized.
      * @throws GenericCryptoException When public key is invalid.
      */
+    @Deprecated
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException, GenericCryptoException {
+        return convertBytesToPublicKey(EcCurve.P256, keyBytes);
+    }
+    
+    /**
+     * Converts byte array to an EC public key, by decoding the Q point (W in Java Security).
+     * parameter.
+     *
+     * @param curve EC curve.
+     * @param keyBytes Bytes to be converted to EC public key.
+     * @return An instance of the EC public key on success, or null on failure.
+     * @throws InvalidKeySpecException When provided bytes are not a correct key
+     *                                 representation.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     * @throws GenericCryptoException When public key is invalid.
+     */
+    public PublicKey convertBytesToPublicKey(EcCurve curve, byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException, GenericCryptoException {
         try {
             // Decode EC point using Bouncy Castle and extract its coordinates
-            ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
+            ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
             if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
-                throw new CryptoProviderException("Crypto provider does not support the secp256r1 curve");
+                throw new CryptoProviderException("Crypto provider does not support the curve " + curve.getName());
             }
             org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
             publicKeyValidator.validate(ecSpec.getCurve(), point);
@@ -90,7 +123,7 @@ public class KeyConvertor {
 
             // Generate public key using Java security API
             AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            parameters.init(new ECGenParameterSpec("secp256r1"));
+            parameters.init(new ECGenParameterSpec(curve.getName()));
             ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
             ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
             return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(ecPublicKeySpec);
@@ -105,6 +138,7 @@ public class KeyConvertor {
 
     /**
      * Converts provided byte array representing X coordinate of an EC public key.
+     * @deprecated use {@link #convertPointBytesToPublicKey(EcCurve, byte[], byte[])}
      *
      * @param xBytes X coordinate.
      * @param yBytes Y coordinate.
@@ -113,23 +147,39 @@ public class KeyConvertor {
      * @throws CryptoProviderException When crypto provider is incorrectly initialized.
      * @throws GenericCryptoException  When public key is invalid.
      */
-    public PublicKey convertPointBytesToPublicKey(byte[] xBytes, byte[] yBytes) throws InvalidKeySpecException, CryptoProviderException, GenericCryptoException {
+    @Deprecated
+    public PublicKey convertPointBytesToPublicKey(byte[] xBytes, byte[] yBytes) throws GenericCryptoException, InvalidKeySpecException, CryptoProviderException {
+        return convertPointBytesToPublicKey(EcCurve.P256, xBytes, yBytes);
+    }
+
+    /**
+     * Converts provided byte array representing X coordinate of an EC public key.
+     *
+     * @param curve EC curve.
+     * @param xBytes X coordinate.
+     * @param yBytes Y coordinate.
+     * @return Public key with provided coordinates.
+     * @throws InvalidKeySpecException When provided bytes are not a correct key representation.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     * @throws GenericCryptoException  When public key is invalid.
+     */
+    public PublicKey convertPointBytesToPublicKey(EcCurve curve, byte[] xBytes, byte[] yBytes) throws InvalidKeySpecException, CryptoProviderException, GenericCryptoException {
         try {
             // Make sure the values are interpreted as positive integer.
             final BigInteger x = new BigInteger(1, xBytes);
             final BigInteger y = new BigInteger(1, yBytes);
 
             // Validate the point is correct
-            final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
+            final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
             if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
-                throw new CryptoProviderException("Crypto provider does not support the secp256r1 curve");
+                throw new CryptoProviderException("Crypto provider does not support the curve " + curve.getName());
             }
             final org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().createPoint(x, y);
             publicKeyValidator.validate(ecSpec.getCurve(), point);
 
             // Generate public key using Java security API
             final AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            parameters.init(new ECGenParameterSpec("secp256r1"));
+            parameters.init(new ECGenParameterSpec(curve.getName()));
             final ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
 
             final ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
@@ -155,6 +205,7 @@ public class KeyConvertor {
 
     /**
      * Convert a byte array to an EC private key by decoding the D number parameter (S in Java Security).
+     * @deprecated use {@link #convertBytesToPrivateKey(EcCurve, byte[])}
      *
      * @param keyBytes Bytes to be converted to the EC private key.
      * @return An instance of EC private key decoded from the input bytes.
@@ -162,10 +213,25 @@ public class KeyConvertor {
      *                                 private key.
      * @throws CryptoProviderException When crypto provider is incorrectly initialized.
      */
+    @Deprecated
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
+        return convertBytesToPrivateKey(EcCurve.P256, keyBytes);
+    }
+
+    /**
+     * Convert a byte array to an EC private key by decoding the D number parameter (S in Java Security).
+     *
+     * @param curve EC curve.
+     * @param keyBytes Bytes to be converted to the EC private key.
+     * @return An instance of EC private key decoded from the input bytes.
+     * @throws InvalidKeySpecException The provided key bytes are not a valid EC
+     *                                 private key.
+     * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     */
+    public PrivateKey convertBytesToPrivateKey(EcCurve curve, byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
         try {
             AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            parameters.init(new ECGenParameterSpec("secp256r1"));
+            parameters.init(new ECGenParameterSpec(curve.getName()));
             ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
             // Private key is stored including the sign bit as regular Java BigInteger representation
             ECPrivateKeySpec ecPrivateKeySpec = new ECPrivateKeySpec(new BigInteger(keyBytes), ecParameterSpec);
