@@ -25,6 +25,7 @@ import io.getlime.security.powerauth.crypto.lib.encryptor.exception.EncryptorExc
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.*;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncryptorSecrets;
 import io.getlime.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncryptorSecrets;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
@@ -100,8 +101,8 @@ public class GeneralEncryptorTest {
                 Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)),
                 keyGenerator.generateRandomBytes(16),
                 UUID.randomUUID().toString(),
-                keyGenerator.generateKeyPair(),
-                keyGenerator.generateKeyPair(),
+                keyGenerator.generateKeyPair(EcCurve.P256),
+                keyGenerator.generateKeyPair(EcCurve.P256),
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString()
         );
@@ -134,7 +135,7 @@ public class GeneralEncryptorTest {
             testInvalidMacInRequest(version, validator, encryptorId);
             testInvalidMacInResponse(version, validator, encryptorId);
             testRequestResponseObjectValidation(version, encryptorId);
-        };
+        }
     }
 
     /**
@@ -589,10 +590,10 @@ public class GeneralEncryptorTest {
         // ----------------------------
 
         // Shared constants
-        final PrivateKey masterServerPrivateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(new byte[1], Base64.getDecoder().decode("0UWBQVv5sVJhKWV5JHX+d8t8qO55Cv7C0LTyB0Kj7H8=")));
-        final PublicKey masterServerPublicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("Ah7lqT0/foYC6eCUZtoiPFOycQBa2imdNE0HfvtGwaWk"));
-        final PrivateKey serverPrivateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(new byte[1], Base64.getDecoder().decode("+f07IdgNmrBjmk0uvkQ1LkMA3MPZAHvutdq/mw7xWp4=")));
-        final PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("AiK5Ka6zZNvH0NAKB9H1eoGBLX48QmUz7eUPj9xzZDaf"));
+        final PrivateKey masterServerPrivateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(new byte[1], Base64.getDecoder().decode("0UWBQVv5sVJhKWV5JHX+d8t8qO55Cv7C0LTyB0Kj7H8=")));
+        final PublicKey masterServerPublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("Ah7lqT0/foYC6eCUZtoiPFOycQBa2imdNE0HfvtGwaWk"));
+        final PrivateKey serverPrivateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(new byte[1], Base64.getDecoder().decode("+f07IdgNmrBjmk0uvkQ1LkMA3MPZAHvutdq/mw7xWp4=")));
+        final PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("AiK5Ka6zZNvH0NAKB9H1eoGBLX48QmUz7eUPj9xzZDaf"));
         final String activationId = "036CC14B-E4F8-4B01-A825-5129832ACDDB";
         final String applicationKey = "lceX5qe+O+Sb0t8TQqg35A==";
         final String applicationSecret = "m3JdVJMIu65fXXFi4VqjjA==";
@@ -964,10 +965,10 @@ public class GeneralEncryptorTest {
         // ----------------------------
 
         // Shared constants
-        final PrivateKey masterServerPrivateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(new byte[1], Base64.getDecoder().decode("oG1PJWwflQ8XRt4Nf4uzyBf0w0D4jNW22JxfImj4i5w=")));
-        final PublicKey masterServerPublicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("Au12Pbz70flr9eizmYC72P3vPp/h2KWlmvcvfssF6xBt"));
-        final PrivateKey serverPrivateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(new byte[1], Base64.getDecoder().decode("98pEwpFj60r8REpXzrflb5kzgj1aoxg1YEuKb0Kuwyk=")));
-        final PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("AjG7M9W9qNUOu51dJROO4NE+xOnqppxxyFU1Tn3FhXui"));
+        final PrivateKey masterServerPrivateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(new byte[1], Base64.getDecoder().decode("oG1PJWwflQ8XRt4Nf4uzyBf0w0D4jNW22JxfImj4i5w=")));
+        final PublicKey masterServerPublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("Au12Pbz70flr9eizmYC72P3vPp/h2KWlmvcvfssF6xBt"));
+        final PrivateKey serverPrivateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(new byte[1], Base64.getDecoder().decode("98pEwpFj60r8REpXzrflb5kzgj1aoxg1YEuKb0Kuwyk=")));
+        final PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("AjG7M9W9qNUOu51dJROO4NE+xOnqppxxyFU1Tn3FhXui"));
         final String tempKeyIdApplication = "D3D82A6B-47CF-4225-BBE5-BAD96FB84CA4";
         final String tempKeyIdActivation = "1221CD15-9092-4779-A157-04DC229A63F7";
         final String activationId = "CF2E9A48-9085-4AA3-8F85-FFAFD2380609";

@@ -16,6 +16,7 @@
  */
 package io.getlime.security.powerauth.crypto.client.activation;
 
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationVersion;
@@ -59,7 +60,7 @@ public class PowerAuthClientActivation {
      */
     public boolean verifyActivationCodeSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
-        return signatureUtils.validateECDSASignature(bytes, signature, masterPublicKey);
+        return signatureUtils.validateECDSASignature(EcCurve.P256, bytes, signature, masterPublicKey);
     }
 
     /**
@@ -69,7 +70,7 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public KeyPair generateDeviceKeyPair() throws CryptoProviderException {
-        return keyGenerator.generateKeyPair();
+        return keyGenerator.generateKeyPair(EcCurve.P256);
     }
 
     /**
@@ -101,7 +102,7 @@ public class PowerAuthClientActivation {
         String activationIdBytesBase64 = Base64.getEncoder().encodeToString(activationIdBytes);
         String C_serverPublicKeyBase64 = Base64.getEncoder().encodeToString(C_serverPublicKey);
         byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
-        return signatureUtils.validateECDSASignature(result, signature, masterPublicKey);
+        return signatureUtils.validateECDSASignature(EcCurve.P256, result, signature, masterPublicKey);
     }
 
     /**

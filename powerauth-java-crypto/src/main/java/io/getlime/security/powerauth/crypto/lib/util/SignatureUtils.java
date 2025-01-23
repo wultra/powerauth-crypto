@@ -19,6 +19,7 @@ package io.getlime.security.powerauth.crypto.lib.util;
 import io.getlime.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import io.getlime.security.powerauth.crypto.lib.config.SignatureConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class SignatureUtils {
 
     /**
      * Compute ECDSA signature of given bytes with a private key.
+     * @deprecated use {@link #computeECDSASignature(EcCurve, byte[], PrivateKey)}
      *
      * @param bytes Bytes to be signed.
      * @param masterPrivateKey Private key for computing the signature.
@@ -51,9 +53,42 @@ public class SignatureUtils {
      * @throws GenericCryptoException In case signature calculation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
+    @Deprecated
     public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        return computeECDSASignature(EcCurve.P256, bytes, masterPrivateKey);
+    }
+
+    /**
+     * Compute ECDSA signature of given bytes with a private key.
+     * @deprecated use {@link #computeECDSASignature(EcCurve, byte[], PrivateKey, SecureRandom)}
+     *
+     * @param bytes Bytes to be signed.
+     * @param masterPrivateKey Private key for computing the signature.
+     * @param secureRandom Secure random instance.
+     * @return Signature for given data.
+     * @throws InvalidKeyException In case invalid key was provided.
+     * @throws GenericCryptoException In case signature calculation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    @Deprecated
+    public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey, SecureRandom secureRandom) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        return computeECDSASignature(EcCurve.P256, bytes, masterPrivateKey, secureRandom);
+    }
+
+    /**
+     * Compute ECDSA signature of given bytes using SHA256withECDSA with a private key, using a provided instance of SecureRandom.
+     *
+     * @param curve EC curve to use.
+     * @param bytes Bytes to be signed.
+     * @param masterPrivateKey Private key for computing the signature.
+     * @return Signature for given data.
+     * @throws InvalidKeyException In case invalid key was provided.
+     * @throws GenericCryptoException In case signature calculation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public byte[] computeECDSASignature(EcCurve curve, byte[] bytes, PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            final Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final Signature ecdsa = Signature.getInstance(curve.getEcdsaAlgorithm(), PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             ecdsa.initSign(masterPrivateKey);
             ecdsa.update(bytes);
             return ecdsa.sign();
@@ -69,8 +104,9 @@ public class SignatureUtils {
     }
 
     /**
-     * Compute ECDSA signature of given bytes with a private key, using a provided instance of SecureRandom.
+     * Compute ECDSA signature of given bytes using SHA256withECDSA with a private key, using a provided instance of SecureRandom.
      *
+     * @param curve EC curve to use.
      * @param bytes Bytes to be signed.
      * @param masterPrivateKey Private key for computing the signature.
      * @param secureRandom Secure random instance.
@@ -79,9 +115,9 @@ public class SignatureUtils {
      * @throws GenericCryptoException In case signature calculation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] computeECDSASignature(byte[] bytes, PrivateKey masterPrivateKey, SecureRandom secureRandom) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public byte[] computeECDSASignature(EcCurve curve, byte[] bytes, PrivateKey masterPrivateKey, SecureRandom secureRandom) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            final Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final Signature ecdsa = Signature.getInstance(curve.getEcdsaAlgorithm(), PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             ecdsa.initSign(masterPrivateKey, secureRandom);
             ecdsa.update(bytes);
             return ecdsa.sign();
@@ -98,6 +134,7 @@ public class SignatureUtils {
 
     /**
      * Validate an ECDSA signature against given data using a public key.
+     * @deprecated use {@link #validateECDSASignature(EcCurve, byte[], byte[], PublicKey)}
      *
      * @param signedBytes Bytes that are signed.
      * @param signature Signature of the bytes.
@@ -107,9 +144,26 @@ public class SignatureUtils {
      * @throws GenericCryptoException In case signature calculation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
+    @Deprecated
     public boolean validateECDSASignature(byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        return this.validateECDSASignature(EcCurve.P256, signedBytes, signature, masterPublicKey);
+    }
+
+    /**
+     * Validate an ECDSA signature using SHA256withECDSA against given data using a public key.
+     *
+     * @param curve EC curve to use.
+     * @param signedBytes Bytes that are signed.
+     * @param signature Signature of the bytes.
+     * @param masterPublicKey Public key for validating the signature.
+     * @return Returns "true" if signature matches, "false" otherwise.
+     * @throws InvalidKeyException In case invalid key was provided.
+     * @throws GenericCryptoException In case signature calculation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public boolean validateECDSASignature(EcCurve curve, byte[] signedBytes, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         try {
-            final Signature ecdsa = Signature.getInstance("SHA256withECDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final Signature ecdsa = Signature.getInstance(curve.getEcdsaAlgorithm(), PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             ecdsa.initVerify(masterPublicKey);
             ecdsa.update(signedBytes);
             return ecdsa.verify(signature);

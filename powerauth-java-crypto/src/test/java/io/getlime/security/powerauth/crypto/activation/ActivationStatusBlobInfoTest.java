@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.activation;
 
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
@@ -60,8 +61,8 @@ public class ActivationStatusBlobInfoTest {
         final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         // Simulate generating of device and server key pairs
         final KeyGenerator keyGenerator = new KeyGenerator();
-        final KeyPair keyPairDevice = keyGenerator.generateKeyPair();
-        final KeyPair keyPairServer = keyGenerator.generateKeyPair();
+        final KeyPair keyPairDevice = keyGenerator.generateKeyPair(EcCurve.P256);
+        final KeyPair keyPairServer = keyGenerator.generateKeyPair(EcCurve.P256);
         // Compute shared master secret key
         final SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(keyPairServer.getPrivate(), keyPairDevice.getPublic());
         // Derive transport key
@@ -105,8 +106,8 @@ public class ActivationStatusBlobInfoTest {
         final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         // Simulate generating of device and server key pairs
         final KeyGenerator keyGenerator = new KeyGenerator();
-        final KeyPair keyPairDevice = keyGenerator.generateKeyPair();
-        final KeyPair keyPairServer = keyGenerator.generateKeyPair();
+        final KeyPair keyPairDevice = keyGenerator.generateKeyPair(EcCurve.P256);
+        final KeyPair keyPairServer = keyGenerator.generateKeyPair(EcCurve.P256);
         final byte[] challenge = keyGenerator.generateRandomBytes(16);
         final byte[] nonce = keyGenerator.generateRandomBytes(16);
         // Compute shared master secret key

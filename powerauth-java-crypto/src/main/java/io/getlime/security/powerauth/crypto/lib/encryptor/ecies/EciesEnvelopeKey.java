@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.lib.encryptor.ecies;
 
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import io.getlime.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -86,12 +87,12 @@ public class EciesEnvelopeKey {
     static EciesEnvelopeKey fromPublicKey(final PublicKey publicKey, final byte[] sharedInfo1) throws EciesException {
         try {
             // Generate ephemeral key pair
-            final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair();
+            final KeyPair ephemeralKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             final PrivateKey ephemeralPrivateKey = ephemeralKeyPair.getPrivate();
             final PublicKey ephemeralPublicKey = ephemeralKeyPair.getPublic();
 
             // Convert ephemeral key to bytes
-            final byte[] ephemeralPublicKeyBytes = keyConvertor.convertPublicKeyToBytes(ephemeralPublicKey);
+            final byte[] ephemeralPublicKeyBytes = keyConvertor.convertPublicKeyToBytes(EcCurve.P256, ephemeralPublicKey);
 
             // Compute ephemeral secret key using ECDH key agreement
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralPrivateKey, publicKey, true);
@@ -122,7 +123,7 @@ public class EciesEnvelopeKey {
     static EciesEnvelopeKey fromPrivateKey(final PrivateKey ephemeralKeyPrivate, final byte[] ephemeralPublicKeyBytes, final byte[] sharedInfo1) throws EciesException {
         try {
             // Convert public key bytes to public key
-            final PublicKey ephemeralPublicKey = keyConvertor.convertBytesToPublicKey(ephemeralPublicKeyBytes);
+            final PublicKey ephemeralPublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, ephemeralPublicKeyBytes);
 
             // Compute ephemeral secret key using ECDH key agreement
             final SecretKey ephemeralSecretKey = keyGenerator.computeSharedKey(ephemeralKeyPrivate, ephemeralPublicKey, true);

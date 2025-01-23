@@ -18,6 +18,7 @@ package io.getlime.security.powerauth.crypto.vault;
 
 import io.getlime.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import io.getlime.security.powerauth.crypto.client.vault.PowerAuthClientVault;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.util.KeyConvertor;
@@ -28,7 +29,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
-import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -80,8 +80,8 @@ public class VaultTest {
         PowerAuthServerVault serverVault = new PowerAuthServerVault();
 
         // Generate fake server and device keys
-        KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
-        KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+        KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
+        KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
 
         // Deduce shared master secret keys
         SecretKey deviceMasterKey = keyGenerator.computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());

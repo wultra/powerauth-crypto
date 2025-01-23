@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.activation;
 
 import io.getlime.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import io.getlime.security.powerauth.crypto.lib.generator.KeyGenerator;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
@@ -57,9 +58,9 @@ public class PowerAuthActivationTest {
     @Test
     public void testGenerateKeys() throws CryptoProviderException {
         KeyGenerator keyGenerator = new KeyGenerator();
-        KeyPair kp = keyGenerator.generateKeyPair();
+        KeyPair kp = keyGenerator.generateKeyPair(EcCurve.P256);
         System.out.println("Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
-        System.out.println("Public Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(kp.getPublic())));
+        System.out.println("Public Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, kp.getPublic())));
     }
 
     /**
@@ -83,7 +84,7 @@ public class PowerAuthActivationTest {
         KeyGenerator keyGenerator = new KeyGenerator();
         PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
-        KeyPair masterKeyPair = keyGenerator.generateKeyPair();
+        KeyPair masterKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
 
         // Generate master keypair
         PrivateKey masterPrivateKey = masterKeyPair.getPrivate();
@@ -165,8 +166,8 @@ public class PowerAuthActivationTest {
             byte[] devicePublicKeyBytes = Base64.getDecoder().decode(devicePublicKeysBase64[i]);
             byte[] serverPublicKeyBytes = Base64.getDecoder().decode(serverPublicKeysBase64[i]);
             String activation1 = activationId[i];
-            PublicKey devicePublicKey = keyConvertor.convertBytesToPublicKey(devicePublicKeyBytes);
-            PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(serverPublicKeyBytes);
+            PublicKey devicePublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, devicePublicKeyBytes);
+            PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, serverPublicKeyBytes);
             final String fingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             final String fingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             assertEquals(publicKeyFingerprint[i], fingerprintClient);

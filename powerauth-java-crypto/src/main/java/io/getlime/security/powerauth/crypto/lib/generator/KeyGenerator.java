@@ -17,6 +17,7 @@
 package io.getlime.security.powerauth.crypto.lib.generator;
 
 import io.getlime.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
+import io.getlime.security.powerauth.crypto.lib.enums.EcCurve;
 import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
@@ -58,15 +59,27 @@ public class KeyGenerator {
 
     /**
      * Generate a new ECDH key pair using P256r1 curve.
+     * This method is deprecated. Use the specific method for chosen EC curve.
      *
      * @return A new key pair instance, or null in case of an error.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
+    @Deprecated
     public KeyPair generateKeyPair() throws CryptoProviderException {
+        return generateKeyPair(EcCurve.P256);
+    }
+
+    /**
+     * Generate a new ECDH key pair using given EC curve.
+     *
+     * @param curve EC curve.
+     * @return A new key pair instance, or null in case of an error.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     */
+    public KeyPair generateKeyPair(EcCurve curve) throws CryptoProviderException {
         try {
-            // we assume BouncyCastle provider
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            kpg.initialize(new ECGenParameterSpec("secp256r1"));
+            final KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            kpg.initialize(new ECGenParameterSpec(curve.getName()));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
             logger.warn(ex.getMessage(), ex);
