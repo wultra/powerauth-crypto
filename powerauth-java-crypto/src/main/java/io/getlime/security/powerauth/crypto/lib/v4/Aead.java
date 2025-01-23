@@ -22,6 +22,7 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.CryptoProviderEx
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import io.getlime.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import io.getlime.security.powerauth.crypto.lib.util.ByteUtils;
+import io.getlime.security.powerauth.crypto.lib.util.SideChannelUtils;
 import io.getlime.security.powerauth.crypto.lib.v4.kdf.Kdf;
 import io.getlime.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
@@ -97,7 +98,7 @@ public class Aead {
         final SecretKey keyEncryption = Kdf.derive(key, KEY_ENCRYPTION_INDEX, KEY_LENGTH, keyContext);
         final SecretKey keyMac = Kdf.derive(key, KEY_MAC_INDEX, TAG_LENGTH, keyContext);
         byte[] mac = Kmac.kmac256(keyMac, ByteUtils.concat(nonce, associatedData, encrypted), TAG_LENGTH, CRYPTO4_AEAD_KMAC_CUSTOM_BYTES);
-        if (!Arrays.equals(mac, tag)) {
+        if (!SideChannelUtils.constantTimeAreEqual(mac, tag)) {
             throw new GenericCryptoException("Invalid MAC");
         }
         byte[] iv = ByteUtils.concat(nonce, ByteUtils.zeroBytes(4));
