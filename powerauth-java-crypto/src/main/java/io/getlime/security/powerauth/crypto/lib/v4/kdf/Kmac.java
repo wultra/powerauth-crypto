@@ -24,7 +24,7 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import javax.crypto.SecretKey;
 
 /**
- * KMAC based on Keccak.
+ * Keccak Message Authentication Code.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
