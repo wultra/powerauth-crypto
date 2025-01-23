@@ -44,7 +44,7 @@ public class Kmac {
      */
     public static byte[] kmac256(SecretKey key, byte[] data, int outLength, byte[] customString) throws GenericCryptoException {
         if (key == null) {
-            throw new GenericCryptoException("Missing secret key for KDF");
+            throw new GenericCryptoException("Missing secret key for KMAC");
         }
         if (data == null) {
             throw new GenericCryptoException("Missing data for KDF");
