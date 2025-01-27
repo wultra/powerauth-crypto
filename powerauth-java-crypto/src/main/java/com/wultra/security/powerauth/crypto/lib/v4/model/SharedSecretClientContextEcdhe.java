@@ -21,6 +21,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretClientContext
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.security.PrivateKey;
 
@@ -37,6 +38,7 @@ public class SharedSecretClientContextEcdhe implements SharedSecretClientContext
     /**
      * Client EC private key.
      */
+    @ToString.Exclude
     private PrivateKey privateKey;
 
 }
