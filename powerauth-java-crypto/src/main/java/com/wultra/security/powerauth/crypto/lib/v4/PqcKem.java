@@ -1,6 +1,6 @@
 /*
  * PowerAuth Crypto Library
- * Copyright 2024 Wultra s.r.o.
+ * Copyright 2025 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,11 @@ public class PqcKem {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     public SecretKeyWithEncapsulation encapsulate(PublicKey encapsulationKey) throws GenericCryptoException {
+        if (encapsulationKey == null) {
+            throw new GenericCryptoException("Missing public key during encapsulation");
+        }
         try {
-            final KEMGenerateSpec kemGenerateSpec = new KEMGenerateSpec(encapsulationKey, "Secret");
+            final KEMGenerateSpec kemGenerateSpec = new KEMGenerateSpec(encapsulationKey, "AES");
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
             keyGenerator.init(kemGenerateSpec);
             return (SecretKeyWithEncapsulation) keyGenerator.generateKey();
@@ -78,8 +81,14 @@ public class PqcKem {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     public SecretKey decapsulate(PrivateKey decapsulationKey, byte[] ciphertext) throws GenericCryptoException {
+        if (decapsulationKey == null) {
+            throw new GenericCryptoException("Missing public key during decapsulation");
+        }
+        if (ciphertext == null) {
+            throw new GenericCryptoException("Missing ciphertext during decapsulation");
+        }
         try {
-            final KEMExtractSpec kemExtractSpec = new KEMExtractSpec(decapsulationKey, ciphertext, "Secret");
+            final KEMExtractSpec kemExtractSpec = new KEMExtractSpec(decapsulationKey, ciphertext, "AES");
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
             keyGenerator.init(kemExtractSpec);
             return keyGenerator.generateKey();
