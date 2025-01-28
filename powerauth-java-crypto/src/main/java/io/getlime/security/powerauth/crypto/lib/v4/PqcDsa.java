@@ -57,11 +57,11 @@ public class PqcDsa {
      */
     public byte[] sign(PrivateKey privateKey, byte[] message) throws GenericCryptoException {
         try {
-            final Signature mlDsa = Signature.getInstance("MLDSA");
+            final Signature mlDsa = Signature.getInstance("MLDSA", "BC");
             mlDsa.initSign(privateKey);
             mlDsa.update(message);
             return mlDsa.sign();
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException e) {
             throw new GenericCryptoException("Error during signature calculation", e);
         }
     }
@@ -76,11 +76,11 @@ public class PqcDsa {
      */
     public boolean verify(PublicKey publicKey, byte[] message, byte[] signature) throws GenericCryptoException {
         try {
-            final Signature mlDsa = Signature.getInstance("MLDSA");
+            final Signature mlDsa = Signature.getInstance("MLDSA", "BC");
             mlDsa.initVerify(publicKey);
             mlDsa.update(message);
             return mlDsa.verify(signature);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException e) {
             throw new GenericCryptoException("Error during signature verification", e);
         }
     }
