@@ -52,6 +52,7 @@ public class PqcKemTest {
         final SecretKey sharedKey = kem.decapsulate(keyPair.getPrivate(), secret.getEncapsulation());
         assertNotNull(sharedKey);
         assertEquals(32, sharedKey.getEncoded().length);
+        assertArrayEquals(secret.getEncoded(), sharedKey.getEncoded());
     }
 
     /**
