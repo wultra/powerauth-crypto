@@ -17,6 +17,7 @@
 
 package io.getlime.security.powerauth.crypto.lib.v4;
 
+import com.wultra.security.powerauth.crypto.lib.v4.PqcDsa;
 import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Tests for PQC digital signature algorithm.
  */
-public class PqcDsaTest {
+class PqcDsaTest {
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -83,7 +84,8 @@ public class PqcDsaTest {
     public void testPqcDsa_NullMessage() throws GenericCryptoException {
         final PqcDsa pqcDsa = new PqcDsa();
         final KeyPair keyPair = pqcDsa.generateKeyPair();
-        assertThrows(NullPointerException.class, () -> pqcDsa.sign(keyPair.getPrivate(), null));
+        final Exception ex = assertThrows(GenericCryptoException.class, () -> pqcDsa.sign(keyPair.getPrivate(), null));
+        assertEquals("Missing message to sign", ex.getMessage());
     }
 
     /**

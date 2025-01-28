@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package io.getlime.security.powerauth.crypto.lib.v4;
+package com.wultra.security.powerauth.crypto.lib.v4;
 
-import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import lombok.NoArgsConstructor;
 import org.bouncycastle.jcajce.spec.MLDSAParameterSpec;
 
@@ -56,6 +56,12 @@ public class PqcDsa {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     public byte[] sign(PrivateKey privateKey, byte[] message) throws GenericCryptoException {
+        if (privateKey == null) {
+            throw new GenericCryptoException("Missing private key when signing a message");
+        }
+        if (message == null) {
+            throw new GenericCryptoException("Missing message to sign");
+        }
         try {
             final Signature mlDsa = Signature.getInstance("MLDSA", "BC");
             mlDsa.initSign(privateKey);
@@ -75,6 +81,15 @@ public class PqcDsa {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     public boolean verify(PublicKey publicKey, byte[] message, byte[] signature) throws GenericCryptoException {
+        if (publicKey == null) {
+            throw new GenericCryptoException("Missing public key when verifying a signature");
+        }
+        if (message == null) {
+            throw new GenericCryptoException("Missing message when verifying a signature");
+        }
+        if (signature == null) {
+            throw new GenericCryptoException("Missing signature to verify");
+        }
         try {
             final Signature mlDsa = Signature.getInstance("MLDSA", "BC");
             mlDsa.initVerify(publicKey);
