@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class PqcKemTest {
+class PqcKemTest {
 
     static {
         Security.addProvider(new BouncyCastleProvider());
