@@ -21,7 +21,6 @@ import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
 
 import javax.crypto.SecretKey;
 import java.security.KeyPair;
