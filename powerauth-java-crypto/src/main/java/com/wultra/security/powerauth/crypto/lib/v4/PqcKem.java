@@ -1,6 +1,6 @@
 /*
  * PowerAuth Crypto Library
- * Copyright 2024 Wultra s.r.o.
+ * Copyright 2025 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package io.getlime.security.powerauth.crypto.lib.v4;
+package com.wultra.security.powerauth.crypto.lib.v4;
 
-import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import lombok.NoArgsConstructor;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 import org.bouncycastle.jcajce.spec.KEMExtractSpec;
