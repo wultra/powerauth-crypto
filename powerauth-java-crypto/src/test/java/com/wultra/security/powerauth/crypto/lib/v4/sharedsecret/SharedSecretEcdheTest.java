@@ -84,7 +84,7 @@ public class SharedSecretEcdheTest {
         );
     }
 
-    public static Stream<Map<String, String>> jsonDataEcdhe_P384_Provider() throws IOException  {
+    private static Stream<Map<String, String>> jsonDataEcdhe_P384_Provider() throws IOException  {
         InputStream stream = SharedSecretEcdheTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_Test_Vectors.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("ecdhe_test_vectors").stream();
