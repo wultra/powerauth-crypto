@@ -79,7 +79,7 @@ public class PqcKem {
      */
     public SecretKey decapsulate(PrivateKey decapsulationKey, byte[] ciphertext) throws GenericCryptoException {
         try {
-            final KEMExtractSpec kemExtractSpec = new KEMExtractSpec(decapsulationKey, ciphertext, "Secret");
+            final KEMExtractSpec kemExtractSpec = new KEMExtractSpec(decapsulationKey, ciphertext, "AES");
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
             keyGenerator.init(kemExtractSpec);
             return keyGenerator.generateKey();
