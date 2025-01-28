@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package io.getlime.security.powerauth.crypto.lib.v4;
+package com.wultra.security.powerauth.crypto.lib.v4;
 
-import com.wultra.security.powerauth.crypto.lib.v4.PqcDsa;
-import io.getlime.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 
