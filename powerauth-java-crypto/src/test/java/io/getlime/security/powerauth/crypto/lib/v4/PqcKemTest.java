@@ -26,6 +26,7 @@ import org.opentest4j.AssertionFailedError;
 import javax.crypto.SecretKey;
 import java.security.KeyPair;
 import java.security.Security;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
