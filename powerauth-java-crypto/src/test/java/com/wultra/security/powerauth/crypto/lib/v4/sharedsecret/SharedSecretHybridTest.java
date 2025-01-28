@@ -99,7 +99,7 @@ public class SharedSecretHybridTest {
 
     @ParameterizedTest
     @MethodSource("jsonDataEcdhe_P384_Mlkem_768_Provider")
-    public void testEcdheWithTestVectors(Map<String, String> vector) throws Exception {
+    public void testEcdheMlkemWithTestVectors(Map<String, String> vector) throws Exception {
         SharedSecretHybrid sharedSecretHybrid = new SharedSecretHybrid();
         PrivateKey ecClientPrivateKey = KEY_CONVERTOR_EC.convertBytesToPrivateKey(EcCurve.P384, Base64.getDecoder().decode(vector.get("ecClientPrivateKey")));
         PrivateKey pqcClientPrivateKey = KEY_CONVERTOR_PQC.convertBytesToPrivateKey(Base64.getDecoder().decode(vector.get("pqcClientPrivateKey")));
