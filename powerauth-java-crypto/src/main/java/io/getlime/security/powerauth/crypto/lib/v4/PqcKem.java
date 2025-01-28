@@ -61,7 +61,7 @@ public class PqcKem {
      */
     public SecretKeyWithEncapsulation encapsulate(PublicKey encapsulationKey) throws GenericCryptoException {
         try {
-            final KEMGenerateSpec kemGenerateSpec = new KEMGenerateSpec(encapsulationKey, "Secret");
+            final KEMGenerateSpec kemGenerateSpec = new KEMGenerateSpec(encapsulationKey, "AES");
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
             keyGenerator.init(kemGenerateSpec);
             return (SecretKeyWithEncapsulation) keyGenerator.generateKey();
