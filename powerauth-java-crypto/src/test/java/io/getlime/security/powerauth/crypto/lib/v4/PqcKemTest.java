@@ -67,7 +67,7 @@ public class PqcKemTest {
         final KeyPair keyPair2 = kem.generateKeyPair();
         final SecretKey sharedKey = kem.decapsulate(keyPair.getPrivate(), secret.getEncapsulation());
         final SecretKey sharedKey2 = kem.decapsulate(keyPair2.getPrivate(), secret.getEncapsulation());
-        assertThrows(AssertionFailedError.class, () -> assertArrayEquals(sharedKey.getEncoded(), sharedKey2.getEncoded()));
+        assertFalse(Arrays.equals(sharedKey.getEncoded(), sharedKey2.getEncoded()));
     }
 
 }
