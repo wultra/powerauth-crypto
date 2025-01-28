@@ -38,6 +38,6 @@ public class SharedSecretRequestHybrid implements SharedSecretRequest {
     /**
      * PQC-KEM encapsulation key.
      */
-    private String pqckem;
+    private String pqcKem;
 
 }

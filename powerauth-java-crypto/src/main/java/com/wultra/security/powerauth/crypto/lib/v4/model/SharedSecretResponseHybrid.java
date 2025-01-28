@@ -40,6 +40,6 @@ public class SharedSecretResponseHybrid implements SharedSecretResponse {
     /**
      * PQC-KEM ciphertext.
      */
-    private String pqckem;
+    private String pqcKem;
 
 }

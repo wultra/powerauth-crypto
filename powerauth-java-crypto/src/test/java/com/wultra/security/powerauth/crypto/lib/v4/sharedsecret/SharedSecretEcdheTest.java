@@ -17,24 +17,36 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.crypto.SecretKey;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.security.Security;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SharedSecretEcdheTest {
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -70,6 +82,27 @@ public class SharedSecretEcdheTest {
                 serverSharedSecret,
                 serverResponse.getSecretKey()
         );
+    }
+
+    public static Stream<Map<String, String>> jsonDataEcdhe_P384_Provider() throws IOException  {
+        InputStream stream = SharedSecretEcdheTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_Test_Vectors.json");
+        Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
+        return testData.get("ecdhe_test_vectors").stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("jsonDataEcdhe_P384_Provider")
+    public void testEcdheWithTestVectors(Map<String, String> vector) throws Exception {
+        SharedSecretEcdhe sharedSecretEcdhe = new SharedSecretEcdhe();
+        PrivateKey clientPrivateKey = KEY_CONVERTOR.convertBytesToPrivateKey(EcCurve.P384, Base64.getDecoder().decode(vector.get("ecClientPrivateKey")));
+        SharedSecretClientContextEcdhe clientContext = new SharedSecretClientContextEcdhe(clientPrivateKey);
+        SharedSecretResponseEcdhe response = new SharedSecretResponseEcdhe(vector.get("ecServerPublicKey"));
+        SecretKey sharedSecret = sharedSecretEcdhe.computeSharedSecret(
+                clientContext,
+                response
+        );
+        assertNotNull(sharedSecret);
+        assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedKey"));
     }
 
 }
