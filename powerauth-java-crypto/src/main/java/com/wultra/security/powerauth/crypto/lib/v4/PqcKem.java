@@ -60,6 +60,9 @@ public class PqcKem {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     public SecretKeyWithEncapsulation encapsulate(PublicKey encapsulationKey) throws GenericCryptoException {
+        if (encapsulationKey == null) {
+            throw new GenericCryptoException("Missing public key during encapsulation");
+        }
         try {
             final KEMGenerateSpec kemGenerateSpec = new KEMGenerateSpec(encapsulationKey, "AES");
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
@@ -78,6 +81,12 @@ public class PqcKem {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     public SecretKey decapsulate(PrivateKey decapsulationKey, byte[] ciphertext) throws GenericCryptoException {
+        if (decapsulationKey == null) {
+            throw new GenericCryptoException("Missing public key during decapsulation");
+        }
+        if (ciphertext == null) {
+            throw new GenericCryptoException("Missing ciphertext during decapsulation");
+        }
         try {
             final KEMExtractSpec kemExtractSpec = new KEMExtractSpec(decapsulationKey, ciphertext, "AES");
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
