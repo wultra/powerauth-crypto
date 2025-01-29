@@ -42,6 +42,11 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Tests for shared secret calculation for ECDHE on curve P-384.
+ *
+ * @author Roman Strobl, roman.strobl@wultra.com
+ */
 public class SharedSecretEcdheTest {
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();

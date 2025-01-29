@@ -17,6 +17,7 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.api;
 
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.v4.model.RequestCryptogram;
 import com.wultra.security.powerauth.crypto.lib.v4.model.ResponseCryptogram;
 import com.wultra.security.powerauth.crypto.lib.v4.model.SharedSecretAlgorithm;
@@ -28,7 +29,7 @@ import javax.crypto.SecretKey;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public interface SharedSecret<SharedSecretRequest, SharedSecretResponse, SharedSecretContext> {
+public interface SharedSecret<Req extends SharedSecretRequest, Res extends SharedSecretResponse, Ctx extends SharedSecretClientContext> {
 
     /**
      * Get algorithm for the shared secret implementation.
@@ -39,19 +40,25 @@ public interface SharedSecret<SharedSecretRequest, SharedSecretResponse, SharedS
     /**
      * Generate a request cryptogram.
      * @return Request cryptogram.
+     * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    RequestCryptogram generateRequestCryptogram() throws Exception;
+    RequestCryptogram generateRequestCryptogram() throws GenericCryptoException;
 
     /**
      * Generate a response cryptogram.
+     * @param request Shared secret request.
      * @return Response cryptogram.
+     * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    ResponseCryptogram generateResponseCryptogram(SharedSecretRequest request) throws Exception;
+    ResponseCryptogram generateResponseCryptogram(Req request) throws GenericCryptoException;
 
     /**
      * Generate a shared secret key.
+     * @param clientContext Client context.
+     * @param serverResponse Server response.
      * @return Shared secret key.
+     * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    SecretKey computeSharedSecret(SharedSecretContext context, SharedSecretResponse response) throws Exception;
+    SecretKey computeSharedSecret(Ctx clientContext, Res serverResponse) throws GenericCryptoException;
 
 }

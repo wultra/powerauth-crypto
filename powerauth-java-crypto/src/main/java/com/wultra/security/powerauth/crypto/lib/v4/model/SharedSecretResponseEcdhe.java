@@ -35,6 +35,6 @@ public class SharedSecretResponseEcdhe implements SharedSecretResponse {
     /**
      * Server EC public key for ECDH calculation.
      */
-    private String ecdhe;
+    private String ecServerPublicKey;
 
 }

@@ -33,11 +33,11 @@ public class SharedSecretRequestHybrid implements SharedSecretRequest {
     /**
      * Client EC public key for ECDH calculation.
      */
-    private String ecdhe;
+    private String ecClientPublicKey;
 
     /**
      * PQC-KEM encapsulation key.
      */
-    private String pqcKem;
+    private String pqcEncapsulationKey;
 
 }

@@ -44,6 +44,9 @@ public class PqcKemKeyConvertor {
      * @throws GenericCryptoException Thrown in case of conversion error.
      */
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) throws GenericCryptoException {
+        if (publicKey == null) {
+            throw new GenericCryptoException("Missing public key");
+        }
         if (!(publicKey instanceof MLKEMPublicKey)) {
             throw new GenericCryptoException("Invalid public key");
         }
@@ -57,6 +60,9 @@ public class PqcKemKeyConvertor {
      * @throws GenericCryptoException Thrown in case of conversion error.
      */
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) throws GenericCryptoException {
+        if (privateKey == null) {
+            throw new GenericCryptoException("Missing private key");
+        }
         if (!(privateKey instanceof MLKEMPrivateKey)) {
             throw new GenericCryptoException("Invalid private key");
         }
@@ -70,6 +76,9 @@ public class PqcKemKeyConvertor {
      * @throws GenericCryptoException Thrown in case of conversion error.
      */
     public PublicKey convertBytesToPublicKey(byte[] publicKeyBytes) throws GenericCryptoException {
+        if (publicKeyBytes == null) {
+            throw new GenericCryptoException("Missing public key bytes");
+        }
         try {
             final SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfo.getInstance(publicKeyBytes);
             final byte[] encodedPublicKey = publicKeyInfo.getEncoded();
@@ -91,6 +100,9 @@ public class PqcKemKeyConvertor {
      * @throws GenericCryptoException Thrown in case of conversion error.
      */
     public PrivateKey convertBytesToPrivateKey(byte[] privateKeyBytes) throws GenericCryptoException {
+        if (privateKeyBytes == null) {
+            throw new GenericCryptoException("Missing private key bytes");
+        }
         try {
             final PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
             final byte[] encodedPrivateKey = privateKeyInfo.getEncoded();
@@ -111,8 +123,12 @@ public class PqcKemKeyConvertor {
      *
      * @param sharedSecretKey A shared key to be converted to bytes.
      * @return A byte array representation of the shared secret key.
+     * @throws GenericCryptoException Thrown in case of conversion error.
      */
-    public byte[] convertSharedSecretKeyToBytes(SecretKey sharedSecretKey) {
+    public byte[] convertSharedSecretKeyToBytes(SecretKey sharedSecretKey) throws GenericCryptoException {
+        if (sharedSecretKey == null) {
+            throw new GenericCryptoException("Missing shared secret key");
+        }
         return sharedSecretKey.getEncoded();
     }
 
@@ -122,8 +138,12 @@ public class PqcKemKeyConvertor {
      *
      * @param bytesSecretKey Bytes representing the shared key.
      * @return An instance of the secret key by decoding from provided bytes.
+     * @throws GenericCryptoException Thrown in case of conversion error.
      */
-    public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) {
+    public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) throws GenericCryptoException {
+        if (bytesSecretKey == null) {
+            throw new GenericCryptoException("Missing shared secret key bytes");
+        }
         return new SecretKeySpec(bytesSecretKey, "AES");
     }
 

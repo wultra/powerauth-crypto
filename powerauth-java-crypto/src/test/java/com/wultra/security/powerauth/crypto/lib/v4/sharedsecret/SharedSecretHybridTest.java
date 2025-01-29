@@ -43,6 +43,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for shared secret calculation for hybrid ECDHE on curve P-384 with ML-KEM-768.
+ *
+ * @author Roman Strobl, roman.strobl@wultra.com
+ */
 public class SharedSecretHybridTest {
 
     private static final KeyGenerator KEY_GENERATOR_EC = new KeyGenerator();

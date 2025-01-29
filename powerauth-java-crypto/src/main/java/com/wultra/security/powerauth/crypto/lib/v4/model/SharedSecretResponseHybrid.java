@@ -35,11 +35,11 @@ public class SharedSecretResponseHybrid implements SharedSecretResponse {
     /**
      * Server EC public key for ECDH calculation.
      */
-    private String ecdhe;
+    private String ecServerPublicKey;
 
     /**
      * PQC-KEM ciphertext.
      */
-    private String pqcKem;
+    private String pqcEncapsulation;
 
 }

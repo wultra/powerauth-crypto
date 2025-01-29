@@ -35,6 +35,6 @@ public class SharedSecretRequestEcdhe implements SharedSecretRequest {
     /**
      * Client EC public key for ECDH calculation.
      */
-    private String ecdhe;
+    private String ecClientPublicKey;
 
 }
