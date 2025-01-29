@@ -71,14 +71,14 @@ public class SharedSecretHybridTest {
         assertNotNull(serverResponse.getSharedSecretResponse());
         assertNotNull(serverResponse.getSecretKey());
 
-        SecretKey serverSharedSecret = sharedSecretHybrid.computeSharedSecret(
+        SecretKey derivedSharedSecret = sharedSecretHybrid.computeSharedSecret(
                 clientContext,
                 (SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()
         );
-        assertNotNull(serverSharedSecret);
+        assertNotNull(derivedSharedSecret);
 
         assertEquals(
-                serverSharedSecret,
+                derivedSharedSecret,
                 serverResponse.getSecretKey()
         );
     }

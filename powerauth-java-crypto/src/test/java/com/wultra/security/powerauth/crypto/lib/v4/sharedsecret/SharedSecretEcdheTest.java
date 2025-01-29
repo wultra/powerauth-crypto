@@ -70,14 +70,14 @@ public class SharedSecretEcdheTest {
         assertNotNull(serverResponse.getSharedSecretResponse());
         assertNotNull(serverResponse.getSecretKey());
 
-        SecretKey serverSharedSecret = sharedSecretEcdhe.computeSharedSecret(
+        SecretKey derivedSharedSecret = sharedSecretEcdhe.computeSharedSecret(
                 clientContext,
                 (SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()
         );
-        assertNotNull(serverSharedSecret);
+        assertNotNull(derivedSharedSecret);
 
         assertEquals(
-                serverSharedSecret,
+                derivedSharedSecret,
                 serverResponse.getSecretKey()
         );
     }
