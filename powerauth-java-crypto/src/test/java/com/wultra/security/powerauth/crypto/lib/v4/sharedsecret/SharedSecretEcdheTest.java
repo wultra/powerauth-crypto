@@ -20,7 +20,6 @@ package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
-import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -31,7 +30,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.util.Base64;
@@ -49,7 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 public class SharedSecretEcdheTest {
 
-    private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -65,12 +62,8 @@ public class SharedSecretEcdheTest {
         assertNotNull(request.getSharedSecretRequest());
         assertNotNull(request.getSharedSecretClientContext());
 
-        KeyPair ecClientKeyPair = KEY_GENERATOR.generateKeyPair(EcCurve.P384);
-        SharedSecretClientContextEcdhe clientContext = new SharedSecretClientContextEcdhe(ecClientKeyPair.getPrivate());
-
-        byte[] ecClientPublicKeyRaw = KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P384, ecClientKeyPair.getPublic());
-        String ecClientPublicKeyBase64 = Base64.getEncoder().encodeToString(ecClientPublicKeyRaw);
-        SharedSecretRequestEcdhe clientRequest = new SharedSecretRequestEcdhe(ecClientPublicKeyBase64);
+        SharedSecretRequestEcdhe clientRequest = (SharedSecretRequestEcdhe) request.getSharedSecretRequest();
+        SharedSecretClientContextEcdhe clientContext = (SharedSecretClientContextEcdhe) request.getSharedSecretClientContext();
 
         ResponseCryptogram serverResponse = sharedSecretEcdhe.generateResponseCryptogram(clientRequest);
         assertNotNull(serverResponse);
