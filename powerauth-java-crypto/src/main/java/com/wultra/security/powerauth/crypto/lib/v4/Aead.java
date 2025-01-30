@@ -80,7 +80,7 @@ public class Aead {
      *
      * @param key Secret key used for decryption.
      * @param keyContext Context data used during key derivation.
-     * @param associatedData AAdditional data used as additional input for MAC derivation.
+     * @param associatedData Additional data used as additional input for MAC derivation.
      * @param ciphertext Byte array with nonce, MAC, and encrypted ciphertext.
      * @return Byte array with decrypted data.
      * @throws CryptoProviderException Thrown in case the cryptographic provider could not be initialized.
