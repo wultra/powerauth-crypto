@@ -61,6 +61,7 @@ public class EncryptorFactory {
      * @throws EncryptorException In case that some required parameter is missing or encryptor cannot be constructed or
      *                            configured with the secrets.
      */
+    @SuppressWarnings("unchecked")
     public <Req extends EncryptedRequest, Res extends EncryptedResponse> ClientEncryptor<Req, Res> getClientEncryptor(EncryptorId encryptorId, EncryptorParameters encryptorParameters, EncryptorSecrets encryptorSecrets) throws EncryptorException {
         validateParameters(encryptorId, encryptorParameters);
         switch (encryptorParameters.getProtocolVersion()) {
@@ -108,6 +109,7 @@ public class EncryptorFactory {
      * @throws EncryptorException In case that some required parameter is missing or encryptor cannot be constructed or
      *                            configured with the secrets.
      */
+    @SuppressWarnings("unchecked")
     public <Req extends EncryptedRequest, Res extends EncryptedResponse> ServerEncryptor<Req, Res> getServerEncryptor(EncryptorId encryptorId, EncryptorParameters encryptorParameters, EncryptorSecrets encryptorSecrets) throws EncryptorException {
         validateParameters(encryptorId, encryptorParameters);
         switch (encryptorParameters.getProtocolVersion()) {
@@ -157,6 +159,7 @@ public class EncryptorFactory {
      * @return Object implementing {@link RequestResponseValidator} interface.
      * @throws EncryptorException In case that protocol is unsupported or not specified.
      */
+    @SuppressWarnings("unchecked")
     public <Req extends EncryptedRequest, Res extends EncryptedResponse> RequestResponseValidator<Req, Res> getRequestResponseValidator(String protocolVersion) throws EncryptorException {
         if (protocolVersion == null) {
             throw new EncryptorException("Missing protocolVersion parameter");
