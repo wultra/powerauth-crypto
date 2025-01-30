@@ -25,6 +25,8 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.model.EciesPaylo
 import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncryptorSecrets;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.util.EciesUtils;
@@ -40,7 +42,7 @@ import java.util.Base64;
  *     <li>3.2</li>
  * </ul>
  */
-public class ClientEciesEncryptor implements ClientEncryptor {
+public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> {
 
     private static final KeyGenerator keyGenerator = new KeyGenerator();
 
@@ -119,7 +121,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
     }
 
     @Override
-    public EncryptedRequest encryptRequest(byte[] data) throws EncryptorException {
+    public EciesEncryptedRequest encryptRequest(byte[] data) throws EncryptorException {
         if (!canEncryptRequest()) {
             throw new EncryptorException("Encryptor is not ready for request encryption.");
         }
@@ -156,7 +158,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
             throw new EncryptorException("The cryptogram value is null.");
         }
 
-        return new EncryptedRequest(
+        return new EciesEncryptedRequest(
                 encryptorParameters.getTemporaryKeyId(),
                 base64Encoder.encodeToString(eciesCryptogram.getEphemeralPublicKey()),
                 base64Encoder.encodeToString(eciesCryptogram.getEncryptedData()),
@@ -172,7 +174,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
     }
 
     @Override
-    public byte[] decryptResponse(EncryptedResponse response) throws EncryptorException {
+    public byte[] decryptResponse(EciesEncryptedResponse response) throws EncryptorException {
         if (!canDecryptResponse()) {
             throw new EncryptorException("Encryptor is not ready for response decryption.");
         }

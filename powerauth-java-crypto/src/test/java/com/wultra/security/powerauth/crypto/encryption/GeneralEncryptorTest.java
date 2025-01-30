@@ -24,6 +24,8 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.ClientEncryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncryptorSecrets;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncryptorSecrets;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
@@ -114,11 +116,11 @@ public class GeneralEncryptorTest {
         /**
          * Validate whether request data looks OK.
          */
-        void validateRequest(EncryptedRequest request) throws Exception;
+        void validateRequest(EciesEncryptedRequest request) throws Exception;
         /**
          * Validate whether response data looks OK.
          */
-        void validateResponse(EncryptedResponse response) throws Exception;
+        void validateResponse(EciesEncryptedResponse response) throws Exception;
     }
 
     /**
@@ -147,10 +149,10 @@ public class GeneralEncryptorTest {
      * @throws Exception In case of failure.
      */
     void testRegularEncryptDecryptWithConfigureSecrets(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
-        final RequestResponseValidator validator = encryptorFactory.getRequestResponseValidator(version);
+        final RequestResponseValidator<EciesEncryptedRequest, EciesEncryptedResponse> validator = encryptorFactory.getRequestResponseValidator(version);
         final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
         // Create client encryptor
-        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters);
+        final ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters);
         assertFalse(clientEncryptor.canEncryptRequest());
         assertFalse(clientEncryptor.canDecryptResponse());
         // Apply secrets
@@ -159,13 +161,13 @@ public class GeneralEncryptorTest {
         assertFalse(clientEncryptor.canDecryptResponse());
         // Encrypt request
         final byte[] requestDataOriginal = generateRandomData();
-        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        final EciesEncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
         assertTrue(clientEncryptor.canEncryptRequest());
         assertTrue(clientEncryptor.canDecryptResponse());
         dataValidator.validateRequest(request);
 
         // Create server encryptor
-        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters);
+        final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters);
         assertFalse(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
         // Apply secrets
@@ -180,7 +182,7 @@ public class GeneralEncryptorTest {
         assertArrayEquals(requestDataOriginal, requestDataDecrypted);
         // Encrypt response
         final byte[] responseDataOriginal = generateRandomData();
-        final EncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
+        final EciesEncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
         assertTrue(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
         dataValidator.validateResponse(response);
@@ -204,18 +206,18 @@ public class GeneralEncryptorTest {
     void testRegularEncryptDecryptWithKnownSecrets(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
         final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
         // Create client encryptor
-        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        final ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
         assertTrue(clientEncryptor.canEncryptRequest());
         assertFalse(clientEncryptor.canDecryptResponse());
         // Encrypt request
         final byte[] requestDataOriginal = generateRandomData();
-        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        final EciesEncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
         assertTrue(clientEncryptor.canEncryptRequest());
         assertTrue(clientEncryptor.canDecryptResponse());
         dataValidator.validateRequest(request);
 
         // Create server encryptor
-        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
         assertTrue(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
         // Decrypt request on server
@@ -225,7 +227,7 @@ public class GeneralEncryptorTest {
         assertArrayEquals(requestDataOriginal, requestDataDecrypted);
         // Encrypt response
         final byte[] responseDataOriginal = generateRandomData();
-        final EncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
+        final EciesEncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
         assertTrue(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
         dataValidator.validateResponse(response);
@@ -248,18 +250,18 @@ public class GeneralEncryptorTest {
     void testEncryptDecryptWithExternalEncryptor(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
         final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
         // Create client encryptor
-        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        final ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
         assertTrue(clientEncryptor.canEncryptRequest());
         assertFalse(clientEncryptor.canDecryptResponse());
         // Encrypt request
         final byte[] requestDataOriginal = generateRandomData();
-        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        final EciesEncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
         assertTrue(clientEncryptor.canEncryptRequest());
         assertTrue(clientEncryptor.canDecryptResponse());
         dataValidator.validateRequest(request);
 
         // Create server encryptor
-        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse>  serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
         assertTrue(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
         final EncryptorSecrets secretsForExternalEncryptor = serverEncryptor.calculateSecretsForExternalEncryptor(request);
@@ -268,7 +270,7 @@ public class GeneralEncryptorTest {
         assertFalse(serverEncryptor.canEncryptResponse());
 
         // Now create external encryptor
-        final ServerEncryptor externalServerEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, secretsForExternalEncryptor);
+        final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> externalServerEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, secretsForExternalEncryptor);
         assertTrue(externalServerEncryptor.canDecryptRequest());
         assertFalse(externalServerEncryptor.canEncryptResponse());
 
@@ -279,7 +281,7 @@ public class GeneralEncryptorTest {
         assertArrayEquals(requestDataOriginal, requestDataDecrypted);
         // Encrypt response
         final byte[] responseDataOriginal = generateRandomData();
-        final EncryptedResponse response = externalServerEncryptor.encryptResponse(responseDataOriginal);
+        final EciesEncryptedResponse response = externalServerEncryptor.encryptResponse(responseDataOriginal);
         assertTrue(externalServerEncryptor.canDecryptRequest());
         assertFalse(externalServerEncryptor.canEncryptResponse());
         dataValidator.validateResponse(response);
@@ -301,19 +303,19 @@ public class GeneralEncryptorTest {
     void testInvalidMacInRequest(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
         final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
         // Create client encryptor
-        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        final ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
         assertTrue(clientEncryptor.canEncryptRequest());
         assertFalse(clientEncryptor.canDecryptResponse());
         // Encrypt request
         final byte[] requestDataOriginal = generateRandomData();
-        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        final EciesEncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
         request.setMac(Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)));
         assertTrue(clientEncryptor.canEncryptRequest());
         assertTrue(clientEncryptor.canDecryptResponse());
         dataValidator.validateRequest(request);
 
         // Create server encryptor
-        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
         assertTrue(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
         // Decrypt request on server
@@ -335,19 +337,19 @@ public class GeneralEncryptorTest {
     void testInvalidMacInResponse(String version, DataValidator dataValidator, EncryptorId encryptorId) throws Exception {
         final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
         // Create client encryptor
-        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        final ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
         // Encrypt request
         final byte[] requestDataOriginal = generateRandomData();
-        final EncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
+        final EciesEncryptedRequest request = clientEncryptor.encryptRequest(requestDataOriginal);
         dataValidator.validateRequest(request);
 
         // Create server encryptor
-        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
         // Decrypt request on server
         serverEncryptor.decryptRequest(request);
         // Encrypt response
         final byte[] responseDataOriginal = generateRandomData();
-        final EncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
+        final EciesEncryptedResponse response = serverEncryptor.encryptResponse(responseDataOriginal);
         response.setMac(Base64.getEncoder().encodeToString(keyGenerator.generateRandomBytes(16)));
         dataValidator.validateResponse(response);
 
@@ -367,20 +369,20 @@ public class GeneralEncryptorTest {
      * @throws Exception In case of failure.
      */
     void testRequestResponseObjectValidation(String version, EncryptorId encryptorId) throws Exception {
-        final RequestResponseValidator validator = encryptorFactory.getRequestResponseValidator(version);
+        final RequestResponseValidator<EciesEncryptedRequest, EciesEncryptedResponse> validator = encryptorFactory.getRequestResponseValidator(version);
         final EncryptorParameters encryptorParameters = getParametersForEncryptor(encryptorId, version);
         // Create client encryptor
-        final ClientEncryptor clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
-        final ServerEncryptor serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
-        final EncryptedRequest validRequest = clientEncryptor.encryptRequest(new byte[0]);
+        final ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> clientEncryptor = encryptorFactory.getClientEncryptor(encryptorId, encryptorParameters, getClientSecrets(encryptorId, version));
+        final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
+        final EciesEncryptedRequest validRequest = clientEncryptor.encryptRequest(new byte[0]);
         serverEncryptor.decryptRequest(validRequest);
-        final EncryptedResponse validResponse = serverEncryptor.encryptResponse(new byte[0]);
+        final EciesEncryptedResponse validResponse = serverEncryptor.encryptResponse(new byte[0]);
 
         // Test for invalid requests
 
         assertTrue(validator.validateEncryptedRequest(validRequest));
 
-        EncryptedRequest request = copyRequest(validRequest);
+        EciesEncryptedRequest request = copyRequest(validRequest);
         request.setMac(null);
         assertFalse(validator.validateEncryptedRequest(request));
         request = copyRequest(validRequest);
@@ -419,7 +421,7 @@ public class GeneralEncryptorTest {
 
         assertTrue(validator.validateEncryptedResponse(validResponse));
 
-        EncryptedResponse response = copyResponse(validResponse);
+        EciesEncryptedResponse response = copyResponse(validResponse);
         response.setMac(null);
         assertFalse(validator.validateEncryptedResponse(response));
         response = copyResponse(validResponse);
@@ -449,8 +451,8 @@ public class GeneralEncryptorTest {
      * @param response Response object to copy.
      * @return Copy of provided response object.
      */
-    private EncryptedResponse copyResponse(EncryptedResponse response) {
-        return new EncryptedResponse(response.getEncryptedData(), response.getMac(), response.getNonce(), response.getTimestamp());
+    private EciesEncryptedResponse copyResponse(EciesEncryptedResponse response) {
+        return new EciesEncryptedResponse(response.getEncryptedData(), response.getMac(), response.getNonce(), response.getTimestamp());
     }
 
     /**
@@ -458,8 +460,8 @@ public class GeneralEncryptorTest {
      * @param request Request object to copy.
      * @return Copy of provided request object.
      */
-    private EncryptedRequest copyRequest(EncryptedRequest request) {
-        return new EncryptedRequest(request.getTemporaryKeyId(), request.getEphemeralPublicKey(), request.getEncryptedData(), request.getMac(), request.getNonce(), request.getTimestamp());
+    private EciesEncryptedRequest copyRequest(EciesEncryptedRequest request) {
+        return new EciesEncryptedRequest(request.getTemporaryKeyId(), request.getEphemeralPublicKey(), request.getEncryptedData(), request.getMac(), request.getNonce(), request.getTimestamp());
     }
 
     /**
@@ -470,7 +472,7 @@ public class GeneralEncryptorTest {
     public void testEncryptDecryptV30() throws Exception {
         testGenericEncryptor("3.0", new DataValidator() {
             @Override
-            public void validateRequest(EncryptedRequest request) throws Exception {
+            public void validateRequest(EciesEncryptedRequest request) throws Exception {
                 assertNotNull(request);
                 assertNull(request.getTemporaryKeyId());
                 assertNotNull(request.getEphemeralPublicKey());
@@ -481,7 +483,7 @@ public class GeneralEncryptorTest {
             }
 
             @Override
-            public void validateResponse(EncryptedResponse response) throws Exception {
+            public void validateResponse(EciesEncryptedResponse response) throws Exception {
                 assertNotNull(response);
                 assertNotNull(response.getEncryptedData());
                 assertNotNull(response.getMac());
@@ -499,7 +501,7 @@ public class GeneralEncryptorTest {
     public void testEncryptDecryptV31() throws Exception {
         testGenericEncryptor("3.1", new DataValidator() {
             @Override
-            public void validateRequest(EncryptedRequest request) throws Exception {
+            public void validateRequest(EciesEncryptedRequest request) throws Exception {
                 assertNotNull(request);
                 assertNull(request.getTemporaryKeyId());
                 assertNotNull(request.getEphemeralPublicKey());
@@ -510,7 +512,7 @@ public class GeneralEncryptorTest {
             }
 
             @Override
-            public void validateResponse(EncryptedResponse response) throws Exception {
+            public void validateResponse(EciesEncryptedResponse response) throws Exception {
                 assertNotNull(response);
                 assertNotNull(response.getEncryptedData());
                 assertNotNull(response.getMac());
@@ -528,7 +530,7 @@ public class GeneralEncryptorTest {
     public void testEncryptDecryptV32() throws Exception {
         testGenericEncryptor("3.2", new DataValidator() {
             @Override
-            public void validateRequest(EncryptedRequest request) throws Exception {
+            public void validateRequest(EciesEncryptedRequest request) throws Exception {
                 assertNotNull(request);
                 assertNull(request.getTemporaryKeyId());
                 assertNotNull(request.getEphemeralPublicKey());
@@ -539,7 +541,7 @@ public class GeneralEncryptorTest {
             }
 
             @Override
-            public void validateResponse(EncryptedResponse response) throws Exception {
+            public void validateResponse(EciesEncryptedResponse response) throws Exception {
                 assertNotNull(response);
                 assertNotNull(response.getEncryptedData());
                 assertNotNull(response.getMac());
@@ -557,7 +559,7 @@ public class GeneralEncryptorTest {
     public void testEncryptDecryptV33() throws Exception {
         testGenericEncryptor("3.3", new DataValidator() {
             @Override
-            public void validateRequest(EncryptedRequest request) throws Exception {
+            public void validateRequest(EciesEncryptedRequest request) throws Exception {
                 assertNotNull(request);
                 assertNotNull(request.getTemporaryKeyId());
                 assertNotNull(request.getEphemeralPublicKey());
@@ -568,7 +570,7 @@ public class GeneralEncryptorTest {
             }
 
             @Override
-            public void validateResponse(EncryptedResponse response) throws Exception {
+            public void validateResponse(EciesEncryptedResponse response) throws Exception {
                 assertNotNull(response);
                 assertNotNull(response.getEncryptedData());
                 assertNotNull(response.getMac());
@@ -694,8 +696,8 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("RhijpnRtB71Pa3Okf0Suw4El/XhkaQ8nwopwRuqeFGp1K1qoI0OrMNQrLe2c73df"),
         };
         // Requests
-        final EncryptedRequest[] encryptedRequest = {
-                new EncryptedRequest(
+        final EciesEncryptedRequest[] encryptedRequest = {
+                new EciesEncryptedRequest(
                         null,
                         "Avlav7hfDwCA1zJq6gyczWtUn+MhNCebikIH7rkUkoHB",
                         "jZ1y4ZkJpvRTDHFXQ+J9jsWaFuV0AvqpUXFDCi3bH90YCutTufSamKXpEIhFfqBmhzYak2g6LBUfgmTJ7c74D+eOqGRn1EwZOcgVHKbaFjgthwSUnD8E7maEK9u5qmVdi52drt9vQ1Cye5jWn0vSTKmvSkfcQcmK42o/0r/8LXs=",
@@ -703,7 +705,7 @@ public class GeneralEncryptorTest {
                         "BKIsGcbgqAqEKhuEJFX25Q==",
                         1691762307382L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "A97NlW0JPLJfpG0AUvaRHRGSHh+quZu+u0c+yxsK7Xji",
                         "qYLONkDWFpXefTKPbaKTA/PWdRYH5pk9uvGjUqSYbeK7Q0aOohK2MknTyviyNuSp",
@@ -711,7 +713,7 @@ public class GeneralEncryptorTest {
                         "ZQxUjy/hSRyJ3xBtqyXBeQ==",
                         1691762307384L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "AtSsPjiwbh3GnWYjCOejGIGg0LEbl1X6SY4f1F77PG2I",
                         "px6h9Hu+wyH38YySO6istbinaF3ALyrBraad0qhTCJZrYrVlTv1bEnfvElBupQzGUx3SikSqaOjR+UKzj9TVfa2rw36LkSIVFZYk1gG6xW3U852ZvJpuTtw6h7WhFYks",
@@ -719,7 +721,7 @@ public class GeneralEncryptorTest {
                         "6p2OQ20Ezjd+RcCAr2w34w==",
                         1691762307384L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "AnjhcBNyzpyUs8TnvW164zfwVk6UQjof8zueumjUADlB",
                         "rQDj9EseF9GvJY6a0YCExA==",
@@ -727,7 +729,7 @@ public class GeneralEncryptorTest {
                         "0qdMsQVKjhE8gwRm8It2Vg==",
                         1691762307385L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "Aqa/2aW4VuZTXaFoc0rcc67RotG0rbiqpvontLsdoLIe",
                         "ic3LxIfwgK9XbckAxivYvMdwuAL9nOC/Kdry4w/1xRw=",
@@ -735,7 +737,7 @@ public class GeneralEncryptorTest {
                         "6YzESLD7x6ANSxeirDAXZQ==",
                         1691762307385L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "Aomhgt+8zAMsuRYgsVJMioFFPLP6eK+4omcLfftS/PHK",
                         "xNdtHsq28x+cFGxLGJbW6l7SscETdLRHejmXYETzU8670YyaqpiGOO5276vb3XDnxM6GjKHEztXruz8YBQzWKYqc6YVU4WqKMNHBu1A/9yKY8KGE+XsSxyrkZxoIM4oZuUp7p1ui+H87PPY8Vs/c9dMM5YUMYVUFZA1kBnzskKs=",
@@ -743,7 +745,7 @@ public class GeneralEncryptorTest {
                         "fWn7lYWXckz72X4elEU+3g==",
                         1691762307385L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "AoCXG9cbmKBSPP2zi3pOuJQV6dENZ751dUhEGoDqLWVB",
                         "fqsJXWuIt2rwwsWLu8TbPnCxwha6PTGTpzmsLq/Tdynt5YcrEBk9wlRaQIXzWi0KbES20BjJbgL7JIaY2qj/XlFU+vxB+vybUnHrtpe2NaDthaYgdEecX3W1uzpyd745ogDSGe19gOqwXCFCRFLF+w==",
@@ -751,7 +753,7 @@ public class GeneralEncryptorTest {
                         "YQwJfuPmImzyBhGqZ7QMNw==",
                         1691762307386L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "A/5KJP3Cb8DhNjo8Cs2juYLwpswsUBJe6XXdwowIelP7",
                         "wUXXg0vgkZjqvqIfJm7YPgk+7bwgWSttizi+uSKAE4z8dOY8zUp0uvsvsUqDIvnhisnc82IyS/kGhSg1QWyzjAdfr5rWehl+aS+e8GPIu3Ok8n0qNG9TJ1n/UxuD6Ok/WTCHsRW2QoU2I8vB6BAMUw==",
@@ -759,7 +761,7 @@ public class GeneralEncryptorTest {
                         "vr95iaeHXK4W0o0WU3MAkQ==",
                         1691762307386L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "A3TP+jPFrRgQd563V8goh2wJgvRS9eMpwjo9tOivLboN",
                         "8MjZ4+3cUC7IkwyNK09WSDMOrMpNwfHrXUM3A/19sjyOVZJIAl9HYJySlN8h9A2qrG7l0Eu6nFUwjDH8+NHfqBHCdOAnpncwgANE5GetzgA=",
@@ -767,7 +769,7 @@ public class GeneralEncryptorTest {
                         "ecQuWdjhJB90a0vxXJCHDA==",
                         1691762307386L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "A0w7WTl0Q3vhxlyKJWV1hM1YC484mysCqhjay9uFSmvG",
                         "K0Ep8dWNhD99yZm/mShFy53DYbTCntm582rlWwskPfcKTE7b/7gBFbXaGly1o9cmQ9Wv9RjBx8Ai4rda/KKbyMq3ZaX6ljAWFpOmqUIgMUQ=",
@@ -775,7 +777,7 @@ public class GeneralEncryptorTest {
                         "20zLGrzcBPr6aPWQTOESuQ==",
                         1691762307387L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "A4o3ZVufjyXvJnc98rvHxTbQgCpY1dwMkJs4mKkT78up",
                         "8hYJGXgHLD8tH9sFrRlU6fxGWU/JdlSBpPkL178OFRdORMXTY/ReMRbajQD3bXKzXjmhdYR5X13fHsmiuvHIQVPRFB0ZyS43HT/uEDpWh8SWByKjNB5je6ftEySsmpKGp0KvmjXgiIRX7TiRzwJ03g==",
@@ -783,7 +785,7 @@ public class GeneralEncryptorTest {
                         "Z5XV6HOqZ3ftaxEkdgjIwQ==",
                         1691762307387L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "AhVR4QxfHA5resv8ppMANxzZwkaWphsmtA/EENi8Swjp",
                         "ASC8xiBSyjx8wGwf71U9Zk4nZT9w//8AafiZaT+9RtObUmb1HjguWv3Xpqejnf5kml3Z7sXDYgFemFYLklhL5A==",
@@ -791,7 +793,7 @@ public class GeneralEncryptorTest {
                         "Y6DDsiZb40xV1lhNNWloiw==",
                         1691762307387L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "A9ok7XXLWWWtQAxERdvFv3I31D+pgZuY3cVSbjpJHLda",
                         "+b0Ki6WcoaoGJhBrGR28zeMqS91XMmCCtO/HU3xaKNg=",
@@ -799,7 +801,7 @@ public class GeneralEncryptorTest {
                         "MrgNNwmotGQZspWUFNMuRw==",
                         1691762307388L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "A24fQipKuaW7sOmXbpZDW+QetW/aBmS+2fkrkSdNDlQe",
                         "GaXg6TBM+H4ru/E25gvV0g==",
@@ -807,7 +809,7 @@ public class GeneralEncryptorTest {
                         "mXHJkh/NUVzxLAXRH2r+9g==",
                         1691762307388L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "ArzfJWjDZrjndvQg3aFxZme6w/Z5P4uV4mBClCbURJuv",
                         "cbG2zh4dp5Ig65/Gdz97ZLm1vWeLfSUbIIoLWQXQm5pUVLkHJ55Mrl4TwdK6kTG0",
@@ -815,7 +817,7 @@ public class GeneralEncryptorTest {
                         "C48N0ekaenicTtsb6LEf1g==",
                         1691762307388L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         null,
                         "At3TEHVJmtO+VPUtJ/ijXYhx1BAnjcDnQRk9AbhukeWa",
                         "4RPt1tswWfapZNWU7gFkuMyUADjsykdAQHQsMXHmghDE3l7dVYiMctKuj8RHFLAIsgI09toZelMAPRE1PLJz6g==",
@@ -825,98 +827,98 @@ public class GeneralEncryptorTest {
                 ),
         };
         // Responses
-        final EncryptedResponse[] encryptedResponse = {
-                new EncryptedResponse(
+        final EciesEncryptedResponse[] encryptedResponse = {
+                new EciesEncryptedResponse(
                         "6gIBzx28iqPFxtI/UjSLnR8FoFB6xFyshfMsCzOShY/5FN6rcKLtkD2r9M0ihKKW2bviC4HmLUJWXZtDUog9LA==",
                         "/giQrgL3pX+ziYaWBgLCLUiPH/D5/f31A5lRxVA12sI=",
                         "kpgl9EC9+4KiKsUFlwLidw==",
                         1691762307384L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "UH04USDgyi9P36PtmGh7jNuAu7PbdayXnDEomzWiRQI=",
                         "4p++jQ7Ym3D3CwMBCs2+bOIfWfAF+aPZtuym48+5zsI=",
                         "rMhUf8cP0LS0r2WFFupW4A==",
                         1691762307384L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "o82fufbAJinoRVKiMlAY9w==",
                         "ayU0uzZ7tTyc8Us4AR+nZcQ8ubAY8AslpSnJXtWLoIA=",
                         "TlXLxl3QzkvMiJcNPKqETw==",
                         1691762307385L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "kKtNt76jdmC8ooSTxVhxl4Gm1eahP3tn3I5F4qE+rFv1vCgSfTP+BZq15mAtmPxX",
                         "4OCRqhwFd3ZzxOAYatNSW99FmehINKYl/u551IW+Li0=",
                         "Z7e1oAU+54be5c/UVd0I9A==",
                         1691762307385L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "VQLfGVujKbLbjYDdiXHnc4nqOPo5IQO00o2IpJRuHOQylW5dciR52EFrPVNXiQL17rDVVMmldeGRzilbB938zb8t9QIpYyJsfdI8bTd4fNJrU274CZKjeW9bi0pZrSJ+KmgVW1Ie7oMJ0Nw/m6blUCxQHDdoQgL6ogTPY21GBRo=",
                         "3srmFyVru0ah43aoyuro1Ra0AZhPVZ/IRYrHLF+BaYg=",
                         "sN703PpZgrNxMEtyLqmUSA==",
                         1691762307385L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "inCo5hDW9vy5b1/dFlxry8u5pSiKaTkewUeRudCRfp0=",
                         "SDeDv9TObKgyW1NgDmeBc4mTESWJfJReqPYiJLaO1i4=",
                         "V1EHs3fAn+E32kqp1MxwCg==",
                         1691762307386L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "E0KBXTsjEB99tGzGNU6kijZArOQDA4XvoTscux6tefnSafXlHNpeAnORj59GaavEjWhNOoj65Ydd5/0LUUJhFw==",
                         "D/k+OwZ1EgEAfF7Slj8FpShAWHn2Ki8RRdA7wC41Fks=",
                         "2ilRIrI23/eJnUMeEcQg4Q==",
                         1691762307386L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "yDq2+CANxqAlj9q1oG2hcOdHt72TCmQuufa3BS8GBNBZNb1xqBhZoTzDXmdmcdbSXKepUVxj6UFRCT9J3wSNQIKImwBVdPzkHTgdBW/Gc82lGgkSzQvCmAmLKOkSLJkVqB7az2JtEo7WsdB+GABViw==",
                         "LZMF/pM5g7o67AkDca2uHRDAXzhVf+FUmXhTXZAbOXM=",
                         "0ci+hsMP8mBYlsF5lJKvLg==",
                         1691762307386L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "BTtWJFMupEQ4GlaFyEcaLi23YE8eZqDs+ZxQPz7suEDH691kchGJhfs10CqIPyyXlDGkOyAQT4cTRJHknbx6XongqOSyBImNaCW9UyS7+AE6mLK1YVcQFCppzd/YB5Zh0xGI9CbLI72O9FYZHGRGtQ==",
                         "08iGPB0MCqEpej4sh5CzKfAt8ktutN8ajeivkpushCo=",
                         "IKhsARWx99rpf/IoN16XbQ==",
                         1691762307387L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "YGOcH+UPrtD6xL5wkSW9M5W5HPQgTT5qCapbC1rOH4k9Cv1sDpnMjCT4ePn2K1j80YyxU0KHuQJB/R7Rz/iUbNmnV8Ri+mvCjv5OthkD+P5vcWxUfeg1LCX5KLBROjPkbRejxO91+VmQiwy+gjBWoQ==",
                         "3oraw0O9CgIfTHJ4h08xEzVxHlLOXxjz9kajjaBp/7Q=",
                         "ucp8o29LdMCJd+1L1ulLAg==",
                         1691762307387L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "FcwUzp8ee8of47XNQjQKDz9DjpzofDn6chMLiX7UvZaJn++hEpDfIN/v03qSKIOZiNf4cI1fgiC5WoSXDLXfZSjivJGLOiXzYW+TqGCkcr/DZzoo0/GvXH01/F3h7q5GhdDy+QH2TmKinz6Bbebziw==",
                         "ZE7JejfCs6hryHPg2OD1wl89kjt4wqxaTjuUoXueSI4=",
                         "5kv5XPhqzNxkbwlVSzwgBw==",
                         1691762307387L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "QaVyHX4/Du7d6P9shxPgPhoerLYy7/Bj6iFMRbx2aIw/vU+E7n3tX07nEiM7r8hPdu2Y1jUmfpHUnorUqXRPMzsLdGz1Dcqy47p/JcVW0+sEKFOpT52r6BhNE4iU7lP1brVSjbhpiqCKf11H5HSZdCNKX+T/Sf21SftqP+UAQp44Lt84PPsszsRyOA6Vyntk",
                         "AWG6XZCD9cdNyAeRdKI3yiAaCnIbDkyCzOy/0Zro/Gg=",
                         "/vdhJZpeQ65k+rengkK1AA==",
                         1691762307388L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "TxtxLvVlfQLBVIdc7E3S80I6hGdyhyVKGCtkv4pHnK8=",
                         "+en3LYRIkol8rMBBs0iV4WWsZoIfH8oVkNzg1Opyonk=",
                         "wLczqR8MsNZfwR1zk3cwBw==",
                         1691762307388L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "rl/7v8+OtJ/Z9Sw14ixX6wmAHGDjfTcvqhc/7d08I1/0YhShhtMjY2tYfKZJMC2CgSr6sCUv6bWY0kAAZkkVroV6szQhfI30UMn+Oko20IU01VxCRQlmD3aOS6cD9xA7Qtz/uTZCOAbkZTXOUDPg+w==",
                         "hfPwRknzNUnULYgVEEfEKFbd8jdC7zPxc2DU8wC9ZnE=",
                         "/170WhIMeUiQ1D3jOkHTdA==",
                         1691762307388L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "kRkbsDXXR27W9Ynvdwxm01rD609uAFXQTIRDthBNocZNkD/I9Own07JmzB6Zky7+4GupZokobr2UL6qyVSmZMg==",
                         "Jw/tdkpvAjxYyWs5/srIw/f+ge4at68Vi4sBx4GWGec=",
                         "VmdUQZcFRbKM5YzOGETrDQ==",
                         1691762307389L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "3eIJBI864mTpLRDe+6EjBTyePGi90pZLBp2uDwKRfIi1gIzNUUEsyVvUCfVDlWpIhwmcBzrGQlfQe2yEY6srUuhuHyoMD1j/obos7TYnvgkWZ+UdC1kdaV6V+U28/OjnaLAZ+Wq7uOS3XwX7Ij+7uHRo9Mmasc+ULaX4i1lN1nE=",
                         "FQ5EZ3ns2GezvF+XgeLtzSPhrDNcopl8KK2DbtWTOtY=",
                         "RCSutPa+2dpHNyI1hCquYA==",
@@ -928,8 +930,8 @@ public class GeneralEncryptorTest {
 
         for (int i = 0; i < encryptedRequest.length; i++) {
             // Prepare values for this batch
-            final EncryptedRequest request = encryptedRequest[i];
-            final EncryptedResponse response = encryptedResponse[i];
+            final EciesEncryptedRequest request = encryptedRequest[i];
+            final EciesEncryptedResponse response = encryptedResponse[i];
             final EncryptorId eid = encryptorIds[i];
             final EncryptorScope scope = eid.scope();
             final byte[] sharedInfo1 = eid.getEciesSharedInfo1("3.2");
@@ -937,7 +939,7 @@ public class GeneralEncryptorTest {
             final byte[] envelopeKey = envelopeKeys[i];
 
             // Construct Server's encryptor
-            final ServerEncryptor serverEncryptor;
+            final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> serverEncryptor;
             if (scope == EncryptorScope.APPLICATION_SCOPE) {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
                         new EncryptorParameters("3.2", applicationKey, null, null),
@@ -1071,8 +1073,8 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("7en0qGieNCkyZGT44+/pQbgebgoVWk9527ygAFOy6s3s1+XY/kiOXm6fp9ru/y9r"),
         };
         // Requests
-        final EncryptedRequest[] encryptedRequest = {
-                new EncryptedRequest(
+        final EciesEncryptedRequest[] encryptedRequest = {
+                new EciesEncryptedRequest(
                         "D3D82A6B-47CF-4225-BBE5-BAD96FB84CA4",
                         "AjpBEi1V6hxMt6SXmn6pFuSNd6S2loTKwqa/9A5hL+lh",
                         "7m3Eh0RUc2S4k1sThtVQvwzK1QEiAJwxAgKmTigAqY3wPen5EO+HJG6FolSVTM0J",
@@ -1080,7 +1082,7 @@ public class GeneralEncryptorTest {
                         "yss0YBlx0ERypDj/4HF6oQ==",
                         1723109505418L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "AjJv5HtX/WOk2ajL186KJ+9GGbYYAsx/kEAcSr7Aot0k",
                         "/n1ijWx8rY0a9DSd8peAMbEznhyKhSGPDbmRQWwTzLErKdyFCSWMdsfyYjprK/MmYczAoJvSgHhe9FeWvg/aMpGWsykjlaGzprZ/WZT+vMA=",
@@ -1088,7 +1090,7 @@ public class GeneralEncryptorTest {
                         "lGvXPH17WpDErd277D7w1w==",
                         1723109505420L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "D3D82A6B-47CF-4225-BBE5-BAD96FB84CA4",
                         "AgGQFxV3lw5VDbHHI6lTdoUOMvA+ciXc+JFI8OsY4ErK",
                         "Kb0IVdVE5aicv70QY6cfDnE690jVhEqhOct28y1r7G0=",
@@ -1096,7 +1098,7 @@ public class GeneralEncryptorTest {
                         "L9wCRvnLTUkla7IAlrprEQ==",
                         1723109505420L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "AgjDJvBgQubjJsc3mG/usmz1Saachm56h+L7Ao+ODS+G",
                         "OnI4x+FwViNe3zACnpkhLib5U8s37EKPYlcp7+EP+0R9EYYkEfQoosyavXMvcULam0TvdixhIt98xWsW6UPrDA==",
@@ -1104,7 +1106,7 @@ public class GeneralEncryptorTest {
                         "dYXDUMkh3AcATXwenSdDyg==",
                         1723109505421L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "Aos8e2W2DbLD+rBNA6Mwzj+RWaETuLGo4M/sEdRtRENL",
                         "z2qMMLBv9dEqvv9SdZpxdoUmvPKBTlQU5MELLivW+2SZyv4cK+yT46cLEM8bdnly1f28/3nYogZaajzftXbZM2Bj8cSYBjZuQRLIbUcjz2wLtWP7BYEAk8LlS+gA3dAOrZ/lWI4MOEt1lgG0JkEHBkEpmD2s3wPSNr9t1fUJqU4=",
@@ -1112,7 +1114,7 @@ public class GeneralEncryptorTest {
                         "C0t960Q62hxHaWnnu6sYEw==",
                         1723109505421L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "A1Ph49CFAdWfQFlzYPDeaFdipYMJGY+qYWEJgphvE601",
                         "v5chxkMsHJanOOw/av+oRbPsk2Va226igxQ+2frT3AraTLwJxotHocnTFxyK7pNk",
@@ -1120,7 +1122,7 @@ public class GeneralEncryptorTest {
                         "EoNe/DqID0Isa15tzFeTYw==",
                         1723109505421L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "A+5Y+goYEAPxnM5xVxLkZoJTSG5SEoa2D6U2/a//+vgS",
                         "gg9w0km2aG+pchUeHL5BEjDMROOcuTmDSMTBRRf9OyTwrYA6+a991jhdZiSYT6MSK52n2hd6yWvEp18NQI6VOy0gsxAzoOXfYf2Rir9rvtIcmtRC76cYDqLHA9Dl2TyrzacnOSZJRwGOePal1RM8vQ==",
@@ -1128,7 +1130,7 @@ public class GeneralEncryptorTest {
                         "nt9/rGJ74UoCKT24QS+USw==",
                         1723109505422L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "D3D82A6B-47CF-4225-BBE5-BAD96FB84CA4",
                         "A7MzuALkFpmLMUOoPfXyx+aCAKZqP0V1RnRLNKbqrCdn",
                         "xaMGsBQgJ5NihO8GGrjG1epaEszSDcv8Z67WBJy0olQ5sfrlx+nR112JAKIKqpDo4DApF9EOkDfi5za0DnlryvGPpiaLbngbF06QR85DFNkOUD5Gt/DuN/qbGdHYJ66AsZhAdUf8L0u5OGYbYF6ULQ==",
@@ -1136,7 +1138,7 @@ public class GeneralEncryptorTest {
                         "af7JpUq2cwR0Ekodu6WQQQ==",
                         1723109505422L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "AyAZz2budSXg9tUr41qMRIWZYHvf8ZRg1Ky1xXfjUVzP",
                         "P1E456VYswsieUXDxi49WldA647JbSy5YfwS6xoJijWZ7/ml3Zx5VMJYz+X8X9Wm2+GNiyWiLURpJaTMK3lwXOEFUWUDoP0cv6du+Vz7jQgoyPvgSxpcOeb9NEiOcbgc",
@@ -1144,7 +1146,7 @@ public class GeneralEncryptorTest {
                         "o4KfZWSYNqBjwaHqJcwYTg==",
                         1723109505422L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "D3D82A6B-47CF-4225-BBE5-BAD96FB84CA4",
                         "A6tOYHM9zg9O4v/rTAiduPRfJgWLT47V/1SKVpOVfb3h",
                         "6E5yo1+y/Nv9A9uTr2dWijEAoOMOlCX39fdCDE5ohbBw6slMbFBIC6HUn7qBs8dBgMNJTatJEp/twGJZyaT6+WMOZRI7ec7/bOImrN9kjwkYq70gY/UHPETUyBkczYc+",
@@ -1152,7 +1154,7 @@ public class GeneralEncryptorTest {
                         "/KUGtLbpCgqW+KyTfP/1FQ==",
                         1723109505423L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "Ajqbv+0CUuWHZQuiU1d+Z8x4sbXDB37sm0Kbjp95kzPI",
                         "OKr4ceWyBbLTxzZhv5RQvlG44K+n+ohw4JUbV30lC0KIypNl0uKwdzSQtK5eljKXdfYxaLSuY+Gwj/NK+xdQkdMXskLeXluey5GET23HaL4=",
@@ -1160,7 +1162,7 @@ public class GeneralEncryptorTest {
                         "K+XqUGF5lUKgTz0yaJ9p2g==",
                         1723109505423L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "A3uO4rYlQByC4ch5ylQEgFwOqYVANPLPw61DzbmT2nwH",
                         "VnYlfhQVaYFkCCvG6snx6bgGbHbNqS69AnBvcJ7o+vVtqtaZ13XaXWHCM3cyKW70QZs5uGuI/NWHD9pItXQpaxGkogmlixNc/EOpk7FJv04x1+SqKDFDveZgeORIFcOqX10V9BmhoqoBodUQ/Mf/19zc3/hXL6B2Py9MwnBlfxE=",
@@ -1168,7 +1170,7 @@ public class GeneralEncryptorTest {
                         "HadtUun2ZzG8yY9ZdoMieg==",
                         1723109505423L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "Arn/DbG8zpduSRv5WazPO14rRicFGzzSruSeK91TzLcz",
                         "Hy6BkHDntqmbV56oNTL+7aIJloEtkiZkiDZOmaxtsZQPGh2ZOcdL58M29mX0SCJ5uWEIKiQMGARtRNef4K9/ZyiKV3VdJFkzXKKs3ul5d+w=",
@@ -1176,7 +1178,7 @@ public class GeneralEncryptorTest {
                         "z6lNafKqRONRBYwT6mfZHQ==",
                         1723109505424L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "A2dQMe2lT6PNXju5qnY58dc7MrVlfeMxvmHpYZVSo1iy",
                         "yFi4XJ0kADIbf6xL4pShHhsAdDhmLyiHuf2uDVmGTsQDeDunVLn9E/cPOY3Pi8beTfyLMTuJs/KCYacDXkniCmzuawsftmASF14Ee2nLfUZoBhdA2HUDdKiIy+zvfrSChRx9YP0gkXE5bMRFpWgLmQ==",
@@ -1184,7 +1186,7 @@ public class GeneralEncryptorTest {
                         "xei7+wZwpJnRVnhsjRAEpg==",
                         1723109505424L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "D3D82A6B-47CF-4225-BBE5-BAD96FB84CA4",
                         "Ai7rf1nkviyd/H4oLwjazip5ceScgTyV+B3F/GqQblen",
                         "ZYxobd3H7Uj1VUQQvlh+7PBBzmtCPoVKDde5rjRbHx+10WRCFjV5Uhb3ySHWLuXUrqDmTGERRDEmPNXcfkp9Sw==",
@@ -1192,7 +1194,7 @@ public class GeneralEncryptorTest {
                         "34OaEzc8gcHw/TDsr5hI+A==",
                         1723109505424L
                 ),
-                new EncryptedRequest(
+                new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
                         "Awe+CP/SBxK4U8Szk4/2mJEI+k5J0t1Iul1FTNBNdG4K",
                         "Im5FJi42sIoKKuRQwyKaX/nGsRWDeDXNpE6jTyXmKENm/ulBftYmWCsDhX8uJKSi3ICtN70JtbNdOcWG+KsVAw==",
@@ -1202,98 +1204,98 @@ public class GeneralEncryptorTest {
                 ),
         };
         // Responses
-        final EncryptedResponse[] encryptedResponse = {
-                new EncryptedResponse(
+        final EciesEncryptedResponse[] encryptedResponse = {
+                new EciesEncryptedResponse(
                         "VKUZve03Rc+8N2D2YzGeX9ZZteeQws9ZAW7N2VVZ4cj8YHpHf+X4ULpqYeGKCHfJXi4Dvt6ZbbAU4i7rImvmRH7ZdMZgyVMlsRXwyJxIhDgkr8zLQlJDJ3Nc/TL2n2YTw3ukL2vv3ZW65UcDOWi9OBnXuEFYvuAjGR7zJLDL8Z0=",
                         "ebBjC2k7LndYqgOgbE239Rc1yhhRRhOGL/QGk23P458=",
                         "mrL2R2ochtK1QFfLi9dX3Q==",
                         1723109505420L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "qxbAsh4KlTWrfoRb2f65FUkBMfvPjJdPkc5z44rdNJ7angP/q83NTw19XurQ8N1RjA06ozqnOR4pr9KrjuWq38kyVEWEsrMsrE2rLjzcVqyoFNOBd3tPK74f/uLmbVFnqbUoKaqjn4mBIHCfgWle7g==",
                         "GMeP0BM62NDRxWBtHMsadAHQQzsgmfZfGU3x9piipfM=",
                         "beYoMVodt06E7yk2WMFiCA==",
                         1723109505420L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "l+Yl3JfRpcr+ReXSDdTo2GVbe+c98rpfX3vODqnrpkk=",
                         "cRPSf7+3IA8M1zjQnGEixuFlJ5O6hsmzvWeB2xFHfCI=",
                         "qPtFVgDgtgJpNTzuElDoVA==",
                         1723109505421L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "Y8KAD1G9wUpoTXpA0UKMI4PaUgS43uUFrOTBR3cCoBUdOWS4HizPdF+3SxdkbP5Z",
                         "QfQzM+0z0re6/AWMNOI8uP7syAeCtud+TkDt+H1X/tM=",
                         "A/+VbdsF+0s8HvJrBAtBCQ==",
                         1723109505421L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "+Jqs/d97p0Qau9ixhL23cctRnUwowZuTzvA3MHsBH24=",
                         "AgBS0dF5RSfPlvbqgtFpMwj2QSDQUXIUcZdNUyJPzO0=",
                         "iu0blftcv9NCHb0mJVqRKA==",
                         1723109505421L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "jKg+rY99pZ3gZa+h5Dfy7ohbhKKUIhKWltXrx8Az4DTyRiT8PfljuUKWD1nXYtpToAodYrI83scJ5OuoOILcxQ7/h3fLHs6KB642xaoV/od4eVMYoXqDXMraMojCsxCJ",
                         "8YJ8n79aFpOAawRnSfG7XlNYNdGVfP2iGKhrE2VP0ho=",
                         "qD/LMXJEWu8/64ZVLs3+7g==",
                         1723109505422L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "Od0g66R5gHPqyLjaKYkiSyKg11qzpMERanBS3qlSJ13MIArCWQWgq54408xvo1hpt5V8Wgj7ITwfsJ8+AQTZOgx7Wz3a1x56x8X7ooZhIk8=",
                         "ndfN2p7RMwWo6JDS4ifa5kleEW8CcBjjwySh67niVZo=",
                         "vywPr8XZ8b2YyDtHMikmfg==",
                         1723109505422L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "3GGQRP4u4+w/d7/KtPS8SjDa8lV7AxZhXbJKzKWwx80=",
                         "irvrHy2xNLjDfAeL/4dxmmSCuuDsOxXHCc95P/i/35E=",
                         "BMWmr4DsI8+WImCDvwB2/w==",
                         1723109505422L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "tfMDn6+5V1Zppc4huevk3LI/dgzOuSRTYqtXJf+xB/hNzNc2hChinWIjKMh2cdWwoms3WO+boaKGnCDdVbSCDEx+nFg6T4iN6rfz4qTwaov6KdLkT04Y8hnkbi4YAyNm",
                         "90Vud5c9q8Xy+UgMGtq5D6vPs5Hsn0Nkmj+rUmuUcz8=",
                         "YNJifcT945fhcKm3aqkhag==",
                         1723109505423L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "0fWvysKeg3naheL/A5cJjTiA+BmhZYbDkHVK63JPosXDhqZzqPrJ0/KvPE116ELpG2FzQP5LnD0Jk9eJ627p67nMhJD+jQkRFQgqKeggViiw+zEsQtp/dcIN3ZpdR+zh",
                         "TIe67QK7kYFlMI7tEMB5+DdqwVdAUNbje/xVyrLEwwI=",
                         "LdNF+2cVBklgSNtd8VgVHQ==",
                         1723109505423L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "WKwK5/O9ebjhrec16gMbS5tuAiYSE7/7oxMRc+DU8ZU6FSNUewK8O0cVOV3sT6++6U3QgPJLbgRIBP6lZjvAUcrzXlwjNjQJEmO3816BOo8=",
                         "Eo0IFaMj5O9ZPfq5DCqS+6m0swuEGgoVfihAKtDTnsg=",
                         "miiZTny2CvOrBZkjD+eaLA==",
                         1723109505423L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "jDmIvPflnOKjS45+cSCqaA==",
                         "h39gAppf4ooZoh3DlXUTg8K6hMvTeUDXjJIbrbEKefg=",
                         "G68hARhQVl/NlWqvqdrHAw==",
                         1723109505424L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "JCeEIhe8hUKPbb0+FB/s1A==",
                         "1ZYXTaUXg8BH37PHNUYZC/qAaiu72vvbBUMMayO5ygc=",
                         "v4k9JUEQqmqs0avfakFRiQ==",
                         1723109505424L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "lYITkSdxBpjIKd6YsORWZLKE21G3bbRSd+7/7CeSk0jXrtAnoyqvYfvcdx2TVtOVOlM8yAkgwuDn610ovcDW9mT5/HfvdoB1c7v8uwXwSEorpajFTT/b6tYo4fRD+lGt",
                         "8/r/tlMCzmHLwszOGUwBGGK9MM1Jis2R8Gmk4e17AJo=",
                         "WGeBG1GE8gFWSXQCUR9dKQ==",
                         1723109505424L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "it9d1VO49uCf4G3zax9Z0IxNmTaoUb2aVHZB45b8rmd/myB8pjEhvzowwatdx5fX",
                         "EmyVIkCwUqH0SCRxqHWDXIjZhB23uaxLFozdlzB8f7U=",
                         "XAqO+IzvrQ6zsEyHQd2pyg==",
                         1723109505425L
                 ),
-                new EncryptedResponse(
+                new EciesEncryptedResponse(
                         "pDks/WpNZ3l71+1vgVQReVIjlSC5o7Jyepka/kbj5oUqtjyO3WopHyfAB7e1exqDl6dLDwsP0TcIndKmAPPdpQ==",
                         "Ob1ku/gu4dFdov1GVZIRZ8dSGeh2Kt8JbFACi/k5onc=",
                         "9/QPax/kk/VO5mto3ufdBA==",
@@ -1305,8 +1307,8 @@ public class GeneralEncryptorTest {
 
         for (int i = 0; i < encryptedRequest.length; i++) {
             // Prepare values for this batch
-            final EncryptedRequest request = encryptedRequest[i];
-            final EncryptedResponse response = encryptedResponse[i];
+            final EciesEncryptedRequest request = encryptedRequest[i];
+            final EciesEncryptedResponse response = encryptedResponse[i];
             final EncryptorId eid = encryptorIds[i];
             final EncryptorScope scope = eid.scope();
             final byte[] sharedInfo1 = eid.getEciesSharedInfo1("3.3");
@@ -1314,7 +1316,7 @@ public class GeneralEncryptorTest {
             final byte[] envelopeKey = envelopeKeys[i];
 
             // Construct Server's encryptor
-            final ServerEncryptor serverEncryptor;
+            final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> serverEncryptor;
             if (scope == EncryptorScope.APPLICATION_SCOPE) {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
                         new EncryptorParameters("3.3", applicationKey, null, tempKeyIdApplication),

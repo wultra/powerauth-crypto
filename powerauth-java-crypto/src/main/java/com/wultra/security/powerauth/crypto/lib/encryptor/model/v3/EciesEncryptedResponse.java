@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package com.wultra.security.powerauth.crypto.lib.encryptor.model;
+package com.wultra.security.powerauth.crypto.lib.encryptor.model.v3;
+
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptedResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * The {@code EncryptedResponse} object represents an encrypted request payload in PowerAuth End-To-End encryption scheme.
- *
- * @author Roman Strobl, roman.strobl@wultra.com
+ * The {@code EciesEncryptedResponse} object represents an encrypted request payload in PowerAuth Crypto v3 End-To-End encryption scheme.
  */
-public interface EncryptedResponse {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class EciesEncryptedResponse implements EncryptedResponse {
+    private String encryptedData;
+    private String mac;
+    private String nonce;
+    private Long timestamp;
 }
