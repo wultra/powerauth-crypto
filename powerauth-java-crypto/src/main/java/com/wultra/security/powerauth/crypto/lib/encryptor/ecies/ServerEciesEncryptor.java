@@ -24,6 +24,8 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.model.EciesParam
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.model.EciesPayload;
 import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncryptorSecrets;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
@@ -41,7 +43,7 @@ import java.util.Base64;
  *     <li>3.2</li>
  * </ul>
  */
-public class ServerEciesEncryptor implements ServerEncryptor {
+public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> {
 
     private static final KeyGenerator keyGenerator = new KeyGenerator();
 
@@ -121,7 +123,7 @@ public class ServerEciesEncryptor implements ServerEncryptor {
     }
 
     @Override
-    public EncryptorSecrets calculateSecretsForExternalEncryptor(EncryptedRequest request) throws EncryptorException {
+    public EncryptorSecrets calculateSecretsForExternalEncryptor(EciesEncryptedRequest request) throws EncryptorException {
         if (!canDecryptRequest()) {
             throw new EncryptorException("Encryptor is not ready for request decryption.");
         }
@@ -146,7 +148,7 @@ public class ServerEciesEncryptor implements ServerEncryptor {
     }
 
     @Override
-    public byte[] decryptRequest(EncryptedRequest request) throws EncryptorException {
+    public byte[] decryptRequest(EciesEncryptedRequest request) throws EncryptorException {
         if (!canDecryptRequest()) {
             throw new EncryptorException("Encryptor is not ready for request decryption.");
         }
@@ -204,7 +206,7 @@ public class ServerEciesEncryptor implements ServerEncryptor {
     }
 
     @Override
-    public EncryptedResponse encryptResponse(byte[] data) throws EncryptorException {
+    public EciesEncryptedResponse encryptResponse(byte[] data) throws EncryptorException {
         if (!canEncryptResponse()) {
             throw new EncryptorException("Encryptor is not ready for response encryption.");
         }
@@ -230,7 +232,7 @@ public class ServerEciesEncryptor implements ServerEncryptor {
         this.envelopeKey = null;
         this.requestNonce = null;
 
-        return new EncryptedResponse(
+        return new EciesEncryptedResponse(
                 Base64.getEncoder().encodeToString(eciesPayload.getCryptogram().getEncryptedData()),
                 Base64.getEncoder().encodeToString(eciesPayload.getCryptogram().getMac()),
                 validator.isUseTimestamp() ? Base64.getEncoder().encodeToString(responseNonce) : null,

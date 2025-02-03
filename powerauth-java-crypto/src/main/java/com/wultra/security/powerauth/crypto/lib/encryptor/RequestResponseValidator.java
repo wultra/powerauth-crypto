@@ -24,7 +24,7 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptedRespons
  * The {@code RequestResponseValidator} interface allows you to formally validate the encrypted request or response data
  * in advance, before you try to decrypt it.
  */
-public interface RequestResponseValidator {
+public interface RequestResponseValidator<Req extends EncryptedRequest, Res extends EncryptedResponse> {
     /**
      * Test whether encrypted request contains valid data. The function does a simple formal validation whether
      * all required parameters are present in the request object.
@@ -32,7 +32,7 @@ public interface RequestResponseValidator {
      * @param request Encrypted request object to validate.
      * @return true if object appears to contain valid data, otherwise false.
      */
-    boolean validateEncryptedRequest(EncryptedRequest request);
+    boolean validateEncryptedRequest(Req request);
 
     /**
      * Test whether encrypted response contains valid data. The function does a simple formal validation whether
@@ -41,5 +41,5 @@ public interface RequestResponseValidator {
      * @param response Encrypted response object to validate.
      * @return true if object appears to contain valid data, otherwise false.
      */
-    boolean validateEncryptedResponse(EncryptedResponse response);
+    boolean validateEncryptedResponse(Res response);
 }

@@ -19,8 +19,8 @@ package com.wultra.security.powerauth.crypto.lib.encryptor.ecies;
 
 import com.wultra.security.powerauth.crypto.lib.encryptor.RequestResponseValidator;
 import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
-import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptedRequest;
-import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptedResponse;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
 import lombok.Getter;
 
 import java.util.Set;
@@ -29,7 +29,7 @@ import java.util.Set;
  * The {@code EciesRequestResponseValidator} class implements request and response validation for 3.x protocol versions.
  */
 @Getter
-public class EciesRequestResponseValidator implements RequestResponseValidator {
+public class EciesRequestResponseValidator implements RequestResponseValidator<EciesEncryptedRequest, EciesEncryptedResponse> {
     /**
      * Protocol versions supported in this validator.
      */
@@ -63,7 +63,7 @@ public class EciesRequestResponseValidator implements RequestResponseValidator {
     }
 
     @Override
-    public boolean validateEncryptedRequest(EncryptedRequest request) {
+    public boolean validateEncryptedRequest(EciesEncryptedRequest request) {
         if (request == null) {
             return false;
         }
@@ -85,7 +85,7 @@ public class EciesRequestResponseValidator implements RequestResponseValidator {
     }
 
     @Override
-    public boolean validateEncryptedResponse(EncryptedResponse response) {
+    public boolean validateEncryptedResponse(EciesEncryptedResponse response) {
         if (response == null) {
             return false;
         }
