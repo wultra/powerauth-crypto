@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.wultra.security.powerauth.crypto.lib.v4.model;
+package com.wultra.security.powerauth.crypto.lib.v4.model.request;
 
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretClientContext;
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretRequest;

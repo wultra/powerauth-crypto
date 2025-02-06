@@ -177,12 +177,26 @@ public class KeyGenerator {
 
     /**
      * Generate a new random symmetric key.
+     * 
+     * @deprecated use {@link #generateRandomSecretKey(int)}
      *
      * @return A new instance of a symmetric key.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
+    @Deprecated
     public SecretKey generateRandomSecretKey() throws CryptoProviderException {
-        return keyConvertor.convertBytesToSharedSecretKey(generateRandomBytes(16));
+        return generateRandomSecretKey(16);
+    }
+
+    /**
+     * Generate a new random symmetric key.
+     *
+     * @param length Key length in bytes.
+     * @return A new instance of a symmetric key.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     */
+    public SecretKey generateRandomSecretKey(int length) throws CryptoProviderException {
+        return keyConvertor.convertBytesToSharedSecretKey(generateRandomBytes(length));
     }
 
     /**

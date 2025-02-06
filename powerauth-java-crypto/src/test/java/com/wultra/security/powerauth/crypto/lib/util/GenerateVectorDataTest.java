@@ -638,7 +638,7 @@ public class GenerateVectorDataTest {
 
         for (final ActivationStatusBlobInfoBuilder builder : testData) {
 
-            final SecretKey transportKey = keyGenerator.generateRandomSecretKey();
+            final SecretKey transportKey = keyGenerator.generateRandomSecretKey(16);
             final byte[] transportKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(transportKey);
             final byte[] ctrData = keyGenerator.generateRandomBytes(16);
             final byte[] challenge = keyGenerator.generateRandomBytes(16);

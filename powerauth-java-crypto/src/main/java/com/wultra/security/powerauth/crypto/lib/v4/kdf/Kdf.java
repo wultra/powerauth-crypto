@@ -89,6 +89,4 @@ public class Kdf {
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 
-
-
 }

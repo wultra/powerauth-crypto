@@ -213,7 +213,7 @@ public class IdentifierGenerator {
      * @throws InvalidKeyException In case key is invalid.
      */
     public RecoveryInfo generateRecoveryCode() throws GenericCryptoException, CryptoProviderException, InvalidKeyException {
-        final SecretKey secretKey = keyGenerator.generateRandomSecretKey();
+        final SecretKey secretKey = keyGenerator.generateRandomSecretKey(16);
         return generateRecoveryCode(secretKey, 1, false);
     }
 
