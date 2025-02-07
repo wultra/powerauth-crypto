@@ -31,6 +31,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+/**
+ * Test for SHA-3 primitives.
+ *
+ * @author Roman Strobl, roman.strobl@wultra.com
+ */
 class Sha3Test {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();

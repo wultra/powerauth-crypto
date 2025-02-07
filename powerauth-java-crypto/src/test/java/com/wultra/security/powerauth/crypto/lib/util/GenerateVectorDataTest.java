@@ -235,7 +235,7 @@ public class GenerateVectorDataTest {
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
-            HashBasedCounter hashBasedCounter = new HashBasedCounter();
+            HashBasedCounter hashBasedCounter = new HashBasedCounter("3.0");
 
             for (int i = 0; i < keyMax; i++) {
 
@@ -353,7 +353,7 @@ public class GenerateVectorDataTest {
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
-            HashBasedCounter hashBasedCounter = new HashBasedCounter();
+            HashBasedCounter hashBasedCounter = new HashBasedCounter("3.1");
 
             for (int i = 0; i < keyMax; i++) {
 
@@ -460,7 +460,7 @@ public class GenerateVectorDataTest {
             PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
-            HashBasedCounter hashBasedCounter = new HashBasedCounter();
+            HashBasedCounter hashBasedCounter = new HashBasedCounter("3.1");
 
             for (int i = 0; i < keyMax; i++) {
 

@@ -18,7 +18,9 @@ package com.wultra.security.powerauth.crypto.lib.generator;
 
 import com.wultra.security.powerauth.crypto.lib.api.Counter;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.Hash;
+import com.wultra.security.powerauth.crypto.lib.v4.hash.Sha3;
 
 /**
  * Implementation of hash based counter.
@@ -31,34 +33,61 @@ public class HashBasedCounter implements Counter {
     /**
      * Number of bytes used in counter.
      */
-    private static final int HASH_COUNTER_RANDOM_BYTES_LENGTH = 16;
+    private static final int HASH_COUNTER_RANDOM_BYTES_LENGTH_V3 = 16;
+    private static final int HASH_COUNTER_RANDOM_BYTES_LENGTH_V4 = 32;
 
     /**
      * Key generator is used for operations with bytes.
      */
-    private final KeyGenerator keyGenerator = new KeyGenerator();
+    private final KeyGenerator KEY_GENERATOR = new KeyGenerator();
 
     /**
-     * Generate initial counter data.
-     * @return Initial counter data.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     * Protocol version.
      */
-    @Override
-    public byte[] init() throws CryptoProviderException {
-        return keyGenerator.generateRandomBytes(HASH_COUNTER_RANDOM_BYTES_LENGTH);
+    private final String version;
+
+    /**
+     * Constructor with version.
+     *
+     * @param version Protocol version.
+     * @throws GenericCryptoException Thrown in case version is not specified.
+     */
+    public HashBasedCounter(String version) throws GenericCryptoException {
+        if (version == null) {
+            throw new GenericCryptoException("Missing protocol version");
+        }
+        this.version = version;
     }
 
-    /**
-     * Generate next counter data by hashing current counter data.
-     * @param ctrData Current counter data.
-     * @return Next counter data.
-     */
-    public byte[] next(byte[] ctrData) {
-        byte[] nextCtrData = Hash.sha256(ctrData);
-        if (nextCtrData != null) {
-            return keyGenerator.convert32Bto16B(nextCtrData);
+    @Override
+    public byte[] init() throws CryptoProviderException, GenericCryptoException {
+        final byte[] ctrData;
+        switch (version) {
+            case "3.0", "3.1", "3.2", "3.3" -> ctrData = KEY_GENERATOR.generateRandomBytes(HASH_COUNTER_RANDOM_BYTES_LENGTH_V3);
+            case "4.0" -> ctrData = KEY_GENERATOR.generateRandomBytes(HASH_COUNTER_RANDOM_BYTES_LENGTH_V4);
+            default -> throw new GenericCryptoException("Unsupported version: " + version);
         }
-        return null;
+        return ctrData;
+    }
+
+    @Override
+    public byte[] next(byte[] ctrData) throws GenericCryptoException {
+        if (ctrData == null) {
+            throw new GenericCryptoException("Missing input counter data");
+        }
+        final byte[] nextCtrData;
+        switch (version) {
+            case "3.0", "3.1", "3.2", "3.3" -> {
+                final byte[] nextData = Hash.sha256(ctrData);
+                if (nextData == null) {
+                    throw new GenericCryptoException("Hash calculation failed");
+                }
+                nextCtrData = KEY_GENERATOR.convert32Bto16B(nextData);
+            }
+            case "4.0" -> nextCtrData = Sha3.hash256(ctrData);
+            default -> throw new GenericCryptoException("Unsupported version: " + version);
+        }
+        return nextCtrData;
     }
 
 }
