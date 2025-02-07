@@ -31,10 +31,25 @@ import java.util.stream.Collectors;
 @Getter
 public enum ProtocolVersion {
 
+    /**
+     * Protocol version 3.0
+     */
     V30("3.0"),
+    /**
+     * Protocol version 3.1
+     */
     V31("3.1"),
+    /**
+     * Protocol version 3.2
+     */
     V32("3.2"),
+    /**
+     * Protocol version 3.3
+     */
     V33("3.3"),
+    /**
+     * Protocol version 4.0
+     */
     V40("4.0");
 
     private final String version;
