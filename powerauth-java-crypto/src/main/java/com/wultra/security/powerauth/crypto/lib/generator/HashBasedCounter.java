@@ -17,6 +17,7 @@
 package com.wultra.security.powerauth.crypto.lib.generator;
 
 import com.wultra.security.powerauth.crypto.lib.api.Counter;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.Hash;
@@ -55,6 +56,9 @@ public class HashBasedCounter implements Counter {
     public HashBasedCounter(String version) throws GenericCryptoException {
         if (version == null) {
             throw new GenericCryptoException("Missing protocol version");
+        }
+        if (!ProtocolVersion.supportedVersions().contains(version)) {
+            throw new GenericCryptoException("Unsupported version: " + version);
         }
         this.version = version;
     }
