@@ -16,6 +16,7 @@
  */
 package com.wultra.security.powerauth.http.validator;
 
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +48,6 @@ public class ValueTypeValidator {
      * Regexp for validating decimal strings.
      */
     private static final String DECIMAL_STRING_REGEX = "^[0-9]*$";
-
-    /**
-     * Admissible protocol versions in the header.
-     */
-    private static final Set<String> PROTOCOL_VERSIONS = Set.of("3.3", "3.2", "3.1", "3.0");
 
     /**
      * Admissible signature types in the header.
@@ -174,7 +170,7 @@ public class ValueTypeValidator {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isValidProtocolVersion(String version) {
-        return PROTOCOL_VERSIONS.contains(version);
+        return ProtocolVersion.supportedVersions().contains(version);
     }
 
 }

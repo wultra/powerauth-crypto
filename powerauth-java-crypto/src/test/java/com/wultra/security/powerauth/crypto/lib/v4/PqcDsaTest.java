@@ -29,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for PQC digital signature algorithm.
+ *
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
 class PqcDsaTest {
 

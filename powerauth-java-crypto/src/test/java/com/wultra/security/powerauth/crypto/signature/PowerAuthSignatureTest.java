@@ -103,7 +103,7 @@ public class PowerAuthSignatureTest {
         PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
         PowerAuthServerKeyFactory serverKeyFactory = new PowerAuthServerKeyFactory();
 
-        HashBasedCounter ctrGenerator = new HashBasedCounter();
+        HashBasedCounter ctrGenerator = new HashBasedCounter("3.0");
         byte[] ctrData = ctrGenerator.init();
 
         for (int i = 0; i < 5; i++) {
@@ -238,7 +238,7 @@ public class PowerAuthSignatureTest {
         PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
         PowerAuthServerKeyFactory serverKeyFactory = new PowerAuthServerKeyFactory();
 
-        HashBasedCounter ctrGenerator = new HashBasedCounter();
+        HashBasedCounter ctrGenerator = new HashBasedCounter("3.1");
         byte[] ctrData = ctrGenerator.init();
 
         for (int i = 0; i < 5; i++) {
@@ -372,7 +372,7 @@ public class PowerAuthSignatureTest {
         PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
         PowerAuthServerKeyFactory serverKeyFactory = new PowerAuthServerKeyFactory();
 
-        HashBasedCounter ctrGenerator = new HashBasedCounter();
+        HashBasedCounter ctrGenerator = new HashBasedCounter("3.1");
         byte[] ctrData = ctrGenerator.init();
 
         for (int i = 0; i < 5; i++) {
