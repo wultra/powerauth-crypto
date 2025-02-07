@@ -17,12 +17,14 @@
 package com.wultra.security.powerauth.crypto.server.token;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.TokenUtils;
 
 /**
  * Server side class used for generating new tokens.
  *
  * @author Petr Dvorak, petr@wultra.com
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class ServerTokenGenerator {
 
@@ -37,12 +39,20 @@ public class ServerTokenGenerator {
     }
 
     /**
-     * Generate random token secret, 16 random bytes.
+     * Generate random token secret, 16 or 32 random bytes depending on the version.
+     * @param version Protocol version.
      * @return Random token secret.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case the protocol version is not supported.
      */
-    public byte[] generateTokenSecret() throws CryptoProviderException {
-        return tokenUtils.generateTokenSecret();
+    public byte[] generateTokenSecret(String version) throws CryptoProviderException, GenericCryptoException {
+        final byte[] tokenSecret;
+        switch (version) {
+            case "3.0", "3.1", "3.2", "3.3" -> tokenSecret = tokenUtils.generateTokenSecret(16);
+            case "4.0" -> tokenSecret = tokenUtils.generateTokenSecret(32);
+            default -> throw new GenericCryptoException("Unsupported protocol version: " + version);
+        }
+        return tokenSecret;
     }
 
 }

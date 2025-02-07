@@ -19,7 +19,9 @@ package com.wultra.security.powerauth.crypto.lib.util;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -27,11 +29,15 @@ import java.util.UUID;
  * Class used for computing PowerAuth Token digests.
  *
  * @author Petr Dvorak, petr@wultra.com
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class TokenUtils {
 
-    private final KeyGenerator keyGenerator = new KeyGenerator();
-    private final HMACHashUtilities hmac = new HMACHashUtilities();
+    private static final byte[] DIGEST_KMAC_CUSTOM_BYTES = "PA4DIGEST".getBytes(StandardCharsets.UTF_8);
+
+    private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
+    private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
+    private static final HMACHashUtilities HMAC = new HMACHashUtilities();
 
     /**
      * Generate random token ID. Use UUID format.
@@ -45,11 +51,12 @@ public class TokenUtils {
     /**
      * Generate random token secret, 16 random bytes.
      *
+     * @param length Number of random bytes.
      * @return Random token secret.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
-    public byte[] generateTokenSecret() throws CryptoProviderException {
-        return keyGenerator.generateRandomBytes(16);
+    public byte[] generateTokenSecret(int length) throws CryptoProviderException {
+        return KEY_GENERATOR.generateRandomBytes(length);
     }
 
     /**
@@ -59,7 +66,7 @@ public class TokenUtils {
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      */
     public byte[] generateTokenNonce() throws CryptoProviderException {
-        return keyGenerator.generateRandomBytes(16);
+        return KEY_GENERATOR.generateRandomBytes(16);
     }
 
     /**
@@ -67,7 +74,7 @@ public class TokenUtils {
      * String representation of timestamp.<br>
      * <br>
      * The timestamp conversion works like this: Long timestamp is converted to String and then, bytes of the
-     * String are extracted usign the UTF-8 encoding.<br>
+     * String are extracted using the UTF-8 encoding.<br>
      * <br>
      * Code: <code>String.valueOf(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8);</code>
      *
@@ -101,12 +108,24 @@ public class TokenUtils {
     public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, String version, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
         final byte[] amp = "&".getBytes(StandardCharsets.UTF_8);
         final byte[] data;
+        final byte[] digest;
         switch (version) {
-            case "3.3", "3.2" -> data = ByteUtils.concat(nonce, amp, timestamp, amp, version.getBytes(StandardCharsets.UTF_8));
-            case "3.0", "3.1" -> data = ByteUtils.concat(nonce, amp, timestamp);
+            case "3.3", "3.2" -> {
+                data = ByteUtils.concat(nonce, amp, timestamp, amp, version.getBytes(StandardCharsets.UTF_8));
+                digest = HMAC.hash(tokenSecret, data);
+            }
+            case "3.0", "3.1" -> {
+                data = ByteUtils.concat(nonce, amp, timestamp);
+                digest = HMAC.hash(tokenSecret, data);
+            }
+            case "4.0" -> {
+                data = ByteUtils.concat(nonce, amp, timestamp, amp, version.getBytes(StandardCharsets.UTF_8));
+                final SecretKey secretKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(tokenSecret);
+                digest = Kmac.kmac256(secretKey, data, 32, DIGEST_KMAC_CUSTOM_BYTES);
+            }
             default -> throw new GenericCryptoException("Unsupported version value was specified: " + version);
         }
-        return hmac.hash(tokenSecret, data);
+        return digest;
     }
 
     /**
