@@ -17,6 +17,7 @@
 package com.wultra.security.powerauth.crypto.lib.api;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 
 /**
  * Interface for byte array based counter used for cryptography.
@@ -30,14 +31,16 @@ public interface Counter {
      * Initialize counter by generating initial counter data.
      * @return Initial counter data.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case of invalid initialization.
      */
-    byte[] init() throws CryptoProviderException;
+    byte[] init() throws CryptoProviderException, GenericCryptoException;
 
     /**
      * Generate next counter data based on current counter data.
      * @param ctrData Current counter data.
      * @return Next counter data.
+     * @throws GenericCryptoException In case next counter value could not be derived.
      */
-    byte[] next(byte[] ctrData);
+    byte[] next(byte[] ctrData) throws GenericCryptoException;
 
 }
