@@ -156,8 +156,7 @@ public class ServerAeadEncryptor implements ServerEncryptor<AeadEncryptedRequest
 
     @Override
     public boolean canEncryptResponse() {
-        return encryptorSecrets != null && encryptorSecrets.getEnvelopeKey() != null && sharedInfo2 != null;
-
+        return encryptorSecrets != null && encryptorSecrets.getEnvelopeKey() != null && sharedInfo2 != null && nonce != null;
     }
 
     @Override

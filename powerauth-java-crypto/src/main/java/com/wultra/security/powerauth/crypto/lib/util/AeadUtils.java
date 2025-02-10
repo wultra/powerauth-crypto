@@ -116,7 +116,7 @@ public final class AeadUtils {
      * @param nonce Nonce for request or response.
      * @param timestamp Timestamp for request or response.
      * @param associatedData Associated data.
-     * @return Bytes representing SharedInfo2 parameter for V4 end-to-end encryption.
+     * @return Bytes representing AD parameter for V4 end-to-end encryption.
      * @throws AeadException In case that some required parameter is missing.
      */
     public static byte[] deriveAssociateDataFinal(String protocolVersion, byte[] sharedInfo2, byte[] nonce, Long timestamp, byte[] associatedData) throws AeadException {
@@ -151,7 +151,7 @@ public final class AeadUtils {
      * @param protocolVersion Protocol's version.
      * @param sharedInfo1 SharedInfo1 parameter.
      * @param nonce Nonce for request or response.
-     * @return Bytes representing SharedInfo2 parameter for V4 end-to-end encryption.
+     * @return Bytes representing KC parameter for V4 end-to-end encryption.
      * @throws AeadException In case that some required parameter is missing.
      */
     public static byte[] deriveKeyContext(String protocolVersion, byte[] sharedInfo1, byte[] nonce) throws AeadException {

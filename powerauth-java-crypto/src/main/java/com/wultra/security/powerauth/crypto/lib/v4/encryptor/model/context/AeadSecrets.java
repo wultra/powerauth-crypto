@@ -20,6 +20,8 @@ package com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.context;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptorSecrets;
 import lombok.*;
 
+import java.util.Arrays;
+
 /**
  * The {@code AeadSecrets} class provides secret values for encryptor using V4 scheme.
  * <p>PowerAuth protocol versions:
@@ -62,7 +64,7 @@ public class AeadSecrets implements EncryptorSecrets {
      * @param applicationSecret Application's secret string.
      */
     public AeadSecrets(byte[] envelopeKey, String applicationSecret) {
-        this.envelopeKey = envelopeKey;
+        this.envelopeKey = Arrays.copyOf(envelopeKey, envelopeKey.length);
         this.applicationSecret = applicationSecret;
         this.keySharedInfo2 = null;
         this.sharedInfo2 = null;
@@ -77,9 +79,9 @@ public class AeadSecrets implements EncryptorSecrets {
      *                     then such secrets can be used for application scoped encryptor only.
      */
     public AeadSecrets(byte[] envelopeKey, String applicationSecret, byte[] keySharedInfo2) {
-        this.envelopeKey = envelopeKey;
+        this.envelopeKey = Arrays.copyOf(envelopeKey, envelopeKey.length);
         this.applicationSecret = applicationSecret;
-        this.keySharedInfo2 = keySharedInfo2;
+        this.keySharedInfo2 = Arrays.copyOf(keySharedInfo2, envelopeKey.length);
         this.sharedInfo2 = null;
     }
 
@@ -90,10 +92,10 @@ public class AeadSecrets implements EncryptorSecrets {
      * @param sharedInfo2 Precalculated SharedInfo2.
      */
     public AeadSecrets(byte[] envelopeKey, byte[] sharedInfo2) {
-        this.envelopeKey = envelopeKey;
+        this.envelopeKey = Arrays.copyOf(envelopeKey, envelopeKey.length);
         this.applicationSecret = null;
         this.keySharedInfo2 = null;
-        this.sharedInfo2 = sharedInfo2;
+        this.sharedInfo2 = Arrays.copyOf(sharedInfo2, envelopeKey.length);
     }
 
 }

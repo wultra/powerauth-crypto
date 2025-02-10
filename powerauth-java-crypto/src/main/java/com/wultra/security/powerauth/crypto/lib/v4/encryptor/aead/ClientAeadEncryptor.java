@@ -151,7 +151,7 @@ public class ClientAeadEncryptor implements ClientEncryptor<AeadEncryptedRequest
 
     @Override
     public boolean canDecryptResponse() {
-        return encryptorSecrets != null && encryptorSecrets.getEnvelopeKey() != null && sharedInfo2 != null;
+        return encryptorSecrets != null && encryptorSecrets.getEnvelopeKey() != null && sharedInfo2 != null && nonce != null;
     }
 
     @Override
