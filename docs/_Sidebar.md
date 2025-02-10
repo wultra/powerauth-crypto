@@ -6,7 +6,6 @@
 
 - [Activation Principles](./Activation.md)
 - [Activation via Activation Code](./Activation-via-Activation-Code.md)
-- [Activation via Recovery Code](./Activation-via-Recovery-Code.md)
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Key Derivation](./Key-derivation.md)
 - [Checking Activation Status](./Activation-Status.md)

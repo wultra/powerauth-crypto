@@ -21,7 +21,6 @@ We will describe each situation in detail in the separate chapters:
 3. [Activation confirmation using OTP](#activation-confirmation-using-otp)
    - [Confirm regular activation with OTP](#confirm-regular-activation-with-otp)
    - [Confirm custom activation with OTP](#confirm-custom-activation-with-otp)
-   - [Confirm activation recovery with OTP](#confirm-activation-recovery-with-otp)
 
 ## Changing the Commit Phase
 
@@ -90,7 +89,7 @@ There are multiple ways how to implement custom activation with an additional au
 
 ## Activation Confirmation using OTP
 
-In this common scenario, an additional activation OTP helps with the final activation confirmation, so the OTP is required in the later stages of the activation process (during the commit). In this case, it doesn't matter how the activation process was initiated. You can confirm regular, custom and also recovery activations with the OTP.
+In this common scenario, an additional activation OTP helps with the final activation confirmation, so the OTP is required in the later stages of the activation process (during the commit). In this case, it doesn't matter how the activation process was initiated. You can confirm regular and custom activations with the OTP.
 
 ### Confirm Regular Activation With OTP
 
@@ -149,35 +148,6 @@ There are multiple ways how to implement custom activation and confirm it with a
 1. Intermediate Server Application then receives the commit request:
 
    1. Decrypts OTP from the request
-   1. Commits the activation by calling PowerAuth Server's [`commitActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-commitactivation) method.
-
-After the response from the commit is received on the mobile side, the application can check whether the activation's state is ACTIVE.
-
-### Confirm Activation Recovery With OTP
-
-The confirmation of activation recovery is very similar to custom activation confirmation.
-
-1. In the mobile application:
-
-   1. The user enters recovery code and PUK.
-   1. Mobile application then initializes the recovery activation with provided code and PUK.
-
-1. Intermediate Server Application receives a recovery activation request:
-
-   1. The recovery code and PUK is verified by the PowerAuth Server, by calling [`recoveryCodeActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-recoverycodeactivation).
-   1. Intermediate Server Application generates random activation OTP and update the activation record, by calling [`updateActivationOtp`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-updateactivationotp) method.
-   1. At the same time, Intermediate Server Application initiates the delivery of activation OTP.
-
-1. Back in the mobile application:
-
-   1. The mobile application receives the response from the server and completes the keys-exchange on the mobile side.
-   1. The user waits for OTP delivery via the out-of-band channel.
-   1. The user retypes OTP.
-   1. Mobile application then commits the activation with OTP, by calling a custom RESTful endpoint, protected with our [ECIES encryption](End-To-End-Encryption.md) scheme.
-
-1. Intermediate Server Application then receives the commit request:
-
-   1. Decrypts OTP from the request.
    1. Commits the activation by calling PowerAuth Server's [`commitActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-commitactivation) method.
 
 After the response from the commit is received on the mobile side, the application can check whether the activation's state is ACTIVE.

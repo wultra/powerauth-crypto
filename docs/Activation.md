@@ -27,12 +27,9 @@ The activation credentials may be arbitrary and selected by a customer. We call 
 
 More commonly, the activation credentials are managed by our systems. The typical activation type uses an **activation code**. An activation code is a temporary, single use token that is strongly connected to specific user and to pre-initialized activation record. Activation code is issued for a given user via an application where the user already is authenticated, such as the Internet banking.
 
-Another type of credentials our systems manage are **recovery codes**. When enabled, our systems generate recovery codes during a successful activation. The mobile device then store them on the mobile device, protected by a secure vault mechanism (the secure vault requires the PIN code to unlock).
-
 You can read more about specific activation types in dedicated chapters:
 
 - [Activation via Activation Code](./Activation-via-Activation-Code.md)
-- [Activation via Recovery Code](./Activation-via-Recovery-Code.md)
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 
 ## Application-Level Encryption
@@ -41,7 +38,7 @@ Since the activation process transfers extremely sensitive data payloads and use
 
 The end-to-end application-level encryption is actually performed twice on a single payload.
 
-The first layer of encryption protects the data transfer between the mobile app and intermediate Enrollment Server component (accessible from the Internet). After unwrapping the first encryption layer, the Enrollment Server gains access to the activation type and activation specific credentials. However, the Enrollment Server cannot unwrap the second encryption layer. Instead, the Enrollment Server passes the encrypted activation data to PowerAuth Server alongside either the user ID (for custom credentials), activation code (for activation via activation code) or recovery code (for activation via recovery code). The PowerAuth Server then decrypts the second encryption layer and it stores the activation data from the client. In response, it sends an encrypted server-side activation payload (again, the Enrollment Server cannot decrypt this payload). The Enrollment server finally re-encrypts the response and sends it to the mobile app.
+The first layer of encryption protects the data transfer between the mobile app and intermediate Enrollment Server component (accessible from the Internet). After unwrapping the first encryption layer, the Enrollment Server gains access to the activation type and activation specific credentials. However, the Enrollment Server cannot unwrap the second encryption layer. Instead, the Enrollment Server passes the encrypted activation data to PowerAuth Server alongside either the user ID (for custom credentials) and activation code (for activation via activation code). The PowerAuth Server then decrypts the second encryption layer and it stores the activation data from the client. In response, it sends an encrypted server-side activation payload (again, the Enrollment Server cannot decrypt this payload). The Enrollment server finally re-encrypts the response and sends it to the mobile app.
 
 Detailed documentation of [End-to-End Encryption](./End-To-End-Encryption.md) is available in a dedicated chapter.
 
@@ -78,7 +75,6 @@ The following diagram shows transitions between activation states:
 ## Related Topics
 
 - [Activation via Activation Code](./Activation-via-Activation-Code.md)
-- [Activation via Recovery Code](./Activation-via-Recovery-Code.md)
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Checking Activation Status](./Activation-Status.md)
 - [Key Derivation](./Key-derivation.md)
