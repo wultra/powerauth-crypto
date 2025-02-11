@@ -126,7 +126,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final byte[] pqcSharedKeyBytes = KEY_CONVERTOR_PQC.convertSharedSecretKeyToBytes(pqcSharedKey);
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);
             final SecretKey hybridKey = KEY_CONVERTOR_EC.convertBytesToSharedSecretKey(hybridKeyBytes);
-            return Kdf.derive(hybridKey, KEY_SHARED_SECRET_CUSTOM_STRING, null,32);
+            return Kdf.derive(hybridKey, KEY_SHARED_SECRET_CUSTOM_STRING, null, 32);
         } catch (CryptoProviderException | InvalidKeySpecException | InvalidKeyException e) {
             throw new GenericCryptoException("Shared secret generation failed", e);
         }
