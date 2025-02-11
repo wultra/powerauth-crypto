@@ -47,7 +47,7 @@ import java.util.Base64;
  */
 public class SharedSecretEcdhe implements SharedSecret<SharedSecretRequestEcdhe, SharedSecretResponseEcdhe, SharedSecretClientContextEcdhe> {
 
-    private static final long SHARED_SECRET_DERIVATION_INDEX = 20_000L;
+    private static final String KEY_SHARED_SECRET_CUSTOM_STRING = "shared-secret/ec-p384";
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
@@ -81,7 +81,7 @@ public class SharedSecretEcdhe implements SharedSecret<SharedSecretRequestEcdhe,
             final PublicKey ecClientPublicKey = KEY_CONVERTOR.convertBytesToPublicKey(EcCurve.P384, ecClientPublicKeyRaw);
             final KeyPair ecServerKeyPair = KEY_GENERATOR.generateKeyPair(EcCurve.P384);
             final SecretKey ecSharedKey = KEY_GENERATOR.computeSharedKey(ecServerKeyPair.getPrivate(), ecClientPublicKey, true);
-            final SecretKey sharedSecret = Kdf.derive(ecSharedKey, SHARED_SECRET_DERIVATION_INDEX, 32, null);
+            final SecretKey sharedSecret = Kdf.derive(ecSharedKey, KEY_SHARED_SECRET_CUSTOM_STRING, null, 32);
             final byte[] ecServerPublicKey = KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P384, ecServerKeyPair.getPublic());
             final String ecServerPublicKeyBase64 = Base64.getEncoder().encodeToString(ecServerPublicKey);
             final SharedSecretResponseEcdhe serverResponse = new SharedSecretResponseEcdhe(ecServerPublicKeyBase64);
@@ -101,7 +101,7 @@ public class SharedSecretEcdhe implements SharedSecret<SharedSecretRequestEcdhe,
             final PublicKey ecServerPublicKey = KEY_CONVERTOR.convertBytesToPublicKey(EcCurve.P384, ecServerPublicKeyRaw);
             final PrivateKey ecClientPrivateKey = clientContext.getPrivateKey();
             final SecretKey sharedKey = KEY_GENERATOR.computeSharedKey(ecClientPrivateKey, ecServerPublicKey, true);
-            return Kdf.derive(sharedKey, SHARED_SECRET_DERIVATION_INDEX, 32, null);
+            return Kdf.derive(sharedKey, KEY_SHARED_SECRET_CUSTOM_STRING, null, 32);
         } catch (InvalidKeySpecException | CryptoProviderException | InvalidKeyException e) {
             throw new GenericCryptoException("Shared secret generation failed", e);
         }

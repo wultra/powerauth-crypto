@@ -33,7 +33,7 @@ import java.util.UUID;
  */
 public class TokenUtils {
 
-    private static final byte[] DIGEST_KMAC_CUSTOM_BYTES = "PA4DIGEST".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] KMAC_TOKEN_DIGEST_CUSTOM_BYTES = "PA4DIGEST".getBytes(StandardCharsets.UTF_8);
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
@@ -121,7 +121,7 @@ public class TokenUtils {
             case "4.0" -> {
                 data = ByteUtils.concat(nonce, amp, timestamp, amp, version.getBytes(StandardCharsets.UTF_8));
                 final SecretKey secretKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(tokenSecret);
-                digest = Kmac.kmac256(secretKey, data, 32, DIGEST_KMAC_CUSTOM_BYTES);
+                digest = Kmac.kmac256(secretKey, data, KMAC_TOKEN_DIGEST_CUSTOM_BYTES, 32);
             }
             default -> throw new GenericCryptoException("Unsupported version value was specified: " + version);
         }

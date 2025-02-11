@@ -37,12 +37,12 @@ public class Kmac {
      *
      * @param key          The secret key, must be a valid {@link SecretKey} with a 256-bit key length.
      * @param data         The input data used for the KMAC.
-     * @param outLength    The length of generated output bytes.
      * @param customString An optional customization string, use null value for no customization.
+     * @param outLength    The length of generated output bytes.
      * @return KMAC256 output byte array.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    public static byte[] kmac256(SecretKey key, byte[] data, int outLength, byte[] customString) throws GenericCryptoException {
+    public static byte[] kmac256(SecretKey key, byte[] data, byte[] customString, int outLength) throws GenericCryptoException {
         if (key == null) {
             throw new GenericCryptoException("Missing secret key for KMAC");
         }

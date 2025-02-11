@@ -102,7 +102,7 @@ public final class AeadUtils {
             }
             final SecretKey keySh2 = KEY_CONVERTOR.convertBytesToSharedSecretKey(keySharedInfo2);
             try {
-                return Kmac.kmac256(keySh2, applicationSecretBytes, 32, CRYPTO4_SH2_CUSTOM_BYTES);
+                return Kmac.kmac256(keySh2, applicationSecretBytes, CRYPTO4_SH2_CUSTOM_BYTES, 32);
             } catch (Exception e) {
                 throw new AeadException("KMAC calculation failed", e);
             }
