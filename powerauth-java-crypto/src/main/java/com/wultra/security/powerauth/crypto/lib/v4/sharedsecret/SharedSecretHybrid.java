@@ -29,6 +29,11 @@ import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecret;
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretClientContext;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kdf;
 import com.wultra.security.powerauth.crypto.lib.v4.model.*;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestHybrid;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.SharedSecretResponseHybrid;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 
 import javax.crypto.SecretKey;

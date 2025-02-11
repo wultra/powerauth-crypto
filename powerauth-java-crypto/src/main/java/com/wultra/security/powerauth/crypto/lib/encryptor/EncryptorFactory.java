@@ -24,12 +24,18 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorExc
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
+import com.wultra.security.powerauth.crypto.lib.v4.encryptor.aead.AeadRequestResponseValidator;
+import com.wultra.security.powerauth.crypto.lib.v4.encryptor.aead.ClientAeadEncryptor;
+import com.wultra.security.powerauth.crypto.lib.v4.encryptor.aead.ServerAeadEncryptor;
+import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.request.AeadEncryptedRequest;
+import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.response.AeadEncryptedResponse;
 
 /**
  * The {@code EncryptorFactory} class provide high level encryptors for PowerAuth End-To-End encryption implementation.
  * You can construct both server and client-side constructors in this factory.
  */
 public class EncryptorFactory {
+
     /**
      * Create client-side encryptor that can encrypt the request and decrypt response from the server. To use the encryptor
      * properly, you have to call {@link ClientEncryptor#configureSecrets(EncryptorSecrets)} function later on the constructed
@@ -72,9 +78,14 @@ public class EncryptorFactory {
                 }
                 return (ClientEncryptor<Req, Res>) encryptor;
             }
-            default -> {
-                throw new EncryptorException("Unsupported protocol version: " + encryptorParameters.getProtocolVersion());
+            case "4.0" -> {
+                final ClientEncryptor<AeadEncryptedRequest, AeadEncryptedResponse> encryptor = new ClientAeadEncryptor(encryptorId, encryptorParameters);
+                if (encryptorSecrets != null) {
+                    encryptor.configureSecrets(encryptorSecrets);
+                }
+                return (ClientEncryptor<Req, Res>) encryptor;
             }
+            default -> throw new EncryptorException("Unsupported protocol version: " + encryptorParameters.getProtocolVersion());
         }
     }
 
@@ -90,7 +101,7 @@ public class EncryptorFactory {
      * @return Server-side encryptor.
      * @throws EncryptorException In case that some required parameter is missing or encryptor cannot be constructed.
      */
-    public <Req extends EncryptedRequest, Res extends EncryptedResponse> ServerEncryptor<Req, Res>  getServerEncryptor(EncryptorId encryptorId, EncryptorParameters encryptorParameters) throws EncryptorException {
+    public <Req extends EncryptedRequest, Res extends EncryptedResponse> ServerEncryptor<Req, Res> getServerEncryptor(EncryptorId encryptorId, EncryptorParameters encryptorParameters) throws EncryptorException {
         return getServerEncryptor(encryptorId, encryptorParameters, null);
     }
 
@@ -120,9 +131,15 @@ public class EncryptorFactory {
                 }
                 return (ServerEncryptor<Req, Res>) encryptor;
             }
-            default -> {
-                throw new EncryptorException("Unsupported protocol version: " + encryptorParameters.getProtocolVersion());
+            case "4.0" -> {
+                final ServerEncryptor<AeadEncryptedRequest, AeadEncryptedResponse> encryptor = new ServerAeadEncryptor(encryptorId, encryptorParameters);
+                if (encryptorSecrets != null) {
+                    encryptor.configureSecrets(encryptorSecrets);
+                }
+                return (ServerEncryptor<Req, Res>) encryptor;
+
             }
+            default -> throw new EncryptorException("Unsupported protocol version: " + encryptorParameters.getProtocolVersion());
         }
     }
 
@@ -169,9 +186,11 @@ public class EncryptorFactory {
                 final RequestResponseValidator<EciesEncryptedRequest, EciesEncryptedResponse> validator = new EciesRequestResponseValidator(protocolVersion);
                 return (RequestResponseValidator<Req, Res>) validator;
             }
-            default -> {
-                throw new EncryptorException("Unsupported protocol version: " + protocolVersion);
+            case "4.0" -> {
+                final RequestResponseValidator<AeadEncryptedRequest, AeadEncryptedResponse> validator = new AeadRequestResponseValidator(protocolVersion);
+                return (RequestResponseValidator<Req, Res>) validator;
             }
+            default -> throw new EncryptorException("Unsupported protocol version: " + protocolVersion);
         }
     }
 }

@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package com.wultra.security.powerauth.crypto.lib.v4.model;
+package com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.request;
 
-import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretResponse;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptedRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Response cryptogram for ECDHE on curve P-384.
+ * Encrypted request in V4 end-to-end encryption scheme.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SharedSecretResponseEcdhe implements SharedSecretResponse {
+public class AeadEncryptedRequest implements EncryptedRequest {
 
-    /**
-     * Server EC public key for ECDH calculation.
-     */
-    private String ecServerPublicKey;
+    private String temporaryKeyId;
+    private String encryptedData;
+    private String nonce;
+    private Long timestamp;
 
 }
