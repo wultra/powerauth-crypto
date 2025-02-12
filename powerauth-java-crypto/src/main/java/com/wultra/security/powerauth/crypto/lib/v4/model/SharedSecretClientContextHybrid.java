@@ -42,7 +42,7 @@ public class SharedSecretClientContextHybrid implements SharedSecretClientContex
     private PrivateKey ecPrivateKey;
 
     /**
-     * Client PQC-KEM descapsulation key.
+     * Client PQC-KEM decapsulation key.
      */
     @ToString.Exclude
     private PrivateKey pqcKemDecapsulationKey;

@@ -31,8 +31,8 @@ import java.nio.charset.StandardCharsets;
  */
 public class Kdf {
 
-    private static final byte[] CRYPTO4_KDF_CUSTOM_BYTES = "PA4KDF".getBytes(StandardCharsets.UTF_8);
-    private static final byte[] CRYPTO4_PBKDF_CUSTOM_BYTES = "PA4PBKDF".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] KDF_CUSTOM_BYTES_PREFIX = "PA4KDF:".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] PBKDF_CUSTOM_BYTES = "PA4PBKDF".getBytes(StandardCharsets.UTF_8);
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
@@ -40,27 +40,24 @@ public class Kdf {
      * Derive a secret key based on an input key, numeric key index, requested key size and optional context.
      *
      * @param key Secret key to be used for key derivation.
-     * @param index Key index (numeric).
-     * @param outLength Requested derived key size.
-     * @param context Optional context to use during key derivation.
+     * @param label Label allows derivation of multiple keys from the same source key material.
+     * @param diversifier Optional byte array that can provide an additional key separation.
+     * @param outLength Requested derived key length in bytes.
      * @return Derived secret key.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    public static SecretKey derive(SecretKey key, long index, int outLength, byte[] context) throws GenericCryptoException {
+    public static SecretKey derive(SecretKey key, String label, byte[] diversifier, int outLength) throws GenericCryptoException {
         if (key == null) {
             throw new GenericCryptoException("Missing secret key for key derivation");
         }
-        if (index < 0L) {
-            throw new GenericCryptoException("Invalid index used for key derivation");
+        if (label == null) {
+            throw new GenericCryptoException("Missing label for key derivation");
         }
-        final byte[] indexBytes = ByteUtils.encodeLong(index);
-        final byte[] data;
-        if (context != null) {
-            data = ByteUtils.concat(indexBytes, ByteUtils.concatWithSizes(context));
-        } else {
-            data = indexBytes;
+        if (diversifier == null) {
+            diversifier = new byte[0];
         }
-        final byte[] output = Kmac.kmac256(key, data, outLength, CRYPTO4_KDF_CUSTOM_BYTES);
+        final byte[] custom = ByteUtils.concat(KDF_CUSTOM_BYTES_PREFIX, label.getBytes(StandardCharsets.UTF_8));
+        final byte[] output = Kmac.kmac256(key, diversifier, custom, outLength);
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 
@@ -85,7 +82,7 @@ public class Kdf {
         }
         final byte[] passwordBytes = ByteUtils.encodeString(password);
         final SecretKey key = KEY_CONVERTOR.convertBytesToSharedSecretKey(passwordBytes);
-        final byte[] output = Kmac.kmac256(key, salt, outLength, CRYPTO4_PBKDF_CUSTOM_BYTES);
+        final byte[] output = Kmac.kmac256(key, salt, PBKDF_CUSTOM_BYTES, outLength);
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 

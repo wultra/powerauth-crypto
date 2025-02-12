@@ -51,7 +51,7 @@ import java.util.Base64;
  */
 public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybrid, SharedSecretResponseHybrid, SharedSecretClientContextHybrid> {
 
-    private static final long SHARED_SECRET_DERIVATION_INDEX = 20_000L;
+    private static final String KEY_SHARED_SECRET_CUSTOM_STRING = "shared-secret/ec-p384-ml-l3";
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR_EC = new KeyConvertor();
@@ -98,7 +98,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final byte[] pqcSharedKeyBytes = pqcKeyWithEncaps.getEncoded();
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);
             final SecretKey hybridKey = KEY_CONVERTOR_EC.convertBytesToSharedSecretKey(hybridKeyBytes);
-            final SecretKey sharedSecret = Kdf.derive(hybridKey, SHARED_SECRET_DERIVATION_INDEX, 32, null);
+            final SecretKey sharedSecret = Kdf.derive(hybridKey, KEY_SHARED_SECRET_CUSTOM_STRING, null, 32);
             final byte[] ecServerPublicKey = KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, ecServerKeyPair.getPublic());
             final String ecServerPublicKeyBase64 = Base64.getEncoder().encodeToString(ecServerPublicKey);
             final String encapsBase64 = Base64.getEncoder().encodeToString(pqcKeyWithEncaps.getEncapsulation());
@@ -126,7 +126,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final byte[] pqcSharedKeyBytes = KEY_CONVERTOR_PQC.convertSharedSecretKeyToBytes(pqcSharedKey);
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);
             final SecretKey hybridKey = KEY_CONVERTOR_EC.convertBytesToSharedSecretKey(hybridKeyBytes);
-            return Kdf.derive(hybridKey, SHARED_SECRET_DERIVATION_INDEX, 32, null);
+            return Kdf.derive(hybridKey, KEY_SHARED_SECRET_CUSTOM_STRING, null, 32);
         } catch (CryptoProviderException | InvalidKeySpecException | InvalidKeyException e) {
             throw new GenericCryptoException("Shared secret generation failed", e);
         }

@@ -104,7 +104,7 @@ public class SharedSecretEcdheTest {
                 response
         );
         assertNotNull(sharedSecret);
-        assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedKey"));
+        assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedSecret"));
     }
 
 }
