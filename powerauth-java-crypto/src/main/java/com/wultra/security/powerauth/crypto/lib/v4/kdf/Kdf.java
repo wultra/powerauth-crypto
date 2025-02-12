@@ -56,8 +56,8 @@ public class Kdf {
         if (diversifier == null) {
             diversifier = new byte[0];
         }
-        final byte[] labelFinal = ByteUtils.concat(KDF_CUSTOM_BYTES_PREFIX, label.getBytes(StandardCharsets.UTF_8));
-        final byte[] output = Kmac.kmac256(key, diversifier, labelFinal, outLength);
+        final byte[] custom = ByteUtils.concat(KDF_CUSTOM_BYTES_PREFIX, label.getBytes(StandardCharsets.UTF_8));
+        final byte[] output = Kmac.kmac256(key, diversifier, custom, outLength);
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 
