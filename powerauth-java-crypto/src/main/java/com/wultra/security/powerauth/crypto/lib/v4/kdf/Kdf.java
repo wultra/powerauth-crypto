@@ -40,24 +40,24 @@ public class Kdf {
      * Derive a secret key based on an input key, numeric key index, requested key size and optional context.
      *
      * @param key Secret key to be used for key derivation.
-     * @param context Key context allows derivation of multiple keys from the same source key material.
-     * @param index Optional byte array that can provide an additional key separation.
-     * @param outLength Requested derived key size.
-     * @return Derived secret key length in bytes.
+     * @param label Label allows derivation of multiple keys from the same source key material.
+     * @param diversifier Optional byte array that can provide an additional key separation.
+     * @param outLength Requested derived key length in bytes.
+     * @return Derived secret key.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    public static SecretKey derive(SecretKey key, String context, byte[] index, int outLength) throws GenericCryptoException {
+    public static SecretKey derive(SecretKey key, String label, byte[] diversifier, int outLength) throws GenericCryptoException {
         if (key == null) {
             throw new GenericCryptoException("Missing secret key for key derivation");
         }
-        if (context == null) {
-            throw new GenericCryptoException("Missing context for key derivation");
+        if (label == null) {
+            throw new GenericCryptoException("Missing label for key derivation");
         }
-        if (index == null) {
-            index = new byte[0];
+        if (diversifier == null) {
+            diversifier = new byte[0];
         }
-        final byte[] label = ByteUtils.concat(KDF_CUSTOM_BYTES_PREFIX, context.getBytes(StandardCharsets.UTF_8));
-        final byte[] output = Kmac.kmac256(key, index, label, outLength);
+        final byte[] labelFinal = ByteUtils.concat(KDF_CUSTOM_BYTES_PREFIX, label.getBytes(StandardCharsets.UTF_8));
+        final byte[] output = Kmac.kmac256(key, diversifier, labelFinal, outLength);
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 

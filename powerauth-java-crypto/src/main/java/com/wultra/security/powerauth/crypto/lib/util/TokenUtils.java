@@ -121,7 +121,7 @@ public class TokenUtils {
             case "4.0" -> {
                 data = ByteUtils.concat(nonce, amp, timestamp, amp, version.getBytes(StandardCharsets.UTF_8));
                 final SecretKey secretKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(tokenSecret);
-                digest = Kmac.kmac256(secretKey, data, KMAC_TOKEN_DIGEST_CUSTOM_BYTES, 32);
+                digest = Kmac.kmac256(secretKey, data, KMAC_TOKEN_DIGEST_CUSTOM_BYTES);
             }
             default -> throw new GenericCryptoException("Unsupported version value was specified: " + version);
         }
