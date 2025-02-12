@@ -98,9 +98,6 @@ public class Kmac {
             throw new GenericCryptoException("Invalid output length for KDF");
         }
         final KMAC kmac = new KMAC(KMAC_BIT_LENGTH, customString);
-        if (keyBytes == null) {
-            throw new GenericCryptoException("Secret key encoding is null");
-        }
         kmac.init(new KeyParameter(keyBytes));
         kmac.update(data, 0, data.length);
         final byte[] output = new byte[outLength];
