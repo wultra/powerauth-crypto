@@ -30,6 +30,7 @@ import java.util.Set;
  */
 @Getter
 public class EciesRequestResponseValidator implements RequestResponseValidator<EciesEncryptedRequest, EciesEncryptedResponse> {
+
     /**
      * Protocol versions supported in this validator.
      */
@@ -100,4 +101,5 @@ public class EciesRequestResponseValidator implements RequestResponseValidator<E
             return response.getNonce() == null && response.getTimestamp() == null;
         }
     }
+
 }

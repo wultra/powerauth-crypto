@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package com.wultra.security.powerauth.crypto.lib.v4.model;
+package com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.response;
+
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptedResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * Enumeration of supported shared secret algorithms.
+ * Encrypted response in V4 end-to-end encryption scheme.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public enum SharedSecretAlgorithm {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AeadEncryptedResponse implements EncryptedResponse {
 
-    /**
-     * EC with P-384 curve.
-     */
-    EC_P384,
-
-    /**
-     * EC with P-384 curve and ML with level 3 (ML-KEM-768 / ML-DSA-65).
-     */
-    EC_P384_ML_L3
+    private String encryptedData;
+    private Long timestamp;
 
 }

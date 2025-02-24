@@ -18,9 +18,9 @@
 package com.wultra.security.powerauth.crypto.lib.v4.api;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.v4.model.RequestCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.ResponseCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.SharedSecretAlgorithm;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 
 import javax.crypto.SecretKey;
 

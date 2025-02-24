@@ -14,37 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.wultra.security.powerauth.crypto.lib.v4.encryptor.exception;
 
-package com.wultra.security.powerauth.crypto.lib.v4.model;
-
-import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretClientContext;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-import java.security.PrivateKey;
+import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 
 /**
- * Shared secret client context object for hybrid algorithm with ECDHE on P-384 and ML-KEM-768.
+ * Exception used for handling incorrect AEAD encryption / decryption states.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class SharedSecretClientContextHybrid implements SharedSecretClientContext {
+public class AeadException extends EncryptorException {
 
     /**
-     * Client EC private key.
+     * Empty constructor.
      */
-    @ToString.Exclude
-    private PrivateKey ecPrivateKey;
+    public AeadException() {
+    }
 
     /**
-     * Client PQC-KEM decapsulation key.
+     * Constructor with message.
+     * @param message Message.
      */
-    @ToString.Exclude
-    private PrivateKey pqcKemDecapsulationKey;
+    public AeadException(String message) {
+        super(message);
+    }
+
+    /**
+     * Construction with message and cause.
+     * @param message Message.
+     * @param cause Cause.
+     */
+    public AeadException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

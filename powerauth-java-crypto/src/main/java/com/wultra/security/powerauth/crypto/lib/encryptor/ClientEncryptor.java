@@ -24,6 +24,7 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
  * The {@code ClientEncryptor} interface provides End-To-End Encryption for PowerAuth Clients.
  */
 public interface ClientEncryptor<Req extends EncryptedRequest, Res extends EncryptedResponse>  {
+
     /**
      * Get parameters used to construct this encryptor.
      * @return EncryptorParameters used to construct this encryptor.
@@ -51,11 +52,11 @@ public interface ClientEncryptor<Req extends EncryptedRequest, Res extends Encry
 
     /**
      * Encrypt data with this encryptor.
-     * @param data Data to encrypt.
+     * @param plaintext Data to encrypt.
      * @return Object representing an encrypted request.
      * @throws EncryptorException In case of failure.
      */
-    Req encryptRequest(byte[] data) throws EncryptorException;
+    Req encryptRequest(byte[] plaintext) throws EncryptorException;
 
     /**
      * Determine whether encrypted response data can be decrypted. You cannot decrypt the response if you did not
@@ -71,4 +72,5 @@ public interface ClientEncryptor<Req extends EncryptedRequest, Res extends Encry
      * @throws EncryptorException In case of failure.
      */
     byte[] decryptResponse(Res response) throws EncryptorException;
+
 }

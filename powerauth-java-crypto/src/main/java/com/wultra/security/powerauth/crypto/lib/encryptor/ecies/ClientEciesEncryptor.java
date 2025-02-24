@@ -24,7 +24,7 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.model.EciesParam
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.model.EciesPayload;
 import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
-import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncryptorSecrets;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ClientEciesSecrets;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
@@ -40,6 +40,7 @@ import java.util.Base64;
  *     <li>3.0</li>
  *     <li>3.1</li>
  *     <li>3.2</li>
+ *     <li>3.3</li>
  * </ul>
  */
 public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> {
@@ -52,7 +53,7 @@ public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedReque
     private final byte[] associatedData;        // non-null for V3.2+
 
     // Variables altered after configureKeys() call.
-    private ClientEncryptorSecrets encryptorSecrets;
+    private ClientEciesSecrets encryptorSecrets;
 
     /**
      * SharedInfo2 base bytes.
@@ -98,7 +99,7 @@ public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedReque
 
     @Override
     public void configureSecrets(EncryptorSecrets secrets) throws EncryptorException {
-        if (!(secrets instanceof ClientEncryptorSecrets clientSecrets)) {
+        if (!(secrets instanceof ClientEciesSecrets clientSecrets)) {
             throw new EncryptorException("Unsupported EncryptorSecrets object");
         }
         final byte[] sharedInfo2Base;
@@ -121,7 +122,7 @@ public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedReque
     }
 
     @Override
-    public EciesEncryptedRequest encryptRequest(byte[] data) throws EncryptorException {
+    public EciesEncryptedRequest encryptRequest(byte[] plaintext) throws EncryptorException {
         if (!canEncryptRequest()) {
             throw new EncryptorException("Encryptor is not ready for request encryption.");
         }
@@ -147,7 +148,7 @@ public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedReque
         // Prepare EciesParameters
         final EciesParameters eciesParameters = new EciesParameters(requestNonce, associatedData, requestTimestamp);
         // If everything is OK, then encrypt the data.
-        final EciesPayload eciesPayload = eciesEncryptor.encrypt(data,eciesParameters);
+        final EciesPayload eciesPayload = eciesEncryptor.encrypt(plaintext, eciesParameters);
         // Keep envelope key and nonce used for the request if protocol require use the same nonce also for the response.
         this.envelopeKey = envelopeKey;
         this.requestNonce = validator.isUseTimestamp() ? null : requestNonce;
