@@ -257,7 +257,6 @@ PowerAuth protocol defines following `SHARED_INFO_1` (also called as `sh1` or `s
 | `/pa/v3/upgrade`                      | activation   | `/pa/upgrade`             |
 | `/pa/v3/vault/unlock`                 | activation   | `/pa/vault/unlock`        |
 | `/pa/v3/token/create`                 | activation   | `/pa/token/create`        |
-| `/pa/v3/recovery/confirm`             | activation   | `/pa/recovery/confirm`    |
 
 On top of that, following constants can be used for application-specific purposes:
 

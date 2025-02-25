@@ -54,12 +54,7 @@ public enum EncryptorId {
     /**
      * Create token encryption.
      */
-    CREATE_TOKEN("/pa/token/create", EncryptorScope.ACTIVATION_SCOPE),
-
-    /**
-     * Recovery code confirmation encryption.
-     */
-    CONFIRM_RECOVERY_CODE("/pa/recovery/confirm", EncryptorScope.ACTIVATION_SCOPE);
+    CREATE_TOKEN("/pa/token/create", EncryptorScope.ACTIVATION_SCOPE);
 
     private final String value;
     private final EncryptorScope scope;

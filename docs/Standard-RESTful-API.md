@@ -18,7 +18,6 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 - [`/pa/v3/signature/validate`](#validate-signature) - Validate a signature (requires authentication).
 - [`/pa/v3/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires encryption).
 - [`/pa/v3/upgrade/commit`](#upgrade-commit) - Commits a protocol upgrade (requires authentication).
-- [`/pa/v3/recovery/confirm`](#confirm-recovery) - Confirm a recovery code (requires authentication and encryption).
 - [`/pa/v3/keystore/create`](#create-new-key-pair) - Create a new temporary key pair for ECIES encryption.
 <!-- end -->
 
@@ -191,17 +190,10 @@ The `activationData` contains an encrypted level 2 response. So, the JSON respon
 {
   "activationId": "c564e700-7e86-4a87-b6c8-a5a0cc89683f",
   "serverPublicKey": "NESF9QVUJMSUNfS0VZX3JhbmRvbQNESF9QVUJMSUNfS0VZX3JhbmRvbQ==",
-  "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J==",
-  "activationRecovery": {
-    "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA",
-    "puk": "0123456789"
-  }
+  "ctrData": "vbQRUNESF9hbmRQVUJMSUNfS0VZX3J=="
 }
 ```
 
-<!-- begin box info -->
-The `activationRecovery` response element is optional and depends on whether the [Activation Recovery](Activation-via-Recovery-Code.md) feature is enabled on the PowerAuth Server or not.
-<!-- end -->
 <!-- end -->
 
 <!-- begin api POST /pa/v3/activation/status -->
@@ -467,7 +459,6 @@ You can provide the following reasons for a vault unlocking:
 - `ADD_BIOMETRY` - call was used to enable biometric authentication.
 - `FETCH_ENCRYPTION_KEY` - call was used to fetch a generic data encryption key.
 - `SIGN_WITH_DEVICE_PRIVATE_KEY` - call was used to unlock device private key used for ECDSA signatures.
-- `RECOVERY_CODE` - call was used to unlock recovery code.
 
 An actual JSON request body after the encryption is the following:
 
@@ -646,79 +637,6 @@ X-PowerAuth-Authorization: PowerAuth ...
 
 ```json
 {}
-```
-<!-- end -->
-
-## Recovery Code API
-
-<!-- begin api POST /pa/v3/recovery/confirm -->
-### Confirm Recovery
-
-Confirm a recovery code created for a recovery postcard. The recovery code is confirmed once user receives a postcard with recovery code and PUKs.
-
-<!-- begin remove -->
-| Request parameter | Value                       |
-| ----------------- | --------------------------- |
-| Method            | `POST`                      |
-| Resource URI      | `/pa/v3/recovery/confirm`   |
-| Signature uriId   | `/pa/recovery/confirm`      |
-| ECIES             | `activation, sh1="/pa/recovery/confirm"` |
-<!-- end -->
-
-#### Request
-
-##### Signature and Encryption Parameters
-
-| Request parameter | Value                       |
-| ----------------- | --------------------------- |
-| Method            | `POST`                      |
-| Signature uriId   | `/pa/recovery/confirm`      |
-| ECIES             | `activation, sh1="/pa/recovery/confirm"` |
-
-##### Signature Headers
-
-```
-X-PowerAuth-Authorization: PowerAuth ...
-```
-
-##### Body
-
-The JSON request before an ECIES encryption:
-
-```json
-{
-  "recoveryCode": "VVVVV-VVVVV-VVVVV-VTFVA"
-}
-```
-
-An actual JSON request body after the encryption:
-
-```json
-{
-  "ephemeralPublicKey" : "A5Iuit2vV1zgLb/ewROYGEMWxw4zjSoM2e2dO6cABY78",
-  "encryptedData" : "7BzoLuLYKZrfFfhlom1zMA==",
-  "mac" : "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-  "nonce" : "v1y015uEP5RuT2g9RS6LIw=="
-}
-```
-
-#### Response 200
-
-The JSON response before ECIES decryption:
-
-```json
-{
-  "mac": "JpDckCpQ6Kh/gGCdBZQSh11x38EaU/DL2r/2BCXohMI=",
-  "encryptedData": "7LK7qs+OK0cfQPZlkzl2G8z5/IZx0SHhI/BPYFhhxqE="
-}
-```
-
-The JSON response after the decryption:
-
-```json
-{
-  "alreadyConfirmed" : false
-}
 ```
 <!-- end -->
 

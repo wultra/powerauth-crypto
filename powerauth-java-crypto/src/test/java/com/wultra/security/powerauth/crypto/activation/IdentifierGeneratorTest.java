@@ -16,23 +16,14 @@
  */
 package com.wultra.security.powerauth.crypto.activation;
 
-import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.generator.IdentifierGenerator;
-import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
-import com.wultra.security.powerauth.crypto.lib.model.RecoveryInfo;
-import com.wultra.security.powerauth.crypto.lib.model.RecoverySeed;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.crypto.SecretKey;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.Security;
-import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for {@link IdentifierGenerator}.
@@ -50,46 +41,6 @@ class IdentifierGeneratorTest {
     public static void setUp() {
         // Add Bouncy Castle Security Provider
         Security.addProvider(new BouncyCastleProvider());
-    }
-
-    @Test
-    void testRecoveryCodeDerivation() throws Exception {
-        // Number of PUKs to test
-        int pukCount = 100;
-
-        // Generate random secret key using ECDH
-        KeyGenerator keyGenerator = new KeyGenerator();
-        KeyPair keyPair1 = keyGenerator.generateKeyPair(EcCurve.P256);
-        PrivateKey privateKey1 = keyPair1.getPrivate();
-        KeyPair keyPair2 = keyGenerator.generateKeyPair(EcCurve.P256);
-        PublicKey publicKey2 = keyPair2.getPublic();
-        SecretKey secretKey = keyGenerator.computeSharedKey(privateKey1, publicKey2, true);
-
-        // Generate recovery code and PUKs using secret key with seed information
-        RecoveryInfo recoveryInfo = identifierGenerator.generateRecoveryCode(secretKey, pukCount, true);
-        assertNotNull(recoveryInfo.getRecoveryCode());
-        assertTrue(identifierGenerator.validateActivationCode(recoveryInfo.getRecoveryCode()));
-        assertNotNull(recoveryInfo.getPuks());
-        assertEquals(pukCount, recoveryInfo.getPuks().size());
-
-        // Verify recovery seed
-        RecoverySeed recoverySeed = recoveryInfo.getSeed();
-        assertNotNull(recoverySeed.getNonce());
-        assertNotNull(recoverySeed.getPukDerivationIndexes());
-        assertEquals(pukCount, recoverySeed.getPukDerivationIndexes().size());
-        assertEquals(recoveryInfo.getPuks().keySet(), recoverySeed.getPukDerivationIndexes().keySet());
-
-        // Verify that PUK derivation indexes are unique
-        assertEquals(pukCount, new HashSet<>(recoverySeed.getPukDerivationIndexes().values()).size());
-
-        // Derive recovery code and PUKs using seed
-        RecoveryInfo derivedRecoveryInfo = identifierGenerator.deriveRecoveryCode(secretKey, recoverySeed);
-
-        // Verify that derive recovery code and PUKs match generated values
-        assertEquals(recoveryInfo.getRecoveryCode(), derivedRecoveryInfo.getRecoveryCode());
-        for (int i = 1; i <= pukCount; i++) {
-            assertEquals(recoveryInfo.getPuks().get(i), derivedRecoveryInfo.getPuks().get(i));
-        }
     }
 
     @Test

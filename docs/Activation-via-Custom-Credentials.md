@@ -69,7 +69,6 @@ However, if the particular use case requires different handling, the enrollment 
 ## Related Topics
 
 - [Activation via Activation Code](./Activation-via-Activation-Code.md)
-- [Activation via Recovery Code](./Activation-via-Recovery-Code.md)
 - [Checking Activation Status](./Activation-Status.md)
 - [Key Derivation](./Key-derivation.md)
 - [Advanced Activation Flows](./Advanced-Activation-Flows.md)
