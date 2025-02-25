@@ -150,6 +150,39 @@ public final class ByteUtils {
     }
 
     /**
+     * Copy bytes from source byte array into destination byte array.
+     * @param src Source byte array.
+     * @param srcPos Source byte array position.
+     * @param dest Destination byte array.
+     * @param destPos Destination byte array position.
+     * @param length Number of bytes to copy.
+     */
+    public static void copy(byte[] src, int srcPos, byte[] dest, int destPos, int length) {
+        if (src == null) {
+            throw new IllegalArgumentException("Source byte array is null");
+        }
+        if (dest == null) {
+            throw new IllegalArgumentException("Destination byte array is null");
+        }
+        if (length <= 0) {
+            throw new IllegalArgumentException("Invalid length for copy");
+        }
+        if (srcPos < 0 || srcPos >= src.length) {
+            throw new IndexOutOfBoundsException("Source position out of bounds: " + srcPos);
+        }
+        if (destPos < 0 || destPos >= dest.length) {
+            throw new IndexOutOfBoundsException("Destination position out of bounds: " + destPos);
+        }
+        if (srcPos + length > src.length) {
+            throw new IndexOutOfBoundsException("Source range exceeds array bounds: srcPos=" + srcPos + ", length=" + length);
+        }
+        if (destPos + length > dest.length) {
+            throw new IndexOutOfBoundsException("Destination range exceeds array bounds: destPos=" + destPos + ", length=" + length);
+        }
+        System.arraycopy(src, srcPos, dest, destPos, length);
+    }
+
+    /**
      * Returns the values from each provided array combined into a single array. For example, {@code
      * concat(new byte[] {a, b}, new byte[] {}, new byte[] {c}} returns the array {@code {a, b, c}}.
      *
