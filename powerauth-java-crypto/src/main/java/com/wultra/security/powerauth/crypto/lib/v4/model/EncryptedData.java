@@ -17,24 +17,23 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.model;
 
-import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Request cryptogram for ECDHE on curve P-384.
+ * Model class for encrypted data.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SharedSecretRequestEcdhe implements SharedSecretRequest {
+public class EncryptedData {
 
-    /**
-     * Client EC public key for ECDH calculation.
-     */
-    private String ecClientPublicKey;
-
+    private String temporaryKeyId;
+    private String nonce;
+    private long timestamp;
+    private String encryptedData;
+    
 }

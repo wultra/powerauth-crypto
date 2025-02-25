@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package com.wultra.security.powerauth.crypto.lib.v4.model;
-
-import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretRequest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package com.wultra.security.powerauth.crypto.lib.v4.model.context;
 
 /**
- * Request cryptogram for hybrid scheme with ECDHE on curve P-384 and ML-KEM-768.
+ * Enumeration of supported shared secret algorithms.
+ *
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class SharedSecretRequestHybrid implements SharedSecretRequest {
+public enum SharedSecretAlgorithm {
 
     /**
-     * Client EC public key for ECDH calculation.
+     * EC with P-384 curve.
      */
-    private String ecClientPublicKey;
+    EC_P384,
 
     /**
-     * PQC-KEM encapsulation key.
+     * EC with P-384 curve and ML with level 3 (ML-KEM-768 / ML-DSA-65).
      */
-    private String pqcEncapsulationKey;
+    EC_P384_ML_L3
 
 }

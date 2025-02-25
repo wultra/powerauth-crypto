@@ -23,6 +23,10 @@ import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.util.PqcKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.*;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestHybrid;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.SharedSecretResponseHybrid;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -102,7 +106,7 @@ public class SharedSecretHybridTest {
                 response
         );
         assertNotNull(sharedSecret);
-        assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedKey"));
+        assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedSecret"));
     }
 
 }

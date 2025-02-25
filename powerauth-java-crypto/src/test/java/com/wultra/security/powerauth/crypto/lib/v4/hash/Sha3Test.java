@@ -41,13 +41,13 @@ class Sha3Test {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static Stream<Map<String, String>> jsonDataSha3_256Provider() throws IOException {
-        InputStream sha3_256Stream = Sha3Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/hash/SHA3_256_TestVectors.json");
+        InputStream sha3_256Stream = Sha3Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/hash/SHA3_256_Test_Vectors.json");
         Map<String, List<Map<String, String>>> sha3_256Data = MAPPER.readValue(sha3_256Stream, new TypeReference<>() {});
         return sha3_256Data.get("sha3_256_test_vectors").stream();
     }
 
     static Stream<Map<String, String>> jsonDataSha3_384Provider() throws IOException {
-        InputStream sha3_384Stream = Sha3Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/hash/SHA3_384_TestVectors.json");
+        InputStream sha3_384Stream = Sha3Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/hash/SHA3_384_Test_Vectors.json");
         Map<String, List<Map<String, String>>> sha3_384Data = MAPPER.readValue(sha3_384Stream, new TypeReference<>() {});
         return sha3_384Data.get("sha3_384_test_vectors").stream();
     }

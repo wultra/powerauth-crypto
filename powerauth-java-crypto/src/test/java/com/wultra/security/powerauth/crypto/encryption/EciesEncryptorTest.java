@@ -73,7 +73,7 @@ public class EciesEncryptorTest {
     public void testKdf() throws GenericCryptoException, CryptoProviderException {
 
         for (int i = 0 ; i < 100 ; i++) {
-            final SecretKey secretKey = keyGenerator.generateRandomSecretKey();
+            final SecretKey secretKey = keyGenerator.generateRandomSecretKey(16);
             final byte[] secretKeyToBytes = keyConvertor.convertSharedSecretKeyToBytes(secretKey);
 
             // Implement reference KDF implementation

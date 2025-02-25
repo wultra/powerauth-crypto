@@ -23,10 +23,10 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.ServerEncryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ClientEncryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
-import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncryptorSecrets;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ClientEciesSecrets;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
-import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncryptorSecrets;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ServerEciesSecrets;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.util.ByteUtils;
@@ -263,7 +263,7 @@ public class GeneralEncryptorTest {
         final ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse>  serverEncryptor = encryptorFactory.getServerEncryptor(encryptorId, encryptorParameters, getServerSecrets(encryptorId, version));
         assertTrue(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
-        final EncryptorSecrets secretsForExternalEncryptor = serverEncryptor.calculateSecretsForExternalEncryptor(request);
+        final EncryptorSecrets secretsForExternalEncryptor = serverEncryptor.deriveSecretsForExternalEncryptor(request);
         // The state of encryptor should not be changed.
         assertTrue(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
@@ -904,12 +904,12 @@ public class GeneralEncryptorTest {
             if (scope == EncryptorScope.APPLICATION_SCOPE) {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
                         new EncryptorParameters("3.2", applicationKey, null, null),
-                        new ServerEncryptorSecrets(masterServerPrivateKey, applicationSecret)
+                        new ServerEciesSecrets(masterServerPrivateKey, applicationSecret)
                 );
             } else {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
                         new EncryptorParameters("3.2", applicationKey, activationId, null),
-                        new ServerEncryptorSecrets(serverPrivateKey, applicationSecret, transportKey)
+                        new ServerEciesSecrets(serverPrivateKey, applicationSecret, transportKey)
                 );
             }
             // Decrypt request and compare to the expected value.
@@ -1243,12 +1243,12 @@ public class GeneralEncryptorTest {
             if (scope == EncryptorScope.APPLICATION_SCOPE) {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
                         new EncryptorParameters("3.3", applicationKey, null, tempKeyIdApplication),
-                        new ServerEncryptorSecrets(masterServerPrivateKey, applicationSecret)
+                        new ServerEciesSecrets(masterServerPrivateKey, applicationSecret)
                 );
             } else {
                 serverEncryptor = encryptorFactory.getServerEncryptor(eid,
                         new EncryptorParameters("3.3", applicationKey, activationId, tempKeyIdActivation),
-                        new ServerEncryptorSecrets(serverPrivateKey, applicationSecret, transportKey)
+                        new ServerEciesSecrets(serverPrivateKey, applicationSecret, transportKey)
                 );
             }
             // Decrypt request and compare to the expected value.
@@ -1283,7 +1283,7 @@ public class GeneralEncryptorTest {
     private EncryptorSecrets getClientSecrets(EncryptorId encryptorId, String protocolVersion) throws Exception {
         final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion) || "3.3".equals(protocolVersion)) {
-            return new ClientEncryptorSecrets(
+            return new ClientEciesSecrets(
                     appScope ? configuration.keyMasterServer.getPublic() : configuration.keyServer.getPublic(),
                     configuration.applicationSecret,
                     appScope ? null : configuration.keyTransport
@@ -1302,7 +1302,7 @@ public class GeneralEncryptorTest {
     private EncryptorSecrets getServerSecrets(EncryptorId encryptorId, String protocolVersion) throws Exception {
         final boolean appScope = encryptorId.scope() == EncryptorScope.APPLICATION_SCOPE;
         if ("3.0".equals(protocolVersion) || "3.1".equals(protocolVersion) || "3.2".equals(protocolVersion) || "3.3".equals(protocolVersion)) {
-            return new ServerEncryptorSecrets(
+            return new ServerEciesSecrets(
                     appScope ? configuration.keyMasterServer.getPrivate() : configuration.keyServer.getPrivate(),
                     configuration.applicationSecret,
                     appScope ? null : configuration.keyTransport

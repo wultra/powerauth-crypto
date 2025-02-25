@@ -26,7 +26,7 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorExc
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
-import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ServerEncryptorSecrets;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ServerEciesSecrets;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.util.EciesUtils;
@@ -41,6 +41,7 @@ import java.util.Base64;
  *     <li>3.0</li>
  *     <li>3.1</li>
  *     <li>3.2</li>
+ *     <li>3.3</li>
  * </ul>
  */
 public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> {
@@ -54,7 +55,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
 
     // Variables altered after configureKeys() call.
 
-    private ServerEncryptorSecrets encryptorSecrets;
+    private ServerEciesSecrets encryptorSecrets;
 
     /**
      * SharedInfo2 base bytes.
@@ -100,7 +101,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
 
     @Override
     public void configureSecrets(EncryptorSecrets secrets) throws EncryptorException {
-        if (!(secrets instanceof ServerEncryptorSecrets serverSecrets)) {
+        if (!(secrets instanceof ServerEciesSecrets serverSecrets)) {
             throw new EncryptorException("Unsupported EncryptorSecrets object");
         }
         final byte[] sharedInfo2Base;
@@ -123,7 +124,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
     }
 
     @Override
-    public EncryptorSecrets calculateSecretsForExternalEncryptor(EciesEncryptedRequest request) throws EncryptorException {
+    public EncryptorSecrets deriveSecretsForExternalEncryptor(EciesEncryptedRequest request) throws EncryptorException {
         if (!canDecryptRequest()) {
             throw new EncryptorException("Encryptor is not ready for request decryption.");
         }
@@ -144,7 +145,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
             );
         }
         // Return secrets object with the precalculated keys.
-        return new ServerEncryptorSecrets(envelopeKey.getSecretKey(), sharedInfo2Base);
+        return new ServerEciesSecrets(envelopeKey.getSecretKey(), sharedInfo2Base);
     }
 
     @Override
@@ -206,7 +207,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
     }
 
     @Override
-    public EciesEncryptedResponse encryptResponse(byte[] data) throws EncryptorException {
+    public EciesEncryptedResponse encryptResponse(byte[] plaintext) throws EncryptorException {
         if (!canEncryptResponse()) {
             throw new EncryptorException("Encryptor is not ready for response encryption.");
         }
@@ -227,7 +228,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
         // Prepare EciesParameters
         final EciesParameters eciesParameters = new EciesParameters(responseNonce, associatedData, responseTimestamp);
         // If everything is OK, then encrypt data.
-        final EciesPayload eciesPayload = eciesEncryptor.encrypt(data, eciesParameters);
+        final EciesPayload eciesPayload = eciesEncryptor.encrypt(plaintext, eciesParameters);
         // If everything's OK, then reset the state to do not allow to encrypt with the same keys again.
         this.envelopeKey = null;
         this.requestNonce = null;

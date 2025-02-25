@@ -25,18 +25,19 @@ import lombok.ToString;
 import java.security.PrivateKey;
 
 /**
- * The {@code ServerEncryptorSecrets} class provides secret values for server side encryptor using ECIES scheme.
+ * The {@code ServerEciesSecrets} class provides secret values for server side encryptor using ECIES scheme.
  * <p>PowerAuth protocol versions:
  * <ul>
  *     <li>3.0</li>
  *     <li>3.1</li>
  *     <li>3.2</li>
+ *     <li>3.3</li>
  * </ul>
  */
 @Getter
 @Data
 @ToString(onlyExplicitlyIncluded = true)
-public class ServerEncryptorSecrets implements EncryptorSecrets {
+public class ServerEciesSecrets implements EncryptorSecrets {
     /**
      * Server's private key.
      */
@@ -66,7 +67,7 @@ public class ServerEncryptorSecrets implements EncryptorSecrets {
      * @param transportKey Transport key. The value is required for activation scoped encryptor. If null is provided,
      *                     then such secrets can be used for application scoped encryptor only.
      */
-    public ServerEncryptorSecrets(PrivateKey serverPrivateKey, String applicationSecret, byte[] transportKey) {
+    public ServerEciesSecrets(PrivateKey serverPrivateKey, String applicationSecret, byte[] transportKey) {
         this.serverPrivateKey = serverPrivateKey;
         this.envelopeKey = null;
         this.transportKey = transportKey;
@@ -80,7 +81,7 @@ public class ServerEncryptorSecrets implements EncryptorSecrets {
      * @param serverPrivateKey Server's private key.
      * @param applicationSecret Application's secret.
      */
-    public ServerEncryptorSecrets(PrivateKey serverPrivateKey, String applicationSecret) {
+    public ServerEciesSecrets(PrivateKey serverPrivateKey, String applicationSecret) {
         this.serverPrivateKey = serverPrivateKey;
         this.envelopeKey = null;
         this.transportKey = null;
@@ -96,7 +97,7 @@ public class ServerEncryptorSecrets implements EncryptorSecrets {
      * @param envelopeKey Precalculated envelope key.
      * @param sharedInfo2Base Precalculated SharedInfo2 base.
      */
-    public ServerEncryptorSecrets(byte[] envelopeKey, byte[] sharedInfo2Base) {
+    public ServerEciesSecrets(byte[] envelopeKey, byte[] sharedInfo2Base) {
         this.serverPrivateKey = null;
         this.envelopeKey = envelopeKey;
         this.transportKey = null;

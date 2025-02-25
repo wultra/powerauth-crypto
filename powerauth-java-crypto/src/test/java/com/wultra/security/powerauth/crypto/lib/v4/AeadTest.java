@@ -48,7 +48,7 @@ class AeadTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        key = KEY_GENERATOR.generateRandomSecretKey();
+        key = KEY_GENERATOR.generateRandomSecretKey(32);
         plaintext = KEY_GENERATOR.generateRandomBytes(128);
         keyContext =  KEY_GENERATOR.generateRandomBytes(16);
         associatedData = KEY_GENERATOR.generateRandomBytes(16);
@@ -95,7 +95,7 @@ class AeadTest {
 
     @Test
     void testInvalidKey() throws Exception {
-        SecretKey wrongKey = KEY_GENERATOR.generateRandomSecretKey();
+        SecretKey wrongKey = KEY_GENERATOR.generateRandomSecretKey(32);
         byte[] ciphertext = Aead.seal(key, keyContext, null, associatedData, plaintext);
         assertThrows(GenericCryptoException.class, () -> Aead.open(wrongKey, keyContext, associatedData, ciphertext), "Decryption with an invalid key should throw exception");
     }
