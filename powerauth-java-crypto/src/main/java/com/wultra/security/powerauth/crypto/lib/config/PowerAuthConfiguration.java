@@ -56,16 +56,22 @@ public class PowerAuthConfiguration {
 
     /**
      * Length of authentication code factor in Base64 formatted code (number of bytes encoded to Base64, protocol v4)
+     *
+     * @since protocol v4
      */
     public static final int AUTH_CODE_DECIMAL_LENGTH = 8;
 
     /**
      * Length of authentication code factor in Base64 formatted signature (number of bytes encoded to Base64, protocol v4).
+     *
+     * @since protocol v4
      */
     public static final int AUTH_CODE_BINARY_LENGTH = 16;
 
     /**
      * Number of bytes required for the authentication code counter data (protocol v4).
+     *
+     * @since protocol v4
      */
     public static final int AUTH_CODE_COUNTER_LENGTH = 32;
 
