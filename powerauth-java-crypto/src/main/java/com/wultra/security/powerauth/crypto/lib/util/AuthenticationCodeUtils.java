@@ -80,22 +80,22 @@ public class AuthenticationCodeUtils {
     }
 
     /**
-     * Compute PowerAuth authentication code components for given data using a secret signature keys and counter byte array. The code is returned
+     * Compute PowerAuth authentication code components for given data using a secret factor keys and counter byte array. The code is returned
      * in form of list of binary components, where each item in returned array contains an appropriate factor. The returned
      * array must be then post-processed into the decimal, or Base64 format.
      *
      * @param data Data to be signed.
-     * @param signatureKeys Keys for computing the authentication code.
+     * @param factorKeys Keys for computing the authentication code.
      * @param ctrData Counter byte array / derived key index.
      * @return List with binary authentication code components.
      * @throws GenericCryptoException In case authentication code computation fails.
      */
-    private List<byte[]> computeAuthCodeComponents(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException {
+    private List<byte[]> computeAuthCodeComponents(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException {
         if (data == null) {
             throw new GenericCryptoException("Missing data for authentication code calculation");
         }
-        if (signatureKeys == null || signatureKeys.isEmpty() || signatureKeys.size() > PowerAuthConfiguration.MAX_FACTOR_KEYS_COUNT) {
-            throw new GenericCryptoException("Invalid signature keys for authentication code calculation");
+        if (factorKeys == null || factorKeys.isEmpty() || factorKeys.size() > PowerAuthConfiguration.MAX_FACTOR_KEYS_COUNT) {
+            throw new GenericCryptoException("Invalid factor keys for authentication code calculation");
         }
         if (ctrData == null) {
             throw new GenericCryptoException("Missing counter data for authentication code calculation");
@@ -103,20 +103,19 @@ public class AuthenticationCodeUtils {
         if (ctrData.length != PowerAuthConfiguration.AUTH_CODE_COUNTER_LENGTH) {
             throw new GenericCryptoException("Invalid length of counter data");
         }
-        // Prepare array for signature binary components.
-        final List<byte[]> signatureComponents = new ArrayList<>();
-        for (int i = 0; i < signatureKeys.size(); i++) {
-            final SecretKey keySignature = signatureKeys.get(0);
-            byte[] keyDerived = Kmac.kmac256(keySignature, ctrData, KMAC_AUTH_CODE_CUSTOM_BYTES);
+        final List<byte[]> components = new ArrayList<>();
+        for (int i = 0; i < factorKeys.size(); i++) {
+            final SecretKey key = factorKeys.get(0);
+            byte[] keyDerived = Kmac.kmac256(key, ctrData, KMAC_AUTH_CODE_CUSTOM_BYTES);
             for (int j = 0; j < i; j++) {
-                final SecretKey keySignatureInner = signatureKeys.get(j + 1);
-                final byte[] keyDerivedCurrent = Kmac.kmac256(keySignatureInner, ctrData, KMAC_AUTH_CODE_CUSTOM_BYTES);
+                final SecretKey keyInner = factorKeys.get(j + 1);
+                final byte[] keyDerivedCurrent = Kmac.kmac256(keyInner, ctrData, KMAC_AUTH_CODE_CUSTOM_BYTES);
                 keyDerived = Kmac.kmac256(keyDerivedCurrent, keyDerived, KMAC_AUTH_CODE_CUSTOM_BYTES);
             }
-            final byte[] signatureComponent = Kmac.kmac256(keyDerived, data, KMAC_AUTH_CODE_CUSTOM_BYTES, 16);
-            signatureComponents.add(signatureComponent);
+            final byte[] component = Kmac.kmac256(keyDerived, data, KMAC_AUTH_CODE_CUSTOM_BYTES, 16);
+            components.add(component);
         }
-        return signatureComponents;
+        return components;
     }
 
 }
