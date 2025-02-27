@@ -20,6 +20,7 @@ import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.HMACHashUtilities;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,8 @@ import java.util.List;
  * @author Petr Dvorak, petr@wultra.com
  */
 public class DataDigest {
+
+    private static final byte[] KMAC_DATA_DIGEST_CUSTOM_BYTES = "PA4DIGEST_DATA".getBytes(StandardCharsets.UTF_8);
 
     private static final Logger logger = LoggerFactory.getLogger(DataDigest.class);
 
@@ -96,6 +99,24 @@ public class DataDigest {
         }
         this.authorizationCodeLength = length;
     }
+    
+    /**
+     * Data digest of the list with string elements. Data is first normalized (items concatenated
+     * by '&amp;' character), then a random key is generated and hash (HMAC-SHA256) is computed. Finally,
+     * the resulting MAC is decimalized to the signature of a length 8 numeric digits.
+     * <p>
+     * In case the digest could not be computed, null value is returned.
+     *
+     * @deprecated use {@link #generateDigest(String, List)}
+     *
+     * @param items Items to be serialized into digest.
+     * @return Digest fo provided data, including seed used to compute that digest.
+     * @throws GenericCryptoException In case cryptography fails.
+     */
+    @Deprecated
+    public Result generateDigest(List<String> items) throws GenericCryptoException {
+        return generateDigest("3.3", items);
+    }
 
     /**
      * Data digest of the list with string elements. Data is first normalized (items concatenated
@@ -104,25 +125,38 @@ public class DataDigest {
      * <p>
      * In case the digest could not be computed, null value is returned.
      *
+     * @param version Cryptography protocol version.
      * @param items Items to be serialized into digest.
      * @return Digest fo provided data, including seed used to compute that digest.
+     * @throws GenericCryptoException In case cryptography fails.
      */
-    public Result generateDigest(List<String> items) {
-        if (items.isEmpty()) {
-            return null;
+    public Result generateDigest(String version, List<String> items) throws GenericCryptoException {
+        if (version == null) {
+            throw new GenericCryptoException("Missing protocol version when calculating digest");
+        }
+        if (items == null || items.isEmpty()) {
+            throw new GenericCryptoException("Missing data when calculating digest");
         }
         try {
-            byte[] operationData = String.join("&", items).getBytes(StandardCharsets.UTF_8);
-            byte[] randomKey = new KeyGenerator().generateRandomBytes(16);
-            byte[] otpHash = hmac.hash(randomKey, operationData);
-            BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(authorizationCodeLength));
-            String digitFormat = "%" + String.format("%02d", authorizationCodeLength) + "d";
-            String digest = String.format(digitFormat, otp);
+            final byte[] operationData = String.join("&", items).getBytes(StandardCharsets.UTF_8);
+            final byte[] randomKey = new KeyGenerator().generateRandomBytes(16);
+            final byte[] otpHash = generateDigest(version, operationData, randomKey);
+            final BigInteger otp = new BigInteger(otpHash).mod(BigInteger.TEN.pow(authorizationCodeLength));
+            final String digitFormat = "%" + String.format("%02d", authorizationCodeLength) + "d";
+            final String digest = String.format(digitFormat, otp);
             return new Result(digest, randomKey);
         } catch (GenericCryptoException | CryptoProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             return null;
         }
+    }
+
+    private byte[] generateDigest(String version, byte[] operationData, byte[] key) throws GenericCryptoException, CryptoProviderException {
+        return switch (version) {
+            case "3.0", "3.1", "3.2", "3.3" -> hmac.hash(key, operationData);
+            case "4.0" -> Kmac.kmac256(key, operationData, KMAC_DATA_DIGEST_CUSTOM_BYTES);
+            default -> throw new GenericCryptoException("Unsupported protocol version: " + version);
+        };
     }
 
 }
