@@ -40,7 +40,7 @@ public class PowerAuthConfiguration {
     public static final int FINGERPRINT_LENGTH = 8;
 
     /**
-     * Length of signature factor in decimal formatted signature (number of decimal numbers representing signature, protocol v3))
+     * Length of signature factor in decimal formatted signature (number of decimal numbers representing signature, protocol v3)
      */
     public static final int SIGNATURE_DECIMAL_LENGTH = 8;
 
