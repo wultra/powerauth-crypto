@@ -306,7 +306,7 @@ public class SignatureUtils {
         if (ctrData == null) {
             throw new GenericCryptoException("Missing ctrData parameter");
         }
-        if (signatureKeys.isEmpty() || signatureKeys.size() > PowerAuthConfiguration.MAX_SIGNATURE_KEYS_COUNT) {
+        if (signatureKeys.isEmpty() || signatureKeys.size() > PowerAuthConfiguration.MAX_FACTOR_KEYS_COUNT) {
             throw new GenericCryptoException("Wrong number of signature keys");
         }
         if (ctrData.length != PowerAuthConfiguration.SIGNATURE_COUNTER_LENGTH) {
