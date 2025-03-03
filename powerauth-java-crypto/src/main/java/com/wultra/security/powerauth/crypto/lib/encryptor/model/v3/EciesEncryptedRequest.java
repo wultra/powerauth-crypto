@@ -21,6 +21,7 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptedRequest
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * The {@code EciesEncryptedRequest} object represents an encrypted request payload in PowerAuth Crypto v3 End-To-End encryption scheme.
@@ -33,6 +34,7 @@ public class EciesEncryptedRequest implements EncryptedRequest {
     private String ephemeralPublicKey;
     private String encryptedData;
     private String mac;
+    @ToString.Exclude
     private String nonce;
     private Long timestamp;
 }

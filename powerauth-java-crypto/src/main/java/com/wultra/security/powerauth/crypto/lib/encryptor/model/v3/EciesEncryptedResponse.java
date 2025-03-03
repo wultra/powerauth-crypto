@@ -21,6 +21,7 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptedRespons
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * The {@code EciesEncryptedResponse} object represents an encrypted request payload in PowerAuth Crypto v3 End-To-End encryption scheme.
@@ -31,6 +32,7 @@ import lombok.NoArgsConstructor;
 public class EciesEncryptedResponse implements EncryptedResponse {
     private String encryptedData;
     private String mac;
+    @ToString.Exclude
     private String nonce;
     private Long timestamp;
 }
