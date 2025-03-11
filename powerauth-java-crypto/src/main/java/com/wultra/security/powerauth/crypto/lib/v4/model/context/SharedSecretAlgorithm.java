@@ -25,6 +25,11 @@ package com.wultra.security.powerauth.crypto.lib.v4.model.context;
 public enum SharedSecretAlgorithm {
 
     /**
+     * EC with P-256 curve.
+     */
+    EC_P256,
+
+    /**
      * EC with P-384 curve.
      */
     EC_P384,
