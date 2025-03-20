@@ -53,6 +53,7 @@ public class PqcDsaKeyConvertor {
      *
      * @param keyBytes Bytes to be converted to ML-DSA public key.
      * @return An instance of the ML-DSA public key.
+     * @throws GenericCryptoException Throw in case conversion fails.
      */
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws GenericCryptoException {
         try {
@@ -84,6 +85,7 @@ public class PqcDsaKeyConvertor {
      *
      * @param keyBytes Bytes to be converted to the ML-DSA private key.
      * @return An instance of ML-DSA private key decoded from the input bytes.
+     * @throws GenericCryptoException Throw in case conversion fails.
      */
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws GenericCryptoException {
         try {
