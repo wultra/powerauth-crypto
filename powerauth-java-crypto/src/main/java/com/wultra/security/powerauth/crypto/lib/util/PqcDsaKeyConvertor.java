@@ -56,8 +56,8 @@ public class PqcDsaKeyConvertor {
      */
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws GenericCryptoException {
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance("ML-DSA", "BC");
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+            final KeyFactory keyFactory = KeyFactory.getInstance("ML-DSA", "BC");
+            final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             return keyFactory.generatePublic(keySpec);
         } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             logger.debug(e.getMessage(), e);
