@@ -56,6 +56,9 @@ public class PqcDsaKeyConvertor {
      * @throws GenericCryptoException Throw in case conversion fails.
      */
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws GenericCryptoException {
+        if (keyBytes == null) {
+            throw new GenericCryptoException("Missing public key bytes");
+        }
         try {
             final KeyFactory keyFactory = KeyFactory.getInstance("ML-DSA", "BC");
             final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
@@ -88,6 +91,9 @@ public class PqcDsaKeyConvertor {
      * @throws GenericCryptoException Throw in case conversion fails.
      */
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws GenericCryptoException {
+        if (keyBytes == null) {
+            throw new GenericCryptoException("Missing public key bytes");
+        }
         try {
             final KeyFactory keyFactoryMlDsa = KeyFactory.getInstance("ML-DSA", "BC");
             final PKCS8EncodedKeySpec keySpecMlDsa = new PKCS8EncodedKeySpec(keyBytes);

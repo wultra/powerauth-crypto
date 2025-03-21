@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * 
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class PqcDsaKeyConvertorTest {
+class PqcDsaKeyConvertorTest {
 
 	private final PqcDsaKeyConvertor KEY_CONVERTOR = new PqcDsaKeyConvertor();
 	private final PqcDsa PQC_DSA = new PqcDsa();
