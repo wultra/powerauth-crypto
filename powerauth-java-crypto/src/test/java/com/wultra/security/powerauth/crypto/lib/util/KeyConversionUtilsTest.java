@@ -91,7 +91,7 @@ public class KeyConversionUtilsTest {
 			PrivateKey decodedPrivateKey = instance.convertBytesToPrivateKey(EcCurve.P256, decodedPrivateBytes);
 			assertEquals(((BCECPrivateKey)privateKey).getD(), (((BCECPrivateKey)decodedPrivateKey).getD()));
 
-			KeyFactory kf = KeyFactory.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+			KeyFactory kf = KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
 			final BigInteger keyInteger = new BigInteger("" + (12 * i + 1));
 			ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
 			ECPrivateKeySpec pubSpec = new ECPrivateKeySpec(keyInteger, ecSpec);

@@ -78,7 +78,7 @@ public class KeyGenerator {
      */
     public KeyPair generateKeyPair(EcCurve curve) throws CryptoProviderException {
         try {
-            final KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             kpg.initialize(new ECGenParameterSpec(curve.getName()));
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException ex) {
