@@ -112,8 +112,8 @@ public class ServerAeadEncryptor implements ServerEncryptor<AeadEncryptedRequest
 
     @Override
     public EncryptorSecrets deriveSecretsForExternalEncryptor(AeadEncryptedRequest request) {
-        // No calculation is required unlike in V3 protocol
-        return encryptorSecrets;
+        // Copy envelope key and sharedInfo2 from the encryptor
+        return new AeadSecrets(encryptorSecrets.getEnvelopeKey(), sharedInfo2);
     }
 
     @Override
