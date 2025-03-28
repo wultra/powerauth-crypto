@@ -125,7 +125,7 @@ The device and server keys are generated using ECDH algorithm with P256 curve:
 
 ```java
 public KeyPair generateKeyPair() {
-    KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", "BC"); // we assume BouncyCastle provider
+    KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC", "BC"); // we assume BouncyCastle provider
     kpg.initialize(new ECGenParameterSpec("secp256r1"));
     KeyPair kp = kpg.generateKeyPair();
     return kp;
