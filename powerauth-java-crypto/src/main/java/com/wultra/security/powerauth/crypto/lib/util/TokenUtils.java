@@ -19,6 +19,7 @@ package com.wultra.security.powerauth.crypto.lib.util;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
@@ -33,7 +34,7 @@ import java.util.UUID;
  */
 public class TokenUtils {
 
-    private static final byte[] KMAC_TOKEN_DIGEST_CUSTOM_BYTES = "PA4DIGEST".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] KMAC_TOKEN_DIGEST_CUSTOM_BYTES = CustomString.PA4DIGEST.value().getBytes(StandardCharsets.UTF_8);
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
