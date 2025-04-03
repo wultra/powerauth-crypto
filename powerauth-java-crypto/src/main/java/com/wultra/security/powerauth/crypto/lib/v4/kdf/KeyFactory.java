@@ -67,29 +67,29 @@ public class KeyFactory {
     }
 
     /**
-     * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_ECDHE} (algorithm EC_P384).
+     * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_ECDHE_BASE} for algorithm EC_P384.
      *
-     * @param keySharedSecretEcdhe Shared secret from ECDHE key exchange.
+     * @param keySharedSecretEcdheBase Shared secret from ECDHE key exchange.
      * @return Derived shared secret key.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
-    public static SecretKey deriveKeySharedSecretEcdhe(SecretKey keySharedSecretEcdhe) throws GenericCryptoException {
-        return derive(keySharedSecretEcdhe, KeyLabel.SHARED_SECRET_EC_P384);
+    public static SecretKey deriveKeySharedSecretEcdhe(SecretKey keySharedSecretEcdheBase) throws GenericCryptoException {
+        return derive(keySharedSecretEcdheBase, KeyLabel.SHARED_SECRET_EC_P384);
     }
 
     /**
-     * Derives {@code KEY_SHARED_SECRET3} from {@code KEY_SHARED_SECRET_HYBRID} (algorithm EC_P384_ML_L3).
+     * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID_BASE} for algorithm EC_P384_ML_L3.
      *
-     * @param keySharedSecretHybrid Shared secret from hybrid key exchange.
+     * @param keySharedSecretHybridBase Shared secret from hybrid key exchange.
      * @return Derived hybrid shared secret key.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
-    public static SecretKey deriveKeySharedSecretHybrid(SecretKey keySharedSecretHybrid) throws GenericCryptoException {
-        return derive(keySharedSecretHybrid, KeyLabel.SHARED_SECRET_EC_P384_ML_L3);
+    public static SecretKey deriveKeySharedSecretHybrid(SecretKey keySharedSecretHybridBase) throws GenericCryptoException {
+        return derive(keySharedSecretHybridBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L3);
     }
 
     /**
-     * Derives {@code KEY_ENC} from {@code BASE_KEY}.
+     * Derives {@code KEY_ENC} from {@code KEY_BASE}.
      *
      * @param keyBase     Base key for AEAD encryption.
      * @param diversifier Diversifier for additional key separation.
@@ -101,7 +101,7 @@ public class KeyFactory {
     }
 
     /**
-     * Derives {@code KEY_MAC} from {@code BASE_KEY}.
+     * Derives {@code KEY_MAC} from {@code KEY_BASE}.
      *
      * @param keyBase     Base key for AEAD MAC.
      * @param diversifier Diversifier for additional key separation.
@@ -128,7 +128,7 @@ public class KeyFactory {
      * Derives {@code KDK_APP_VAULT_KNOWLEDGE} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
-     * @return Derived vault KDK for knowledge-based 2FA authorization.
+     * @return Derived vault KDK after knowledge-based 2FA authorization.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyKdkAppVaultKnowledge(SecretKey keyActivationSecret) throws GenericCryptoException {
@@ -140,7 +140,7 @@ public class KeyFactory {
      * Derives {@code KDK_APP_VAULT_2FA} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
-     * @return Derived vault KDK for general 2FA authorization.
+     * @return Derived vault KDK for after any 2FA authorization.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyKdkAppVault2fa(SecretKey keyActivationSecret) throws GenericCryptoException {
