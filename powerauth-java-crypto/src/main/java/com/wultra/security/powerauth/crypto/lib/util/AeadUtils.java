@@ -25,6 +25,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * A utility class for handling AEAD data.
@@ -92,7 +93,7 @@ public final class AeadUtils {
         if (applicationSecret == null) {
             throw new AeadException("Missing applicationSecret parameter");
         }
-        final byte[] applicationSecretBytes = applicationSecret.getBytes(StandardCharsets.UTF_8);
+        final byte[] applicationSecretBytes = Base64.getDecoder().decode(applicationSecret);
         if (scope == EncryptorScope.APPLICATION_SCOPE) {
             // Application scope
             return Sha3.hash256(applicationSecretBytes);
