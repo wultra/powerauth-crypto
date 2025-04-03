@@ -23,7 +23,7 @@ import javax.crypto.SecretKey;
 
 /**
  * KeyFactory is a utility class for deriving keys from provided source keys using the KMAC-based KDF function.
- * Key are derived using specific derivation paths, as defined in the V4 key index registry.
+ * Keys are derived using specific derivation paths, as defined in the V4 key index registry.
  * The default key length is 32 bytes and it is used for all the derived keys.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
@@ -128,7 +128,7 @@ public class KeyFactory {
      * Derives {@code KDK_APP_VAULT_KNOWLEDGE} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
-     * @return Derived vault KDK after knowledge-based 2FA authorization.
+     * @return Derived vault KDK provided after knowledge-based 2FA authorization.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyKdkAppVaultKnowledge(SecretKey keyActivationSecret) throws GenericCryptoException {
@@ -140,7 +140,7 @@ public class KeyFactory {
      * Derives {@code KDK_APP_VAULT_2FA} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
-     * @return Derived vault KDK for after any 2FA authorization.
+     * @return Derived vault KDK provided after any 2FA authorization.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyKdkAppVault2fa(SecretKey keyActivationSecret) throws GenericCryptoException {
