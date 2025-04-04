@@ -24,46 +24,46 @@ import javax.crypto.SecretKey;
 /**
  * KeyFactory is a utility class for deriving keys from provided source keys using the KMAC-based KDF function.
  * Keys are derived using specific derivation paths, as defined in the V4 key index registry.
- * The default key length is 32 bytes and it is used for all the derived keys.
+ * The default key length is 32 bytes, and it is used for all the derived keys.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class KeyFactory {
 
     /**
-     * Derives {@code KEY_SIGNATURE_POSSESSION} from {@code KEY_ACTIVATION_SECRET}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_POSSESSION} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
      * @return Derived possession factor key.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
-    public static SecretKey deriveKeySignaturePossession(SecretKey keyActivationSecret) throws GenericCryptoException {
+    public static SecretKey deriveKeyAuthenticationCodePossession(SecretKey keyActivationSecret) throws GenericCryptoException {
         SecretKey kdkSignature = deriveKdkSignature(keyActivationSecret);
-        return deriveKeySignaturePossessionFromKdk(kdkSignature);
+        return deriveKeyAuthenticationCodePossessionFromKdk(kdkSignature);
     }
 
     /**
-     * Derives {@code KEY_SIGNATURE_KNOWLEDGE} from {@code KEY_ACTIVATION_SECRET}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_KNOWLEDGE} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
      * @return Derived knowledge factor key.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
-    public static SecretKey deriveKeySignatureKnowledge(SecretKey keyActivationSecret) throws GenericCryptoException {
+    public static SecretKey deriveKeyAuthenticationCodeKnowledge(SecretKey keyActivationSecret) throws GenericCryptoException {
         SecretKey kdkSignature = deriveKdkSignature(keyActivationSecret);
-        return deriveKeySignatureKnowledgeFromKdk(kdkSignature);
+        return deriveKeyAuthenticationCodeKnowledgeFromKdk(kdkSignature);
     }
 
     /**
-     * Derives {@code KEY_SIGNATURE_BIOMETRY} from {@code KEY_ACTIVATION_SECRET}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_BIOMETRY} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
      * @return Derived biometry factor key.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
-    public static SecretKey deriveKeySignatureBiometry(SecretKey keyActivationSecret) throws GenericCryptoException {
+    public static SecretKey deriveKeyAuthenticationCodeBiometry(SecretKey keyActivationSecret) throws GenericCryptoException {
         SecretKey kdkSignature = deriveKdkSignature(keyActivationSecret);
-        return deriveKeySignatureBiometryFromKdk(kdkSignature);
+        return deriveKeyAuthenticationCodeBiometryFromKdk(kdkSignature);
     }
 
     /**
@@ -215,23 +215,23 @@ public class KeyFactory {
     }
 
     /**
-     * Derives {@code KEY_SIGNATURE_POSSESSION} from {@code KDK_SIGNATURE}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_POSSESSION} from {@code KDK_SIGNATURE}.
      */
-    private static SecretKey deriveKeySignaturePossessionFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
+    private static SecretKey deriveKeyAuthenticationCodePossessionFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
         return derive(kdkSignature, KeyLabel.AUTH_POSSESSION);
     }
 
     /**
-     * Derives {@code KEY_SIGNATURE_KNOWLEDGE} from {@code KDK_SIGNATURE}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_KNOWLEDGE} from {@code KDK_SIGNATURE}.
      */
-    private static SecretKey deriveKeySignatureKnowledgeFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
+    private static SecretKey deriveKeyAuthenticationCodeKnowledgeFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
         return derive(kdkSignature, KeyLabel.AUTH_KNOWLEDGE);
     }
 
     /**
-     * Derives {@code KEY_SIGNATURE_BIOMETRY} from {@code KDK_SIGNATURE}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_BIOMETRY} from {@code KDK_SIGNATURE}.
      */
-    private static SecretKey deriveKeySignatureBiometryFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
+    private static SecretKey deriveKeyAuthenticationCodeBiometryFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
         return derive(kdkSignature, KeyLabel.AUTH_BIOMETRY);
     }
 
