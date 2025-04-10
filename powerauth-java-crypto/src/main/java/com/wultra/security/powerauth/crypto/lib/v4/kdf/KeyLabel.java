@@ -75,6 +75,9 @@ public enum KeyLabel {
     /** Label for deriving {@code KEY_MAC_GET_ACT_TEMP_KEY} from {@code KDK_UTILITY}. */
     UTIL_MAC_GET_ACT_TEMP_KEY("util/mac/get-act-temp-key"),
 
+    /** Label for deriving {@code KEY_MAC_PERSONALIZED_DATA} from {@code KDK_UTILITY}. */
+    UTIL_MAC_PERSONALIZED_DATA("util/mac/personalized-data"),
+
     /** Label for deriving {@code KEY_E2EE_SHARED_INFO2} from {@code KDK_UTILITY}. */
     UTIL_KEY_E2EE_SH2("util/key-e2ee-sh2");
 

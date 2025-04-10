@@ -196,6 +196,18 @@ public class KeyFactory {
     }
 
     /**
+     * Derives {@code KEY_MAC_PERSONALIZED_DATA} from {@code KEY_ACTIVATION_SECRET}.
+     *
+     * @param keyActivationSecret The activation secret key.
+     * @return Derived MAC key for personalized data.
+     * @throws GenericCryptoException In case of cryptographic failure.
+     */
+    public static SecretKey deriveKeyMacPersonalizedData(SecretKey keyActivationSecret) throws GenericCryptoException {
+        SecretKey kdkUtility = deriveKdkUtility(keyActivationSecret);
+        return deriveKeyMacPersonalizedDataFromKdk(kdkUtility);
+    }
+
+    /**
      * Derives {@code KEY_E2EE_SHARED_INFO2} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
@@ -289,6 +301,13 @@ public class KeyFactory {
      */
     private static SecretKey deriveKeyMacGetActTempKeyFromKdk(SecretKey kdkUtility) throws GenericCryptoException {
         return derive(kdkUtility, KeyLabel.UTIL_MAC_GET_ACT_TEMP_KEY);
+    }
+
+    /**
+     * Derives {@code KEY_MAC_PERSONALIZED_DATA} from {@code KDK_UTILITY}.
+     */
+    private static SecretKey deriveKeyMacPersonalizedDataFromKdk(SecretKey kdkUtility) throws GenericCryptoException {
+        return derive(kdkUtility, KeyLabel.UTIL_MAC_PERSONALIZED_DATA);
     }
 
     /**
