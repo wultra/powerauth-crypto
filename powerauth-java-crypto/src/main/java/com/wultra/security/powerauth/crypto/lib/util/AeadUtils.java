@@ -19,11 +19,13 @@ package com.wultra.security.powerauth.crypto.lib.util;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptorScope;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.exception.AeadException;
 import com.wultra.security.powerauth.crypto.lib.v4.hash.Sha3;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * A utility class for handling AEAD data.
@@ -32,7 +34,7 @@ import java.nio.charset.StandardCharsets;
  */
 public final class AeadUtils {
 
-    private static final byte[] CRYPTO4_SH2_CUSTOM_BYTES = "PA4SH2".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] CRYPTO4_SH2_CUSTOM_BYTES = CustomString.PA4SH2.value().getBytes(StandardCharsets.UTF_8);
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
@@ -91,7 +93,7 @@ public final class AeadUtils {
         if (applicationSecret == null) {
             throw new AeadException("Missing applicationSecret parameter");
         }
-        final byte[] applicationSecretBytes = applicationSecret.getBytes(StandardCharsets.UTF_8);
+        final byte[] applicationSecretBytes = Base64.getDecoder().decode(applicationSecret);
         if (scope == EncryptorScope.APPLICATION_SCOPE) {
             // Application scope
             return Sha3.hash256(applicationSecretBytes);

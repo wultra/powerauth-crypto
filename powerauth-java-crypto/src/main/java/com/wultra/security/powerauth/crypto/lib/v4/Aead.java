@@ -23,7 +23,8 @@ import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import com.wultra.security.powerauth.crypto.lib.util.AESEncryptionUtils;
 import com.wultra.security.powerauth.crypto.lib.util.ByteUtils;
 import com.wultra.security.powerauth.crypto.lib.util.SideChannelUtils;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kdf;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyFactory;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
@@ -38,12 +39,9 @@ import java.security.InvalidKeyException;
 public class Aead {
 
     private static final int NONCE_LENGTH = 12;
-    private static final int KEY_LENGTH = 32;
     private static final int TAG_LENGTH = 32;
 
-    private static final String KMAC_AEAD_CUSTOM_STRING = "PA4MAC-AEAD";
-    private static final String KEY_ENC_CUSTOM_STRING = "aead/enc";
-    private static final String KEY_MAC_CUSTOM_STRING = "aead/mac";
+    private static final byte[] KMAC_AEAD_CUSTOM_BYTES = CustomString.PA4MAC_AEAD.value().getBytes(StandardCharsets.UTF_8);
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final AESEncryptionUtils aes = new AESEncryptionUtils();
@@ -67,11 +65,11 @@ public class Aead {
         } else if (nonce.length != NONCE_LENGTH) {
             throw new GenericCryptoException("Invalid nonce length: " + nonce.length);
         }
-        final SecretKey keyEncryption = Kdf.derive(key, KEY_ENC_CUSTOM_STRING, keyContext, KEY_LENGTH);
-        final SecretKey keyMac = Kdf.derive(key, KEY_MAC_CUSTOM_STRING, keyContext, TAG_LENGTH);
+        final SecretKey keyEncryption = KeyFactory.deriveKeyAeadEnc(key, keyContext);
+        final SecretKey keyMac = KeyFactory.deriveKeyAeadMac(key, keyContext);
         final byte[] iv = ByteUtils.concat(nonce, ByteUtils.zeroBytes(4));
         final byte[] encrypted = aes.encrypt(plaintext, iv, keyEncryption, "AES/CTR/NoPadding");
-        final byte[] mac = Kmac.kmac256(keyMac, ByteUtils.concat(nonce, associatedData, encrypted), KMAC_AEAD_CUSTOM_STRING.getBytes(StandardCharsets.UTF_8), TAG_LENGTH);
+        final byte[] mac = Kmac.kmac256(keyMac, ByteUtils.concat(nonce, associatedData, encrypted), KMAC_AEAD_CUSTOM_BYTES, TAG_LENGTH);
         return ByteUtils.concat(nonce, mac, encrypted);
     }
 
@@ -94,9 +92,9 @@ public class Aead {
         final byte[] nonce = ByteUtils.subarray(ciphertext, 0, NONCE_LENGTH);
         final byte[] tag = ByteUtils.subarray(ciphertext, NONCE_LENGTH, TAG_LENGTH);
         final byte[] encrypted = ByteUtils.subarray(ciphertext, NONCE_LENGTH + TAG_LENGTH, ciphertext.length - NONCE_LENGTH - TAG_LENGTH);
-        final SecretKey keyEncryption = Kdf.derive(key, KEY_ENC_CUSTOM_STRING, keyContext, KEY_LENGTH);
-        final SecretKey keyMac = Kdf.derive(key, KEY_MAC_CUSTOM_STRING, keyContext, TAG_LENGTH);
-        byte[] mac = Kmac.kmac256(keyMac, ByteUtils.concat(nonce, associatedData, encrypted), KMAC_AEAD_CUSTOM_STRING.getBytes(StandardCharsets.UTF_8), TAG_LENGTH);
+        final SecretKey keyEncryption = KeyFactory.deriveKeyAeadEnc(key, keyContext);
+        final SecretKey keyMac = KeyFactory.deriveKeyAeadMac(key, keyContext);
+        byte[] mac = Kmac.kmac256(keyMac, ByteUtils.concat(nonce, associatedData, encrypted), KMAC_AEAD_CUSTOM_BYTES, TAG_LENGTH);
         if (!SideChannelUtils.constantTimeAreEqual(mac, tag)) {
             throw new GenericCryptoException("Invalid MAC");
         }

@@ -20,6 +20,7 @@ import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.HMACHashUtilities;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 public class DataDigest {
 
-    private static final byte[] KMAC_DATA_DIGEST_CUSTOM_BYTES = "PA4DIGEST_DATA".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] KMAC_DATA_DIGEST_CUSTOM_BYTES = CustomString.PA4DIGEST_DATA.value().getBytes(StandardCharsets.UTF_8);
 
     private static final Logger logger = LoggerFactory.getLogger(DataDigest.class);
 

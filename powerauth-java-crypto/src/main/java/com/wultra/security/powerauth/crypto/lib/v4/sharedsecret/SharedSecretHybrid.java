@@ -27,7 +27,7 @@ import com.wultra.security.powerauth.crypto.lib.util.PqcKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.PqcKem;
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecret;
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretClientContext;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kdf;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyFactory;
 import com.wultra.security.powerauth.crypto.lib.v4.model.*;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
@@ -50,8 +50,6 @@ import java.util.Base64;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybrid, SharedSecretResponseHybrid, SharedSecretClientContextHybrid> {
-
-    private static final String KEY_SHARED_SECRET_CUSTOM_STRING = "shared-secret/ec-p384-ml-l3";
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR_EC = new KeyConvertor();
@@ -98,7 +96,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final byte[] pqcSharedKeyBytes = pqcKeyWithEncaps.getEncoded();
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);
             final SecretKey hybridKey = KEY_CONVERTOR_EC.convertBytesToSharedSecretKey(hybridKeyBytes);
-            final SecretKey sharedSecret = Kdf.derive(hybridKey, KEY_SHARED_SECRET_CUSTOM_STRING, null, 32);
+            final SecretKey sharedSecret = KeyFactory.deriveKeySharedSecretHybrid(hybridKey);
             final byte[] ecServerPublicKey = KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, ecServerKeyPair.getPublic());
             final String ecServerPublicKeyBase64 = Base64.getEncoder().encodeToString(ecServerPublicKey);
             final String encapsBase64 = Base64.getEncoder().encodeToString(pqcKeyWithEncaps.getEncapsulation());
@@ -126,7 +124,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final byte[] pqcSharedKeyBytes = KEY_CONVERTOR_PQC.convertSharedSecretKeyToBytes(pqcSharedKey);
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);
             final SecretKey hybridKey = KEY_CONVERTOR_EC.convertBytesToSharedSecretKey(hybridKeyBytes);
-            return Kdf.derive(hybridKey, KEY_SHARED_SECRET_CUSTOM_STRING, null, 32);
+            return KeyFactory.deriveKeySharedSecretHybrid(hybridKey);
         } catch (CryptoProviderException | InvalidKeySpecException | InvalidKeyException e) {
             throw new GenericCryptoException("Shared secret generation failed", e);
         }

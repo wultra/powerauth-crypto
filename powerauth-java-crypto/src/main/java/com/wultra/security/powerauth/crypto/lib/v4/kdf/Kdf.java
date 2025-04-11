@@ -31,13 +31,13 @@ import java.nio.charset.StandardCharsets;
  */
 public class Kdf {
 
-    private static final byte[] KDF_CUSTOM_BYTES_PREFIX = "PA4KDF:".getBytes(StandardCharsets.UTF_8);
-    private static final byte[] PBKDF_CUSTOM_BYTES = "PA4PBKDF".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] KDF_CUSTOM_BYTES_PREFIX = (CustomString.PA4KDF.value() + ":").getBytes(StandardCharsets.UTF_8);
+    private static final byte[] PBKDF_CUSTOM_BYTES = CustomString.PA4PBKDF.value().getBytes(StandardCharsets.UTF_8);
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
     /**
-     * Derive a secret key based on an input key, numeric key index, requested key size and optional context.
+     * Derive a secret key based on an input key, label, and diversifier.
      *
      * @param key Secret key to be used for key derivation.
      * @param label Label allows derivation of multiple keys from the same source key material.
