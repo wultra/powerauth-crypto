@@ -38,8 +38,8 @@ public class KeyFactory {
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyAuthenticationCodePossession(SecretKey keyActivationSecret) throws GenericCryptoException {
-        SecretKey kdkSignature = deriveKdkSignature(keyActivationSecret);
-        return deriveKeyAuthenticationCodePossessionFromKdk(kdkSignature);
+        SecretKey kdkAuthenticationCode = deriveKdkAuthenticationCode(keyActivationSecret);
+        return deriveKeyAuthenticationCodePossessionFromKdk(kdkAuthenticationCode);
     }
 
     /**
@@ -50,8 +50,8 @@ public class KeyFactory {
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyAuthenticationCodeKnowledge(SecretKey keyActivationSecret) throws GenericCryptoException {
-        SecretKey kdkSignature = deriveKdkSignature(keyActivationSecret);
-        return deriveKeyAuthenticationCodeKnowledgeFromKdk(kdkSignature);
+        SecretKey kdkAuthenticationCode = deriveKdkAuthenticationCode(keyActivationSecret);
+        return deriveKeyAuthenticationCodeKnowledgeFromKdk(kdkAuthenticationCode);
     }
 
     /**
@@ -62,8 +62,8 @@ public class KeyFactory {
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyAuthenticationCodeBiometry(SecretKey keyActivationSecret) throws GenericCryptoException {
-        SecretKey kdkSignature = deriveKdkSignature(keyActivationSecret);
-        return deriveKeyAuthenticationCodeBiometryFromKdk(kdkSignature);
+        SecretKey kdkAuthenticationCode = deriveKdkAuthenticationCode(keyActivationSecret);
+        return deriveKeyAuthenticationCodeBiometryFromKdk(kdkAuthenticationCode);
     }
 
     /**
@@ -128,7 +128,7 @@ public class KeyFactory {
      * Derives {@code KDK_APP_VAULT_KNOWLEDGE} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
-     * @return Derived vault KDK provided after knowledge-based 2FA authorization.
+     * @return Derived KDK for vault used after knowledge-based 2FA authorization.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyKdkAppVaultKnowledge(SecretKey keyActivationSecret) throws GenericCryptoException {
@@ -176,7 +176,7 @@ public class KeyFactory {
      * Derives {@code KEY_MAC_GET_APP_TEMP_KEY} from {@code APP_SECRET}.
      *
      * @param keyAppSecret Application secret.
-     * @return Derived MAC key for application-scoped temporary key.
+     * @return Derived MAC key for signing requests for application-scoped temporary keys.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyMacGetAppTempKey(SecretKey keyAppSecret) throws GenericCryptoException {
@@ -187,7 +187,7 @@ public class KeyFactory {
      * Derives {@code KEY_MAC_GET_ACT_TEMP_KEY} from {@code KEY_ACTIVATION_SECRET}.
      *
      * @param keyActivationSecret The activation secret key.
-     * @return Derived MAC key for activation-scoped temporary key.
+     * @return Derived MAC key for signing requests for activation-scoped temporary keys.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeyMacGetActTempKey(SecretKey keyActivationSecret) throws GenericCryptoException {
@@ -220,35 +220,50 @@ public class KeyFactory {
     }
 
     /**
-     * Derives {@code KDK_SIGNATURE} from {@code KEY_ACTIVATION_SECRET}.
+     * Derives {@code KDK_AUTHENTICATION_CODE} from {@code KEY_ACTIVATION_SECRET}.
+     * @param keyActivationSecret The activation secret key.
+     * @return Derived KDK for authentication codes.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
-    private static SecretKey deriveKdkSignature(SecretKey keyActivationSecret) throws GenericCryptoException {
+    private static SecretKey deriveKdkAuthenticationCode(SecretKey keyActivationSecret) throws GenericCryptoException {
         return derive(keyActivationSecret, KeyLabel.AUTH);
     }
 
     /**
-     * Derives {@code KEY_AUTHENTICATION_CODE_POSSESSION} from {@code KDK_SIGNATURE}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_POSSESSION} from {@code KDK_AUTHENTICATION_CODE}.
+     * @param kdkAuthenticationCode KDK for authentication codes.
+     * @return Derived possession factor key.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
-    private static SecretKey deriveKeyAuthenticationCodePossessionFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
-        return derive(kdkSignature, KeyLabel.AUTH_POSSESSION);
+    private static SecretKey deriveKeyAuthenticationCodePossessionFromKdk(SecretKey kdkAuthenticationCode) throws GenericCryptoException {
+        return derive(kdkAuthenticationCode, KeyLabel.AUTH_POSSESSION);
     }
 
     /**
-     * Derives {@code KEY_AUTHENTICATION_CODE_KNOWLEDGE} from {@code KDK_SIGNATURE}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_KNOWLEDGE} from {@code KDK_AUTHENTICATION_CODE}.
+     * @param kdkAuthenticationCode KDK for authentication codes.
+     * @return Derived knowledge factor key.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
-    private static SecretKey deriveKeyAuthenticationCodeKnowledgeFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
-        return derive(kdkSignature, KeyLabel.AUTH_KNOWLEDGE);
+    private static SecretKey deriveKeyAuthenticationCodeKnowledgeFromKdk(SecretKey kdkAuthenticationCode) throws GenericCryptoException {
+        return derive(kdkAuthenticationCode, KeyLabel.AUTH_KNOWLEDGE);
     }
 
     /**
-     * Derives {@code KEY_AUTHENTICATION_CODE_BIOMETRY} from {@code KDK_SIGNATURE}.
+     * Derives {@code KEY_AUTHENTICATION_CODE_BIOMETRY} from {@code KDK_AUTHENTICATION_CODE}.
+     * @param kdkAuthenticationCode KDK for authentication codes.
+     * @return Derived biometry factor key.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
-    private static SecretKey deriveKeyAuthenticationCodeBiometryFromKdk(SecretKey kdkSignature) throws GenericCryptoException {
-        return derive(kdkSignature, KeyLabel.AUTH_BIOMETRY);
+    private static SecretKey deriveKeyAuthenticationCodeBiometryFromKdk(SecretKey kdkAuthenticationCode) throws GenericCryptoException {
+        return derive(kdkAuthenticationCode, KeyLabel.AUTH_BIOMETRY);
     }
 
     /**
      * Derives {@code KDK_VAULT} from {@code KEY_ACTIVATION_SECRET}.
+     * @param keyActivationSecret The activation secret key.
+     * @return Derived KDK for vault.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKdkVault(SecretKey keyActivationSecret) throws GenericCryptoException {
         return derive(keyActivationSecret, KeyLabel.VAULT);
@@ -256,6 +271,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KEK_DEVICE_PRIVATE} from {@code KDK_VAULT}.
+     * @param kdkVault KDK for vault.
+     * @return Derived KEK for device private key.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKekDevicePrivateFromKdk(SecretKey kdkVault) throws GenericCryptoException {
         return derive(kdkVault, KeyLabel.VAULT_KEK_DEVICE_PRIVATE);
@@ -263,6 +281,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KDK_APP_VAULT_KNOWLEDGE} from {@code KDK_VAULT}.
+     * @param kdkVault KDK for vault.
+     * @return Derived KEK for vault used after 2FA with knowledge factor.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKeyKdkAppVaultKnowledgeFromKdk(SecretKey kdkVault) throws GenericCryptoException {
         return derive(kdkVault, KeyLabel.KDK_APP_VAULT_KNOWLEDGE);
@@ -270,6 +291,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KDK_APP_VAULT_2FA} from {@code KDK_VAULT}.
+     * @param kdkVault KDK for vault.
+     * @return Derived KEK for vault used after any 2FA authentication.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKeyKdkAppVault2faFromKdk(SecretKey kdkVault) throws GenericCryptoException {
         return derive(kdkVault, KeyLabel.KDK_APP_VAULT_2FA);
@@ -277,6 +301,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KDK_UTILITY} from {@code KEY_ACTIVATION_SECRET}.
+     * @param keyActivationSecret The activation secret key.
+     * @return Derived KDK for utility purposes.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKdkUtility(SecretKey keyActivationSecret) throws GenericCryptoException {
         return derive(keyActivationSecret, KeyLabel.UTIL);
@@ -284,6 +311,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KEY_MAC_CTR_DATA} from {@code KDK_UTILITY}.
+     * @param kdkUtility KDK for utility purposes.
+     * @return Derived key for counter data MAC.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKeyMacCtrDataFromKdk(SecretKey kdkUtility) throws GenericCryptoException {
         return derive(kdkUtility, KeyLabel.UTIL_MAC_CTR_DATA);
@@ -291,6 +321,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KEY_MAC_STATUS} from {@code KDK_UTILITY}.
+     * @param kdkUtility KDK for utility purposes.
+     * @return Derived key for activation status MAC.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKeyMacStatusFromKdk(SecretKey kdkUtility) throws GenericCryptoException {
         return derive(kdkUtility, KeyLabel.UTIL_MAC_STATUS);
@@ -298,6 +331,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KEY_MAC_GET_ACT_TEMP_KEY} from {@code KDK_UTILITY}.
+     * @param kdkUtility KDK for utility purposes.
+     * @return Derived MAC key for signing requests for activation-scoped temporary keys.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKeyMacGetActTempKeyFromKdk(SecretKey kdkUtility) throws GenericCryptoException {
         return derive(kdkUtility, KeyLabel.UTIL_MAC_GET_ACT_TEMP_KEY);
@@ -305,6 +341,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KEY_MAC_PERSONALIZED_DATA} from {@code KDK_UTILITY}.
+     * @param kdkUtility KDK for utility purposes.
+     * @return Derived key for MAC of personalized data.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKeyMacPersonalizedDataFromKdk(SecretKey kdkUtility) throws GenericCryptoException {
         return derive(kdkUtility, KeyLabel.UTIL_MAC_PERSONALIZED_DATA);
@@ -312,6 +351,9 @@ public class KeyFactory {
 
     /**
      * Derives {@code KEY_E2EE_SHARED_INFO2} from {@code KDK_UTILITY}.
+     * @param kdkUtility KDK for utility purposes.
+     * @return Derived key for sharedInfo2 computation.
+     * @throws GenericCryptoException In case of cryptographic failure.
      */
     private static SecretKey deriveKeyE2eeSharedInfo2FromKdk(SecretKey kdkUtility) throws GenericCryptoException {
         return derive(kdkUtility, KeyLabel.UTIL_KEY_E2EE_SH2);

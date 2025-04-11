@@ -24,16 +24,16 @@ package com.wultra.security.powerauth.crypto.lib.v4.kdf;
  */
 public enum KeyLabel {
 
-    /** Label for deriving {@code KDK_SIGNATURE} from {@code KEY_ACTIVATION_SECRET}. */
+    /** Label for deriving {@code KDK_AUTHENTICATION_CODE} from {@code KEY_ACTIVATION_SECRET}. */
     AUTH("auth"),
 
-    /** Label for deriving {@code KEY_SIGNATURE_POSSESSION} from {@code KDK_SIGNATURE}. */
+    /** Label for deriving {@code KEY_AUTHENTICATION_CODE_POSSESSION} from {@code KDK_AUTHENTICATION_CODE}. */
     AUTH_POSSESSION("auth/possession"),
 
-    /** Label for deriving {@code KEY_SIGNATURE_KNOWLEDGE} from {@code KDK_SIGNATURE}. */
+    /** Label for deriving {@code KEY_AUTHENTICATION_CODE_KNOWLEDGE} from {@code KDK_AUTHENTICATION_CODE}. */
     AUTH_KNOWLEDGE("auth/knowledge"),
 
-    /** Label for deriving {@code KEY_SIGNATURE_BIOMETRY} from {@code KDK_SIGNATURE}. */
+    /** Label for deriving {@code KEY_AUTHENTICATION_CODE_BIOMETRY} from {@code KDK_AUTHENTICATION_CODE}. */
     AUTH_BIOMETRY("auth/biometry"),
 
     /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_ECDHE} (algorithm EC_P384). */
