@@ -59,7 +59,7 @@ public class GenerateVectorDataTest {
     private static File testVectorFolder;
     private static ObjectMapper objectMapper;
 
-    private final KeyConvertor keyConvertor = new KeyConvertor();
+    private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
     /**
      * Register crypto providers
@@ -111,8 +111,8 @@ public class GenerateVectorDataTest {
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationCode", activationCode);
-            input.put("masterPrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)));
-            input.put("masterPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, masterPublicKey)));
+            input.put("masterPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(masterPrivateKey)));
+            input.put("masterPublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, masterPublicKey)));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("activationSignature", Base64.getEncoder().encodeToString(activationSignature));
             testSet.addData(input, output);
@@ -147,12 +147,12 @@ public class GenerateVectorDataTest {
             SecretKey masterSecretKey = new KeyGenerator().computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
 
             Map<String, String> input = new LinkedHashMap<>();
-            input.put("devicePrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())));
-            input.put("devicePublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, deviceKeyPair.getPublic())));
-            input.put("serverPrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(serverKeyPair.getPrivate())));
-            input.put("serverPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, serverKeyPair.getPublic())));
+            input.put("devicePrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())));
+            input.put("devicePublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, deviceKeyPair.getPublic())));
+            input.put("serverPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(serverKeyPair.getPrivate())));
+            input.put("serverPublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, serverKeyPair.getPublic())));
             Map<String, String> output = new LinkedHashMap<>();
-            output.put("masterSecretKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)));
+            output.put("masterSecretKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(masterSecretKey)));
             testSet.addData(input, output);
         }
         writeTestVector(testSet);
@@ -188,13 +188,13 @@ public class GenerateVectorDataTest {
             PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
 
             Map<String, String> input = new LinkedHashMap<>();
-            input.put("masterSecretKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)));
+            input.put("masterSecretKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(masterSecretKey)));
             Map<String, String> output = new LinkedHashMap<>();
-            output.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignaturePossessionKey(masterSecretKey))));
-            output.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey))));
-            output.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureBiometryKey(masterSecretKey))));
-            output.put("transportKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))));
-            output.put("vaultEncryptionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))));
+            output.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateClientSignaturePossessionKey(masterSecretKey))));
+            output.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey))));
+            output.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureBiometryKey(masterSecretKey))));
+            output.put("transportKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))));
+            output.put("vaultEncryptionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))));
             testSet.addData(input, output);
         }
         writeTestVector(testSet);
@@ -256,9 +256,9 @@ public class GenerateVectorDataTest {
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
@@ -278,9 +278,9 @@ public class GenerateVectorDataTest {
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
@@ -300,9 +300,9 @@ public class GenerateVectorDataTest {
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
@@ -374,9 +374,9 @@ public class GenerateVectorDataTest {
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
@@ -396,9 +396,9 @@ public class GenerateVectorDataTest {
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
@@ -418,9 +418,9 @@ public class GenerateVectorDataTest {
                     String signatureType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
@@ -481,9 +481,9 @@ public class GenerateVectorDataTest {
                     String signatureType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
                     input.put("signatureComponentLength", String.valueOf(j));
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
@@ -504,9 +504,9 @@ public class GenerateVectorDataTest {
                     String signatureType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
+                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signaturePossessionKey)));
+                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
+                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(signatureBiometryKey)));
                     input.put("signatureType", signatureType);
                     input.put("signatureComponentLength", String.valueOf(j));
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
@@ -560,8 +560,8 @@ public class GenerateVectorDataTest {
             byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
 
             Map<String, String> input = new LinkedHashMap<>();
-            input.put("devicePublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, devicePublicKey)));
-            input.put("serverPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(EcCurve.P256, serverPublicKey)));
+            input.put("devicePublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, devicePublicKey)));
+            input.put("serverPublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, serverPublicKey)));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("devicePublicKeyCoordX", Base64.getEncoder().encodeToString(devicePublicKeyBytes));
             output.put("serverPublicKeyCoordX", Base64.getEncoder().encodeToString(serverPublicKeyBytes));
@@ -595,7 +595,7 @@ public class GenerateVectorDataTest {
             byte[] transportKey = keyGenerator.generateRandomBytes(16);
             byte[] challenge = keyGenerator.generateRandomBytes(16);
             byte[] nonce = keyGenerator.generateRandomBytes(16);
-            byte[] iv = keyDerivationUtils.deriveIvForStatusBlobEncryption(challenge, nonce, keyConvertor.convertBytesToSharedSecretKey(transportKey));
+            byte[] iv = keyDerivationUtils.deriveIvForStatusBlobEncryption(challenge, nonce, KEY_CONVERTOR.convertBytesToSharedSecretKey(transportKey));
             Map<String, String> input = new LinkedHashMap<>();
             input.put("transportKey", Base64.getEncoder().encodeToString(transportKey));
             input.put("challenge", Base64.getEncoder().encodeToString(challenge));
@@ -639,7 +639,7 @@ public class GenerateVectorDataTest {
         for (final ActivationStatusBlobInfoBuilder builder : testData) {
 
             final SecretKey transportKey = keyGenerator.generateRandomSecretKey(16);
-            final byte[] transportKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(transportKey);
+            final byte[] transportKeyBytes = KEY_CONVERTOR.convertSharedSecretKeyToBytes(transportKey);
             final byte[] ctrData = keyGenerator.generateRandomBytes(16);
             final byte[] challenge = keyGenerator.generateRandomBytes(16);
             final byte[] nonce = keyGenerator.generateRandomBytes(16);
