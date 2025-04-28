@@ -78,4 +78,15 @@ public enum ProtocolVersion {
         return Integer.parseInt(version.split("\\.")[0]);
     }
 
+    /**
+     * Get protocol version from String value.
+     * @param value String protocol version value.
+     * @return Protocol version.
+     */
+    public static ProtocolVersion fromValue(String value) {
+        return Arrays.stream(ProtocolVersion.values())
+                .filter(version -> version.getVersion().equals(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Unsupported protocol version: " + value));
+    }
 }
