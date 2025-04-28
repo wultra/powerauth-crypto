@@ -17,6 +17,7 @@
 package com.wultra.security.powerauth.crypto.client.activation;
 
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
@@ -232,14 +233,15 @@ public class PowerAuthClientActivation {
      * @param receivedCtrDataHash Value received from the server, containing hash, calculated from hash based counter.
      * @param expectedCtrData Expected hash based counter.
      * @param transportKey Transport key.
+     * @param protocolVersion Protocol version.
      * @return {@code true} in case that received hash equals to hash calculated from counter data.
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
+    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey, ProtocolVersion protocolVersion)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
+        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey, protocolVersion);
     }
 
 }

@@ -16,12 +16,16 @@
  */
 package com.wultra.security.powerauth.crypto.lib.util;
 
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 
 /**
@@ -45,35 +49,44 @@ public class HashBasedCounterUtils {
      * Number of bytes expected for CTR_DATA
      */
     private static final int CTR_DATA_LENGTH = 16;
+    /**
+     * Custom bytes for MAC for counter data.
+     */
+    private static final byte[] KMAC_CTR_DATA_CUSTOM_BYTES = CustomString.PA4MAC_CTR.value().getBytes(StandardCharsets.UTF_8);
 
     /**
      * Calculate hash from value representing the hash based counter. HMAC-SHA256 is currently used as a hashing
      * function.
      *
      * @param ctrData Hash-based counter.
-     * @param transportKey Transport key.
+     * @param keyCtrDataMac Key for calculating the counter data hash.
+     * @param protocolVersion Protocol version.
      * @return Hash calculated from provided hash-based counter.
      * @throws GenericCryptoException In case that key derivation fails or you provided invalid ctrData.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      * @throws InvalidKeyException In case that transport key is not valid.
      */
-    public byte[] calculateHashFromHashBasedCounter(byte[] ctrData, SecretKey transportKey)
+    public byte[] calculateHashFromHashBasedCounter(byte[] ctrData, SecretKey keyCtrDataMac, ProtocolVersion protocolVersion)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
         if (ctrData == null || ctrData.length != CTR_DATA_LENGTH) {
             throw new GenericCryptoException("Invalid ctrData provided");
         }
-        if (transportKey == null) {
-            throw new GenericCryptoException("Invalid transport key");
+        if (keyCtrDataMac == null) {
+            throw new GenericCryptoException("Invalid ctrData hash key");
         }
-        // Derive KEY_TRANSPORT_CTR from KEY_TRANSPORT
-        final byte[] derivationIndex = ByteBuffer.allocate(STATUS_BLOB_TRANSPORT_CTR_LENGTH)
-                .putLong(0L)
-                .putLong(STATUS_BLOB_TRANSPORT_CTR_INDEX)
-                .array();
-        final SecretKey transportCtr = keyGenerator.deriveSecretKey(transportKey, derivationIndex);
-        // Derive CTR_DATA_HASH from KEY_TRANSPORT_CTR and CTR_DATA
-        final SecretKey ctrDataHashKey = keyGenerator.deriveSecretKeyHmac(transportCtr, ctrData);
-        return keyConvertor.convertSharedSecretKeyToBytes(ctrDataHashKey);
+        if (protocolVersion.intValue() == 3) {
+            // Derive KEY_TRANSPORT_CTR from KEY_TRANSPORT
+            final byte[] derivationIndex = ByteBuffer.allocate(STATUS_BLOB_TRANSPORT_CTR_LENGTH)
+                    .putLong(0L)
+                    .putLong(STATUS_BLOB_TRANSPORT_CTR_INDEX)
+                    .array();
+            final SecretKey transportCtr = keyGenerator.deriveSecretKey(keyCtrDataMac, derivationIndex);
+            // Derive CTR_DATA_HASH from KEY_TRANSPORT_CTR and CTR_DATA
+            final SecretKey ctrDataHashKey = keyGenerator.deriveSecretKeyHmac(transportCtr, ctrData);
+            return keyConvertor.convertSharedSecretKeyToBytes(ctrDataHashKey);
+        } else {
+            return Kmac.kmac256(keyCtrDataMac, ctrData, KMAC_CTR_DATA_CUSTOM_BYTES);
+        }
     }
 
     /**
@@ -84,12 +97,13 @@ public class HashBasedCounterUtils {
      * @param receivedCtrDataHash Value received from the server, containing hash, calculated from hash based counter.
      * @param expectedCtrData Expected hash based counter.
      * @param transportKey Transport key.
+     * @param protocolVersion Protocol version.
      * @return {@code true} in case that received hash equals to hash calculated from counter data.
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
+    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey, ProtocolVersion protocolVersion)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
         if (expectedCtrData == null || expectedCtrData.length != CTR_DATA_LENGTH) {
             throw new GenericCryptoException("Invalid expected counter data");
@@ -101,7 +115,7 @@ public class HashBasedCounterUtils {
             throw new GenericCryptoException("Invalid transport key");
         }
         // Calculate hash from current hash based counter
-        final byte[] expectedCtrDataHash = calculateHashFromHashBasedCounter(expectedCtrData, transportKey);
+        final byte[] expectedCtrDataHash = calculateHashFromHashBasedCounter(expectedCtrData, transportKey, protocolVersion);
         // Compare both hashed values
         return SideChannelUtils.constantTimeAreEqual(expectedCtrDataHash, receivedCtrDataHash);
     }

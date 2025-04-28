@@ -651,7 +651,7 @@ public class GenerateVectorDataTest {
             for (int i = 0; i < builder.counterDistance; i++) {
                 ctrDataMoved = keyGenerator.convert32Bto16B(Hash.sha256(ctrDataMoved));
             }
-            final byte[] ctrDataHash = activation.calculateHashFromHashBasedCounter(ctrDataMoved, transportKey);
+            final byte[] ctrDataHash = activation.calculateHashFromHashBasedCounter(ctrDataMoved, transportKey, ProtocolVersion.V33);
 
             final ActivationStatusBlobInfo info = builder.ctrDataHash(ctrDataHash).build();
             final byte[] encryptedStatusBlob = activation.encryptedStatusBlob(info, challenge, nonce, transportKey, ProtocolVersion.V33);

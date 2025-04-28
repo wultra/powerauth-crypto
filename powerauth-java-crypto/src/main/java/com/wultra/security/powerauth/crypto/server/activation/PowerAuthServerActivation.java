@@ -24,6 +24,8 @@ import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -46,6 +48,11 @@ public class PowerAuthServerActivation {
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
+
+    /**
+     * Custom bytes for MAC for counter data.
+     */
+    private static final byte[] KMAC_STATUS_CUSTOM_BYTES = CustomString.PA4MAC_STATUS.value().getBytes(StandardCharsets.UTF_8);
 
     /**
      * Generate a server related activation key pair.
@@ -217,15 +224,36 @@ public class PowerAuthServerActivation {
      * </ul>
      *
      * @param ctrData Hash-based counter.
-     * @param transportKey Transport key.
+     * @param keyCtrDataMac Key for calculating the counter data hash.
      * @return Hash calculated from provided hash-based counter.
      * @throws GenericCryptoException In case that key derivation fails or you provided invalid ctrData.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      * @throws InvalidKeyException In case that transport key is not valid.
      */
-    public byte[] calculateHashFromHashBasedCounter(byte[] ctrData, SecretKey transportKey)
+    public byte[] calculateHashFromHashBasedCounter(byte[] ctrData, SecretKey keyCtrDataMac, ProtocolVersion protocolVersion)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        return new HashBasedCounterUtils().calculateHashFromHashBasedCounter(ctrData, transportKey);
+        return new HashBasedCounterUtils().calculateHashFromHashBasedCounter(ctrData, keyCtrDataMac, protocolVersion);
+    }
+
+    /**
+     * Calculate MAC for activation status.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>4.0</li>
+     * </ul>
+     *
+     * @param statusData Activation status data.
+     * @param keyCtrStatusMac Key for calculating MAC for activation data.
+     * @param protocolVersion Protocol version.
+     * @return Activation status MAC.
+     * @throws GenericCryptoException In case of a cryptography error.
+     */
+    public byte[] calculateStatusMac(byte[] statusData, SecretKey keyCtrStatusMac, ProtocolVersion protocolVersion) throws GenericCryptoException {
+        if (protocolVersion.intValue() < 4) {
+            throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
+        }
+        return Kmac.kmac256(keyCtrStatusMac, statusData, KMAC_STATUS_CUSTOM_BYTES);
     }
 
     /**
