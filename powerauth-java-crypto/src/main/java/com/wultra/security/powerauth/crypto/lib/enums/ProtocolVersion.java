@@ -70,4 +70,12 @@ public enum ProtocolVersion {
         return Arrays.stream(values()).map(value -> value.version).collect(Collectors.toSet());
     }
 
+    /**
+     * Return the major version.
+     * @return Integer value of the major version.
+     */
+    public int intValue() {
+        return Integer.parseInt(version.split("\\.")[0]);
+    }
+
 }

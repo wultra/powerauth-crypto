@@ -17,6 +17,7 @@
 package com.wultra.security.powerauth.crypto.server.activation;
 
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
@@ -105,12 +106,13 @@ public class PowerAuthServerActivation {
      * @param challenge Challenge for activation status blob encryption. If non-null, then also {@code nonce} parameter must be provided.
      * @param nonce Nonce for activation status blob encryption. If non-null, then also {@code challenge} parameter must be provided.
      * @param transportKey A key used to protect the transport.
+     * @param protocolVersion Protocol version.
      * @return Encrypted status blob
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] encryptedStatusBlob(ActivationStatusBlobInfo statusBlobInfo, byte[] challenge, byte[] nonce, SecretKey transportKey)
+    public byte[] encryptedStatusBlob(ActivationStatusBlobInfo statusBlobInfo, byte[] challenge, byte[] nonce, SecretKey transportKey, ProtocolVersion protocolVersion)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         // Validate inputs
         if (statusBlobInfo == null) {
@@ -119,49 +121,87 @@ public class PowerAuthServerActivation {
         if (transportKey == null) {
             throw new GenericCryptoException("Required transportKey parameter is missing");
         }
-        // Prepare variables that has different meaning, depended on the protocol version.
-        final byte[] reserved;
+        final byte[] statusBlob = generateActivationStatusBlob(statusBlobInfo, protocolVersion);
+
+        // Derive IV and encrypt status blob data.
+        final byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        return new AESEncryptionUtils().encrypt(statusBlob, iv, transportKey, "AES/CBC/NoPadding");
+    }
+
+    /**
+     * Generate activations status blob for different protocol versions.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     *     <li>4.0</li>
+     * </ul>
+     *
+     * @param statusBlobInfo Activation status blog information.
+     * @param protocolVersion Protocol version.
+     * @return Status blob byte array.
+     * @throws GenericCryptoException In case encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public byte[] generateActivationStatusBlob(ActivationStatusBlobInfo statusBlobInfo, ProtocolVersion protocolVersion) throws GenericCryptoException, CryptoProviderException {
         final byte[] ctrDataHash;
         final byte ctrByte;
         final byte ctrLookAhead;
-        if (challenge != null) {
-            // Protocol V3.1+, use values provided in the status blob info object.
+        final int magicValue;
+        final byte[] statusFlagsAndReserved;
+        if (protocolVersion.intValue() == 4) {
             if (statusBlobInfo.getCtrDataHash() == null) {
                 throw new GenericCryptoException("Missing ctrDataHash in statusBlobInfo object");
             }
-            reserved = KEY_GENERATOR.generateRandomBytes(5);
+            magicValue = ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V4;
+            // Status flags 1 byte + reserved 5 bytes
+            statusFlagsAndReserved = ByteBuffer.allocate(5)
+                    .put(statusBlobInfo.getStatusFlags())
+                    .put(KEY_GENERATOR.generateRandomBytes(4))
+                    .array();
+            ctrDataHash = statusBlobInfo.getCtrDataHash();
+            ctrByte = statusBlobInfo.getCtrByte();
+            ctrLookAhead = statusBlobInfo.getCtrLookAhead();
+        } else if (protocolVersion != ProtocolVersion.V30) {
+            if (statusBlobInfo.getCtrDataHash() == null) {
+                throw new GenericCryptoException("Missing ctrDataHash in statusBlobInfo object");
+            }
+            magicValue = ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3;
+            // Reserved 5 bytes
+            statusFlagsAndReserved = KEY_GENERATOR.generateRandomBytes(5);
             ctrDataHash = statusBlobInfo.getCtrDataHash();
             ctrByte = statusBlobInfo.getCtrByte();
             ctrLookAhead = statusBlobInfo.getCtrLookAhead();
         } else {
-            // Legacy protocol versions (2.x, 3.0)
+            // Legacy protocol version (3.0)
             //
             // In this case, ctrDataHash, ctrInfo, ctrLookAhead should be completely random values, because
             // mobile clients don't use them. The older protocols also use zero-IV for the encryption, so the first
             // block encrypted by AES should have as much entropy as possible.
             //
+            magicValue = ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3;
             final byte[] randomBytes = KEY_GENERATOR.generateRandomBytes(5 + 2 + 16);
-            reserved = Arrays.copyOf(randomBytes, 5);
+            // Reserved 5 bytes
+            statusFlagsAndReserved = Arrays.copyOf(randomBytes, 5);
             ctrDataHash = Arrays.copyOfRange(randomBytes, 5 + 2, 5 + 2 + 16);
             ctrByte = randomBytes[5];
             ctrLookAhead = randomBytes[6];
         }
-        // Prepare status blob data.
-        final byte[] statusBlob = ByteBuffer.allocate(32)
-                .putInt(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE)     // 4 bytes
+        return ByteBuffer.allocate(32)
+                .putInt(magicValue)                          // 4 bytes
                 .put(statusBlobInfo.getActivationStatus())   // 1 byte
                 .put(statusBlobInfo.getCurrentVersion())     // 1 byte
                 .put(statusBlobInfo.getUpgradeVersion())     // 1 byte
-                .put(reserved)                               // 5 bytes
+                .put(statusFlagsAndReserved)                 // 5 bytes
                 .put(ctrByte)                                // 1 byte
                 .put(statusBlobInfo.getFailedAttempts())     // 1 byte
                 .put(statusBlobInfo.getMaxFailedAttempts())  // 1 byte
                 .put(ctrLookAhead)                           // 1 byte
                 .put(ctrDataHash)                            // 16 bytes
                 .array();
-        // Derive IV and encrypt status blob data.
-        final byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
-        return new AESEncryptionUtils().encrypt(statusBlob, iv, transportKey, "AES/CBC/NoPadding");
     }
 
     /**

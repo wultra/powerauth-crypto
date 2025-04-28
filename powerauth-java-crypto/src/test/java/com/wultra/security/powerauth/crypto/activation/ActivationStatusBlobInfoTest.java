@@ -18,6 +18,7 @@ package com.wultra.security.powerauth.crypto.activation;
 
 import com.wultra.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
@@ -75,14 +76,14 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setFailedAttempts((byte)1);
         serverStatusBlob.setMaxFailedAttempts((byte)5);
         serverStatusBlob.setCtrLookAhead((byte)20);
-        byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, null, null, transportKey);
+        byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, null, null, transportKey, ProtocolVersion.V30);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] zeroIv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(null, null, transportKey);
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         // Status blob bytes 0 ... 6 are deterministic, verify them
-        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE, buffer.getInt(0));
+        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3, buffer.getInt(0));
         assertEquals((byte) 3, buffer.get(4));
         assertEquals((byte) 2, buffer.get(5));
         assertEquals((byte) 3, buffer.get(6));
@@ -126,14 +127,14 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setCtrLookAhead((byte)20);
         serverStatusBlob.setCtrByte((byte)33);
         serverStatusBlob.setCtrDataHash(ctrDataHash);
-        byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey);
+        byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey, ProtocolVersion.V33);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] zeroIv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         // Status blob bytes 0 ... 6 are deterministic, verify them
-        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE, buffer.getInt(0));
+        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3, buffer.getInt(0));
         assertEquals((byte) 3, buffer.get(4));
         assertEquals((byte) 2, buffer.get(5));
         assertEquals((byte) 3, buffer.get(6));
@@ -160,4 +161,5 @@ public class ActivationStatusBlobInfoTest {
         assertArrayEquals(ctrDataHash, statusBlobDecoded.getCtrDataHash());
         assertTrue(statusBlobDecoded.isValid());
     }
+
 }

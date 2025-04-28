@@ -161,14 +161,32 @@ public class PowerAuthClientActivation {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
+        return getStatusFromBlob(statusBlob);
+    }
 
+    /**
+     * Returns an activation status from the activation blob as described in PowerAuth Specification.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     *     <li>4.0</li>
+     * </ul>
+     *
+     * @param statusBlob Activation status blob.
+     * @return Status information from the status blob.
+     */
+    public ActivationStatusBlobInfo getStatusFromBlob(byte[] statusBlob) {
         // Prepare objects to read status info into
         ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
 
         // check if the prefix is OK
         int prefix = buffer.getInt(0);
-        statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE);
+        statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3 || prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V4);
 
         // fetch the activation status byte
         statusInfo.setActivationStatus(buffer.get(4));

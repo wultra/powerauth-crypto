@@ -24,6 +24,7 @@ import com.wultra.security.powerauth.crypto.client.signature.PowerAuthClientSign
 import com.wultra.security.powerauth.crypto.lib.config.SignatureConfiguration;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import com.wultra.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
@@ -614,6 +615,7 @@ public class GenerateVectorDataTest {
      * <ul>
      *     <li>3.1</li>
      *     <li>3.2</li>
+     *     <li>3.3</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
@@ -652,7 +654,7 @@ public class GenerateVectorDataTest {
             final byte[] ctrDataHash = activation.calculateHashFromHashBasedCounter(ctrDataMoved, transportKey);
 
             final ActivationStatusBlobInfo info = builder.ctrDataHash(ctrDataHash).build();
-            final byte[] encryptedStatusBlob = activation.encryptedStatusBlob(info, challenge, nonce, transportKey);
+            final byte[] encryptedStatusBlob = activation.encryptedStatusBlob(info, challenge, nonce, transportKey, ProtocolVersion.V33);
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("transportKey", Base64.getEncoder().encodeToString(transportKeyBytes));
