@@ -121,7 +121,7 @@ public class PowerAuthServerActivation {
         if (transportKey == null) {
             throw new GenericCryptoException("Required transportKey parameter is missing");
         }
-        final byte[] statusBlob = generateActivationStatusBlob(statusBlobInfo, protocolVersion);
+        final byte[] statusBlob = generateStatusBlob(statusBlobInfo, protocolVersion);
 
         // Derive IV and encrypt status blob data.
         final byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
@@ -146,7 +146,7 @@ public class PowerAuthServerActivation {
      * @throws GenericCryptoException In case encryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] generateActivationStatusBlob(ActivationStatusBlobInfo statusBlobInfo, ProtocolVersion protocolVersion) throws GenericCryptoException, CryptoProviderException {
+    public byte[] generateStatusBlob(ActivationStatusBlobInfo statusBlobInfo, ProtocolVersion protocolVersion) throws GenericCryptoException, CryptoProviderException {
         final byte[] ctrDataHash;
         final byte ctrByte;
         final byte ctrLookAhead;
