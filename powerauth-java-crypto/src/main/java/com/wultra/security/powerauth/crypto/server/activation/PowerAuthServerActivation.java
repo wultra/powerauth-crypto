@@ -159,6 +159,7 @@ public class PowerAuthServerActivation {
         final byte ctrLookAhead;
         final int magicValue;
         final byte[] statusFlagsAndReserved;
+        final int blobLength;
         if (protocolVersion.intValue() == 4) {
             if (statusBlobInfo.getCtrDataHash() == null) {
                 throw new GenericCryptoException("Missing ctrDataHash in statusBlobInfo object");
@@ -172,6 +173,7 @@ public class PowerAuthServerActivation {
             ctrDataHash = statusBlobInfo.getCtrDataHash();
             ctrByte = statusBlobInfo.getCtrByte();
             ctrLookAhead = statusBlobInfo.getCtrLookAhead();
+            blobLength = 48;
         } else if (protocolVersion != ProtocolVersion.V30) {
             if (statusBlobInfo.getCtrDataHash() == null) {
                 throw new GenericCryptoException("Missing ctrDataHash in statusBlobInfo object");
@@ -182,6 +184,7 @@ public class PowerAuthServerActivation {
             ctrDataHash = statusBlobInfo.getCtrDataHash();
             ctrByte = statusBlobInfo.getCtrByte();
             ctrLookAhead = statusBlobInfo.getCtrLookAhead();
+            blobLength = 32;
         } else {
             // Legacy protocol version (3.0)
             //
@@ -196,8 +199,9 @@ public class PowerAuthServerActivation {
             ctrDataHash = Arrays.copyOfRange(randomBytes, 5 + 2, 5 + 2 + 16);
             ctrByte = randomBytes[5];
             ctrLookAhead = randomBytes[6];
+            blobLength = 32;
         }
-        return ByteBuffer.allocate(32)
+        return ByteBuffer.allocate(blobLength)
                 .putInt(magicValue)                          // 4 bytes
                 .put(statusBlobInfo.getActivationStatus())   // 1 byte
                 .put(statusBlobInfo.getCurrentVersion())     // 1 byte
@@ -225,6 +229,7 @@ public class PowerAuthServerActivation {
      *
      * @param ctrData Hash-based counter.
      * @param keyCtrDataMac Key for calculating the counter data hash.
+     * @param protocolVersion Protocol version.
      * @return Hash calculated from provided hash-based counter.
      * @throws GenericCryptoException In case that key derivation fails or you provided invalid ctrData.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
