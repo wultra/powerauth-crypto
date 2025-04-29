@@ -203,6 +203,7 @@ public class ActivationStatusBlobInfoTest {
         assertEquals(3, statusBlobDecoded.getActivationStatus());
         assertEquals(3, statusBlobDecoded.getCurrentVersion());
         assertEquals(4, statusBlobDecoded.getUpgradeVersion());
+        assertEquals(1, statusBlobDecoded.getStatusFlags());
         assertEquals(1, statusBlobDecoded.getFailedAttempts());
         assertEquals(5, statusBlobDecoded.getMaxFailedAttempts());
         assertEquals(20, statusBlobDecoded.getCtrLookAhead());
