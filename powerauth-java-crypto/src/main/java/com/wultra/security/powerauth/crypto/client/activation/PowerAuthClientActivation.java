@@ -243,7 +243,7 @@ public class PowerAuthClientActivation {
      * @throws GenericCryptoException In case of a cryptography error.
      */
     public boolean verifyStatusMac(byte[] statusData, byte[] expectedStatusMac, SecretKey keyCtrStatusMac, ProtocolVersion protocolVersion) throws GenericCryptoException {
-        if (protocolVersion.intValue() < 4) {
+        if (protocolVersion.getMajorVersion() < 4) {
             throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
         }
         return SideChannelUtils.constantTimeAreEqual(expectedStatusMac, Kmac.kmac256(keyCtrStatusMac, statusData, KMAC_STATUS_CUSTOM_BYTES));

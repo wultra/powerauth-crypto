@@ -160,7 +160,7 @@ public class PowerAuthServerActivation {
         final int magicValue;
         final byte[] statusFlagsAndReserved;
         final int blobLength;
-        if (protocolVersion.intValue() == 4) {
+        if (protocolVersion.getMajorVersion() == 4) {
             if (statusBlobInfo.getCtrDataHash() == null) {
                 throw new GenericCryptoException("Missing ctrDataHash in statusBlobInfo object");
             }
@@ -255,7 +255,7 @@ public class PowerAuthServerActivation {
      * @throws GenericCryptoException In case of a cryptography error.
      */
     public byte[] calculateStatusMac(byte[] statusData, SecretKey keyCtrStatusMac, ProtocolVersion protocolVersion) throws GenericCryptoException {
-        if (protocolVersion.intValue() < 4) {
+        if (protocolVersion.getMajorVersion() < 4) {
             throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
         }
         return Kmac.kmac256(keyCtrStatusMac, statusData, KMAC_STATUS_CUSTOM_BYTES);

@@ -74,7 +74,7 @@ public enum ProtocolVersion {
      * Return the major version.
      * @return Integer value of the major version.
      */
-    public int intValue() {
+    public int getMajorVersion() {
         return Integer.parseInt(version.split("\\.")[0]);
     }
 

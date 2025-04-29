@@ -78,7 +78,7 @@ public class HashBasedCounterUtils {
         if (keyCtrDataMac == null) {
             throw new GenericCryptoException("Invalid ctrData hash key");
         }
-        if (protocolVersion.intValue() == 3) {
+        if (protocolVersion.getMajorVersion() == 3) {
             // Derive KEY_TRANSPORT_CTR from KEY_TRANSPORT
             final byte[] derivationIndex = ByteBuffer.allocate(STATUS_BLOB_TRANSPORT_CTR_LENGTH)
                     .putLong(0L)
@@ -112,19 +112,19 @@ public class HashBasedCounterUtils {
         if (expectedCtrData == null) {
             throw new GenericCryptoException("Missing expected counter data");
         }
-        if (protocolVersion.intValue() == 3 && expectedCtrData.length != CTR_DATA_LENGTH_V3) {
+        if (protocolVersion.getMajorVersion() == 3 && expectedCtrData.length != CTR_DATA_LENGTH_V3) {
             throw new GenericCryptoException("Invalid expected counter data length");
         }
-        if (protocolVersion.intValue() == 4 && expectedCtrData.length != CTR_DATA_LENGTH_V4) {
+        if (protocolVersion.getMajorVersion() == 4 && expectedCtrData.length != CTR_DATA_LENGTH_V4) {
             throw new GenericCryptoException("Invalid expected counter data length");
         }
         if (receivedCtrDataHash == null) {
             throw new GenericCryptoException("Missing counter data hash");
         }
-        if (protocolVersion.intValue() == 3 && receivedCtrDataHash.length != CTR_DATA_LENGTH_V3) {
+        if (protocolVersion.getMajorVersion() == 3 && receivedCtrDataHash.length != CTR_DATA_LENGTH_V3) {
             throw new GenericCryptoException("Invalid received counter data length");
         }
-        if (protocolVersion.intValue() == 4 && receivedCtrDataHash.length != CTR_DATA_LENGTH_V4) {
+        if (protocolVersion.getMajorVersion() == 4 && receivedCtrDataHash.length != CTR_DATA_LENGTH_V4) {
             throw new GenericCryptoException("Invalid received counter data length");
         }
         if (keyCtrDataMac == null) {
