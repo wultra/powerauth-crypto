@@ -18,6 +18,7 @@ package com.wultra.security.powerauth.crypto.activation;
 
 import com.wultra.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
@@ -46,6 +47,8 @@ public class ActivationStatusBlobInfoTest {
 
     private final PowerAuthServerKeyFactory powerAuthServerKeyFactory = new PowerAuthServerKeyFactory();
 
+    private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
+
     /**
      * Add crypto providers.
      */
@@ -60,9 +63,8 @@ public class ActivationStatusBlobInfoTest {
         final PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
         final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         // Simulate generating of device and server key pairs
-        final KeyGenerator keyGenerator = new KeyGenerator();
-        final KeyPair keyPairDevice = keyGenerator.generateKeyPair(EcCurve.P256);
-        final KeyPair keyPairServer = keyGenerator.generateKeyPair(EcCurve.P256);
+        final KeyPair keyPairDevice = KEY_GENERATOR.generateKeyPair(EcCurve.P256);
+        final KeyPair keyPairServer = KEY_GENERATOR.generateKeyPair(EcCurve.P256);
         // Compute shared master secret key
         final SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(keyPairServer.getPrivate(), keyPairDevice.getPublic());
         // Derive transport key
@@ -75,14 +77,14 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setFailedAttempts((byte)1);
         serverStatusBlob.setMaxFailedAttempts((byte)5);
         serverStatusBlob.setCtrLookAhead((byte)20);
-        byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, null, null, transportKey);
+        byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, null, null, transportKey, ProtocolVersion.V30);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] zeroIv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(null, null, transportKey);
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         // Status blob bytes 0 ... 6 are deterministic, verify them
-        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE, buffer.getInt(0));
+        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3, buffer.getInt(0));
         assertEquals((byte) 3, buffer.get(4));
         assertEquals((byte) 2, buffer.get(5));
         assertEquals((byte) 3, buffer.get(6));
@@ -105,17 +107,16 @@ public class ActivationStatusBlobInfoTest {
         final PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
         final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         // Simulate generating of device and server key pairs
-        final KeyGenerator keyGenerator = new KeyGenerator();
-        final KeyPair keyPairDevice = keyGenerator.generateKeyPair(EcCurve.P256);
-        final KeyPair keyPairServer = keyGenerator.generateKeyPair(EcCurve.P256);
-        final byte[] challenge = keyGenerator.generateRandomBytes(16);
-        final byte[] nonce = keyGenerator.generateRandomBytes(16);
+        final KeyPair keyPairDevice = KEY_GENERATOR.generateKeyPair(EcCurve.P256);
+        final KeyPair keyPairServer = KEY_GENERATOR.generateKeyPair(EcCurve.P256);
+        final byte[] challenge = KEY_GENERATOR.generateRandomBytes(16);
+        final byte[] nonce = KEY_GENERATOR.generateRandomBytes(16);
         // Compute shared master secret key
         final SecretKey masterSecretKey = powerAuthServerKeyFactory.generateServerMasterSecretKey(keyPairServer.getPrivate(), keyPairDevice.getPublic());
         // Derive transport key
         final SecretKey transportKey = powerAuthServerKeyFactory.generateServerTransportKey(masterSecretKey);
         // Generate hash based counter
-        byte[] ctrDataHash = keyGenerator.generateRandomBytes(16);
+        byte[] ctrDataHash = KEY_GENERATOR.generateRandomBytes(16);
         // Encrypt status blob with transport key
         ActivationStatusBlobInfo serverStatusBlob = new ActivationStatusBlobInfo();
         serverStatusBlob.setActivationStatus((byte)3);
@@ -126,19 +127,19 @@ public class ActivationStatusBlobInfoTest {
         serverStatusBlob.setCtrLookAhead((byte)20);
         serverStatusBlob.setCtrByte((byte)33);
         serverStatusBlob.setCtrDataHash(ctrDataHash);
-        byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey);
+        byte[] encryptedStatusBlob = serverActivation.encryptedStatusBlob(serverStatusBlob, challenge, nonce, transportKey, ProtocolVersion.V33);
         // Decrypt status blob with transport key
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] zeroIv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(encryptedStatusBlob, zeroIv, transportKey, "AES/CBC/NoPadding");
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
         // Status blob bytes 0 ... 6 are deterministic, verify them
-        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE, buffer.getInt(0));
+        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3, buffer.getInt(0));
         assertEquals((byte) 3, buffer.get(4));
         assertEquals((byte) 2, buffer.get(5));
         assertEquals((byte) 3, buffer.get(6));
         // ctr byte is at position 12
-        assertEquals((byte)33, buffer.get(12));
+        assertEquals((byte) 33, buffer.get(12));
         // Status blob bytes 13 ... 14 contain version, verify them
         assertEquals((byte) 1, buffer.get(13));
         assertEquals((byte) 5, buffer.get(14));
@@ -160,4 +161,55 @@ public class ActivationStatusBlobInfoTest {
         assertArrayEquals(ctrDataHash, statusBlobDecoded.getCtrDataHash());
         assertTrue(statusBlobDecoded.isValid());
     }
+
+    @Test
+    public void testActivationStatusBlobV4() throws GenericCryptoException, CryptoProviderException {
+        final PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
+        final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
+        // Generate hash based counter
+        byte[] ctrDataHash = KEY_GENERATOR.generateRandomBytes(32);
+        ActivationStatusBlobInfo serverStatusBlob = new ActivationStatusBlobInfo();
+        serverStatusBlob.setActivationStatus((byte)3);
+        serverStatusBlob.setCurrentVersion((byte)3);
+        serverStatusBlob.setUpgradeVersion((byte)4);
+        serverStatusBlob.setFailedAttempts((byte)1);
+        serverStatusBlob.setMaxFailedAttempts((byte)5);
+        serverStatusBlob.setCtrLookAhead((byte)20);
+        serverStatusBlob.setCtrByte((byte)33);
+        serverStatusBlob.setCtrDataHash(ctrDataHash);
+        serverStatusBlob.setStatusFlags((byte)1);
+        byte[] statusBlob = serverActivation.generateStatusBlob(serverStatusBlob, ProtocolVersion.V40);
+        // Decrypt status blob with transport key
+        ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
+        // Status blob bytes 0 ... 7 are deterministic, verify them
+        assertEquals(ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V4, buffer.getInt(0));
+        assertEquals((byte) 3, buffer.get(4));
+        assertEquals((byte) 3, buffer.get(5));
+        assertEquals((byte) 4, buffer.get(6));
+        assertEquals((byte) 1, buffer.get(7));
+        // ctr byte is at position 12
+        assertEquals((byte) 33, buffer.get(12));
+        // Status blob bytes 13 ... 14 contain version, verify them
+        assertEquals((byte) 1, buffer.get(13));
+        assertEquals((byte) 5, buffer.get(14));
+        // Look ahead window
+        assertEquals((byte) 20, buffer.get(15));
+        // Status blob bytes 16 ... 31 contain ctrData, verify them
+        byte[] ctrDataFromStatus = Arrays.copyOfRange(statusBlob, 16, 48);
+        assertArrayEquals(ctrDataHash, ctrDataFromStatus);
+
+        // Verify decoded status blob used in client activation
+        final ActivationStatusBlobInfo statusBlobDecoded = clientActivation.getStatusFromBlob(statusBlob);
+        assertEquals(3, statusBlobDecoded.getActivationStatus());
+        assertEquals(3, statusBlobDecoded.getCurrentVersion());
+        assertEquals(4, statusBlobDecoded.getUpgradeVersion());
+        assertEquals(1, statusBlobDecoded.getStatusFlags());
+        assertEquals(1, statusBlobDecoded.getFailedAttempts());
+        assertEquals(5, statusBlobDecoded.getMaxFailedAttempts());
+        assertEquals(20, statusBlobDecoded.getCtrLookAhead());
+        assertEquals(33, statusBlobDecoded.getCtrByte());
+        assertArrayEquals(ctrDataHash, statusBlobDecoded.getCtrDataHash());
+        assertTrue(statusBlobDecoded.isValid());
+    }
+
 }

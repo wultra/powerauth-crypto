@@ -57,7 +57,17 @@ public enum CustomString {
     /**
      * Key derivation for MAC in AEAD.
      */
-    PA4MAC_AEAD("PA4MAC-AEAD");
+    PA4MAC_AEAD("PA4MAC-AEAD"),
+
+    /**
+     * Key derivation for MAC for counter data.
+     */
+    PA4MAC_CTR("PA4MAC-CTR"),
+
+    /**
+     * Key derivation for MAC for activation status.
+     */
+    PA4MAC_STATUS("PA4MAC-STATUS");
 
     private final String customString;
 

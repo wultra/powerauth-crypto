@@ -17,12 +17,15 @@
 package com.wultra.security.powerauth.crypto.client.activation;
 
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -44,6 +47,11 @@ public class PowerAuthClientActivation {
 
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
+
+    /**
+     * Custom bytes for MAC for counter data.
+     */
+    private static final byte[] KMAC_STATUS_CUSTOM_BYTES = CustomString.PA4MAC_STATUS.value().getBytes(StandardCharsets.UTF_8);
 
     /**
      * Generate a device related activation key pair.
@@ -161,14 +169,32 @@ public class PowerAuthClientActivation {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
+        return getStatusFromBlob(statusBlob);
+    }
 
+    /**
+     * Returns an activation status from the activation blob as described in PowerAuth Specification.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     *     <li>4.0</li>
+     * </ul>
+     *
+     * @param statusBlob Activation status blob.
+     * @return Status information from the status blob.
+     */
+    public ActivationStatusBlobInfo getStatusFromBlob(byte[] statusBlob) {
         // Prepare objects to read status info into
         ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
 
         // check if the prefix is OK
         int prefix = buffer.getInt(0);
-        statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE);
+        statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3 || prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V4);
 
         // fetch the activation status byte
         statusInfo.setActivationStatus(buffer.get(4));
@@ -178,6 +204,9 @@ public class PowerAuthClientActivation {
 
         // fetch the upgrade version status byte
         statusInfo.setUpgradeVersion(buffer.get(6));
+
+        // fetch the status flags
+        statusInfo.setStatusFlags(buffer.get(7));
 
         // fetch ctr byte value
         statusInfo.setCtrByte(buffer.get(12));
@@ -192,10 +221,32 @@ public class PowerAuthClientActivation {
         statusInfo.setCtrLookAhead(buffer.get(15));
 
         // extract counter data from second half of status blob
-        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, 32);
+        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, statusBlob.length);
         statusInfo.setCtrDataHash(ctrData);
 
         return statusInfo;
+    }
+
+    /**
+     * Verify MAC for activation status.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>4.0</li>
+     * </ul>
+     *
+     * @param statusData Activation status data.
+     * @param expectedStatusMac Expected status MAC.
+     * @param keyCtrStatusMac Key for calculating MAC for activation data.
+     * @param protocolVersion Protocol version.
+     * @return Activation status MAC.
+     * @throws GenericCryptoException In case of a cryptography error.
+     */
+    public boolean verifyStatusMac(byte[] statusData, byte[] expectedStatusMac, SecretKey keyCtrStatusMac, ProtocolVersion protocolVersion) throws GenericCryptoException {
+        if (protocolVersion.getMajorVersion() < 4) {
+            throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
+        }
+        return SideChannelUtils.constantTimeAreEqual(expectedStatusMac, Kmac.kmac256(keyCtrStatusMac, statusData, KMAC_STATUS_CUSTOM_BYTES));
     }
 
     /**
@@ -214,14 +265,15 @@ public class PowerAuthClientActivation {
      * @param receivedCtrDataHash Value received from the server, containing hash, calculated from hash based counter.
      * @param expectedCtrData Expected hash based counter.
      * @param transportKey Transport key.
+     * @param protocolVersion Protocol version.
      * @return {@code true} in case that received hash equals to hash calculated from counter data.
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
+    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey, ProtocolVersion protocolVersion)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
+        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey, protocolVersion);
     }
 
 }
