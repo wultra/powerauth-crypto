@@ -100,7 +100,7 @@ public class HashBasedCounterUtils {
      *
      * @param receivedCtrDataHash Value received from the server, containing hash, calculated from hash based counter.
      * @param expectedCtrData Expected hash based counter.
-     * @param keyCtrDataMac Transport key.
+     * @param keyCtrDataMac Key for calculating the counter data hash.
      * @param protocolVersion Protocol version.
      * @return {@code true} in case that received hash equals to hash calculated from counter data.
      * @throws InvalidKeyException When invalid key is provided.
