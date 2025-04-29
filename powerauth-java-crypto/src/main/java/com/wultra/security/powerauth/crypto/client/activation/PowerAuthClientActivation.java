@@ -198,6 +198,9 @@ public class PowerAuthClientActivation {
         // fetch the upgrade version status byte
         statusInfo.setUpgradeVersion(buffer.get(6));
 
+        // fetch the status flags
+        statusInfo.setStatusFlags(buffer.get(7));
+
         // fetch ctr byte value
         statusInfo.setCtrByte(buffer.get(12));
 
