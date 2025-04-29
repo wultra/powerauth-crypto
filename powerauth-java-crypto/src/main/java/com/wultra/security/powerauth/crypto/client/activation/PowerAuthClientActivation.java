@@ -246,7 +246,7 @@ public class PowerAuthClientActivation {
         if (protocolVersion.intValue() < 4) {
             throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
         }
-        return Arrays.equals(expectedStatusMac, Kmac.kmac256(keyCtrStatusMac, statusData, KMAC_STATUS_CUSTOM_BYTES));
+        return SideChannelUtils.constantTimeAreEqual(expectedStatusMac, Kmac.kmac256(keyCtrStatusMac, statusData, KMAC_STATUS_CUSTOM_BYTES));
     }
 
     /**
