@@ -167,7 +167,7 @@ public class ActivationStatusBlobInfoTest {
         final PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
         final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         // Generate hash based counter
-        byte[] ctrDataHash = KEY_GENERATOR.generateRandomBytes(16);
+        byte[] ctrDataHash = KEY_GENERATOR.generateRandomBytes(32);
         ActivationStatusBlobInfo serverStatusBlob = new ActivationStatusBlobInfo();
         serverStatusBlob.setActivationStatus((byte)3);
         serverStatusBlob.setCurrentVersion((byte)3);
@@ -195,7 +195,7 @@ public class ActivationStatusBlobInfoTest {
         // Look ahead window
         assertEquals((byte) 20, buffer.get(15));
         // Status blob bytes 16 ... 31 contain ctrData, verify them
-        byte[] ctrDataFromStatus = Arrays.copyOfRange(statusBlob, 16, 32);
+        byte[] ctrDataFromStatus = Arrays.copyOfRange(statusBlob, 16, 48);
         assertArrayEquals(ctrDataHash, ctrDataFromStatus);
 
         // Verify decoded status blob used in client activation

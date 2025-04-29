@@ -214,7 +214,7 @@ public class PowerAuthClientActivation {
         statusInfo.setCtrLookAhead(buffer.get(15));
 
         // extract counter data from second half of status blob
-        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, 32);
+        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, statusBlob.length);
         statusInfo.setCtrDataHash(ctrData);
 
         return statusInfo;
