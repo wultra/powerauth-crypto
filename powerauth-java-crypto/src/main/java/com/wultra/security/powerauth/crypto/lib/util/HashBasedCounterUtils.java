@@ -73,12 +73,15 @@ public class HashBasedCounterUtils {
     public byte[] calculateHashFromHashBasedCounter(byte[] ctrData, SecretKey keyCtrDataMac, ProtocolVersion protocolVersion)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
         if (ctrData == null) {
-            throw new GenericCryptoException("Invalid ctrData provided");
+            throw new GenericCryptoException("Missing counter data");
         }
         if (keyCtrDataMac == null) {
-            throw new GenericCryptoException("Invalid ctrData hash key");
+            throw new GenericCryptoException("Invalid counter data hash key");
         }
         if (protocolVersion.getMajorVersion() == 3) {
+            if (ctrData.length != CTR_DATA_LENGTH_V3) {
+                throw new GenericCryptoException("Invalid counter data");
+            }
             // Derive KEY_TRANSPORT_CTR from KEY_TRANSPORT
             final byte[] derivationIndex = ByteBuffer.allocate(STATUS_BLOB_TRANSPORT_CTR_LENGTH)
                     .putLong(0L)
@@ -89,6 +92,9 @@ public class HashBasedCounterUtils {
             final SecretKey ctrDataHashKey = keyGenerator.deriveSecretKeyHmac(transportCtr, ctrData);
             return keyConvertor.convertSharedSecretKeyToBytes(ctrDataHashKey);
         } else {
+            if (ctrData.length != CTR_DATA_LENGTH_V4) {
+                throw new GenericCryptoException("Invalid counter data");
+            }
             return Kmac.kmac256(keyCtrDataMac, ctrData, KMAC_CTR_DATA_CUSTOM_BYTES);
         }
     }
