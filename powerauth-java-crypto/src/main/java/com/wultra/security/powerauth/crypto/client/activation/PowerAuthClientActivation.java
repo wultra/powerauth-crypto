@@ -24,6 +24,8 @@ import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -45,6 +47,11 @@ public class PowerAuthClientActivation {
 
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
+
+    /**
+     * Custom bytes for MAC for counter data.
+     */
+    private static final byte[] KMAC_STATUS_CUSTOM_BYTES = CustomString.PA4MAC_STATUS.value().getBytes(StandardCharsets.UTF_8);
 
     /**
      * Generate a device related activation key pair.
@@ -218,6 +225,28 @@ public class PowerAuthClientActivation {
         statusInfo.setCtrDataHash(ctrData);
 
         return statusInfo;
+    }
+
+    /**
+     * Verify MAC for activation status.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>4.0</li>
+     * </ul>
+     *
+     * @param statusData Activation status data.
+     * @param expectedStatusMac Expected status MAC.
+     * @param keyCtrStatusMac Key for calculating MAC for activation data.
+     * @param protocolVersion Protocol version.
+     * @return Activation status MAC.
+     * @throws GenericCryptoException In case of a cryptography error.
+     */
+    public boolean verifyStatusMac(byte[] statusData, byte[] expectedStatusMac, SecretKey keyCtrStatusMac, ProtocolVersion protocolVersion) throws GenericCryptoException {
+        if (protocolVersion.intValue() < 4) {
+            throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
+        }
+        return Arrays.equals(expectedStatusMac, Kmac.kmac256(keyCtrStatusMac, statusData, KMAC_STATUS_CUSTOM_BYTES));
     }
 
     /**
