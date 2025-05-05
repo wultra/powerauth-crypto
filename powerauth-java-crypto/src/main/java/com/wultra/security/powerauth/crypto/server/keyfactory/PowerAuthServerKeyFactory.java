@@ -17,7 +17,7 @@
 package com.wultra.security.powerauth.crypto.server.keyfactory;
 
 import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
-import com.wultra.security.powerauth.crypto.lib.enums.AuthenticationCodeType;
+import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthCodeType;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -59,7 +59,7 @@ public class PowerAuthServerKeyFactory {
      *     <li>3.3</li>
      * </ul>
      *
-     * @param authenticationCodeType Requested authentication code type
+     * @param powerAuthCodeType Requested authentication code type
      * @param masterSecretKey Master Key Secret
      * @return List with keys constructed from master secret that are needed to get
      * requested authentication code type.
@@ -67,44 +67,44 @@ public class PowerAuthServerKeyFactory {
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public List<SecretKey> keysForAuthenticationCodeType(AuthenticationCodeType authenticationCodeType, SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public List<SecretKey> keysForAuthenticationCodeType(PowerAuthCodeType powerAuthCodeType, SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
         List<SecretKey> factorKeys = new ArrayList<>();
 
-        if (authenticationCodeType == null) {
+        if (powerAuthCodeType == null) {
             return factorKeys;
         }
 
-        if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION)) {
+        if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.KNOWLEDGE)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.KNOWLEDGE)) {
 
             SecretKey factorKey = generateServerKnowledgeFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.BIOMETRY)) {
 
             SecretKey factorKey = generateServerBiometryFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
             factorKey = generateServerKnowledgeFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
             factorKey = generateServerBiometryFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);

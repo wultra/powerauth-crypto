@@ -25,7 +25,7 @@ import java.util.Map;
  * @author Petr Dvorak, petr@wultra.com
  *
  */
-public enum AuthenticationCodeType {
+public enum PowerAuthCodeType {
 
     /**
      * 1FA authentication code using possession factor key, value = "possession"
@@ -59,15 +59,15 @@ public enum AuthenticationCodeType {
 
     private final String value;
 
-    private final static Map<String, AuthenticationCodeType> map = new HashMap<>();
+    private final static Map<String, PowerAuthCodeType> map = new HashMap<>();
 
     static {
-        for (AuthenticationCodeType type : AuthenticationCodeType.values()) {
+        for (PowerAuthCodeType type : PowerAuthCodeType.values()) {
             map.put(type.value.toLowerCase(), type);
         }
     }
 
-    AuthenticationCodeType(final String value) {
+    PowerAuthCodeType(final String value) {
         this.value = value;
     }
 
@@ -76,7 +76,7 @@ public enum AuthenticationCodeType {
      * @param value String to get the enum value for.
      * @return Enum value.
      */
-    public static AuthenticationCodeType getEnumFromString(String value) {
+    public static PowerAuthCodeType getEnumFromString(String value) {
         if (value == null) {
             return null;
         }

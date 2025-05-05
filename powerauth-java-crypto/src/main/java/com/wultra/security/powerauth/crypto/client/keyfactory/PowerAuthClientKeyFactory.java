@@ -17,7 +17,7 @@
 package com.wultra.security.powerauth.crypto.client.keyfactory;
 
 import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
-import com.wultra.security.powerauth.crypto.lib.enums.AuthenticationCodeType;
+import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthCodeType;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -41,43 +41,43 @@ public class PowerAuthClientKeyFactory {
 
     /**
      * Return a correct list of keys for given factor key.
-     * @param authenticationCodeType Requested type of a factor.
+     * @param powerAuthCodeType Requested type of a factor.
      * @param possessionFactorKey Possession factor related factor key.
      * @param knowledgeFactorKey Knowledge factor related factor key.
      * @param biometryFactorKey Biometry factor related factor key.
      * @return List with correct keys
      */
-    public List<SecretKey> keysForAuthenticationCodeType(AuthenticationCodeType authenticationCodeType, SecretKey possessionFactorKey, SecretKey knowledgeFactorKey, SecretKey biometryFactorKey) {
+    public List<SecretKey> keysForAuthenticationCodeType(PowerAuthCodeType powerAuthCodeType, SecretKey possessionFactorKey, SecretKey knowledgeFactorKey, SecretKey biometryFactorKey) {
 
         List<SecretKey> factorKeys = new ArrayList<>();
 
-        if (authenticationCodeType == null) {
+        if (powerAuthCodeType == null) {
             return factorKeys;
         }
 
-        if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION)) {
+        if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
 
             factorKeys.add(possessionFactorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.KNOWLEDGE)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.KNOWLEDGE)) {
 
             factorKeys.add(knowledgeFactorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.BIOMETRY)) {
 
             factorKeys.add(biometryFactorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
 
             factorKeys.add(possessionFactorKey);
             factorKeys.add(knowledgeFactorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
 
             factorKeys.add(possessionFactorKey);
             factorKeys.add(biometryFactorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
 
             factorKeys.add(possessionFactorKey);
             factorKeys.add(knowledgeFactorKey);
@@ -92,7 +92,7 @@ public class PowerAuthClientKeyFactory {
     /**
      * Generate a list with authentication code keys for given authentication code type and master
      * secret
-     * @param authenticationCodeType Requested authentication code type
+     * @param powerAuthCodeType Requested authentication code type
      * @param masterSecretKey Master Key Secret
      * @return List with keys constructed from master secret that are needed to
      *         get requested authentication code type.
@@ -100,40 +100,40 @@ public class PowerAuthClientKeyFactory {
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public List<SecretKey> keysForAuthenticationCodeType(AuthenticationCodeType authenticationCodeType, SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public List<SecretKey> keysForAuthenticationCodeType(PowerAuthCodeType powerAuthCodeType, SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
         List<SecretKey> factorKeys = new ArrayList<>();
 
-        if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION)) {
+        if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
 
             SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.KNOWLEDGE)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.KNOWLEDGE)) {
 
             SecretKey factorKey = generateClientKnowledgeFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.BIOMETRY)) {
 
             SecretKey factorKey = generateClientBiometryFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
 
             SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
             factorKey = generateClientKnowledgeFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
 
             SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
             factorKey = generateClientBiometryFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
+        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
 
             SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
