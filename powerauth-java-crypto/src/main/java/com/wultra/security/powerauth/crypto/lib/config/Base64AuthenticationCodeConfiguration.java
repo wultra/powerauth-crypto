@@ -16,20 +16,20 @@
  */
 package com.wultra.security.powerauth.crypto.lib.config;
 
-import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
+import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthAuthenticationCodeFormat;
 
 /**
- * Configuration for Base64 signatures.
+ * Configuration for Base64 authentication codes.
  *
  * @author Petr Dvorak, petr@wultra.com
  */
-public class Base64SignatureConfiguration extends SignatureConfiguration {
+public class Base64AuthenticationCodeConfiguration extends AuthenticationCodeConfiguration {
 
     /**
-     * Constructor with the base64 signature. Package scoped.
+     * Constructor with the base64 authentication code. Package scoped.
      */
-    Base64SignatureConfiguration() {
-        super(PowerAuthSignatureFormat.BASE64);
+    Base64AuthenticationCodeConfiguration() {
+        super(PowerAuthAuthenticationCodeFormat.BASE64);
     }
 
 }

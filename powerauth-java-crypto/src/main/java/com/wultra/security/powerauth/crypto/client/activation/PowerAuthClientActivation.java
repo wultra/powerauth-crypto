@@ -72,7 +72,7 @@ public class PowerAuthClientActivation {
     }
 
     /**
-     * Verify the signature of activation code using Master Public Key.
+     * Verify the activation code using Master Public Key.
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>

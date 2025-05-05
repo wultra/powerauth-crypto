@@ -20,54 +20,54 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Enum with signature type values.
+ * Enum with authentication code type values.
  *
  * @author Petr Dvorak, petr@wultra.com
  *
  */
-public enum PowerAuthSignatureTypes {
+public enum AuthenticationCodeType {
 
     /**
-     * 1FA signature using possession factor key, value = "possession"
+     * 1FA authentication code using possession factor key, value = "possession"
      */
     POSSESSION("possession"),
 
     /**
-     * 1FA signature using knowledge factor key, value = "knowledge"
+     * 1FA authentication code using knowledge factor key, value = "knowledge"
      */
     KNOWLEDGE("knowledge"),
 
     /**
-     * 1FA signature using biometry factor key, value = "biometry"
+     * 1FA authentication code using biometry factor key, value = "biometry"
      */
     BIOMETRY("biometry"),
 
     /**
-     * 2FA signature using possession and knowledge factor key, value = "possession_knowledge"
+     * 2FA authentication code using possession and knowledge factor key, value = "possession_knowledge"
      */
     POSSESSION_KNOWLEDGE("possession_knowledge"),
 
     /**
-     * 2FA signature using possession and biometry factor key, value = "possession_biometry"
+     * 2FA authentication code using possession and biometry factor key, value = "possession_biometry"
      */
     POSSESSION_BIOMETRY("possession_biometry"),
 
     /**
-     * 3FA signature using possession, knowledge and biometry factor key, value = "possession_knowledge_biometry"
+     * 3FA authentication code using possession, knowledge and biometry factor key, value = "possession_knowledge_biometry"
      */
     POSSESSION_KNOWLEDGE_BIOMETRY("possession_knowledge_biometry");
 
     private final String value;
 
-    private final static Map<String, PowerAuthSignatureTypes> map = new HashMap<>();
+    private final static Map<String, AuthenticationCodeType> map = new HashMap<>();
 
     static {
-        for (PowerAuthSignatureTypes type : PowerAuthSignatureTypes.values()) {
+        for (AuthenticationCodeType type : AuthenticationCodeType.values()) {
             map.put(type.value.toLowerCase(), type);
         }
     }
 
-    PowerAuthSignatureTypes(final String value) {
+    AuthenticationCodeType(final String value) {
         this.value = value;
     }
 
@@ -76,7 +76,7 @@ public enum PowerAuthSignatureTypes {
      * @param value String to get the enum value for.
      * @return Enum value.
      */
-    public static PowerAuthSignatureTypes getEnumFromString(String value) {
+    public static AuthenticationCodeType getEnumFromString(String value) {
         if (value == null) {
             return null;
         }

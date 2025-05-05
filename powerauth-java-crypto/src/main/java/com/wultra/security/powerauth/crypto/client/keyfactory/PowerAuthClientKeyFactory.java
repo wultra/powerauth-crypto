@@ -17,7 +17,7 @@
 package com.wultra.security.powerauth.crypto.client.keyfactory;
 
 import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
-import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthSignatureTypes;
+import com.wultra.security.powerauth.crypto.lib.enums.AuthenticationCodeType;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -40,111 +40,111 @@ public class PowerAuthClientKeyFactory {
     private final KeyGenerator keyGenerator = new KeyGenerator();
 
     /**
-     * Return a correct list of keys for given signature type.
-     * @param signatureType Requested type of a signature.
-     * @param possessionSignatureKey Possession factor related signature key.
-     * @param knowledgeSignatureKey Knowledge factor related signature key.
-     * @param biometrySignatureKey Biometry factor related signature key.
+     * Return a correct list of keys for given factor key.
+     * @param authenticationCodeType Requested type of a factor.
+     * @param possessionFactorKey Possession factor related factor key.
+     * @param knowledgeFactorKey Knowledge factor related factor key.
+     * @param biometryFactorKey Biometry factor related factor key.
      * @return List with correct keys
      */
-    public List<SecretKey> keysForSignatureType(PowerAuthSignatureTypes signatureType, SecretKey possessionSignatureKey, SecretKey knowledgeSignatureKey, SecretKey biometrySignatureKey) {
+    public List<SecretKey> keysForAuthenticationCodeType(AuthenticationCodeType authenticationCodeType, SecretKey possessionFactorKey, SecretKey knowledgeFactorKey, SecretKey biometryFactorKey) {
 
-        List<SecretKey> signatureKeys = new ArrayList<>();
+        List<SecretKey> factorKeys = new ArrayList<>();
 
-        if (signatureType == null) {
-            return signatureKeys;
+        if (authenticationCodeType == null) {
+            return factorKeys;
         }
 
-        if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION)) {
+        if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION)) {
 
-            signatureKeys.add(possessionSignatureKey);
+            factorKeys.add(possessionFactorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.KNOWLEDGE)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.KNOWLEDGE)) {
 
-            signatureKeys.add(knowledgeSignatureKey);
+            factorKeys.add(knowledgeFactorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.BIOMETRY)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.BIOMETRY)) {
 
-            signatureKeys.add(biometrySignatureKey);
+            factorKeys.add(biometryFactorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE)) {
 
-            signatureKeys.add(possessionSignatureKey);
-            signatureKeys.add(knowledgeSignatureKey);
+            factorKeys.add(possessionFactorKey);
+            factorKeys.add(knowledgeFactorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_BIOMETRY)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_BIOMETRY)) {
 
-            signatureKeys.add(possessionSignatureKey);
-            signatureKeys.add(biometrySignatureKey);
+            factorKeys.add(possessionFactorKey);
+            factorKeys.add(biometryFactorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
 
-            signatureKeys.add(possessionSignatureKey);
-            signatureKeys.add(knowledgeSignatureKey);
-            signatureKeys.add(biometrySignatureKey);
+            factorKeys.add(possessionFactorKey);
+            factorKeys.add(knowledgeFactorKey);
+            factorKeys.add(biometryFactorKey);
 
         }
 
-        return signatureKeys;
+        return factorKeys;
 
     }
 
     /**
-     * Generate a list with signature keys for given signature type and master
+     * Generate a list with authentication code keys for given authentication code type and master
      * secret
-     * @param signatureType Requested signature type
+     * @param authenticationCodeType Requested authentication code type
      * @param masterSecretKey Master Key Secret
      * @return List with keys constructed from master secret that are needed to
-     *         get requested signature type.
+     *         get requested authentication code type.
      * @throws InvalidKeyException In case master secret key is invalid.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public List<SecretKey> keysForSignatureType(PowerAuthSignatureTypes signatureType, SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public List<SecretKey> keysForAuthenticationCodeType(AuthenticationCodeType authenticationCodeType, SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
 
-        List<SecretKey> signatureKeys = new ArrayList<>();
+        List<SecretKey> factorKeys = new ArrayList<>();
 
-        if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION)) {
+        if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION)) {
 
-            SecretKey signatureKey = generateClientSignaturePossessionKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
+            SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.KNOWLEDGE)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.KNOWLEDGE)) {
 
-            SecretKey signatureKey = generateClientSignatureKnowledgeKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
+            SecretKey factorKey = generateClientKnowledgeFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.BIOMETRY)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.BIOMETRY)) {
 
-            SecretKey signatureKey = generateClientSignatureBiometryKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
+            SecretKey factorKey = generateClientBiometryFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE)) {
 
-            SecretKey signatureKey = generateClientSignaturePossessionKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
-            signatureKey = generateClientSignatureKnowledgeKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
+            SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
+            factorKey = generateClientKnowledgeFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_BIOMETRY)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_BIOMETRY)) {
 
-            SecretKey signatureKey = generateClientSignaturePossessionKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
-            signatureKey = generateClientSignatureBiometryKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
+            SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
+            factorKey = generateClientBiometryFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
 
-        } else if (signatureType.equals(PowerAuthSignatureTypes.POSSESSION_KNOWLEDGE_BIOMETRY)) {
+        } else if (authenticationCodeType.equals(AuthenticationCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
 
-            SecretKey signatureKey = generateClientSignaturePossessionKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
-            signatureKey = generateClientSignatureKnowledgeKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
-            signatureKey = generateClientSignatureBiometryKey(masterSecretKey);
-            signatureKeys.add(signatureKey);
+            SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
+            factorKey = generateClientKnowledgeFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
+            factorKey = generateClientBiometryFactorKey(masterSecretKey);
+            factorKeys.add(factorKey);
 
         }
 
-        return signatureKeys;
+        return factorKeys;
 
     }
 
@@ -166,51 +166,51 @@ public class PowerAuthClientKeyFactory {
     }
 
     /**
-     * Generate a signature key KEY_SIGNATURE_BIOMETRY from master secret key
+     * Generate a factor key KEY_FACTOR_BIOMETRY from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
-     * @return An instance of signature key KEY_SIGNATURE_BIOMETRY.
+     * @return An instance of factor key KEY_FACTOR_BIOMETRY.
      * @throws InvalidKeyException In case master secret key is invalid.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateClientSignatureBiometryKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_BIOMETRY.getIndex());
+    public SecretKey generateClientBiometryFactorKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.FACTOR_BIOMETRY.getIndex());
     }
 
     /**
-     * Generate a signature key KEY_SIGNATURE_KNOWLEDGE from master secret key
+     * Generate a factor key KEY_FACTOR_KNOWLEDGE from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
-     * @return An instance of signature key KEY_SIGNATURE_KNOWLEDGE.
+     * @return An instance of factor key KEY_FACTOR_KNOWLEDGE.
      * @throws InvalidKeyException In case master secret key is invalid.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateClientSignatureKnowledgeKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_KNOWLEDGE.getIndex());
+    public SecretKey generateClientKnowledgeFactorKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.FACTOR_KNOWLEDGE.getIndex());
     }
 
     /**
-     * Generate a signature key KEY_SIGNATURE_POSSESSION from master secret key
+     * Generate a factor key KEY_FACTOR_POSSESSION from master secret key
      * KEY_MASTER_SECRET using KDF.
      *
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
-     * @return An instance of signature key KEY_SIGNATURE_POSSESSION.
+     * @return An instance of factor key KEY_FACTOR_POSSESSION.
      * @throws InvalidKeyException In case master secret key is invalid.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public SecretKey generateClientSignaturePossessionKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.SIGNATURE_POSSESSION.getIndex());
+    public SecretKey generateClientPossessionFactorKey(SecretKey masterSecretKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        return keyGenerator.deriveSecretKey(masterSecretKey, PowerAuthDerivedKey.FACTOR_POSSESSION.getIndex());
     }
 
     /**
@@ -220,7 +220,7 @@ public class PowerAuthClientKeyFactory {
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
-     * @return An instance of signature key KEY_ENCRYPTED_VAULT.
+     * @return An instance of vault key KEY_ENCRYPTED_VAULT.
      * @throws InvalidKeyException In case master secret key is invalid.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
@@ -236,7 +236,7 @@ public class PowerAuthClientKeyFactory {
      * @see KeyGenerator#deriveSecretKey(SecretKey, byte[])
      * @param masterSecretKey
      *            Master secret key KEY_MASTER_SECRET.
-     * @return An instance of signature key KEY_TRANSPORT.
+     * @return An instance of key KEY_TRANSPORT.
      * @throws InvalidKeyException In case master secret key is invalid.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.

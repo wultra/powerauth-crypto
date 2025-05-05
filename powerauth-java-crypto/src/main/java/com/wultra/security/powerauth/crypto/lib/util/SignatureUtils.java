@@ -16,9 +16,9 @@
  */
 package com.wultra.security.powerauth.crypto.lib.util;
 
-import com.wultra.security.powerauth.crypto.lib.config.DecimalSignatureConfiguration;
+import com.wultra.security.powerauth.crypto.lib.config.DecimalAuthenticationCodeConfiguration;
 import com.wultra.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import com.wultra.security.powerauth.crypto.lib.config.SignatureConfiguration;
+import com.wultra.security.powerauth.crypto.lib.config.AuthenticationCodeConfiguration;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -179,21 +179,29 @@ public class SignatureUtils {
     }
 
     /**
-     * Compute decimal formatted PowerAuth signature for given data using a secret signature keys and counter byte array.
+     * Compute decimal formatted PowerAuth authentication code for given data using a secret factor keys and counter byte array.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
      *
      * @param data Data to be signed.
-     * @param signatureKeys Keys for computing the signature.
+     * @param factorKeys Factor keys used for the computation.
      * @param ctrData Counter byte array / derived key index.
-     * @param length Required length of the factor related signature component (i.e, if length is 4, then 2FA will
+     * @param length Required length of the factor related authentication code component (i.e, if length is 4, then 2FA will
      *               have 8 digits). Minimal allowed non-null value is 4. Maximum allowed value is 8. If the value
      *               is null, the default system value (8) is used.
-     * @return Decimal formatted PowerAuth signature for given data.
-     * @throws GenericCryptoException In case signature computation fails.
+     * @return Decimal formatted PowerAuth authentication code for given data.
+     * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private String computePowerAuthDecimalSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData, Integer length) throws GenericCryptoException, CryptoProviderException {
-        // Determine the length of the signature component, validate length
-        final int signatureDecimalLength;
+    private String computePowerAuthDecimalCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, Integer length) throws GenericCryptoException, CryptoProviderException {
+        // Determine the length of the authentication code component, validate length
+        final int decimalLength;
         if (length != null) {
             if (length < 4) {
                 throw new CryptoProviderException("Length must be at least 4, provided: " + length);
@@ -201,144 +209,176 @@ public class SignatureUtils {
             if (length > 8) {
                 throw new CryptoProviderException("Length must be less or equal to 8, provided: " + length);
             }
-            signatureDecimalLength = length;
+            decimalLength = length;
         } else {
-            signatureDecimalLength = PowerAuthConfiguration.SIGNATURE_DECIMAL_LENGTH;
+            decimalLength = PowerAuthConfiguration.AUTH_CODE_DECIMAL_LENGTH;
         }
-        // Prepare holder for signature components
-        final String[] signatureStringComponents = new String[signatureKeys.size()];
-        // Compute signature components
-        final List<byte[]> signatureComponents = computePowerAuthSignatureComponents(data, signatureKeys, ctrData);
-        // Convert byte components into decimal signature
-        for (int i = 0; i < signatureComponents.size(); i++) {
-            final byte[] signatureComponent = signatureComponents.get(i);
-            final int index = signatureComponent.length - 4;
-            final int number = (ByteBuffer.wrap(signatureComponent).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, signatureDecimalLength));
-            signatureStringComponents[i] = String.format("%0" + signatureDecimalLength + "d", number);
+        // Prepare holder for authentication code components
+        final String[] stringComponents = new String[factorKeys.size()];
+        // Compute authentication code components
+        final List<byte[]> authCodeComponents = computePowerAuthCodeComponents(data, factorKeys, ctrData);
+        // Convert byte authentication code into decimal authentication code
+        for (int i = 0; i < authCodeComponents.size(); i++) {
+            final byte[] component = authCodeComponents.get(i);
+            final int index = component.length - 4;
+            final int number = (ByteBuffer.wrap(component).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, decimalLength));
+            stringComponents[i] = String.format("%0" + decimalLength + "d", number);
         }
         // Join components with dash.
-        return String.join("-", signatureStringComponents);
+        return String.join("-", stringComponents);
     }
 
     /**
-     * Compute Base64 formatted PowerAuth signature for given data using a secret signature keys and counter byte array.
+     * Compute Base64 formatted PowerAuth authentication code for given data using a secret factor keys and counter byte array.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
      *
      * @param data Data to be signed.
-     * @param signatureKeys Keys for computing the signature.
+     * @param factorKeys Factor keys used for the computation.
      * @param ctrData Counter byte array / derived key index.
-     * @return Base64 formatted PowerAuth signature for given data.
-     * @throws GenericCryptoException In case signature computation fails.
+     * @return Base64 formatted PowerAuth authentication code for given data.
+     * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private String computePowerAuthBase64Signature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
-        // Prepare array of bytes for a complete signature
-        final byte[] signatureBytes = new byte[signatureKeys.size() * PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH];
-        // Compute signature components
-        final List<byte[]> signatureComponents = computePowerAuthSignatureComponents(data, signatureKeys, ctrData);
-        // Convert signature components into one Base64 encoded signature string
-        for (int i = 0; i < signatureComponents.size(); i++) {
-            final byte[] signatureComponent = signatureComponents.get(i);
-            final int sourceOffset = signatureComponent.length - PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH;
-            final int destinationOffset = i * PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH;
-            System.arraycopy(signatureComponent, sourceOffset, signatureBytes, destinationOffset, PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH);
+    private String computePowerAuthBase64Code(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
+        // Prepare array of bytes for a complete authentication code
+        final byte[] authenticationCodeBytes = new byte[factorKeys.size() * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH];
+        // Compute authentication code components
+        final List<byte[]> authenticationCodeComponents = computePowerAuthCodeComponents(data, factorKeys, ctrData);
+        // Convert authentication code components into one Base64 encoded string
+        for (int i = 0; i < authenticationCodeComponents.size(); i++) {
+            final byte[] component = authenticationCodeComponents.get(i);
+            final int sourceOffset = component.length - PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH;
+            final int destinationOffset = i * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH;
+            System.arraycopy(component, sourceOffset, authenticationCodeBytes, destinationOffset, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH);
         }
         // Finally, convert bytes into one Base64 string
-        return Base64.getEncoder().encodeToString(signatureBytes);
+        return Base64.getEncoder().encodeToString(authenticationCodeBytes);
     }
 
     /**
-     * Compute PowerAuth signature for given data using a secret signature keys and counter byte array. The signature is returned
-     * in form of list of binary components, where each item in returned array contains an appropriate signature factor. The returned
+     * Compute PowerAuth authentication code for given data using a secret factor keys and counter byte array. The authentication code is returned
+     * in form of list of binary components, where each item in returned array contains an appropriate factor. The returned
      * array must be then post-processed into the decimal, or Base64 format.
      *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
+     *
      * @param data Data to be signed.
-     * @param signatureKeys Keys for computing the signature.
+     * @param factorKeys Factor keys used for the computation.
      * @param ctrData Counter byte array / derived key index.
-     * @return List with binary signature components.
-     * @throws GenericCryptoException In case signature computation fails.
+     * @return List with binary authentication code components.
+     * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private List<byte[]> computePowerAuthSignatureComponents(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
+    private List<byte[]> computePowerAuthCodeComponents(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         // Prepare a hash
         final HMACHashUtilities hmac = new HMACHashUtilities();
 
-        // Prepare array for signature binary components.
-        final List<byte[]> signatureComponents = new ArrayList<>();
+        // Prepare array for authentication code binary components.
+        final List<byte[]> components = new ArrayList<>();
 
         final KeyConvertor keyConvertor = new KeyConvertor();
 
-        for (int i = 0; i < signatureKeys.size(); i++) {
-            final byte[] signatureKey = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(i));
-            byte[] derivedKey = hmac.hash(signatureKey, ctrData);
+        for (int i = 0; i < factorKeys.size(); i++) {
+            final byte[] authenticationCodeKey = keyConvertor.convertSharedSecretKeyToBytes(factorKeys.get(i));
+            byte[] derivedKey = hmac.hash(authenticationCodeKey, ctrData);
 
             for (int j = 0; j < i; j++) {
-                final byte[] signatureKeyInner = keyConvertor.convertSharedSecretKeyToBytes(signatureKeys.get(j + 1));
-                final byte[] derivedKeyInner = hmac.hash(signatureKeyInner, ctrData);
+                final byte[] keyInner = keyConvertor.convertSharedSecretKeyToBytes(factorKeys.get(j + 1));
+                final byte[] derivedKeyInner = hmac.hash(keyInner, ctrData);
                 derivedKey = hmac.hash(derivedKeyInner, derivedKey);
             }
 
-            final byte[] signatureBytes = hmac.hash(derivedKey, data);
-            // Test whether calculated signature has sufficient amount of bytes.
-            if (signatureBytes.length < PowerAuthConfiguration.SIGNATURE_BINARY_LENGTH) { // assert
+            final byte[] authenticationCodeBytes = hmac.hash(derivedKey, data);
+            // Test whether calculated authentication code has sufficient amount of bytes.
+            if (authenticationCodeBytes.length < PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH) { // assert
                 throw new IndexOutOfBoundsException();
             }
-            signatureComponents.add(signatureBytes);
+            components.add(authenticationCodeBytes);
         }
 
-        return signatureComponents;
+        return components;
     }
 
     /**
-     * Compute PowerAuth signature for given data using a secret signature keys and counter byte array.
+     * Compute PowerAuth authentication code for given data using a secret factor keys and counter byte array.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
      *
      * @param data Data to be signed.
-     * @param signatureKeys Keys for computing the signature.
+     * @param factorKeys Factor keys used for the computation.
      * @param ctrData Counter byte array / derived key index.
-     * @param configuration Format of signature to produce and parameters for the signature.
-     * @return PowerAuth signature for given data.
-     * @throws GenericCryptoException In case signature computation fails.
+     * @param configuration Format of authentication code to produce and parameters for the authentication code.
+     * @return PowerAuth authentication code for given data.
+     * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public String computePowerAuthSignature(byte[] data, List<SecretKey> signatureKeys, byte[] ctrData, SignatureConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
-        if (signatureKeys == null) {
-            throw new GenericCryptoException("Missing signatureKeys parameter");
+    public String computePowerAuthCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
+        if (factorKeys == null) {
+            throw new GenericCryptoException("Missing factorKeys parameter");
         }
         if (ctrData == null) {
             throw new GenericCryptoException("Missing ctrData parameter");
         }
-        if (signatureKeys.isEmpty() || signatureKeys.size() > PowerAuthConfiguration.MAX_FACTOR_KEYS_COUNT) {
-            throw new GenericCryptoException("Wrong number of signature keys");
+        if (factorKeys.isEmpty() || factorKeys.size() > PowerAuthConfiguration.MAX_FACTOR_KEYS_COUNT) {
+            throw new GenericCryptoException("Wrong number of factor keys");
         }
-        if (ctrData.length != PowerAuthConfiguration.SIGNATURE_COUNTER_LENGTH) {
-            throw new GenericCryptoException("Invalid length of signature counter");
+        if (ctrData.length != PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH) {
+            throw new GenericCryptoException("Invalid length of counter");
         }
-        switch (configuration.getSignatureFormat()) {
+        switch (configuration.getAuthenticationCodeFormat()) {
             case BASE64 -> {
-                return computePowerAuthBase64Signature(data, signatureKeys, ctrData);
+                return computePowerAuthBase64Code(data, factorKeys, ctrData);
             }
             case DECIMAL -> {
-                final Integer len = ((DecimalSignatureConfiguration) configuration).getLength();
-                return computePowerAuthDecimalSignature(data, signatureKeys, ctrData, len);
+                final Integer len = ((DecimalAuthenticationCodeConfiguration) configuration).getLength();
+                return computePowerAuthDecimalCode(data, factorKeys, ctrData, len);
             }
             default ->
-                throw new GenericCryptoException("Unsupported format of PowerAuth signature.");
+                throw new GenericCryptoException("Unsupported format of PowerAuth authentication code.");
         }
     }
 
     /**
-     * Validate the PowerAuth signature for given data using provided keys.
+     * Validate the PowerAuth authentication code for given data using provided keys.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
      *
      * @param data Data that were signed.
-     * @param signature Data signature.
-     * @param signatureKeys Keys for signature validation.
+     * @param authenticationCode Authentication code.
+     * @param factorKeys Factor keys used for the validation.
      * @param ctrData Counter data.
-     * @param configuration Format in which signature will be validated and parameters for the validation.
-     * @return Return "true" if signature matches, "false" otherwise.
-     * @throws GenericCryptoException In case signature computation fails.
+     * @param configuration Format in which authentication code will be validated and parameters for the validation.
+     * @return Return "true" if authentication code matches, "false" otherwise.
+     * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validatePowerAuthSignature(byte[] data, String signature, List<SecretKey> signatureKeys, byte[] ctrData, SignatureConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
-        return signature.equals(computePowerAuthSignature(data, signatureKeys, ctrData, configuration));
+    public boolean validatePowerAuthCode(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
+        return authenticationCode.equals(computePowerAuthCode(data, factorKeys, ctrData, configuration));
     }
 
 }
