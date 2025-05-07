@@ -19,7 +19,7 @@ package com.wultra.security.powerauth.crypto.client.authentication;
 import com.wultra.security.powerauth.crypto.lib.config.AuthenticationCodeConfiguration;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.util.SignatureUtils;
+import com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeLegacyUtils;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.List;
  */
 public class PowerAuthClientAuthentication {
 
-    private final SignatureUtils signatureUtils = new SignatureUtils();
+    private final AuthenticationCodeLegacyUtils authenticationCodeUtils = new AuthenticationCodeLegacyUtils();
 
     /**
      * Compute a PowerAuth authentication code for given data, factor keys and
@@ -68,7 +68,7 @@ public class PowerAuthClientAuthentication {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public String authenticateCodeForData(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration authenticationCodeConfiguration) throws GenericCryptoException, CryptoProviderException {
-        return signatureUtils.computePowerAuthCode(data, factorKeys, ctrData, authenticationCodeConfiguration);
+        return authenticationCodeUtils.computePowerAuthCode(data, factorKeys, ctrData, authenticationCodeConfiguration);
     }
 
 }
