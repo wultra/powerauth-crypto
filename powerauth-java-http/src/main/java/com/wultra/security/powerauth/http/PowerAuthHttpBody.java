@@ -28,7 +28,7 @@ import java.util.Base64;
 public class PowerAuthHttpBody {
 
     /**
-     * Prepare authentication base string ("data to be authenticated") using request parameters.
+     * Prepare authentication base string ("data used during authentication") using request parameters.
      * @param httpMethod HTTP Method (for example "GET", "POST", "PUT", "DELETE", ...)
      * @param requestUri Request URI identifier (for example "/secure/payment", or "SEC_PAYM" - structure of URI ID is lose, but the first approach is suggested)
      * @param nonce Random 16B nonce value.
