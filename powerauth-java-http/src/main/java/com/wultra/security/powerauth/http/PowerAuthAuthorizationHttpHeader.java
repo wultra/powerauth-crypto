@@ -126,8 +126,8 @@ public class PowerAuthAuthorizationHttpHeader extends PowerAuthHttpHeader {
      * Constructor with all required parameters.
      * @param activationId Activation ID.
      * @param applicationKey Application key.
-     * @param authCode PowerAuth authorization code value.
-     * @param authCodeType PowerAuth authorization code type.
+     * @param authCode PowerAuth authentication code value.
+     * @param authCodeType PowerAuth authentication code type.
      * @param nonce Nonce.
      * @param version Version.
      */
