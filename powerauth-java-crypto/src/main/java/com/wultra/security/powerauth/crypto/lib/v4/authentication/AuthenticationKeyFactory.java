@@ -152,7 +152,7 @@ public class AuthenticationKeyFactory {
      * @throws GenericCryptoException In case key derivation fails.
      */
     public SecretKey generatePossessionFactorKey(SecretKey keyActivationSecret) throws GenericCryptoException {
-        return KeyFactory.deriveKeyAuthenticationCodeKnowledge(keyActivationSecret);
+        return KeyFactory.deriveKeyAuthenticationCodePossession(keyActivationSecret);
     }
 
 }
