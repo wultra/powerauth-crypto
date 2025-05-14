@@ -68,7 +68,7 @@ public class AuthenticationCodeUtils {
         if (factorKeys.isEmpty() || factorKeys.size() > PowerAuthConfiguration.MAX_FACTOR_KEYS_COUNT) {
             throw new GenericCryptoException("Wrong number of factor keys");
         }
-        if (ctrData.length != PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH) {
+        if (ctrData.length != PowerAuthConfiguration.AUTH_CODE_COUNTER_LENGTH) {
             throw new GenericCryptoException("Invalid length of counter");
         }
         switch (configuration.getAuthenticationCodeFormat()) {
