@@ -36,11 +36,12 @@ import java.util.List;
  *     <li>3.3</li>
  * </ul>
  *
- * For version 4.0 or higher, use the {@link com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeUtils} directly.
+ * @deprecated For version 3.x, use the {@link com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeLegacyUtils} directly. For version 4.0 or higher, use the {@link com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeUtils} directly.
  *
  * @author Petr Dvorak
  *
  */
+@Deprecated
 public class PowerAuthServerAuthentication {
 
     private final AuthenticationCodeLegacyUtils authenticationCodeUtils = new AuthenticationCodeLegacyUtils();
