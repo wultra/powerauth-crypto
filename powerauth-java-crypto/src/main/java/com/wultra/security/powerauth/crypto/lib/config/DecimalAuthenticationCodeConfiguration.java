@@ -16,47 +16,47 @@
  */
 package com.wultra.security.powerauth.crypto.lib.config;
 
-import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
+import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthAuthenticationCodeFormat;
 
 /**
- * Configuration for decimal signatures.
+ * Configuration for decimal authentication codes.
  *
  * @author Petr Dvorak, petr@wultra.com
  */
-public class DecimalSignatureConfiguration extends SignatureConfiguration {
+public class DecimalAuthenticationCodeConfiguration extends AuthenticationCodeConfiguration {
 
     private Integer length;
 
     /**
-     * Constructor with the decimal signature. Package scoped.
+     * Constructor with the decimal authentication codes. Package scoped.
      */
-    DecimalSignatureConfiguration() {
-        super(PowerAuthSignatureFormat.DECIMAL);
+    DecimalAuthenticationCodeConfiguration() {
+        super(PowerAuthAuthenticationCodeFormat.DECIMAL);
     }
 
     /**
-     * Constructor with signature length. Package scoped.
+     * Constructor with authentication code length. Package scoped.
      *
      * @param length Length.
      */
-    DecimalSignatureConfiguration(Integer length) {
-        super(PowerAuthSignatureFormat.DECIMAL);
+    DecimalAuthenticationCodeConfiguration(Integer length) {
+        super(PowerAuthAuthenticationCodeFormat.DECIMAL);
         this.length = length;
     }
 
     /**
-     * Get length of signature.
+     * Get length of authentication code.
      *
-     * @return Length of signature.
+     * @return Length of authentication code.
      */
     public Integer getLength() {
         return length;
     }
 
     /**
-     * Set length of the signature.
+     * Set length of the authentication code.
      *
-     * @param length Length of signature.
+     * @param length Length of authentication code.
      */
     public void setLength(Integer length) {
         this.length = length;

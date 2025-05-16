@@ -29,19 +29,19 @@ import java.util.Map;
 public enum PowerAuthDerivedKey {
 
     /**
-     * Value related to the possession factor signature key, value = 1
+     * Value related to the possession factor key, value = 1
      */
-    SIGNATURE_POSSESSION(1),
+    FACTOR_POSSESSION(1),
 
     /**
-     * Value related to the knowledge factor signature key, value = 2
+     * Value related to the knowledge factor key, value = 2
      */
-    SIGNATURE_KNOWLEDGE(2),
+    FACTOR_KNOWLEDGE(2),
 
     /**
-     * Value related to the biometry factor signature key, value = 3
+     * Value related to the biometry factor key, value = 3
      */
-    SIGNATURE_BIOMETRY(3),
+    FACTOR_BIOMETRY(3),
 
     /**
      * Value related to the master transport key, value = 1000

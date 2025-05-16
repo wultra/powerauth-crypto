@@ -16,25 +16,25 @@
  */
 package com.wultra.security.powerauth.http.validator;
 
-import com.wultra.security.powerauth.http.PowerAuthSignatureHttpHeader;
+import com.wultra.security.powerauth.http.PowerAuthAuthorizationHttpHeader;
 
 /**
- * Validator class for {@link com.wultra.security.powerauth.http.PowerAuthSignatureHttpHeader}.
+ * Validator class for {@link PowerAuthAuthorizationHttpHeader}.
  *
  * @author Petr Dvorak, petr@wultra.com
  */
-public class PowerAuthSignatureHttpHeaderValidator {
+public class PowerAuthAuthorizationHttpHeaderValidator {
 
     /**
-     * Validate PowerAuth signature HTTP header.
-     * @param header PowerAuth signature HTTP header.
-     * @throws InvalidPowerAuthHttpHeaderException Thrown in case PowerAuth signature HTTP header is invalid.
+     * Validate PowerAuth authorization HTTP header.
+     * @param header PowerAuth authorization HTTP header.
+     * @throws InvalidPowerAuthHttpHeaderException Thrown in case PowerAuth authorization HTTP header is invalid.
      */
-    public static void validate(PowerAuthSignatureHttpHeader header) throws InvalidPowerAuthHttpHeaderException {
+    public static void validate(PowerAuthAuthorizationHttpHeader header) throws InvalidPowerAuthHttpHeaderException {
 
         // Check if the parsing was successful
         if (header == null) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_INVALID_EMPTY");
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTHORIZATION_INVALID_EMPTY");
         }
 
         // Check activation ID
@@ -59,26 +59,25 @@ public class PowerAuthSignatureHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_NONCE_INVALID");
         }
 
-        // Check signature type
-        final String signatureType = header.getSignatureType();
-        if (signatureType == null) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_TYPE_EMPTY");
+        final String authCodeType = header.getAuthCodeType();
+        if (authCodeType == null) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTH_CODE_TYPE_EMPTY");
         }
 
-        // Check if signature type has correct format
-        if (!ValueTypeValidator.isValidSignatureType(signatureType)) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_TYPE_INVALID");
+        // Check if authorization code type has correct format
+        if (!ValueTypeValidator.isValidAuthCodeType(authCodeType)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTH_CODE_TYPE_INVALID");
         }
 
-        // Check signature
-        final String signature = header.getSignature();
-        if (signature == null) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_EMPTY");
+        // Check authorization code
+        final String authCode = header.getAuthCode();
+        if (authCode == null) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTH_CODE_EMPTY");
         }
 
-        // Check if signature has correct format
-        if (!ValueTypeValidator.isValidSignatureValue(signature)) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_INVALID");
+        // Check if authentication code has correct format
+        if (!ValueTypeValidator.isValidAuthCodeValue(authCode)) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTH_CODE_INVALID");
         }
 
         // Check application key.
@@ -95,12 +94,12 @@ public class PowerAuthSignatureHttpHeaderValidator {
         // Check that version is present
         final String version = header.getVersion();
         if (version == null || version.isEmpty()) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_VERSION_EMPTY");
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTHORIZATION_VERSION_EMPTY");
         }
 
         // Check that version is correct
         if (!ValueTypeValidator.isValidProtocolVersion(version)) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_SIGNATURE_VERSION_INVALID");
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTHORIZATION_VERSION_INVALID");
         }
 
     }

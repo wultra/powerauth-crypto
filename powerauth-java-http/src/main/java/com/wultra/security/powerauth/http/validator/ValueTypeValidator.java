@@ -40,9 +40,9 @@ public class ValueTypeValidator {
     private static final String UUID_REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
     /**
-     * Regexp for validating decimalized signature values.
+     * Regexp for validating decimalized authentication code values.
      */
-    private static final String SIGNATURE_REGEX = "^[0-9]{8}(-[0-9]{8}){0,2}$";
+    private static final String AUTH_CODE_REGEX = "^[0-9]{8}(-[0-9]{8}){0,2}$";
 
     /**
      * Regexp for validating decimal strings.
@@ -50,9 +50,9 @@ public class ValueTypeValidator {
     private static final String DECIMAL_STRING_REGEX = "^[0-9]*$";
 
     /**
-     * Admissible signature types in the header.
+     * Admissible authentication code types in the header.
      */
-    private static final Set<String> EXPECTED_SIGNATURE_TYPES = new HashSet<>(Arrays.asList(
+    private static final Set<String> EXPECTED_AUTH_CODE_TYPES = new HashSet<>(Arrays.asList(
             "possession", "knowledge", "biometry",
             "possession_knowledge", "possession_biometry",
             "possession_knowledge_biometry"
@@ -113,32 +113,32 @@ public class ValueTypeValidator {
     }
 
     /**
-     * Check if the provided signature type value is valid.
-     * @param signatureType Signature type candidate.
-     * @return True if the provided signature type is valid.
+     * Check if the provided authentication code type value is valid.
+     * @param authCodeType Authentication code type candidate.
+     * @return True if the provided authentication code type is valid.
      */
-    public static boolean isValidSignatureType(String signatureType) {
-        return signatureType != null && EXPECTED_SIGNATURE_TYPES.contains(signatureType.toLowerCase());
+    public static boolean isValidAuthCodeType(String authCodeType) {
+        return authCodeType != null && EXPECTED_AUTH_CODE_TYPES.contains(authCodeType.toLowerCase());
     }
 
     /**
-     * Validate if the provided signature is of a correct format.
-     * @param signature Signature candidate.
-     * @return True if signature candidate has correct format, false otherwise.
+     * Validate if the provided authentication code is of a correct format.
+     * @param authCode Authentication code candidate.
+     * @return True if authentication code candidate has correct format, false otherwise.
      */
-    public static boolean isValidSignatureValue(String signature) {
-        if (signature != null) {
-            switch (signature.length()) {
+    public static boolean isValidAuthCodeValue(String authCode) {
+        if (authCode != null) {
+            switch (authCode.length()) {
                 case 8, 17, 26 -> {
-                    // "3.0" signature version uses "DECIMAL" format
-                    return signature.matches(SIGNATURE_REGEX);
+                    // "3.0" authentication code version uses "DECIMAL" format
+                    return authCode.matches(AUTH_CODE_REGEX);
                 }
                 case 24, 44, 64 -> {
-                    // "3.1" and later signatures uses "BASE64" format.
+                    // "3.1" and later authentication code uses "BASE64" format.
                     // We don't need to validate an exact number of encoded bytes. This is due to fact,
                     // that if input string length can only be 24, 44 or 64, then the encoded output length
                     // must be 16, 32 or 48.
-                    return isValidBase64OfLengthRange(signature, 16, 48);
+                    return isValidBase64OfLengthRange(authCode, 16, 48);
                 }
                 default -> {
                     return false;

@@ -40,38 +40,17 @@ public class PowerAuthConfiguration {
     public static final int FINGERPRINT_LENGTH = 8;
 
     /**
-     * Length of signature factor in decimal formatted signature (number of decimal numbers representing signature, protocol v3)
-     */
-    public static final int SIGNATURE_DECIMAL_LENGTH = 8;
-
-    /**
-     * Length of signature factor in Base64 formatted signature (number of bytes encoded to Base64, protocol v3)
-     */
-    public static final int SIGNATURE_BINARY_LENGTH = 16;
-
-    /**
-     * Number of bytes required for the signature counter data (protocol v3).
-     */
-    public static final int SIGNATURE_COUNTER_LENGTH = 16;
-
-    /**
      * Length of authentication code factor in Base64 formatted code (number of bytes encoded to Base64, protocol v4)
-     *
-     * @since protocol v4
      */
     public static final int AUTH_CODE_DECIMAL_LENGTH = 8;
 
     /**
-     * Length of authentication code factor in Base64 formatted signature (number of bytes encoded to Base64, protocol v4).
-     *
-     * @since protocol v4
+     * Length of authentication code factor in Base64 formatted authentication code (number of bytes encoded to Base64, protocol v4).
      */
     public static final int AUTH_CODE_BINARY_LENGTH = 16;
 
     /**
      * Number of bytes required for the authentication code counter data (protocol v4).
-     *
-     * @since protocol v4
      */
     public static final int AUTH_CODE_COUNTER_LENGTH = 32;
 
