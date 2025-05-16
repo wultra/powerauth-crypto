@@ -55,7 +55,7 @@ public class PowerAuthRequestCanonizationUtils {
         String[] keyValuePairs = queryString.split("&"); // ... get the key value pairs
         for (String keyValue : keyValuePairs) {
             String[] tmp = keyValue.split("=", 2);
-            if (tmp.length != 2) { // ... skip invalid values (this will likely fail signature verification)
+            if (tmp.length != 2) { // ... skip invalid values (this will likely fail authentication code verification)
                 continue;
             }
             String key = URLDecoder.decode(tmp[0], StandardCharsets.UTF_8); // decoded GET query attribute key
@@ -79,23 +79,23 @@ public class PowerAuthRequestCanonizationUtils {
             }
         });
 
-        // Serialize the sorted items back to the signature base string
-        StringBuilder signatureBaseString = new StringBuilder();
+        // Serialize the sorted items back to the authentication base string
+        StringBuilder authBaseString = new StringBuilder();
         boolean firstSkipped = false;
         for (Map<String, String> pair : items) {
             String key = pair.get(KEY);
             String val = pair.get(VAL);
             if (firstSkipped) { // ... for all items except for the first one, prepend "&"
-                signatureBaseString.append("&");
+                authBaseString.append("&");
             } else {
                 firstSkipped = true;
             }
-            signatureBaseString.append(URLEncoder.encode(key, StandardCharsets.UTF_8));
-            signatureBaseString.append("=");
-            signatureBaseString.append(URLEncoder.encode(val, StandardCharsets.UTF_8));
+            authBaseString.append(URLEncoder.encode(key, StandardCharsets.UTF_8));
+            authBaseString.append("=");
+            authBaseString.append(URLEncoder.encode(val, StandardCharsets.UTF_8));
         }
 
-        return !signatureBaseString.isEmpty() ? signatureBaseString.toString() : null;
+        return !authBaseString.isEmpty() ? authBaseString.toString() : null;
     }
 
 }

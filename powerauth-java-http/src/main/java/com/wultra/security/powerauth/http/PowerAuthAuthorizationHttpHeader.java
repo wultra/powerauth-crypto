@@ -24,7 +24,7 @@ import java.util.Map;
  * @author Petr Dvorak, petr@wultra.com
  *
  */
-public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
+public class PowerAuthAuthorizationHttpHeader extends PowerAuthHttpHeader {
 
     /**
      * Class with keys used in the underlying map.
@@ -43,13 +43,31 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
 
         /**
          * Key representing the "pa_signature" in the PowerAuth authorization header.
+         * <p>
+         * Only applicable to protocol version 3.
          */
         private static final String SIGNATURE = "pa_signature";
 
         /**
+         * Key representing the "pa_auth_code" in the PowerAuth authorization header.
+         * <p>
+         * Only applicable to protocol version 4 and newer.
+         */
+        private static final String AUTH_CODE = "pa_auth_code";
+
+        /**
          * Key representing the "pa_signature_type" in the PowerAuth authorization header.
+         * <p>
+         * Only applicable to protocol version 3.
          */
         private static final String SIGNATURE_TYPE = "pa_signature_type";
+
+        /**
+         * Key representing the "pa_auth_code_type" in the PowerAuth authorization header.
+         * <p>
+         * Only applicable to protocol version 3.
+         */
+        private static final String AUTH_CODE_TYPE = "pa_auth_code_type";
 
         /**
          * Key representing the "pa_nonce" in the PowerAuth authorization header.
@@ -74,14 +92,14 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
     private String applicationKey;
 
     /**
-     * Field representing signature value.
+     * Field representing authentication code value.
      */
-    private String signature;
+    private String authCode;
 
     /**
-     * Key representing signature type.
+     * Key representing authentication code type.
      */
-    private String signatureType;
+    private String authCodeType;
 
     /**
      * Field representing nonce value.
@@ -101,23 +119,23 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
     /**
      * Default constructor.
      */
-    public PowerAuthSignatureHttpHeader() {
+    public PowerAuthAuthorizationHttpHeader() {
     }
 
     /**
      * Constructor with all required parameters.
      * @param activationId Activation ID.
      * @param applicationKey Application key.
-     * @param signature PowerAuth signature value.
-     * @param signatureType PowerAuth signature type.
+     * @param authCode PowerAuth authentication code value.
+     * @param authCodeType PowerAuth authentication code type.
      * @param nonce Nonce.
      * @param version Version.
      */
-    public PowerAuthSignatureHttpHeader(String activationId, String applicationKey, String signature, String signatureType, String nonce, String version) {
+    public PowerAuthAuthorizationHttpHeader(String activationId, String applicationKey, String authCode, String authCodeType, String nonce, String version) {
         this.activationId = activationId;
         this.applicationKey = applicationKey;
-        this.signature = signature;
-        this.signatureType = signatureType;
+        this.authCode = authCode;
+        this.authCodeType = authCodeType;
         this.nonce = nonce;
         this.version = version;
     }
@@ -128,14 +146,22 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
      * @return PowerAuth authorization HTTP header.
      */
     @Override
-    public PowerAuthSignatureHttpHeader fromValue(String headerValue) {
+    public PowerAuthAuthorizationHttpHeader fromValue(String headerValue) {
         Map<String, String> map = parseHttpHeader(headerValue);
         this.activationId         = map.get(Key.ACTIVATION_ID);
         this.applicationKey       = map.get(Key.APPLICATION_ID);
         this.nonce                = map.get(Key.NONCE);
-        this.signatureType        = map.get(Key.SIGNATURE_TYPE);
-        this.signature            = map.get(Key.SIGNATURE);
         this.version              = map.get(Key.VERSION);
+        switch (version) {
+            case "3.0", "3.1", "3.2", "3.3" -> {
+                this.authCode     = map.get(Key.SIGNATURE);
+                this.authCodeType = map.get(Key.SIGNATURE_TYPE);
+            }
+            default -> {
+                this.authCodeType = map.get(Key.AUTH_CODE_TYPE);
+                this.authCode     = map.get(Key.AUTH_CODE);
+            }
+        }
         return this;
     }
 
@@ -144,13 +170,22 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
      * @return Value to be used in <code>X-PowerAuth-Authorization</code> HTTP header.
      */
     public String buildHttpHeader() {
-        return POWERAUTH_PREFIX
-                + headerField(Key.ACTIVATION_ID, this.activationId) + ", "
-                + headerField(Key.APPLICATION_ID, this.applicationKey) + ", "
-                + headerField(Key.NONCE, this.nonce) + ", "
-                + headerField(Key.SIGNATURE_TYPE, this.signatureType) + ", "
-                + headerField(Key.SIGNATURE, this.signature) + ", "
-                + headerField(Key.VERSION, this.version);
+        return switch (version) {
+            case "3.0", "3.1", "3.2", "3.3" -> POWERAUTH_PREFIX
+                    + headerField(Key.ACTIVATION_ID, this.activationId) + ", "
+                    + headerField(Key.APPLICATION_ID, this.applicationKey) + ", "
+                    + headerField(Key.NONCE, this.nonce) + ", "
+                    + headerField(Key.SIGNATURE_TYPE, this.authCodeType) + ", "
+                    + headerField(Key.SIGNATURE, this.authCode) + ", "
+                    + headerField(Key.VERSION, this.version);
+            default -> POWERAUTH_PREFIX
+                    + headerField(Key.ACTIVATION_ID, this.activationId) + ", "
+                    + headerField(Key.APPLICATION_ID, this.applicationKey) + ", "
+                    + headerField(Key.NONCE, this.nonce) + ", "
+                    + headerField(Key.AUTH_CODE_TYPE, this.authCodeType) + ", "
+                    + headerField(Key.AUTH_CODE, this.authCode) + ", "
+                    + headerField(Key.VERSION, this.version);
+        };
     }
 
     // Field getters
@@ -172,19 +207,19 @@ public class PowerAuthSignatureHttpHeader extends PowerAuthHttpHeader {
     }
 
     /**
-     * Get signature.
-     * @return Signature.
+     * Get authentication code.
+     * @return Authentication code.
      */
-    public String getSignature() {
-        return signature;
+    public String getAuthCode() {
+        return authCode;
     }
 
     /**
-     * Get signature type.
-     * @return Signature type.
+     * Get authentication code type.
+     * @return Authentication code type.
      */
-    public String getSignatureType() {
-        return signatureType;
+    public String getAuthCodeType() {
+        return authCodeType;
     }
 
     /**

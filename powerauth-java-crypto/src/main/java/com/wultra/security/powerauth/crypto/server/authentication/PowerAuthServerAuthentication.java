@@ -1,0 +1,74 @@
+/*
+ * PowerAuth Crypto Library
+ * Copyright 2018 Wultra s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.wultra.security.powerauth.crypto.server.authentication;
+
+import com.wultra.security.powerauth.crypto.lib.config.AuthenticationCodeConfiguration;
+import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeLegacyUtils;
+
+import javax.crypto.SecretKey;
+import java.util.List;
+
+/**
+ * Class implementing processes PowerAuth Server uses to compute and validate
+ * authentication codes.
+ *
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>3.0</li>
+ *     <li>3.1</li>
+ *     <li>3.2</li>
+ *     <li>3.3</li>
+ * </ul>
+ *
+ * @deprecated For version 3.x, use the {@link com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeLegacyUtils} directly. For version 4.0 or higher, use the {@link com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeUtils} directly.
+ *
+ * @author Petr Dvorak
+ *
+ */
+@Deprecated
+public class PowerAuthServerAuthentication {
+
+    private final AuthenticationCodeLegacyUtils authenticationCodeUtils = new AuthenticationCodeLegacyUtils();
+
+    /**
+     * Verify the authentication code against data using authentication code key list and
+     * counter.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
+     *
+     * @param data Signed data.
+     * @param authenticationCode Authentication code for the data.
+     * @param factorKeys Keys used for verification.
+     * @param ctrData Hash based counter / derived signing key index.
+     * @param authenticationCodeConfiguration Format and parameters of authentication code to verify.
+     * @return Returns "true" if the authentication code matches, "false" otherwise.
+     * @throws GenericCryptoException In case authentication code computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public boolean verifyAuthenticationForData(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration authenticationCodeConfiguration) throws GenericCryptoException, CryptoProviderException {
+        return authenticationCodeUtils.validatePowerAuthCode(data, authenticationCode, factorKeys, ctrData, authenticationCodeConfiguration);
+    }
+
+}
