@@ -33,6 +33,7 @@ import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.util.model.TestSet;
 import com.wultra.security.powerauth.crypto.lib.v4.Aead;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kdf;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyLabel;
 import com.wultra.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,10 +45,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
+import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.util.*;
 
@@ -64,7 +62,7 @@ public class GenerateVectorDataTest {
     private static ObjectMapper objectMapper;
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      * Register crypto providers
@@ -108,16 +106,16 @@ public class GenerateVectorDataTest {
      */
     String getRandomString(int minLength, int maxLength, String[] predefinedSet) {
         boolean fixedLength = minLength == maxLength;
-        int length = fixedLength ? maxLength : maxLength - minLength;
-        length = RANDOM.nextInt(length);
-        if (length == 0 && predefinedSet != null) {
+        int upperBound = fixedLength ? maxLength : maxLength - minLength;
+        int length = RANDOM.nextInt(upperBound);
+        if (predefinedSet != null && length < upperBound / 2) {
             return predefinedSet[RANDOM.nextInt(predefinedSet.length)];
         }
         if (!fixedLength) {
             length += minLength;
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i <= length; i++) {
             sb.appendCodePoint(RANDOM_STRING_CHARS[RANDOM.nextInt(RANDOM_STRING_CHARS.length)]);
         }
         return sb.toString();
@@ -130,7 +128,7 @@ public class GenerateVectorDataTest {
      * @return Random data.
      */
     byte[] getRandomBytes(int minLength, int maxLength) {
-        int size = minLength == maxLength ? minLength :  minLength + RANDOM.nextInt(maxLength - minLength);
+        int size = minLength == maxLength ? minLength : minLength + RANDOM.nextInt(maxLength - minLength) + 1;
         byte[] bytes = new byte[size];
         if (size > 0) {
             RANDOM.nextBytes(bytes);
@@ -147,10 +145,25 @@ public class GenerateVectorDataTest {
     void testKdfV4() throws Exception {
         TestSet testSet = new TestSet("v4-kdf.json", "Test vectors for common KMAC-256 based KDF function used in protocol V4");
         final String[] labels = {
-                "auth", "auth/knowledge", "auth/possession", "auth/biometry",
-                "util", "aead/enc", "aead/mac",
-                "util/mac/get-app-temp-key",
-                "util/mac/get-act-temp-key"
+                KeyLabel.AUTH.value(),
+                KeyLabel.AUTH_POSSESSION.value(),
+                KeyLabel.AUTH_KNOWLEDGE.value(),
+                KeyLabel.AUTH_BIOMETRY.value(),
+                KeyLabel.SHARED_SECRET_EC_P384.value(),
+                KeyLabel.SHARED_SECRET_EC_P384_ML_L3.value(),
+                KeyLabel.AEAD_ENC.value(),
+                KeyLabel.AEAD_MAC.value(),
+                KeyLabel.VAULT.value(),
+                KeyLabel.VAULT_KEK_DEVICE_PRIVATE.value(),
+                KeyLabel.KDK_APP_VAULT_KNOWLEDGE.value(),
+                KeyLabel.KDK_APP_VAULT_2FA.value(),
+                KeyLabel.UTIL.value(),
+                KeyLabel.UTIL_MAC_CTR_DATA.value(),
+                KeyLabel.UTIL_MAC_STATUS.value(),
+                KeyLabel.UTIL_MAC_GET_APP_TEMP_KEY.value(),
+                KeyLabel.UTIL_MAC_GET_ACT_TEMP_KEY.value(),
+                KeyLabel.UTIL_MAC_PERSONALIZED_DATA.value(),
+                KeyLabel.UTIL_KEY_E2EE_SH2.value()
         };
         for (int i = 0; i < 100; i++) {
             final String label = getRandomString(4, 20, labels);
@@ -180,12 +193,12 @@ public class GenerateVectorDataTest {
      */
     @Test
     void testPasswordKdfV4() throws Exception {
-        final String[] wellKnonwPassowrds = {
+        final String[] wellKnownPasswords = {
                 "nbusr123", "123456", "password1", "iloveyou", "querty123", "abc123"
         };
         TestSet testSet = new TestSet("v4-pbkdf.json", "Test vectors for password based KDF function used in protocol V4");
         for (int i = 0; i < 100; i++) {
-            final String password = getRandomString(4, 16, wellKnonwPassowrds);
+            final String password = getRandomString(4, 16, wellKnownPasswords);
             final byte[] salt = getRandomBytes(32, 48);
             final int out_size = 16 + (RANDOM.nextInt(2) * 16);
             // derive key
@@ -228,8 +241,6 @@ public class GenerateVectorDataTest {
             output.put("ciphertext", Base64.getEncoder().encodeToString(ciphertext));
             testSet.addData(input, output);
         }
-        writeTestVector(testSet);
-
         writeTestVector(testSet);
     }
 
