@@ -31,20 +31,21 @@ import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.util.model.TestSet;
+import com.wultra.security.powerauth.crypto.lib.v4.Aead;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kdf;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyLabel;
 import com.wultra.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
+import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.util.*;
 
@@ -61,6 +62,7 @@ public class GenerateVectorDataTest {
     private static ObjectMapper objectMapper;
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      * Register crypto providers
@@ -86,7 +88,164 @@ public class GenerateVectorDataTest {
     }
 
     /**
-     * Generate test data for activation data authentication code.
+     * Characters used in {@link #getRandomString(int, int, String[])} method.
+     */
+    static final int[] RANDOM_STRING_CHARS = {
+            32, 33, 35, 38, 39, 40, 41, 43, 45, 46, 47,
+            48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+            65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
+            97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122
+    };
+
+    /**
+     * Generate random string or select random string from predefined set.
+     * @param minLength Minimum string length.
+     * @param maxLength Maximum string length.
+     * @param predefinedSet Predefined set of strings.
+     * @return Random string.
+     */
+    String getRandomString(int minLength, int maxLength, String[] predefinedSet) {
+        boolean fixedLength = minLength == maxLength;
+        int upperBound = fixedLength ? maxLength : maxLength - minLength;
+        int length = RANDOM.nextInt(upperBound);
+        if (predefinedSet != null && length < upperBound / 2) {
+            return predefinedSet[RANDOM.nextInt(predefinedSet.length)];
+        }
+        if (!fixedLength) {
+            length += minLength;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= length; i++) {
+            sb.appendCodePoint(RANDOM_STRING_CHARS[RANDOM.nextInt(RANDOM_STRING_CHARS.length)]);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Generate random bytes with random length. The length is within specified range.
+     * @param minLength Minimum requested number of bytes.
+     * @param maxLength Maximum requested number of bytes.
+     * @return Random data.
+     */
+    byte[] getRandomBytes(int minLength, int maxLength) {
+        int size = minLength == maxLength ? minLength : minLength + RANDOM.nextInt(maxLength - minLength) + 1;
+        byte[] bytes = new byte[size];
+        if (size > 0) {
+            RANDOM.nextBytes(bytes);
+        }
+        return bytes;
+    }
+
+
+    /**
+     * Generate test data for common KDF function based on KMAC-256, used in protocol V4.
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    void testKdfV4() throws Exception {
+        TestSet testSet = new TestSet("v4-kdf.json", "Test vectors for common KMAC-256 based KDF function used in protocol V4");
+        final String[] labels = {
+                KeyLabel.AUTH.value(),
+                KeyLabel.AUTH_POSSESSION.value(),
+                KeyLabel.AUTH_KNOWLEDGE.value(),
+                KeyLabel.AUTH_BIOMETRY.value(),
+                KeyLabel.SHARED_SECRET_EC_P384.value(),
+                KeyLabel.SHARED_SECRET_EC_P384_ML_L3.value(),
+                KeyLabel.AEAD_ENC.value(),
+                KeyLabel.AEAD_MAC.value(),
+                KeyLabel.VAULT.value(),
+                KeyLabel.VAULT_KEK_DEVICE_PRIVATE.value(),
+                KeyLabel.KDK_APP_VAULT_KNOWLEDGE.value(),
+                KeyLabel.KDK_APP_VAULT_2FA.value(),
+                KeyLabel.UTIL.value(),
+                KeyLabel.UTIL_MAC_CTR_DATA.value(),
+                KeyLabel.UTIL_MAC_STATUS.value(),
+                KeyLabel.UTIL_MAC_GET_APP_TEMP_KEY.value(),
+                KeyLabel.UTIL_MAC_GET_ACT_TEMP_KEY.value(),
+                KeyLabel.UTIL_MAC_PERSONALIZED_DATA.value(),
+                KeyLabel.UTIL_KEY_E2EE_SH2.value()
+        };
+        for (int i = 0; i < 100; i++) {
+            final String label = getRandomString(4, 20, labels);
+            final int key_size = 16 + (RANDOM.nextInt(4) * 16);
+            final int out_size = 16 + (RANDOM.nextInt(4) * 16);
+            final byte[] key = new byte[key_size];
+            RANDOM.nextBytes(key);
+            final byte[] custom = getRandomBytes(0, 96);
+            // derive key
+            final SecretKey derivedKey = Kdf.derive(new SecretKeySpec(key, "AES"), label, custom, out_size);
+            // store test vector
+            final Map<String, String> input = new HashMap<>();
+            input.put("key", Base64.getEncoder().encodeToString(key));
+            input.put("label", label);
+            input.put("custom", Base64.getEncoder().encodeToString(custom));
+            input.put("outSize", String.valueOf(out_size));
+            final Map<String, String> output = new HashMap<>();
+            output.put("derivedKey", Base64.getEncoder().encodeToString(derivedKey.getEncoded()));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for KDF function for passwords, based on KMAC-256, used in protocol V4.
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    void testPasswordKdfV4() throws Exception {
+        final String[] wellKnownPasswords = {
+                "nbusr123", "123456", "password1", "iloveyou", "querty123", "abc123"
+        };
+        TestSet testSet = new TestSet("v4-pbkdf.json", "Test vectors for password based KDF function used in protocol V4");
+        for (int i = 0; i < 100; i++) {
+            final String password = getRandomString(4, 16, wellKnownPasswords);
+            final byte[] salt = getRandomBytes(32, 48);
+            final int out_size = 16 + (RANDOM.nextInt(2) * 16);
+            // derive key
+            final SecretKey derivedKey = Kdf.derivePassword(password, salt, out_size);
+            // store test vector
+            final Map<String, String> input = new HashMap<>();
+            input.put("password", password);
+            input.put("salt", Base64.getEncoder().encodeToString(salt));
+            input.put("outSize", String.valueOf(out_size));
+            final Map<String, String> output = new HashMap<>();
+            output.put("derivedKey", Base64.getEncoder().encodeToString(derivedKey.getEncoded()));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test vectors for low-level AEAD encryption used in protocol V4.
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    void testAeadV4() throws Exception {
+        TestSet testSet = new TestSet("v4-aead.json", "Test vectors for low level AEAD encryption routines used in protocol V4");
+        for (int i = 0; i < 100; i++) {
+            byte[] key = getRandomBytes(32, 32);
+            byte[] keyContext = getRandomBytes(4, 32);
+            byte[] nonce = getRandomBytes(12, 12);
+            byte[] associatedData = getRandomBytes(8, 48);
+            byte[] plaintext = getRandomBytes(0, 256);
+            // encrypt data
+            byte[] ciphertext = Aead.seal(new SecretKeySpec(key, "AES"), keyContext, nonce, associatedData, plaintext);
+            // store test vector
+            final Map<String, String> input = new HashMap<>();
+            input.put("key", Base64.getEncoder().encodeToString(key));
+            input.put("keyContext", Base64.getEncoder().encodeToString(keyContext));
+            input.put("nonce", Base64.getEncoder().encodeToString(nonce));
+            input.put("associatedData", Base64.getEncoder().encodeToString(associatedData));
+            input.put("plaintext", Base64.getEncoder().encodeToString(plaintext));
+            final Map<String, String> output = new HashMap<>();
+            output.put("ciphertext", Base64.getEncoder().encodeToString(ciphertext));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for activation data signature.
      *
      * @throws Exception In case any unknown error occurs.
      */
