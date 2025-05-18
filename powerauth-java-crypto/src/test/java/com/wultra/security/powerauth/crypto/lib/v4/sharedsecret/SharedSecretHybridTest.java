@@ -109,4 +109,31 @@ public class SharedSecretHybridTest {
         assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedSecret"));
     }
 
+    @Test
+    public void generateTestVectors() throws Exception {
+        final List<Map<String, String>> vectors = new java.util.ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            SharedSecretHybrid sharedSecretHybrid = new SharedSecretHybrid();
+            RequestCryptogram request = sharedSecretHybrid.generateRequestCryptogram();
+            SharedSecretRequestHybrid clientRequest = (SharedSecretRequestHybrid) request.getSharedSecretRequest();
+            SharedSecretClientContextHybrid clientContext = (SharedSecretClientContextHybrid) request.getSharedSecretClientContext();
+            ResponseCryptogram serverResponse = sharedSecretHybrid.generateResponseCryptogram(clientRequest);
+            SecretKey derivedSharedSecret = sharedSecretHybrid.computeSharedSecret(
+                    clientContext,
+                    (SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()
+            );
+            Map<String, String> vector = Map.of(
+                    "ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPrivateKeyToBytes(clientContext.getEcPrivateKey())),
+                    "pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getPqcKemDecapsulationKey())),
+                    "ecServerPublicKey", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getEcServerPublicKey(),
+                    "pqcEncapsulation", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getPqcEncapsulation(),
+                    "sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded())
+            );
+            vectors.add(vector);
+        }
+
+        Map<String, Object> root = Map.of("ecdhe_mlkem_test_vectors", vectors);
+        System.out.println(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root));
+    }
+
 }

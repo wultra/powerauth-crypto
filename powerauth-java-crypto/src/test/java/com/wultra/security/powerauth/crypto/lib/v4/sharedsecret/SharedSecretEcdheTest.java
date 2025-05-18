@@ -107,4 +107,28 @@ public class SharedSecretEcdheTest {
         assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedSecret"));
     }
 
+    @Test
+    public void generateTestVectors() throws Exception {
+        final List<Map<String, String>> vectors = new java.util.ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            SharedSecretEcdhe sharedSecretEcdhe = new SharedSecretEcdhe();
+            RequestCryptogram request = sharedSecretEcdhe.generateRequestCryptogram();
+            SharedSecretRequestEcdhe clientRequest = (SharedSecretRequestEcdhe) request.getSharedSecretRequest();
+            SharedSecretClientContextEcdhe clientContext = (SharedSecretClientContextEcdhe) request.getSharedSecretClientContext();
+            ResponseCryptogram serverResponse = sharedSecretEcdhe.generateResponseCryptogram(clientRequest);
+            SecretKey derivedSharedSecret = sharedSecretEcdhe.computeSharedSecret(
+                    clientContext,
+                    (SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()
+            );
+            Map<String, String> vector = Map.of(
+                    "ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(clientContext.getPrivateKey())),
+                    "ecServerPublicKey", ((SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()).getEcServerPublicKey(),
+                    "sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded())
+            );
+            vectors.add(vector);
+        }
+        Map<String, Object> root = Map.of("ecdhe_test_vectors", vectors);
+        System.out.println(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root));
+    }
+
 }
