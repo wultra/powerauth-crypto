@@ -63,9 +63,10 @@ public class MlKemPrivateKeyTest {
         byte[] pk = ByteUtils.concat(kemKeyPair[0], kemKeyPair[1]);
         byte[] s = kemKeyPair[2];
         byte[] hpk = kemKeyPair[3];
-        // Ignore kemKeyPair[4] and kemKeyPair[5], these mirror input parameters
-        byte[] privKey = ByteUtils.concat(s, pk, hpk, z, d);
-        byte[] privKeySeed = ByteUtils.concat(z, d);
+        assertArrayEquals(kemKeyPair[4], z);
+        assertArrayEquals(kemKeyPair[5], ByteUtils.concat(d, z));
+        byte[] privKeyFull = ByteUtils.concat(s, pk, hpk, z, d);
+        byte[] privKeySeed = ByteUtils.concat(d, z);
 
         Method kemEncryptInternal = engineClass.getDeclaredMethod("kemEncryptInternal", byte[].class, byte[].class);
         kemEncryptInternal.setAccessible(true);
@@ -81,7 +82,7 @@ public class MlKemPrivateKeyTest {
         System.out.println("hpk       = " + toBase64(hpk));
         System.out.println("z         = " + toBase64(z));
         System.out.println("d         = " + toBase64(d));
-        System.out.println("privFull  = " + toBase64(privKey));
+        System.out.println("privFull  = " + toBase64(privKeyFull));
         System.out.println("privSeed  = " + toBase64(privKeySeed));
         System.out.println("ct        = " + toBase64(ciphertext));
         System.out.println("ss        = " + toBase64(sharedSecret));
