@@ -92,7 +92,7 @@ public class MlKemPrivateKeyTest {
         System.out.println("ss        = " + toBase64(sharedSecret));
 
         MLKEMParameters params = MLKEMParameters.ml_kem_768;
-        MLKEMPrivateKeyParameters privParams = new MLKEMPrivateKeyParameters(
+        MLKEMPrivateKeyParameters privParamsFull = new MLKEMPrivateKeyParameters(
                 params,
                 s,
                 hpk,
@@ -101,12 +101,18 @@ public class MlKemPrivateKeyTest {
                 kemKeyPair[1],
                 d
         );
-        MLKEMExtractor kemExtractor = new MLKEMExtractor(privParams);
-        byte[] recoveredSS = kemExtractor.extractSecret(ciphertext);
-        System.out.println("recovered = " + toBase64(recoveredSS));
+        MLKEMExtractor kemExtractorFull = new MLKEMExtractor(privParamsFull);
+        byte[] extrFull = kemExtractorFull.extractSecret(ciphertext);
+        System.out.println("extrFull  = " + toBase64(extrFull));
+
+        MLKEMPrivateKeyParameters privParamsSeed = new MLKEMPrivateKeyParameters(params, privKeySeed);
+        MLKEMExtractor kemExtractorSeed = new MLKEMExtractor(privParamsSeed);
+        byte[] extrSeed = kemExtractorSeed.extractSecret(ciphertext);
+        System.out.println("extrSeed  = " + toBase64(extrSeed));
 
         assertArrayEquals(ssExpected, sharedSecret);
-        assertArrayEquals(ssExpected, recoveredSS);
+        assertArrayEquals(ssExpected, extrFull);
+        assertArrayEquals(ssExpected, extrSeed);
     }
 
     private static String toBase64(byte[] data) {
