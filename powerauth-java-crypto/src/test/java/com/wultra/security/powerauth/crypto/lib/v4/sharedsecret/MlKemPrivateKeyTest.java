@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Base64;
 
@@ -44,12 +45,15 @@ public class MlKemPrivateKeyTest {
 
     @Test
     public void testMlKemDeterministic() throws Exception {
-        // Fixed parameters for enforcing algorithm determinism
+        // Fixed parameters for enforcing algorithm determinism (seed)
         byte[] d = Base64.getDecoder().decode("Rz06iX6CuK1WR+VWrzgS9u2fHez7i3vPbkIvnR0/Fd4=");
         byte[] z = Base64.getDecoder().decode("8i3uFSZXtlg5Y9ZK2zjpvHMyPTPv0uqfncTKe6cSgDU=");
 
+        // Use fixed byte zeroed array for KEM test
+        byte[] randBytes = new byte[32];
+
         // Expected secret text
-        byte[] ssExpected = Base64.getDecoder().decode("2rlVhy5JX5OgwKuoU4eQOQMqX0CoSUf488wX2BF1dnw=");
+        byte[] ssExpected = Base64.getDecoder().decode("KmtHbzBChob2Ko4kiFWBFpQ69IXsB41g5o7Es7cwkc0=");
 
         Class<?> engineClass = Class.forName("org.bouncycastle.pqc.crypto.mlkem.MLKEMEngine");
         Constructor<?> engineConstructor = engineClass.getDeclaredConstructor(int.class);
@@ -70,7 +74,7 @@ public class MlKemPrivateKeyTest {
 
         Method kemEncryptInternal = engineClass.getDeclaredMethod("kemEncryptInternal", byte[].class, byte[].class);
         kemEncryptInternal.setAccessible(true);
-        Object ctAndSSObj = kemEncryptInternal.invoke(engine, pk, d);
+        Object ctAndSSObj = kemEncryptInternal.invoke(engine, pk, randBytes);
         byte[][] ctAndSS = (byte[][]) ctAndSSObj;
 
         byte[] sharedSecret = ctAndSS[0];
