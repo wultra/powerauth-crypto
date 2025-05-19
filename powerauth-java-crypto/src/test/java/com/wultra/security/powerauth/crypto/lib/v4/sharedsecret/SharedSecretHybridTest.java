@@ -116,16 +116,12 @@ public class SharedSecretHybridTest {
             SharedSecretRequestHybrid clientRequest = (SharedSecretRequestHybrid) request.getSharedSecretRequest();
             SharedSecretClientContextHybrid clientContext = (SharedSecretClientContextHybrid) request.getSharedSecretClientContext();
             ResponseCryptogram serverResponse = sharedSecretHybrid.generateResponseCryptogram(clientRequest);
-            SecretKey derivedSharedSecret = sharedSecretHybrid.computeSharedSecret(
-                    clientContext,
-                    (SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()
-            );
             Map<String, String> vector = new LinkedHashMap<>();
             vector.put("ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPrivateKeyToBytes(clientContext.getEcPrivateKey())));
             vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getPqcKemDecapsulationKey())));
             vector.put("ecServerPublicKey", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getEcServerPublicKey());
             vector.put("pqcCiphertext", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getPqcCiphertext());
-            vector.put("sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded()));
+            vector.put("sharedSecret", Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded()));
             vectors.add(vector);
         }
 

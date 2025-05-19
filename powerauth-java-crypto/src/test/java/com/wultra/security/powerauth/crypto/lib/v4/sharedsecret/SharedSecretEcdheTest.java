@@ -114,14 +114,10 @@ public class SharedSecretEcdheTest {
             SharedSecretRequestEcdhe clientRequest = (SharedSecretRequestEcdhe) request.getSharedSecretRequest();
             SharedSecretClientContextEcdhe clientContext = (SharedSecretClientContextEcdhe) request.getSharedSecretClientContext();
             ResponseCryptogram serverResponse = sharedSecretEcdhe.generateResponseCryptogram(clientRequest);
-            SecretKey derivedSharedSecret = sharedSecretEcdhe.computeSharedSecret(
-                    clientContext,
-                    (SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()
-            );
             Map<String, String> vector = new LinkedHashMap<>();
             vector.put("ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(clientContext.getPrivateKey())));
             vector.put("ecServerPublicKey", ((SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()).getEcServerPublicKey());
-            vector.put("sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded()));
+            vector.put("sharedSecret", Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded()));
             vectors.add(vector);
         }
         Map<String, Object> root = Map.of("ecdhe_test_vectors", vectors);

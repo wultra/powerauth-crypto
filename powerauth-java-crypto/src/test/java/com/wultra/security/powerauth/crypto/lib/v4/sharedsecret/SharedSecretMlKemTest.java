@@ -113,14 +113,10 @@ public class SharedSecretMlKemTest {
             SharedSecretRequestPqc clientRequest = (SharedSecretRequestPqc) request.getSharedSecretRequest();
             SharedSecretClientContextPqc clientContext = (SharedSecretClientContextPqc) request.getSharedSecretClientContext();
             ResponseCryptogram serverResponse = sharedSecretPqc.generateResponseCryptogram(clientRequest);
-            SecretKey derivedSharedSecret = sharedSecretPqc.computeSharedSecret(
-                    clientContext,
-                    (SharedSecretResponsePqc) serverResponse.getSharedSecretResponse()
-            );
             Map<String, String> vector = new LinkedHashMap<>();
             vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getPqcKemDecapsulationKey())));
             vector.put("pqcCiphertext", ((SharedSecretResponsePqc) serverResponse.getSharedSecretResponse()).getPqcCiphertext());
-            vector.put("sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded()));
+            vector.put("sharedSecret", Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded()));
             vectors.add(vector);
         }
 
