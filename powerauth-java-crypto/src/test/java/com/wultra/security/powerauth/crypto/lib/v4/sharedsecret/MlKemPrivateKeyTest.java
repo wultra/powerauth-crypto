@@ -22,12 +22,14 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.crypto.mlkem.MLKEMExtractor;
 import org.bouncycastle.pqc.crypto.mlkem.MLKEMParameters;
 import org.bouncycastle.pqc.crypto.mlkem.MLKEMPrivateKeyParameters;
-import org.bouncycastle.util.Arrays;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.security.Security;
 import java.util.Base64;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 /**
  * Test for deterministic usage of ML-KEM private keys.
@@ -40,10 +42,14 @@ public class MlKemPrivateKeyTest {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    public void testMlKemDeterministic() throws Exception {
         // Fixed parameters for enforcing algorithm determinism
         byte[] d = Base64.getDecoder().decode("Rz06iX6CuK1WR+VWrzgS9u2fHez7i3vPbkIvnR0/Fd4=");
         byte[] z = Base64.getDecoder().decode("8i3uFSZXtlg5Y9ZK2zjpvHMyPTPv0uqfncTKe6cSgDU=");
+
+        // Expected secret text
+        byte[] ssExpected = Base64.getDecoder().decode("2rlVhy5JX5OgwKuoU4eQOQMqX0CoSUf488wX2BF1dnw=");
 
         Class<?> engineClass = Class.forName("org.bouncycastle.pqc.crypto.mlkem.MLKEMEngine");
         Constructor<?> engineConstructor = engineClass.getDeclaredConstructor(int.class);
@@ -92,11 +98,8 @@ public class MlKemPrivateKeyTest {
         byte[] recoveredSS = kemExtractor.extractSecret(ciphertext);
         System.out.println("recovered = " + toBase64(recoveredSS));
 
-        if (!Arrays.areEqual(sharedSecret, recoveredSS)) {
-            throw new IllegalStateException("Decapsulation failed: shared secrets do not match!");
-        } else {
-            System.out.println("Shared secrets match!");
-        }
+        assertArrayEquals(ssExpected, sharedSecret);
+        assertArrayEquals(ssExpected, recoveredSS);
     }
 
     private static String toBase64(byte[] data) {
