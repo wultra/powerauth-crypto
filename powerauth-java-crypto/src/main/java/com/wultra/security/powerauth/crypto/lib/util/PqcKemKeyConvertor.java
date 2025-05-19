@@ -70,7 +70,7 @@ public class PqcKemKeyConvertor {
             final MLKEMPrivateKey mlkemPrivateKey = ((MLKEMPrivateKey) privateKey);
             final PrivateKeyInfo privInfo = PrivateKeyInfo.getInstance(mlkemPrivateKey.getEncoded());
             final byte[] privateData = mlkemPrivateKey.getPrivateData();
-            // Export private key including all private data, default getEncoded implementation only exports seeds
+            // Export private key including all private data, default getEncoded implementation only exports the seed
             final PrivateKeyInfo pkcs8 = new PrivateKeyInfo(privInfo.getPrivateKeyAlgorithm(), privateData);
             return pkcs8.getEncoded();
         } catch (IOException e) {
