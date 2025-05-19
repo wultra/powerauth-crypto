@@ -37,9 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.Security;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -111,7 +109,7 @@ public class SharedSecretHybridTest {
 
     @Test
     public void generateTestVectors() throws Exception {
-        final List<Map<String, String>> vectors = new java.util.ArrayList<>();
+        final List<Map<String, String>> vectors = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             SharedSecretHybrid sharedSecretHybrid = new SharedSecretHybrid();
             RequestCryptogram request = sharedSecretHybrid.generateRequestCryptogram();
@@ -122,13 +120,12 @@ public class SharedSecretHybridTest {
                     clientContext,
                     (SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()
             );
-            Map<String, String> vector = Map.of(
-                    "ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPrivateKeyToBytes(clientContext.getEcPrivateKey())),
-                    "pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getPqcKemDecapsulationKey())),
-                    "ecServerPublicKey", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getEcServerPublicKey(),
-                    "pqcEncapsulation", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getPqcEncapsulation(),
-                    "sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded())
-            );
+            Map<String, String> vector = new LinkedHashMap<>();
+            vector.put("ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPrivateKeyToBytes(clientContext.getEcPrivateKey())));
+            vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getPqcKemDecapsulationKey())));
+            vector.put("ecServerPublicKey", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getEcServerPublicKey());
+            vector.put("pqcEncapsulation", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getPqcEncapsulation());
+            vector.put("sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded()));
             vectors.add(vector);
         }
 

@@ -66,7 +66,16 @@ public class PqcKemKeyConvertor {
         if (!(privateKey instanceof MLKEMPrivateKey)) {
             throw new GenericCryptoException("Invalid private key");
         }
-        return privateKey.getEncoded();
+        try {
+            final MLKEMPrivateKey mlkemPrivateKey = ((MLKEMPrivateKey) privateKey);
+            final PrivateKeyInfo privInfo = PrivateKeyInfo.getInstance(mlkemPrivateKey.getEncoded());
+            final byte[] privateData = mlkemPrivateKey.getPrivateData();
+            // Export private key including all private data, default getEncoded implementation only exports seeds
+            final PrivateKeyInfo pkcs8 = new PrivateKeyInfo(privInfo.getPrivateKeyAlgorithm(), privateData);
+            return pkcs8.getEncoded();
+        } catch (IOException e) {
+            throw new GenericCryptoException("Private key conversion failed", e);
+        }
     }
 
     /**

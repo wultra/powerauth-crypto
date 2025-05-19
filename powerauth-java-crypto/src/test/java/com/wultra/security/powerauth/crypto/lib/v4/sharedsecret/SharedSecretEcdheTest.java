@@ -36,9 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.Security;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -109,7 +107,7 @@ public class SharedSecretEcdheTest {
 
     @Test
     public void generateTestVectors() throws Exception {
-        final List<Map<String, String>> vectors = new java.util.ArrayList<>();
+        final List<Map<String, String>> vectors = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             SharedSecretEcdhe sharedSecretEcdhe = new SharedSecretEcdhe();
             RequestCryptogram request = sharedSecretEcdhe.generateRequestCryptogram();
@@ -120,11 +118,10 @@ public class SharedSecretEcdheTest {
                     clientContext,
                     (SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()
             );
-            Map<String, String> vector = Map.of(
-                    "ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(clientContext.getPrivateKey())),
-                    "ecServerPublicKey", ((SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()).getEcServerPublicKey(),
-                    "sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded())
-            );
+            Map<String, String> vector = new LinkedHashMap<>();
+            vector.put("ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(clientContext.getPrivateKey())));
+            vector.put("ecServerPublicKey", ((SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()).getEcServerPublicKey());
+            vector.put("sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded()));
             vectors.add(vector);
         }
         Map<String, Object> root = Map.of("ecdhe_test_vectors", vectors);
