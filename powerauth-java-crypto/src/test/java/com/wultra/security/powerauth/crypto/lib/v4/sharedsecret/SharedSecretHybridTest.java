@@ -98,7 +98,7 @@ public class SharedSecretHybridTest {
         PrivateKey ecClientPrivateKey = KEY_CONVERTOR_EC.convertBytesToPrivateKey(EcCurve.P384, Base64.getDecoder().decode(vector.get("ecClientPrivateKey")));
         PrivateKey pqcClientPrivateKey = KEY_CONVERTOR_PQC.convertBytesToPrivateKey(Base64.getDecoder().decode(vector.get("pqcClientPrivateKey")));
         SharedSecretClientContextHybrid clientContext = new SharedSecretClientContextHybrid(ecClientPrivateKey, pqcClientPrivateKey);
-        SharedSecretResponseHybrid response = new SharedSecretResponseHybrid(vector.get("ecServerPublicKey"), vector.get("pqcEncapsulation"));
+        SharedSecretResponseHybrid response = new SharedSecretResponseHybrid(vector.get("ecServerPublicKey"), vector.get("pqcCiphertext"));
         SecretKey sharedSecret = sharedSecretHybrid.computeSharedSecret(
                 clientContext,
                 response
@@ -124,7 +124,7 @@ public class SharedSecretHybridTest {
             vector.put("ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPrivateKeyToBytes(clientContext.getEcPrivateKey())));
             vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getPqcKemDecapsulationKey())));
             vector.put("ecServerPublicKey", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getEcServerPublicKey());
-            vector.put("pqcEncapsulation", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getPqcEncapsulation());
+            vector.put("pqcCiphertext", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getPqcCiphertext());
             vector.put("sharedSecret", Base64.getEncoder().encodeToString(derivedSharedSecret.getEncoded()));
             vectors.add(vector);
         }

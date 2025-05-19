@@ -109,13 +109,13 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
 
     @Override
     public SecretKey computeSharedSecret(SharedSecretClientContextHybrid clientContext, SharedSecretResponseHybrid serverResponse) throws GenericCryptoException {
-        if (serverResponse == null || serverResponse.getEcServerPublicKey() == null || serverResponse.getPqcEncapsulation() == null) {
+        if (serverResponse == null || serverResponse.getEcServerPublicKey() == null || serverResponse.getPqcCiphertext() == null) {
             throw new GenericCryptoException("Invalid shared secret request");
         }
         try {
             final byte[] ecServerPublicKeyRaw = Base64.getDecoder().decode(serverResponse.getEcServerPublicKey());
             final PublicKey ecServerPublicKey = KEY_CONVERTOR_EC.convertBytesToPublicKey(EcCurve.P384, ecServerPublicKeyRaw);
-            final byte[] pqcPqcKemCipherText = Base64.getDecoder().decode(serverResponse.getPqcEncapsulation());
+            final byte[] pqcPqcKemCipherText = Base64.getDecoder().decode(serverResponse.getPqcCiphertext());
             final PrivateKey ecClientPrivateKey = clientContext.getEcPrivateKey();
             final SecretKey ecSharedKey = KEY_GENERATOR.computeSharedKey(ecClientPrivateKey, ecServerPublicKey, true);
             final PrivateKey pqcClientDecapsKey = clientContext.getPqcKemDecapsulationKey();
