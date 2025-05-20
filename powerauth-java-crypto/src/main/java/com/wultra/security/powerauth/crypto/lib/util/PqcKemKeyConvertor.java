@@ -17,14 +17,11 @@
 package com.wultra.security.powerauth.crypto.lib.util;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.jcajce.interfaces.MLKEMPrivateKey;
 import org.bouncycastle.jcajce.interfaces.MLKEMPublicKey;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -80,15 +77,13 @@ public class PqcKemKeyConvertor {
             throw new GenericCryptoException("Missing public key bytes");
         }
         try {
-            final SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfo.getInstance(publicKeyBytes);
-            final byte[] encodedPublicKey = publicKeyInfo.getEncoded();
             final KeyFactory keyFactory = KeyFactory.getInstance("ML-KEM", "BC");
-            final PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(encodedPublicKey));
+            final PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
             if (!(publicKey instanceof MLKEMPublicKey)) {
                 throw new GenericCryptoException("Invalid public key");
             }
             return publicKey;
-        } catch (IOException | NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
             throw new GenericCryptoException("Public key conversion failed", e);
         }
     }
@@ -104,15 +99,13 @@ public class PqcKemKeyConvertor {
             throw new GenericCryptoException("Missing private key bytes");
         }
         try {
-            final PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
-            final byte[] encodedPrivateKey = privateKeyInfo.getEncoded();
             final KeyFactory keyFactory = KeyFactory.getInstance("ML-KEM", "BC");
-            final PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encodedPrivateKey));
+            final PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
             if (!(privateKey instanceof MLKEMPrivateKey)) {
                 throw new GenericCryptoException("Invalid private key");
             }
             return privateKey;
-        } catch (IOException | NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
             throw new GenericCryptoException("Private key conversion failed", e);
         }
     }
