@@ -84,7 +84,7 @@ public class MlKemPrivateKeyTest {
         byte[] sharedSecret = ctAndSS[0];
         byte[] ciphertext = ctAndSS[1];
 
-        System.out.println("# ML-KEM-768 Test Vector");
+        System.out.println("# ML-KEM-768 Test Vector (generated key, deterministic)");
         System.out.println("s         = " + toBase64(s));
         System.out.println("pk        = " + toBase64(pk));
         System.out.println("hpk       = " + toBase64(hpk));
@@ -145,9 +145,9 @@ public class MlKemPrivateKeyTest {
         byte[] sharedSecret = ctAndSS[0];
         byte[] ciphertext = ctAndSS[1];
 
-        System.out.println("# ML-KEM-768 Test Vector");
+        System.out.println("# ML-KEM-768 Test Vector (imported key, deterministic)");
         System.out.println("priv      = " + clientPrivateKey);
-        System.out.println("pkData    = " + toBase64(publicKeyData));
+        System.out.println("pk        = " + toBase64(publicKeyData));
         System.out.println("ct        = " + toBase64(ciphertext));
         System.out.println("ss        = " + toBase64(sharedSecret));
 
