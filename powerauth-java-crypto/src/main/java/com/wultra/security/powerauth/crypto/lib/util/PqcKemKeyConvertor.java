@@ -63,10 +63,10 @@ public class PqcKemKeyConvertor {
         if (privateKey == null) {
             throw new GenericCryptoException("Missing private key");
         }
-        if (!(privateKey instanceof MLKEMPrivateKey)) {
+        if (!(privateKey instanceof MLKEMPrivateKey mlkemPrivateKey)) {
             throw new GenericCryptoException("Invalid private key");
         }
-        return privateKey.getEncoded();
+        return mlkemPrivateKey.getEncoded();
     }
 
     /**

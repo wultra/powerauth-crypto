@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package com.wultra.security.powerauth.crypto.lib.v4.model.response;
+package com.wultra.security.powerauth.crypto.lib.v4.model;
 
-import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretResponse;
+import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretClientContext;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.security.PrivateKey;
 
 /**
- * Response cryptogram for hybrid algorithm with ECDHE on P-384 and ML-KEM-768.
+ * Shared secret client context object for ML-KEM-768.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SharedSecretResponseHybrid implements SharedSecretResponse {
+public class SharedSecretClientContextPqc implements SharedSecretClientContext {
 
     /**
-     * Server EC public key for ECDH calculation.
+     * Client PQC-KEM decapsulation key.
      */
-    private String ecServerPublicKey;
-
-    /**
-     * PQC-KEM ciphertext.
-     */
-    private String pqcCiphertext;
+    @ToString.Exclude
+    private PrivateKey pqcKemDecapsulationKey;
 
 }

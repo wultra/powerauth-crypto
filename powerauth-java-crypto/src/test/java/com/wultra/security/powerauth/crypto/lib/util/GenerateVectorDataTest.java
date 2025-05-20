@@ -238,7 +238,7 @@ public class GenerateVectorDataTest {
             input.put("associatedData", Base64.getEncoder().encodeToString(associatedData));
             input.put("plaintext", Base64.getEncoder().encodeToString(plaintext));
             final Map<String, String> output = new HashMap<>();
-            output.put("ciphertext", Base64.getEncoder().encodeToString(ciphertext));
+            output.put("pqcCiphertext", Base64.getEncoder().encodeToString(ciphertext));
             testSet.addData(input, output);
         }
         writeTestVector(testSet);

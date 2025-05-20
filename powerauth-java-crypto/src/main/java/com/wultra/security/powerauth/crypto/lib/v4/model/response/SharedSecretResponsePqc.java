@@ -30,12 +30,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SharedSecretResponseHybrid implements SharedSecretResponse {
-
-    /**
-     * Server EC public key for ECDH calculation.
-     */
-    private String ecServerPublicKey;
+public class SharedSecretResponsePqc implements SharedSecretResponse {
 
     /**
      * PQC-KEM ciphertext.
