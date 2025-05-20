@@ -38,8 +38,7 @@ import java.security.Security;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for shared secret calculation for ML-KEM-768.
@@ -77,9 +76,9 @@ public class SharedSecretMlKemTest {
         );
         assertNotNull(derivedSharedSecret);
 
-        assertEquals(
-                derivedSharedSecret,
-                serverResponse.getSecretKey()
+        assertArrayEquals(
+                derivedSharedSecret.getEncoded(),
+                serverResponse.getSecretKey().getEncoded()
         );
     }
 
