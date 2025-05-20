@@ -65,7 +65,7 @@ public class PqcKem {
         }
         try {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
-            keyGenerator.init(new KEMGenerateSpec.Builder(encapsulationKey, "AES", 256).withNoKdf().build());
+            keyGenerator.init(new KEMGenerateSpec.Builder(encapsulationKey, "RAW", 256).withNoKdf().build());
             return (SecretKeyWithEncapsulation) keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
             throw new GenericCryptoException("Error during encapsulation", e);
@@ -88,7 +88,7 @@ public class PqcKem {
         }
         try {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
-            keyGenerator.init(new KEMExtractSpec.Builder(decapsulationKey, ciphertext, "AES", 256).withNoKdf().build());
+            keyGenerator.init(new KEMExtractSpec.Builder(decapsulationKey, ciphertext, "RAW", 256).withNoKdf().build());
             return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
             throw new GenericCryptoException("Error during decapsulation", e);
