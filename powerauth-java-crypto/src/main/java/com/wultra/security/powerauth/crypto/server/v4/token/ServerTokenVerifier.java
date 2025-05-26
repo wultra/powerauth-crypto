@@ -26,10 +26,7 @@ import com.wultra.security.powerauth.crypto.lib.util.TokenUtils;
  *
  * <p><b>PowerAuth protocol versions:</b>
  * <ul>
- *     <li>3.0</li>
- *     <li>3.1</li>
- *     <li>3.2</li>
- *     <li>3.3</li>
+ *     <li>4.0</li>
  * </ul>
  *
  * @author Petr Dvorak, petr@wultra.com
