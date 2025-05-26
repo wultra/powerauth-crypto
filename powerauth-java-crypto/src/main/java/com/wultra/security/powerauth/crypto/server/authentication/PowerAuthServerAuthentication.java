@@ -63,8 +63,8 @@ public class PowerAuthServerAuthentication {
      * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyAuthenticationForData(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration authenticationCodeConfiguration) throws GenericCryptoException, CryptoProviderException {
-        return authenticationCodeUtils.validatePowerAuthCode(data, authenticationCode, factorKeys, ctrData, authenticationCodeConfiguration);
+    public boolean validateAuthCode(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration authenticationCodeConfiguration) throws GenericCryptoException, CryptoProviderException {
+        return authenticationCodeUtils.validateAuthCode(data, authenticationCode, factorKeys, ctrData, authenticationCodeConfiguration);
     }
 
 }

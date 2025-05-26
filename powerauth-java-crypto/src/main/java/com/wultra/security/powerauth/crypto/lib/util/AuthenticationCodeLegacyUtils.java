@@ -224,7 +224,7 @@ public class AuthenticationCodeLegacyUtils {
      * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validatePowerAuthCode(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
+    public boolean validateAuthCode(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
         return authenticationCode.equals(computeAuthCode(data, factorKeys, ctrData, configuration));
     }
 
