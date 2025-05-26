@@ -46,7 +46,7 @@ public class AuthenticationCodeLegacyUtils {
      * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private String computePowerAuthDecimalCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, Integer length) throws GenericCryptoException, CryptoProviderException {
+    private String computeAuthDecimalCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, Integer length) throws GenericCryptoException, CryptoProviderException {
         // Determine the length of the authentication code component, validate length
         final int decimalLength;
         if (length != null) {
@@ -63,7 +63,7 @@ public class AuthenticationCodeLegacyUtils {
         // Prepare holder for authentication code components
         final String[] stringComponents = new String[factorKeys.size()];
         // Compute authentication code components
-        final List<byte[]> authCodeComponents = computePowerAuthCodeComponents(data, factorKeys, ctrData);
+        final List<byte[]> authCodeComponents = computeAuthCodeComponents(data, factorKeys, ctrData);
         // Convert byte authentication code into decimal authentication code
         for (int i = 0; i < authCodeComponents.size(); i++) {
             final byte[] component = authCodeComponents.get(i);
@@ -93,11 +93,11 @@ public class AuthenticationCodeLegacyUtils {
      * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private String computePowerAuthBase64Code(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
+    private String computeAuthBase64Code(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         // Prepare array of bytes for a complete authentication code
         final byte[] authenticationCodeBytes = new byte[factorKeys.size() * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH];
         // Compute authentication code components
-        final List<byte[]> authenticationCodeComponents = computePowerAuthCodeComponents(data, factorKeys, ctrData);
+        final List<byte[]> authenticationCodeComponents = computeAuthCodeComponents(data, factorKeys, ctrData);
         // Convert authentication code components into one Base64 encoded string
         for (int i = 0; i < authenticationCodeComponents.size(); i++) {
             final byte[] component = authenticationCodeComponents.get(i);
@@ -129,7 +129,7 @@ public class AuthenticationCodeLegacyUtils {
      * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private List<byte[]> computePowerAuthCodeComponents(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
+    private List<byte[]> computeAuthCodeComponents(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         // Prepare a hash
         final HMACHashUtilities hmac = new HMACHashUtilities();
 
@@ -178,7 +178,7 @@ public class AuthenticationCodeLegacyUtils {
      * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public String computePowerAuthCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
+    public String computeAuthCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
         if (factorKeys == null) {
             throw new GenericCryptoException("Missing factorKeys parameter");
         }
@@ -193,11 +193,11 @@ public class AuthenticationCodeLegacyUtils {
         }
         switch (configuration.getAuthenticationCodeFormat()) {
             case BASE64 -> {
-                return computePowerAuthBase64Code(data, factorKeys, ctrData);
+                return computeAuthBase64Code(data, factorKeys, ctrData);
             }
             case DECIMAL -> {
                 final Integer len = ((DecimalAuthenticationCodeConfiguration) configuration).getLength();
-                return computePowerAuthDecimalCode(data, factorKeys, ctrData, len);
+                return computeAuthDecimalCode(data, factorKeys, ctrData, len);
             }
             default ->
                     throw new GenericCryptoException("Unsupported format of PowerAuth authentication code.");
@@ -225,7 +225,7 @@ public class AuthenticationCodeLegacyUtils {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public boolean validatePowerAuthCode(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
-        return authenticationCode.equals(computePowerAuthCode(data, factorKeys, ctrData, configuration));
+        return authenticationCode.equals(computeAuthCode(data, factorKeys, ctrData, configuration));
     }
 
 }
