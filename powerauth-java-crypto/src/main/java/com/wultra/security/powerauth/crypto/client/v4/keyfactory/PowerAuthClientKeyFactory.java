@@ -162,6 +162,18 @@ public class PowerAuthClientKeyFactory {
     }
 
     /**
+     * Generate a factor key KEY_MAC_GET_APP_TEMP_KEY from KEY_ACTIVATION_SECRET using KDF.
+     *
+     * @see KeyFactory#deriveKeyMacGetActTempKey(SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEY_MAC_GET_APP_TEMP_KEY.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyMacGetAppTempKey(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyMacGetAppTempKey(keyActivationSecret);
+    }
+
+    /**
      * Generate a factor key KEY_MAC_GET_ACT_TEMP_KEY from KEY_ACTIVATION_SECRET using KDF.
      *
      * @see KeyFactory#deriveKeyMacGetActTempKey(SecretKey)
