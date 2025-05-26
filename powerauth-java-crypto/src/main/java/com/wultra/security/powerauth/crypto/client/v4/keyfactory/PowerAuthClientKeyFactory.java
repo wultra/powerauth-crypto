@@ -23,8 +23,6 @@ import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyFactory;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,30 +96,30 @@ public class PowerAuthClientKeyFactory {
     public List<SecretKey> keysForAuthenticationCodeType(PowerAuthCodeType powerAuthCodeType, SecretKey keyActivationSecret) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         final List<SecretKey> factorKeys = new ArrayList<>();
         if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
-            final SecretKey factorKey = generateClientPossessionFactorKey(keyActivationSecret);
+            final SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.KNOWLEDGE)) {
-            final SecretKey factorKey = generateClientKnowledgeFactorKey(keyActivationSecret);
+            final SecretKey factorKey = generateKnowledgeFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.BIOMETRY)) {
-            final SecretKey factorKey = generateClientBiometryFactorKey(keyActivationSecret);
+            final SecretKey factorKey = generateBiometryFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
-            SecretKey factorKey = generateClientPossessionFactorKey(keyActivationSecret);
+            SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
-            factorKey = generateClientKnowledgeFactorKey(keyActivationSecret);
+            factorKey = generateKnowledgeFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
-            SecretKey factorKey = generateClientPossessionFactorKey(keyActivationSecret);
+            SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
-            factorKey = generateClientBiometryFactorKey(keyActivationSecret);
+            factorKey = generateBiometryFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
-            SecretKey factorKey = generateClientPossessionFactorKey(keyActivationSecret);
+            SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
-            factorKey = generateClientKnowledgeFactorKey(keyActivationSecret);
+            factorKey = generateKnowledgeFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
-            factorKey = generateClientBiometryFactorKey(keyActivationSecret);
+            factorKey = generateBiometryFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
         }
         return factorKeys;
@@ -135,7 +133,7 @@ public class PowerAuthClientKeyFactory {
      * @return An instance of factor key KEY_FACTOR_BIOMETRY.
      * @throws GenericCryptoException In case key derivation fails.
      */
-    public SecretKey generateClientBiometryFactorKey(SecretKey keyActivationSecret) throws GenericCryptoException {
+    public SecretKey generateBiometryFactorKey(SecretKey keyActivationSecret) throws GenericCryptoException {
         return KeyFactory.deriveKeyAuthenticationCodeBiometry(keyActivationSecret);
     }
 
@@ -147,7 +145,7 @@ public class PowerAuthClientKeyFactory {
      * @return An instance of factor key KEY_FACTOR_KNOWLEDGE.
      * @throws GenericCryptoException In case key derivation fails.
      */
-    public SecretKey generateClientKnowledgeFactorKey(SecretKey keyActivationSecret) throws GenericCryptoException {
+    public SecretKey generateKnowledgeFactorKey(SecretKey keyActivationSecret) throws GenericCryptoException {
         return KeyFactory.deriveKeyAuthenticationCodeKnowledge(keyActivationSecret);
     }
 
@@ -159,8 +157,44 @@ public class PowerAuthClientKeyFactory {
      * @return An instance of factor key KEY_FACTOR_POSSESSION.
      * @throws GenericCryptoException In case key derivation fails.
      */
-    public SecretKey generateClientPossessionFactorKey(SecretKey keyActivationSecret) throws GenericCryptoException {
+    public SecretKey generatePossessionFactorKey(SecretKey keyActivationSecret) throws GenericCryptoException {
         return KeyFactory.deriveKeyAuthenticationCodePossession(keyActivationSecret);
+    }
+
+    /**
+     * Generate a factor key KEY_MAC_GET_ACT_TEMP_KEY from KEY_ACTIVATION_SECRET using KDF.
+     *
+     * @see KeyFactory#deriveKeyMacGetActTempKey(SecretKey) (SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEY_MAC_GET_ACT_TEMP_KEY.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyMacGetActTempKey(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyMacGetActTempKey(keyActivationSecret);
+    }
+
+    /**
+     * Generate a factor key KEY_MAC_STATUS from KEY_ACTIVATION_SECRET using KDF.
+     *
+     * @see KeyFactory#deriveKeyMacStatus(SecretKey) (SecretKey) (SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEY_MAC_STATUS.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyMacStatus(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyMacStatus(keyActivationSecret);
+    }
+
+    /**
+     * Generate a factor key KEY_E2EE_SHARED_INFO2 from KEY_ACTIVATION_SECRET using KDF.
+     *
+     * @see KeyFactory#deriveKeyMacStatus(SecretKey) (SecretKey) (SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEY_E2EE_SHARED_INFO2.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateSharedInfo2Key(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyE2eeSharedInfo2(keyActivationSecret);
     }
 
 }
