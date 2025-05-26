@@ -24,8 +24,6 @@ import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -39,7 +37,15 @@ import java.util.Arrays;
 
 /**
  * Class implementing cryptography used on a server side in order to assure
- * PowerAuth Server activation related processes.
+ * PowerAuth Server activation related processes (V3).
+ *
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>3.0</li>
+ *     <li>3.1</li>
+ *     <li>3.2</li>
+ *     <li>3.3</li>
+ * </ul>
  *
  * @author Petr Dvorak, petr@wultra.com
  * @author Roman Strobl, roman.strobl@wultra.com
@@ -48,11 +54,6 @@ public class PowerAuthServerActivation {
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
-
-    /**
-     * Custom bytes for MAC for counter data.
-     */
-    private static final byte[] KMAC_STATUS_CUSTOM_BYTES = CustomString.PA4MAC_STATUS.value().getBytes(StandardCharsets.UTF_8);
 
     /**
      * Generate a server related activation key pair.
@@ -96,6 +97,45 @@ public class PowerAuthServerActivation {
                                               PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
         return SIGNATURE_UTILS.computeECDSASignature(EcCurve.P256, bytes, masterPrivateKey);
+    }
+
+
+
+    /**
+     * Compute a fingerprint for the version 3 activation. The fingerprint can be used for visual validation of exchanged device public key.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
+     *
+     * @param devicePublicKey Device public key.
+     * @param serverPublicKey Server public key.
+     * @param activationId Activation ID.
+     * @return Fingerprint of the public key.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case fingerprint could not be calculated.
+     */
+    public String computeActivationFingerprint(PublicKey devicePublicKey, PublicKey serverPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
+        return computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId, ActivationVersion.VERSION_3);
+    }
+
+    /**
+     * Compute a fingerprint for the activation. The fingerprint can be used for visual validation of exchanged public keys.
+     *
+     * @param devicePublicKey Device public key.
+     * @param serverPublicKey Server public key.
+     * @param activationId Activation ID.
+     * @param activationVersion Activation version.
+     * @return Fingerprint of the public key.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case fingerprint could not be calculated.
+     */
+    public String computeActivationFingerprint(PublicKey devicePublicKey, PublicKey serverPublicKey, String activationId, ActivationVersion activationVersion) throws GenericCryptoException, CryptoProviderException {
+        return ECPublicKeyFingerprint.compute(((ECPublicKey)devicePublicKey), (ECPublicKey)serverPublicKey, activationId, activationVersion);
     }
 
     /**
@@ -144,7 +184,6 @@ public class PowerAuthServerActivation {
      *     <li>3.1</li>
      *     <li>3.2</li>
      *     <li>3.3</li>
-     *     <li>4.0</li>
      * </ul>
      *
      * @param statusBlobInfo Activation status blog information.
@@ -160,20 +199,8 @@ public class PowerAuthServerActivation {
         final int magicValue;
         final byte[] statusFlagsAndReserved;
         final int blobLength;
-        if (protocolVersion.getMajorVersion() == 4) {
-            if (statusBlobInfo.getCtrDataHash() == null) {
-                throw new GenericCryptoException("Missing ctrDataHash in statusBlobInfo object");
-            }
-            magicValue = ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V4;
-            // Status flags 1 byte + reserved 5 bytes
-            statusFlagsAndReserved = ByteBuffer.allocate(5)
-                    .put(statusBlobInfo.getStatusFlags())
-                    .put(KEY_GENERATOR.generateRandomBytes(4))
-                    .array();
-            ctrDataHash = statusBlobInfo.getCtrDataHash();
-            ctrByte = statusBlobInfo.getCtrByte();
-            ctrLookAhead = statusBlobInfo.getCtrLookAhead();
-            blobLength = 48;
+        if (protocolVersion.getMajorVersion() != 3) {
+            throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
         } else if (protocolVersion != ProtocolVersion.V30) {
             if (statusBlobInfo.getCtrDataHash() == null) {
                 throw new GenericCryptoException("Missing ctrDataHash in statusBlobInfo object");
@@ -237,65 +264,10 @@ public class PowerAuthServerActivation {
      */
     public byte[] calculateHashFromHashBasedCounter(byte[] ctrData, SecretKey keyCtrDataMac, ProtocolVersion protocolVersion)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        return new HashBasedCounterUtils().calculateHashFromHashBasedCounter(ctrData, keyCtrDataMac, protocolVersion);
-    }
-
-    /**
-     * Calculate MAC for activation status.
-     *
-     * <p><b>PowerAuth protocol versions:</b>
-     * <ul>
-     *     <li>4.0</li>
-     * </ul>
-     *
-     * @param statusData Activation status data.
-     * @param keyCtrStatusMac Key for calculating MAC for activation data.
-     * @param protocolVersion Protocol version.
-     * @return Activation status MAC.
-     * @throws GenericCryptoException In case of a cryptography error.
-     */
-    public byte[] calculateStatusMac(byte[] statusData, SecretKey keyCtrStatusMac, ProtocolVersion protocolVersion) throws GenericCryptoException {
-        if (protocolVersion.getMajorVersion() < 4) {
+        if (protocolVersion.getMajorVersion() != 3) {
             throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
         }
-        return Kmac.kmac256(keyCtrStatusMac, statusData, KMAC_STATUS_CUSTOM_BYTES);
-    }
-
-    /**
-     * Compute a fingerprint for the version 3 activation. The fingerprint can be used for visual validation of exchanged device public key.
-     *
-     * <p><b>PowerAuth protocol versions:</b>
-     * <ul>
-     *     <li>3.0</li>
-     *     <li>3.1</li>
-     *     <li>3.2</li>
-     *     <li>3.3</li>
-     * </ul>
-     *
-     * @param devicePublicKey Device public key.
-     * @param serverPublicKey Server public key.
-     * @param activationId Activation ID.
-     * @return Fingerprint of the public key.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     * @throws GenericCryptoException In case fingerprint could not be calculated.
-     */
-    public String computeActivationFingerprint(PublicKey devicePublicKey, PublicKey serverPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
-        return computeActivationFingerprint(devicePublicKey, serverPublicKey, activationId, ActivationVersion.VERSION_3);
-    }
-
-    /**
-     * Compute a fingerprint for the activation. The fingerprint can be used for visual validation of exchanged public keys.
-     *
-     * @param devicePublicKey Device public key.
-     * @param serverPublicKey Server public key.
-     * @param activationId Activation ID.
-     * @param activationVersion Activation version.
-     * @return Fingerprint of the public key.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     * @throws GenericCryptoException In case fingerprint could not be calculated.
-     */
-    public String computeActivationFingerprint(PublicKey devicePublicKey, PublicKey serverPublicKey, String activationId, ActivationVersion activationVersion) throws GenericCryptoException, CryptoProviderException {
-        return ECPublicKeyFingerprint.compute(((ECPublicKey)devicePublicKey), (ECPublicKey)serverPublicKey, activationId, activationVersion);
+        return new HashBasedCounterUtils().calculateHashFromHashBasedCounter(ctrData, keyCtrDataMac, protocolVersion);
     }
 
 }

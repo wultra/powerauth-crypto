@@ -59,9 +59,6 @@ public class ECPublicKeyFingerprint {
             // Prepare fingerprint data
             byte[] fingerprintData;
             switch (activationVersion) {
-                case VERSION_2 ->
-                    // In version 2 the activation fingerprint is computed from device public key bytes
-                        fingerprintData = toByteArray(devicePublicKey);
                 case VERSION_3 -> {
                     if (serverPublicKey == null) {
                         throw new GenericCryptoException("Server public key is invalid");

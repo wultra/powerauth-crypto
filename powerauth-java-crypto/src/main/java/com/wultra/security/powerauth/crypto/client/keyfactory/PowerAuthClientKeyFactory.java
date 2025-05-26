@@ -30,10 +30,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class implementing client side key factory for keys related to PowerAuth processes.
+ * Class implementing client side key factory for keys related to PowerAuth processes (V3).
+ *
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>3.0</li>
+ *     <li>3.1</li>
+ *     <li>3.2</li>
+ *     <li>3.3</li>
+ * </ul>
  *
  * @author Petr Dvorak, petr@wultra.com
- *
  */
 public class PowerAuthClientKeyFactory {
 

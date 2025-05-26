@@ -14,24 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.server.token;
+package com.wultra.security.powerauth.crypto.server.v4.token;
 
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.TokenUtils;
 
 /**
- * Server side class used for generating new tokens (V3).
+ * Server side class used for generating new tokens (V4).
  *
  * <p><b>PowerAuth protocol versions:</b>
  * <ul>
- *     <li>3.0</li>
- *     <li>3.1</li>
- *     <li>3.2</li>
- *     <li>3.3</li>
+ *     <li>4.0</li>
  * </ul>
  *
- * @author Petr Dvorak, petr@wultra.com
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class ServerTokenGenerator {
@@ -54,12 +51,11 @@ public class ServerTokenGenerator {
      * @throws GenericCryptoException In case the protocol version is not supported.
      */
     public byte[] generateTokenSecret(String version) throws CryptoProviderException, GenericCryptoException {
-        final byte[] tokenSecret;
-        switch (version) {
-            case "3.0", "3.1", "3.2", "3.3" -> tokenSecret = tokenUtils.generateTokenSecret(16);
-            default -> throw new GenericCryptoException("Unsupported protocol version: " + version);
+        final ProtocolVersion protocolVersion = ProtocolVersion.fromValue(version);
+        if (protocolVersion.getMajorVersion() != 4) {
+            throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
         }
-        return tokenSecret;
+        return tokenUtils.generateTokenSecret(32);
     }
 
 }

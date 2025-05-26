@@ -1,6 +1,6 @@
 /*
  * PowerAuth Crypto Library
- * Copyright 2018 Wultra s.r.o.
+ * Copyright 2025 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.lib.model;
+package com.wultra.security.powerauth.crypto.client.v4.vault;
 
 /**
- * Enumeration representing activation version.
+ * Class implementing client-side processes related to PowerAuth secure vault (V4).
  *
- * @author Roman Strobl, roman.strobl@wultra.com
+ * @author Roman Strobl, roman.strobl
+ *
  */
-public enum ActivationVersion {
+public class PowerAuthClientVault {
 
-    /**
-     * Version 3.
-     */
-    VERSION_3,
-
-    /**
-     * Version 4.
-     */
-    VERSION_4
+    // TODO - support for crypto4
 
 }

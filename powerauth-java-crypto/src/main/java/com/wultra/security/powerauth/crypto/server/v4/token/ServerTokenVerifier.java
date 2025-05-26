@@ -14,16 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.client.token;
+package com.wultra.security.powerauth.crypto.server.v4.token;
 
 import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.TokenUtils;
 
-
 /**
- * Class that simplifies working with tokens on the client side (V3).
+ * Class to simplify token verification on the server side (V4).
  *
  * <p><b>PowerAuth protocol versions:</b>
  * <ul>
@@ -35,47 +34,38 @@ import com.wultra.security.powerauth.crypto.lib.util.TokenUtils;
  *
  * @author Petr Dvorak, petr@wultra.com
  */
-public class ClientTokenGenerator {
+public class ServerTokenVerifier {
 
     private final TokenUtils tokenUtils = new TokenUtils();
 
     /**
-     * Generate random token nonce, 16 random bytes.
+     * Helper method to convert provided timestamp into bytes (from string representation), for the
+     * purpose of token timestamping.
      *
-     * @return Random token nonce.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
+     * @param timestamp Timestamp to be converted.
+     * @return Provided timestamp in milliseconds converted as bytes.
      */
-    public byte[] generateTokenNonce() throws CryptoProviderException {
-        return tokenUtils.generateTokenNonce();
+    public byte[] convertTokenTimestamp(long timestamp) {
+        return tokenUtils.convertTokenTimestamp(timestamp);
     }
 
     /**
-     * Helper method to get current timestamp for the purpose of token timestamping, encoded as bytes (from string
-     * representation).
-     *
-     * @return Current timestamp in milliseconds.
-     */
-    public byte[] generateTokenTimestamp() {
-        return tokenUtils.generateTokenTimestamp();
-    }
-
-    /**
-     * Compute the digest of provided token information using given token secret.
-     *
+     * Validate provided token digest for given input data and provided token secret.
      * @param nonce Token nonce, 16 random bytes.
      * @param timestamp Token timestamp, Unix timestamp format encoded as bytes (from string representation).
      * @param version Protocol version.
      * @param tokenSecret Token secret, 16 random bytes.
+     * @param tokenDigest Token digest, 32 bytes to be validated.
      * @return Token digest computed using provided data bytes with given token secret.
      * @throws GenericCryptoException In case digest computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] computeTokenDigest(byte[] nonce, byte[] timestamp, String version, byte[] tokenSecret) throws GenericCryptoException, CryptoProviderException {
+    public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, String version, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
         final ProtocolVersion protocolVersion = ProtocolVersion.fromValue(version);
-        if (protocolVersion.getMajorVersion() != 3) {
+        if (protocolVersion.getMajorVersion() != 4) {
             throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
         }
-        return tokenUtils.computeTokenDigest(nonce, timestamp, version, tokenSecret);
+        return tokenUtils.validateTokenDigest(nonce, timestamp, version, tokenSecret, tokenDigest);
     }
 
 }

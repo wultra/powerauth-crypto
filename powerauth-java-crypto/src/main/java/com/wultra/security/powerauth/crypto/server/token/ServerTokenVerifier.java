@@ -16,12 +16,21 @@
  */
 package com.wultra.security.powerauth.crypto.server.token;
 
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.TokenUtils;
 
 /**
- * Class to simplify token verification on the server side.
+ * Class to simplify token verification on the server side (V3).
+ *
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>3.0</li>
+ *     <li>3.1</li>
+ *     <li>3.2</li>
+ *     <li>3.3</li>
+ * </ul>
  *
  * @author Petr Dvorak, petr@wultra.com
  */
@@ -52,6 +61,10 @@ public class ServerTokenVerifier {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public boolean validateTokenDigest(byte[] nonce, byte[] timestamp, String version, byte[] tokenSecret, byte[] tokenDigest) throws GenericCryptoException, CryptoProviderException {
+        final ProtocolVersion protocolVersion = ProtocolVersion.fromValue(version);
+        if (protocolVersion.getMajorVersion() != 3) {
+            throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
+        }
         return tokenUtils.validateTokenDigest(nonce, timestamp, version, tokenSecret, tokenDigest);
     }
 
