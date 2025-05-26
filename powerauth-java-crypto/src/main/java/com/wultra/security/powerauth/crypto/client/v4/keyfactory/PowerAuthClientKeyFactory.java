@@ -152,7 +152,7 @@ public class PowerAuthClientKeyFactory {
     /**
      * Generate a factor key KEY_FACTOR_POSSESSION from KEY_ACTIVATION_SECRET using KDF.
      *
-     * @see KeyFactory#deriveKeyAuthenticationCodePossession(SecretKey) (SecretKey)
+     * @see KeyFactory#deriveKeyAuthenticationCodePossession(SecretKey)
      * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
      * @return An instance of factor key KEY_FACTOR_POSSESSION.
      * @throws GenericCryptoException In case key derivation fails.
@@ -164,7 +164,7 @@ public class PowerAuthClientKeyFactory {
     /**
      * Generate a factor key KEY_MAC_GET_ACT_TEMP_KEY from KEY_ACTIVATION_SECRET using KDF.
      *
-     * @see KeyFactory#deriveKeyMacGetActTempKey(SecretKey) (SecretKey)
+     * @see KeyFactory#deriveKeyMacGetActTempKey(SecretKey)
      * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
      * @return An instance of key KEY_MAC_GET_ACT_TEMP_KEY.
      * @throws GenericCryptoException In case key derivation fails.
@@ -176,7 +176,7 @@ public class PowerAuthClientKeyFactory {
     /**
      * Generate a factor key KEY_MAC_STATUS from KEY_ACTIVATION_SECRET using KDF.
      *
-     * @see KeyFactory#deriveKeyMacStatus(SecretKey) (SecretKey) (SecretKey)
+     * @see KeyFactory#deriveKeyMacStatus(SecretKey)
      * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
      * @return An instance of key KEY_MAC_STATUS.
      * @throws GenericCryptoException In case key derivation fails.
@@ -186,9 +186,21 @@ public class PowerAuthClientKeyFactory {
     }
 
     /**
+     * Generate a factor key KEY_MAC_CTR_DATA from KEY_ACTIVATION_SECRET using KDF.
+     *
+     * @see KeyFactory#deriveKeyMacCtrData(SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEY_MAC_CTR_DATA.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyMacCtrData(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyMacCtrData(keyActivationSecret);
+    }
+
+    /**
      * Generate a factor key KEY_E2EE_SHARED_INFO2 from KEY_ACTIVATION_SECRET using KDF.
      *
-     * @see KeyFactory#deriveKeyMacStatus(SecretKey) (SecretKey) (SecretKey)
+     * @see KeyFactory#deriveKeyE2eeSharedInfo2(SecretKey)
      * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
      * @return An instance of key KEY_E2EE_SHARED_INFO2.
      * @throws GenericCryptoException In case key derivation fails.
