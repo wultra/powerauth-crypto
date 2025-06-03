@@ -44,7 +44,7 @@ public class ServerTokenGenerator {
     }
 
     /**
-     * Generate random token secret, 16 or 32 random bytes depending on the version.
+     * Generate random 32 byte long token secret.
      * @param version Protocol version.
      * @return Random token secret.
      * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
