@@ -164,8 +164,8 @@ public class ActivationStatusBlobInfoTest {
 
     @Test
     public void testActivationStatusBlobV4() throws GenericCryptoException, CryptoProviderException {
-        final PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
-        final PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
+        final com.wultra.security.powerauth.crypto.server.v4.activation.PowerAuthServerActivation serverActivation = new com.wultra.security.powerauth.crypto.server.v4.activation.PowerAuthServerActivation();
+        final com.wultra.security.powerauth.crypto.client.v4.activation.PowerAuthClientActivation clientActivation = new com.wultra.security.powerauth.crypto.client.v4.activation.PowerAuthClientActivation();
         // Generate hash based counter
         byte[] ctrDataHash = KEY_GENERATOR.generateRandomBytes(32);
         ActivationStatusBlobInfo serverStatusBlob = new ActivationStatusBlobInfo();

@@ -31,7 +31,7 @@ import java.util.List;
 
 
 /**
- * Key factory used on server side to generate PowerAuth related keys.
+ * Key factory used on server side to generate PowerAuth related keys (V3).
  *
  * <p><b>PowerAuth protocol versions:</b>
  * <ul>

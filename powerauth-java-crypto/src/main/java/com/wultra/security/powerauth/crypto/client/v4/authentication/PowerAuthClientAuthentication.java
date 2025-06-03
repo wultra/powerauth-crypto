@@ -1,6 +1,6 @@
 /*
  * PowerAuth Crypto Library
- * Copyright 2018 Wultra s.r.o.
+ * Copyright 2025 Wultra s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.client.authentication;
+package com.wultra.security.powerauth.crypto.client.v4.authentication;
 
 import com.wultra.security.powerauth.crypto.lib.config.AuthenticationCodeConfiguration;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeLegacyUtils;
+import com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeUtils;
 
 import javax.crypto.SecretKey;
 import java.util.List;
 
 /**
- * Class implementing client-side authentication related processes (V3).
+ * Class implementing client-side authentication related processes (V4).
  *
  * <p><b>PowerAuth protocol versions:</b>
  * <ul>
- *     <li>3.0</li>
- *     <li>3.1</li>
- *     <li>3.2</li>
- *     <li>3.3</li>
+ *     <li>4.0</li>
  * </ul>
  *
- * @author Petr Dvorak, petr@wultra.com
+ * @author Roman Strobl, roman.strobl@wultra.com
  *
  */
 public class PowerAuthClientAuthentication {
 
-    private final AuthenticationCodeLegacyUtils authenticationCodeUtils = new AuthenticationCodeLegacyUtils();
+    private static final AuthenticationCodeUtils AUTHENTICATION_CODE_UTILS = new AuthenticationCodeUtils();
 
     /**
      * Compute a PowerAuth authentication code for given data, factor keys and
@@ -51,10 +48,7 @@ public class PowerAuthClientAuthentication {
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
-     *     <li>3.0</li>
-     *     <li>3.1</li>
-     *     <li>3.2</li>
-     *     <li>3.3</li>
+     *     <li>4.0</li>
      * </ul>
      *
      * @param data Data to be signed.
@@ -66,7 +60,7 @@ public class PowerAuthClientAuthentication {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public String computeAuthCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration authenticationCodeConfiguration) throws GenericCryptoException, CryptoProviderException {
-        return authenticationCodeUtils.computeAuthCode(data, factorKeys, ctrData, authenticationCodeConfiguration);
+        return AUTHENTICATION_CODE_UTILS.computeAuthCode(data, factorKeys, ctrData, authenticationCodeConfiguration);
     }
 
 }

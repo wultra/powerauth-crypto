@@ -412,7 +412,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String authenticationCode = clientAuth.authenticateCodeForData(data, Collections.singletonList(possessionKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(possessionKey), ctrData, authenticationCodeConfiguration);
                     String authenticationCodeType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -434,7 +434,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(possessionKey, knowledgeKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionKey, knowledgeKey), ctrData, authenticationCodeConfiguration);
                     String authenticationCodeType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -456,7 +456,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(possessionKey, knowledgeKey, biometryKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionKey, knowledgeKey, biometryKey), ctrData, authenticationCodeConfiguration);
                     String authenticationCodeType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -530,7 +530,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String authenticationCode = clientAuth.authenticateCodeForData(data, Collections.singletonList(possessionFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(possessionFactorKey), ctrData, authenticationCodeConfiguration);
                     String authenticationCodeType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -552,7 +552,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey), ctrData, authenticationCodeConfiguration);
                     String authenticationCodeType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -574,7 +574,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey, biometryFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey, biometryFactorKey), ctrData, authenticationCodeConfiguration);
                     String authenticationCodeType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -637,7 +637,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String authenticationCode = clientAuth.authenticateCodeForData(data, Collections.singletonList(possessionFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(possessionFactorKey), ctrData, authenticationCodeConfiguration);
                     String authenticationCodeType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
@@ -660,7 +660,7 @@ public class GenerateVectorDataTest {
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey), ctrData, authenticationCodeConfiguration);
                     String authenticationCodeType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();

@@ -14,13 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.server.util;
+package com.wultra.security.powerauth.crypto.server.v4.util;
 
 import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.HMACHashUtilities;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,19 +31,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * This is a helper class that provides utility methods for computing various data digests (V3).
+ * This is a helper class that provides utility methods for computing various data digests (V4).
  *
  * <p><b>PowerAuth protocol versions:</b>
  * <ul>
- *     <li>3.0</li>
- *     <li>3.1</li>
- *     <li>3.2</li>
- *     <li>3.3</li>
+ *     <li>4.0</li>
  * </ul>
  *
- * @author Petr Dvorak, petr@wultra.com
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class DataDigest {
+
+    private static final byte[] KMAC_DATA_DIGEST_CUSTOM_BYTES = CustomString.PA4DIGEST_DATA.value().getBytes(StandardCharsets.UTF_8);
 
     private static final Logger logger = LoggerFactory.getLogger(DataDigest.class);
 
@@ -111,22 +112,6 @@ public class DataDigest {
      * by '&amp;' character), then a random key is generated and hash (HMAC-SHA256) is computed. Finally,
      * the resulting MAC is decimalized to the signature of a length 8 numeric digits.
      *
-     * @deprecated use {@link #generateDigest(String, List)}
-     *
-     * @param items Items to be serialized into digest.
-     * @return Digest fo provided data, including seed used to compute that digest.
-     * @throws GenericCryptoException In case cryptography fails.
-     */
-    @Deprecated
-    public Result generateDigest(List<String> items) throws GenericCryptoException {
-        return generateDigest("3.3", items);
-    }
-
-    /**
-     * Data digest of the list with string elements. Data is first normalized (items concatenated
-     * by '&amp;' character), then a random key is generated and hash (HMAC-SHA256) is computed. Finally,
-     * the resulting MAC is decimalized to the signature of a length 8 numeric digits.
-     *
      * @param version Cryptography protocol version.
      * @param items Items to be serialized into digest.
      * @return Digest fo provided data, including seed used to compute that digest.
@@ -155,13 +140,10 @@ public class DataDigest {
 
     private byte[] generateDigest(String version, byte[] operationData, byte[] key) throws GenericCryptoException, CryptoProviderException {
         final ProtocolVersion protocolVersion = ProtocolVersion.fromValue(version);
-        if (protocolVersion.getMajorVersion() != 3) {
+        if (protocolVersion.getMajorVersion() != 4) {
             throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
         }
-        return switch (version) {
-            case "3.0", "3.1", "3.2", "3.3" -> hmac.hash(key, operationData);
-            default -> throw new GenericCryptoException("Unsupported protocol version: " + version);
-        };
+        return Kmac.kmac256(key, operationData, KMAC_DATA_DIGEST_CUSTOM_BYTES);
     }
 
 }

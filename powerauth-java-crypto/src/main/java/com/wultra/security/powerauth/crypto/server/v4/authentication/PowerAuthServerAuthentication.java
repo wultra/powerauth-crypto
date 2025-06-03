@@ -14,33 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.server.authentication;
+package com.wultra.security.powerauth.crypto.server.v4.authentication;
 
 import com.wultra.security.powerauth.crypto.lib.config.AuthenticationCodeConfiguration;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeLegacyUtils;
+import com.wultra.security.powerauth.crypto.lib.util.AuthenticationCodeUtils;
 
 import javax.crypto.SecretKey;
 import java.util.List;
 
 /**
  * Class implementing processes PowerAuth Server uses to compute and validate
- * authentication codes (V3).
+ * authentication codes (V4).
  *
  * <p><b>PowerAuth protocol versions:</b>
  * <ul>
- *     <li>3.0</li>
- *     <li>3.1</li>
- *     <li>3.2</li>
- *     <li>3.3</li>
+ *     <li>4.0</li>
  * </ul>
  *
- * @author Petr Dvorak, petr@wultra.com
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class PowerAuthServerAuthentication {
 
-    private final AuthenticationCodeLegacyUtils authenticationCodeUtils = new AuthenticationCodeLegacyUtils();
+    private final AuthenticationCodeUtils authenticationCodeUtils = new AuthenticationCodeUtils();
 
     /**
      * Verify the authentication code against data using authentication code key list and
@@ -48,10 +45,7 @@ public class PowerAuthServerAuthentication {
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
-     *     <li>3.0</li>
-     *     <li>3.1</li>
-     *     <li>3.2</li>
-     *     <li>3.3</li>
+     *     <li>4.0</li>
      * </ul>
      *
      * @param data Signed data.

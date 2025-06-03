@@ -17,6 +17,7 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4;
 
+import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import lombok.NoArgsConstructor;
 import org.bouncycastle.jcajce.spec.MLDSAParameterSpec;
@@ -35,15 +36,15 @@ public class PqcDsa {
      * Generate PQC DSA keypair.
      *
      * @return Keypair.
-     * @throws GenericCryptoException Thrown in case of any cryptography error.
+     * @throws CryptoProviderException Thrown in case the cryptography provider is incorrectly initialized.
      */
-    public KeyPair generateKeyPair() throws GenericCryptoException {
+    public KeyPair generateKeyPair() throws CryptoProviderException {
         try {
             final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("MLDSA", "BC");
             keyPairGenerator.initialize(MLDSAParameterSpec.ml_dsa_65);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            throw new GenericCryptoException("Error generating key pair", e);
+            throw new CryptoProviderException("Error generating key pair", e);
         }
     }
 

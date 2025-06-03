@@ -28,10 +28,17 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 
 /**
- * Class implementing client-side processes related to PowerAuth secure vault.
+ * Class implementing client-side processes related to PowerAuth secure vault (V3).
  *
- * @author Petr Dvorak
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>3.0</li>
+ *     <li>3.1</li>
+ *     <li>3.2</li>
+ *     <li>3.3</li>
+ * </ul>
  *
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class PowerAuthClientVault {
 
@@ -45,6 +52,7 @@ public class PowerAuthClientVault {
      *     <li>3.0</li>
      *     <li>3.1</li>
      *     <li>3.2</li>
+     *     <li>3.3</li>
      * </ul>
      *
      * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.

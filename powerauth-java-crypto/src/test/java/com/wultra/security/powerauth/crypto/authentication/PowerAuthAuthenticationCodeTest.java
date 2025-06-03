@@ -128,7 +128,7 @@ public class PowerAuthAuthenticationCodeTest {
                 SecretKey clientPossessionKey = clientKeyFactory.generateClientPossessionFactorKey(masterClientKey);
                 System.out.println("### Client Authentication Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientPossessionKey)));
 
-                String authenticationCode = clientAuth.authenticateCodeForData(data, Collections.singletonList(clientPossessionKey), ctrData, authenticationCodeConfiguration);
+                String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(clientPossessionKey), ctrData, authenticationCodeConfiguration);
 
                 System.out.println("## Client Authentication Code: " + authenticationCode);
 
@@ -143,7 +143,7 @@ public class PowerAuthAuthenticationCodeTest {
                 System.out.println("### Server Possession Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(serverPossessionKey)));
                 assertEquals(clientPossessionKey, serverPossessionKey);
 
-                boolean isAuthenticationCodeValid = serverAuth.verifyAuthenticationForData(data, authenticationCode, Collections.singletonList(serverPossessionKey), ctrData, authenticationCodeConfiguration);
+                boolean isAuthenticationCodeValid = serverAuth.validateAuthCode(data, authenticationCode, Collections.singletonList(serverPossessionKey), ctrData, authenticationCodeConfiguration);
                 System.out.println("## Authentication Code valid: " + (isAuthenticationCodeValid ? "TRUE" : "FALSE"));
                 assertTrue(isAuthenticationCodeValid);
 
@@ -169,7 +169,7 @@ public class PowerAuthAuthenticationCodeTest {
                 SecretKey clientKeyKnowledge = clientKeyFactory.generateClientKnowledgeFactorKey(masterClientKey);
                 System.out.println("### Client Factor Key - Knowledge:  " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientKeyKnowledge)));
 
-                String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(clientKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
+                String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(clientKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
 
                 System.out.println("## Client Authentication Code: " + authenticationCode);
 
@@ -187,7 +187,7 @@ public class PowerAuthAuthenticationCodeTest {
                 System.out.println("### Server Knowledge Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(serverKeyKnowledge)));
                 assertEquals(clientKeyKnowledge, serverKeyKnowledge);
 
-                boolean isAuthenticationCodeValid = serverAuth.verifyAuthenticationForData(data, authenticationCode, Arrays.asList(serverKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
+                boolean isAuthenticationCodeValid = serverAuth.validateAuthCode(data, authenticationCode, Arrays.asList(serverKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
                 System.out.println("## Authentication Code valid: " + (isAuthenticationCodeValid ? "TRUE" : "FALSE"));
                 assertTrue(isAuthenticationCodeValid);
 
@@ -264,7 +264,7 @@ public class PowerAuthAuthenticationCodeTest {
                 SecretKey clientPossessionKey = clientKeyFactory.generateClientPossessionFactorKey(masterClientKey);
                 System.out.println("### Client Authentication Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientPossessionKey)));
 
-                String authenticationCode = clientAuth.authenticateCodeForData(data, Collections.singletonList(clientPossessionKey), ctrData, authenticationCodeConfiguration);
+                String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(clientPossessionKey), ctrData, authenticationCodeConfiguration);
 
                 System.out.println("## Client Authentication: " + authenticationCode);
 
@@ -279,7 +279,7 @@ public class PowerAuthAuthenticationCodeTest {
                 System.out.println("### Server Possession Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(serverPossessionKey)));
                 assertEquals(clientPossessionKey, serverPossessionKey);
 
-                boolean isAuthenticationCodeValid = serverAuth.verifyAuthenticationForData(data, authenticationCode, Collections.singletonList(serverPossessionKey), ctrData, authenticationCodeConfiguration);
+                boolean isAuthenticationCodeValid = serverAuth.validateAuthCode(data, authenticationCode, Collections.singletonList(serverPossessionKey), ctrData, authenticationCodeConfiguration);
                 System.out.println("## Authentication Code valid: " + (isAuthenticationCodeValid ? "TRUE" : "FALSE"));
                 assertTrue(isAuthenticationCodeValid);
 
@@ -305,7 +305,7 @@ public class PowerAuthAuthenticationCodeTest {
                 SecretKey clientKeyKnowledge = clientKeyFactory.generateClientKnowledgeFactorKey(masterClientKey);
                 System.out.println("### Client Key - Knowledge:  " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientKeyKnowledge)));
 
-                String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(clientKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
+                String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(clientKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
 
                 System.out.println("## Client Authentication Code: " + authenticationCode);
 
@@ -323,7 +323,7 @@ public class PowerAuthAuthenticationCodeTest {
                 System.out.println("### Server Knowledge Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(serverKeyKnowledge)));
                 assertEquals(clientKeyKnowledge, serverKeyKnowledge);
 
-                boolean isAuthenticationCodeValid = serverAuth.verifyAuthenticationForData(data, authenticationCode, Arrays.asList(serverKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
+                boolean isAuthenticationCodeValid = serverAuth.validateAuthCode(data, authenticationCode, Arrays.asList(serverKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
                 System.out.println("## Authentication Code valid: " + (isAuthenticationCodeValid ? "TRUE" : "FALSE"));
                 assertTrue(isAuthenticationCodeValid);
 
@@ -399,7 +399,7 @@ public class PowerAuthAuthenticationCodeTest {
                 SecretKey clientKeyPossession = clientKeyFactory.generateClientPossessionFactorKey(masterClientKey);
                 System.out.println("### Client Possession Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientKeyPossession)));
 
-                String authenticationCode = clientAuth.authenticateCodeForData(data, Collections.singletonList(clientKeyPossession), ctrData, authenticationCodeConfiguration);
+                String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(clientKeyPossession), ctrData, authenticationCodeConfiguration);
 
                 System.out.println("## Client Authentication Code: " + authenticationCode);
 
@@ -414,7 +414,7 @@ public class PowerAuthAuthenticationCodeTest {
                 System.out.println("### Server Possession Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(serverKeyPossession)));
                 assertEquals(clientKeyPossession, serverKeyPossession);
 
-                boolean isAuthenticationCodeValid = serverAuth.verifyAuthenticationForData(data, authenticationCode, Collections.singletonList(serverKeyPossession), ctrData, authenticationCodeConfiguration);
+                boolean isAuthenticationCodeValid = serverAuth.validateAuthCode(data, authenticationCode, Collections.singletonList(serverKeyPossession), ctrData, authenticationCodeConfiguration);
                 System.out.println("## Authentication Code valid: " + (isAuthenticationCodeValid ? "TRUE" : "FALSE"));
                 assertTrue(isAuthenticationCodeValid);
 
@@ -440,7 +440,7 @@ public class PowerAuthAuthenticationCodeTest {
                 SecretKey clientKeyKnowledge = clientKeyFactory.generateClientKnowledgeFactorKey(masterClientKey);
                 System.out.println("### Client Key - Knowledge:  " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientKeyKnowledge)));
 
-                String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(clientKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
+                String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(clientKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
 
                 System.out.println("## Client Authentication Code: " + authenticationCode);
 
@@ -458,7 +458,7 @@ public class PowerAuthAuthenticationCodeTest {
                 System.out.println("### Server Knowledge Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(serverKeyKnowledge)));
                 assertEquals(clientKeyKnowledge, serverKeyKnowledge);
 
-                boolean isAuthenticationCodeValid = serverAuth.verifyAuthenticationForData(data, authenticationCode, Arrays.asList(serverKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
+                boolean isAuthenticationCodeValid = serverAuth.validateAuthCode(data, authenticationCode, Arrays.asList(serverKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
                 System.out.println("## Authentication Code valid: " + (isAuthenticationCodeValid ? "TRUE" : "FALSE"));
                 assertTrue(isAuthenticationCodeValid);
 
@@ -488,7 +488,7 @@ public class PowerAuthAuthenticationCodeTest {
                 SecretKey clientKeyKnowledge = clientKeyFactory.generateClientKnowledgeFactorKey(masterClientKey);
                 System.out.println("### Client Key - Knowledge:  " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(clientKeyKnowledge)));
 
-                String authenticationCode = clientAuth.authenticateCodeForData(data, Arrays.asList(clientKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
+                String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(clientKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
 
                 System.out.println("## Client Authentication Code: " + authenticationCode);
                 assertEquals(componentLength * 2 + 1, authenticationCode.length());
@@ -507,7 +507,7 @@ public class PowerAuthAuthenticationCodeTest {
                 System.out.println("### Server Knowledge Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(serverKeyKnowledge)));
                 assertEquals(clientKeyKnowledge, serverKeyKnowledge);
 
-                boolean isAuthenticationCodeValid = serverAuth.verifyAuthenticationForData(data, authenticationCode, Arrays.asList(serverKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
+                boolean isAuthenticationCodeValid = serverAuth.validateAuthCode(data, authenticationCode, Arrays.asList(serverKeyPossession, clientKeyKnowledge), ctrData, authenticationCodeConfiguration);
                 System.out.println("## Authentication Code valid: " + (isAuthenticationCodeValid ? "TRUE" : "FALSE"));
                 assertTrue(isAuthenticationCodeValid);
 

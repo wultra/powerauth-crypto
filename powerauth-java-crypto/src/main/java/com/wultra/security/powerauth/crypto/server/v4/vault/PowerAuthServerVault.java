@@ -14,23 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.lib.model;
+package com.wultra.security.powerauth.crypto.server.v4.vault;
 
 /**
- * Enumeration representing activation version.
+ * Class implementing server-side logic for PowerAuth vault encryption (V4).
+ *
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>4.0</li>
+ * </ul>
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public enum ActivationVersion {
+public class PowerAuthServerVault {
 
-    /**
-     * Version 3.
-     */
-    VERSION_3,
-
-    /**
-     * Version 4.
-     */
-    VERSION_4
+    // TODO - support for crypto4
 
 }

@@ -17,6 +17,7 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4;
 
+import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class PqcDsaTest {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     @Test
-    public void testPqcDsa_Success() throws GenericCryptoException {
+    public void testPqcDsa_Success() throws GenericCryptoException, CryptoProviderException {
         final PqcDsa pqcDsa = new PqcDsa();
         final KeyPair keyPair = pqcDsa.generateKeyPair();
         final byte[] testMessage = "test_message".getBytes(StandardCharsets.UTF_8);
@@ -56,7 +57,7 @@ class PqcDsaTest {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     @Test
-    public void testPqcDsa_InvalidSignature() throws GenericCryptoException {
+    public void testPqcDsa_InvalidSignature() throws GenericCryptoException, CryptoProviderException {
         final PqcDsa pqcDsa = new PqcDsa();
         final KeyPair keyPair = pqcDsa.generateKeyPair();
         final byte[] testMessage = "test_message".getBytes(StandardCharsets.UTF_8);
@@ -68,7 +69,7 @@ class PqcDsaTest {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     @Test
-    public void testPqcDsa_InvalidPrivateKey() throws GenericCryptoException {
+    public void testPqcDsa_InvalidPrivateKey() throws GenericCryptoException, CryptoProviderException {
         final PqcDsa pqcDsa = new PqcDsa();
         final KeyPair keyPair = pqcDsa.generateKeyPair();
         final KeyPair keyPair2 = pqcDsa.generateKeyPair();
@@ -82,7 +83,7 @@ class PqcDsaTest {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     @Test
-    public void testPqcDsa_NullMessage() throws GenericCryptoException {
+    public void testPqcDsa_NullMessage() throws CryptoProviderException {
         final PqcDsa pqcDsa = new PqcDsa();
         final KeyPair keyPair = pqcDsa.generateKeyPair();
         final Exception ex = assertThrows(GenericCryptoException.class, () -> pqcDsa.sign(keyPair.getPrivate(), null));
@@ -94,7 +95,7 @@ class PqcDsaTest {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     @Test
-    public void testPqcDsa_EmptyMessage() throws GenericCryptoException {
+    public void testPqcDsa_EmptyMessage() throws GenericCryptoException, CryptoProviderException {
         final PqcDsa pqcDsa = new PqcDsa();
         final KeyPair keyPair = pqcDsa.generateKeyPair();
         final byte[] emptyMessage = new byte[0];
