@@ -895,7 +895,7 @@ public class GeneralEncryptorTest {
             final EciesEncryptedResponse response = encryptedResponse[i];
             final EncryptorId eid = encryptorIds[i];
             final EncryptorScope scope = eid.scope();
-            final byte[] sharedInfo1 = eid.getEciesSharedInfo1("3.2");
+            final byte[] sharedInfo1 = eid.getSharedInfo1("3.2");
             final byte[] appSecret = applicationSecret.getBytes(StandardCharsets.UTF_8);
             final byte[] envelopeKey = envelopeKeys[i];
 
@@ -1234,7 +1234,7 @@ public class GeneralEncryptorTest {
             final EciesEncryptedResponse response = encryptedResponse[i];
             final EncryptorId eid = encryptorIds[i];
             final EncryptorScope scope = eid.scope();
-            final byte[] sharedInfo1 = eid.getEciesSharedInfo1("3.3");
+            final byte[] sharedInfo1 = eid.getSharedInfo1("3.3");
             final byte[] appSecret = applicationSecret.getBytes(StandardCharsets.UTF_8);
             final byte[] envelopeKey = envelopeKeys[i];
 

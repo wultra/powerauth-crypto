@@ -160,13 +160,12 @@ public final class AeadUtils {
         if (sharedInfo1 == null) {
             throw new AeadException("Missing sharedInfo1 parameter");
         }
+        if (nonce == null) {
+            throw new AeadException("Missing nonce parameter");
+        }
         switch (protocolVersion) {
             case "4.0": {
-                if (nonce == null) {
-                    throw new AeadException("Missing nonce parameter");
-                }
                 return ByteUtils.concat(
-                        ByteUtils.encodeString(protocolVersion),
                         sharedInfo1,
                         nonce);
             }

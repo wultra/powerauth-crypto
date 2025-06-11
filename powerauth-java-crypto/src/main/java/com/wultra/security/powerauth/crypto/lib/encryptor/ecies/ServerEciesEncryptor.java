@@ -141,7 +141,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
             envelopeKey = EciesEnvelopeKey.fromPrivateKey(
                     encryptorSecrets.getServerPrivateKey(),
                     ephemeralPublicKey,
-                    encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion())
+                    encryptorId.getSharedInfo1(encryptorParameters.getProtocolVersion())
             );
         }
         // Return secrets object with the precalculated keys.
@@ -174,7 +174,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
             envelopeKey = EciesEnvelopeKey.fromPrivateKey(
                     encryptorSecrets.getServerPrivateKey(),
                     ephemeralPublicKey,
-                    encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion())
+                    encryptorId.getSharedInfo1(encryptorParameters.getProtocolVersion())
             );
         }
         // Prepare sharedInfo2 for all available information.

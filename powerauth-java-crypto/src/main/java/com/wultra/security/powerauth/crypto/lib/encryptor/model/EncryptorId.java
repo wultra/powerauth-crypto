@@ -90,7 +90,7 @@ public enum EncryptorId {
      * @param protocolVersion Version of protocol.
      * @return Bytes of sharedInfo1 parameter for ECIES scheme.
      */
-    public byte[] getEciesSharedInfo1(String protocolVersion) {
+    public byte[] getSharedInfo1(String protocolVersion) {
         final byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
         // 3.0, 3.1 or if version is unspecified, return value bytes
         if (protocolVersion == null || "3.0".equals(protocolVersion) || "3.1".equals(protocolVersion)) {
