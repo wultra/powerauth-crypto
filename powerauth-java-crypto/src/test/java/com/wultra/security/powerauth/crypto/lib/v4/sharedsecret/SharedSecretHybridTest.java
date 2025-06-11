@@ -27,6 +27,9 @@ import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogr
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestHybrid;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.SharedSecretResponseHybrid;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,8 +38,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.PrivateKey;
-import java.security.Security;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -83,6 +86,39 @@ public class SharedSecretHybridTest {
                 derivedSharedSecret,
                 serverResponse.getSecretKey()
         );
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class HybridTestEntry {
+        private String clientContext;
+        private SharedSecretRequestHybrid request;
+        private SharedSecretResponseHybrid response;
+        private String sharedSecret;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class HybridTestData {
+        private HybridTestEntry[] testData;
+    }
+
+    @Test
+    public void testHybridFromClient() throws Exception, IOException {
+        InputStream stream = SharedSecretHybridTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_MLKEM_768_Client_Vectors.json");
+        assertNotNull(stream);
+        HybridTestData hybridTestData = MAPPER.readValue(stream, new TypeReference<>() {});
+        assertNotNull(hybridTestData);
+
+        SharedSecretHybrid algorithm = new SharedSecretHybrid();
+        for (HybridTestEntry entry : hybridTestData.getTestData()) {
+             final ResponseCryptogram responseCryptogram = algorithm.generateResponseCryptogram(entry.getRequest());
+             entry.setSharedSecret(Base64.getEncoder().encodeToString(responseCryptogram.getSecretKey().getEncoded()));
+             entry.setResponse((SharedSecretResponseHybrid) responseCryptogram.getSharedSecretResponse());
+        }
+        System.out.println(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(hybridTestData));
     }
 
     private static Stream<Map<String, String>> jsonDataEcdhe_P384_Mlkem_768_Provider() throws IOException {
