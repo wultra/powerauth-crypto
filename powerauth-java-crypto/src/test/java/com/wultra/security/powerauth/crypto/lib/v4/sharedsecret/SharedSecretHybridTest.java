@@ -39,7 +39,6 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -106,7 +105,24 @@ public class SharedSecretHybridTest {
     }
 
     @Test
-    public void testHybridFromClient() throws Exception, IOException {
+    public void testHybridFromClient() throws Exception {
+        /*
+         Usage of this test:
+
+         1. In PowerAuthCore project
+            - Open `SharedSecretTests.cpp`
+            - Enable `genTestVectors_EC_P384_ML_L3` test method (uncomment the method in Unit test's constructor)
+            - Run unit tests
+            - Copy result printed in `genTestVectors_EC_P384_ML_L3()` function
+            - Paste test data to `ECDHE_P384_MLKEM_768_Client_Vectors.json` (see below)
+         2. Run this test case
+            - Copy result printed in the test case
+         3. In PowerAuthCore project
+            - Paste result to `ECDHE_P384_MLKEM_768_Client_Vectors.json`
+            - Run script: `src/PowerAuthTests/TestData/update-pa2-files.sh`
+            - Disable `genTestVectors_EC_P384_ML_L3` test method
+            - Run unit test
+         */
         InputStream stream = SharedSecretHybridTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_MLKEM_768_Client_Vectors.json");
         assertNotNull(stream);
         HybridTestData hybridTestData = MAPPER.readValue(stream, new TypeReference<>() {});
