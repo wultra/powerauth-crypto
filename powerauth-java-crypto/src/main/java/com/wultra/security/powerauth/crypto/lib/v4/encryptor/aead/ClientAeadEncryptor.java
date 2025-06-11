@@ -124,7 +124,7 @@ public class ClientAeadEncryptor implements ClientEncryptor<AeadEncryptedRequest
         // Prepare key context (KC parameter) for AEAD
         final byte[] keyContext = AeadUtils.deriveKeyContext(
                 encryptorParameters.getProtocolVersion(),
-                encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion()),
+                encryptorId.getSharedInfo1(encryptorParameters.getProtocolVersion()),
                 nonce);
         // Prepare final associated data (AD parameter) for AEAD with all available information
         final byte[] associatedDataFinal = AeadUtils.deriveAssociateDataFinal(
@@ -173,7 +173,7 @@ public class ClientAeadEncryptor implements ClientEncryptor<AeadEncryptedRequest
             // Prepare key context (KC parameter) for AEAD
             final byte[] keyContext = AeadUtils.deriveKeyContext(
                     encryptorParameters.getProtocolVersion(),
-                    encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion()),
+                    encryptorId.getSharedInfo1(encryptorParameters.getProtocolVersion()),
                     nonce);
             // Prepare final associated data (AD parameter) for AEAD with all available information
             final byte[] associatedDataFinal = AeadUtils.deriveAssociateDataFinal(

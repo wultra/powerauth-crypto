@@ -129,7 +129,7 @@ public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedReque
         // Prepare new envelope key. The function internally generate new ephemeral public key.
         final EciesEnvelopeKey envelopeKey = EciesEnvelopeKey.fromPublicKey(
                 encryptorSecrets.getServerPublicKey(),
-                encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion())
+                encryptorId.getSharedInfo1(encryptorParameters.getProtocolVersion())
         );
         // Prepare nonce and timestamp for the request, if required.
         final byte[] requestNonce = generateRequestNonce();
