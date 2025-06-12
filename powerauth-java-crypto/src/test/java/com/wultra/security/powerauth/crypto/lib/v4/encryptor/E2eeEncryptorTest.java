@@ -79,7 +79,6 @@ public class E2eeEncryptorTest {
         final byte[] envelopeKey = deriveSecretKey().getEncoded();
         final EncryptorSecrets secrets = new AeadSecrets(envelopeKey, applicationSecret);
         final ClientEncryptor<EncryptedRequest, EncryptedResponse> clientEncryptor = ENCRYPTOR_FACTORY.getClientEncryptor(encryptorId, parameters, secrets);
-        clientEncryptor.configureSecrets(secrets);
         final String requestData = "test_request";
         final AeadEncryptedRequest encryptedRequest = (AeadEncryptedRequest) clientEncryptor.encryptRequest(requestData.getBytes(StandardCharsets.UTF_8));
         assertNotNull(encryptedRequest.getEncryptedData());
@@ -88,7 +87,6 @@ public class E2eeEncryptorTest {
         assertNotNull(encryptedRequest.getNonce());
 
         final ServerEncryptor<EncryptedRequest, EncryptedResponse> serverEncryptor = ENCRYPTOR_FACTORY.getServerEncryptor(encryptorId, parameters, secrets);
-        serverEncryptor.configureSecrets(secrets);
         final byte[] decryptedRequest = serverEncryptor.decryptRequest(encryptedRequest);
         assertArrayEquals(requestData.getBytes(StandardCharsets.UTF_8), decryptedRequest);
 
@@ -113,7 +111,6 @@ public class E2eeEncryptorTest {
         final SecretKey sharedInfo2Key = KEY_GENERATOR.generateRandomSecretKey(32);
         final EncryptorSecrets secrets = new AeadSecrets(envelopeKey, applicationSecret, sharedInfo2Key.getEncoded());
         final ClientEncryptor<EncryptedRequest, EncryptedResponse> clientEncryptor = ENCRYPTOR_FACTORY.getClientEncryptor(encryptorId, parameters, secrets);
-        clientEncryptor.configureSecrets(secrets);
         final String requestData = "test_request";
         final AeadEncryptedRequest encryptedRequest = (AeadEncryptedRequest) clientEncryptor.encryptRequest(requestData.getBytes(StandardCharsets.UTF_8));
         assertNotNull(encryptedRequest.getEncryptedData());
@@ -122,7 +119,6 @@ public class E2eeEncryptorTest {
         assertNotNull(encryptedRequest.getNonce());
 
         final ServerEncryptor<EncryptedRequest, EncryptedResponse> serverEncryptor = ENCRYPTOR_FACTORY.getServerEncryptor(encryptorId, parameters, secrets);
-        serverEncryptor.configureSecrets(secrets);
         final byte[] decryptedRequest = serverEncryptor.decryptRequest(encryptedRequest);
         assertArrayEquals(requestData.getBytes(StandardCharsets.UTF_8), decryptedRequest);
 
@@ -136,7 +132,7 @@ public class E2eeEncryptorTest {
     }
 
     private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider() throws IOException {
-        InputStream stream = E2eeEncryptorTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/encryptor/E2ee_Application_Scope_Test_Vectors.json");
+        InputStream stream = E2eeEncryptorTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/encryptor/E2ee_Application_Scope_Test_Vectors_40.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("e2ee_test_vectors_application_scope").stream();
     }
@@ -152,18 +148,16 @@ public class E2eeEncryptorTest {
         final byte[] envelopeKey = Base64.getDecoder().decode(vector.get("envelopeKey"));
         final EncryptorSecrets secrets = new AeadSecrets(envelopeKey, applicationSecret);
         final ClientEncryptor<EncryptedRequest, EncryptedResponse> clientEncryptor = ENCRYPTOR_FACTORY.getClientEncryptor(encryptorId, parameters, secrets);
-        clientEncryptor.configureSecrets(secrets);
         final String requestData = vector.get("requestData");
         final Long timestampRequest = Long.parseLong(vector.get("timestampRequest"));
         final String nonce = vector.get("nonce");
         final String encryptedDataRequest = vector.get("encryptedDataRequest");
-        Field nonceField = ClientAeadEncryptor.class.getDeclaredField("nonce");
+        final Field nonceField = ClientAeadEncryptor.class.getDeclaredField("nonce");
         nonceField.setAccessible(true);
         nonceField.set(clientEncryptor, Base64.getDecoder().decode(nonce));
 
         final AeadEncryptedRequest encryptedRequest = new AeadEncryptedRequest(temporaryKeyId, encryptedDataRequest, nonce, timestampRequest);
         final ServerEncryptor<EncryptedRequest, EncryptedResponse> serverEncryptor = ENCRYPTOR_FACTORY.getServerEncryptor(encryptorId, parameters, secrets);
-        serverEncryptor.configureSecrets(secrets);
         final byte[] decryptedRequest = serverEncryptor.decryptRequest(encryptedRequest);
         assertArrayEquals(requestData.getBytes(StandardCharsets.UTF_8), decryptedRequest);
 
@@ -177,7 +171,7 @@ public class E2eeEncryptorTest {
     }
 
     private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider() throws IOException {
-        InputStream stream = E2eeEncryptorTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/encryptor/E2ee_Activation_Scope_Test_Vectors.json");
+        InputStream stream = E2eeEncryptorTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/encryptor/E2ee_Activation_Scope_Test_Vectors_40.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("e2ee_test_vectors_activation_scope").stream();
     }
@@ -195,18 +189,16 @@ public class E2eeEncryptorTest {
         final byte[] sharedInfo2Key = Base64.getDecoder().decode(vector.get("sharedInfo2Key"));
         final EncryptorSecrets secrets = new AeadSecrets(envelopeKey, applicationSecret, sharedInfo2Key);
         final ClientEncryptor<EncryptedRequest, EncryptedResponse> clientEncryptor = ENCRYPTOR_FACTORY.getClientEncryptor(encryptorId, parameters, secrets);
-        clientEncryptor.configureSecrets(secrets);
         final String requestData = vector.get("requestData");
         final Long timestampRequest = Long.parseLong(vector.get("timestampRequest"));
         final String nonce = vector.get("nonce");
         final String encryptedDataRequest = vector.get("encryptedDataRequest");
-        Field nonceField = ClientAeadEncryptor.class.getDeclaredField("nonce");
+        final Field nonceField = ClientAeadEncryptor.class.getDeclaredField("nonce");
         nonceField.setAccessible(true);
         nonceField.set(clientEncryptor, Base64.getDecoder().decode(nonce));
 
         final AeadEncryptedRequest encryptedRequest = new AeadEncryptedRequest(temporaryKeyId, encryptedDataRequest, nonce, timestampRequest);
         final ServerEncryptor<EncryptedRequest, EncryptedResponse> serverEncryptor = ENCRYPTOR_FACTORY.getServerEncryptor(encryptorId, parameters, secrets);
-        serverEncryptor.configureSecrets(secrets);
         final byte[] decryptedRequest = serverEncryptor.decryptRequest(encryptedRequest);
         assertArrayEquals(requestData.getBytes(StandardCharsets.UTF_8), decryptedRequest);
 
@@ -223,7 +215,7 @@ public class E2eeEncryptorTest {
     public void generateTestVectorsApplicationScope() throws Exception {
         System.out.println("{\n  \"e2ee_test_vectors_application_scope\": [");
         for (int i = 0; i < 25; i++) {
-            generateTestVectorForScope(EncryptorId.APPLICATION_SCOPE_GENERIC);
+            generateTestVectorForScope(EncryptorId.APPLICATION_SCOPE_GENERIC, "4.0");
             if (i < 24) {
                 System.out.println(",");
             } else {
@@ -237,7 +229,7 @@ public class E2eeEncryptorTest {
     public void generateTestVectorsActivationScope() throws Exception {
         System.out.println("{\n  \"e2ee_test_vectors_activation_scope\": [");
         for (int i = 0; i < 25; i++) {
-            generateTestVectorForScope(EncryptorId.ACTIVATION_SCOPE_GENERIC);
+            generateTestVectorForScope(EncryptorId.ACTIVATION_SCOPE_GENERIC, "4.0");
             if (i < 24) {
                 System.out.println(",");
             } else {
@@ -247,14 +239,14 @@ public class E2eeEncryptorTest {
         System.out.println("  ]\n}");
     }
 
-    private void generateTestVectorForScope(EncryptorId encryptorId) throws Exception {
+    private void generateTestVectorForScope(EncryptorId encryptorId, String protocolVersion) throws Exception {
         final String applicationKey = Base64.getEncoder().encodeToString(KEY_GENERATOR.generateRandomBytes(16));
         final String applicationSecret = Base64.getEncoder().encodeToString(KEY_GENERATOR.generateRandomBytes(16));
         final String temporaryKeyId = UUID.randomUUID().toString();
         final boolean activationScope = encryptorId == EncryptorId.ACTIVATION_SCOPE_GENERIC;
         final String activationId = activationScope ? UUID.randomUUID().toString() : null;
 
-        final EncryptorParameters parameters = new EncryptorParameters("4.0", applicationKey, activationId, temporaryKeyId);
+        final EncryptorParameters parameters = new EncryptorParameters(protocolVersion, applicationKey, activationId, temporaryKeyId);
         final byte[] envelopeKeyBytes = deriveSecretKey().getEncoded();
         final byte[] sharedInfo2KeyBytes = activationScope ? KEY_GENERATOR.generateRandomSecretKey(32).getEncoded() : null;
 
@@ -263,10 +255,8 @@ public class E2eeEncryptorTest {
                 : new AeadSecrets(envelopeKeyBytes, applicationSecret);
         final ClientEncryptor<EncryptedRequest, EncryptedResponse> clientEncryptor =
                 ENCRYPTOR_FACTORY.getClientEncryptor(encryptorId, parameters, secrets);
-        clientEncryptor.configureSecrets(secrets);
         final ServerEncryptor<EncryptedRequest, EncryptedResponse> serverEncryptor =
                 ENCRYPTOR_FACTORY.getServerEncryptor(encryptorId, parameters, secrets);
-        serverEncryptor.configureSecrets(secrets);
         final String requestData = "test_request";
         final AeadEncryptedRequest encryptedRequest =
                 (AeadEncryptedRequest) clientEncryptor.encryptRequest(requestData.getBytes(StandardCharsets.UTF_8));
@@ -277,6 +267,7 @@ public class E2eeEncryptorTest {
                 (AeadEncryptedResponse) serverEncryptor.encryptResponse(responseData.getBytes(StandardCharsets.UTF_8));
 
         System.out.println("    {");
+        System.out.println("      \"protocolVersion\": \"" + protocolVersion + "\",");
         System.out.println("      \"encryptorId\": \"" + encryptorId + "\",");
         System.out.println("      \"encryptorScope\": \"" + (activationScope ? "ACTIVATION_SCOPE" : "APPLICATION_SCOPE") + "\",");
         if (activationScope) {
