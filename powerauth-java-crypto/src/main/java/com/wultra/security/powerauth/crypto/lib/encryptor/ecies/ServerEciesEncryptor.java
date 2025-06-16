@@ -53,7 +53,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
     private final EciesRequestResponseValidator validator;
     private final byte[] associatedData;        // non-null for V3.2+
 
-    // Variables altered after configureKeys() call.
+    // Variables altered after configureSecrets() call.
 
     private ServerEciesSecrets encryptorSecrets;
 

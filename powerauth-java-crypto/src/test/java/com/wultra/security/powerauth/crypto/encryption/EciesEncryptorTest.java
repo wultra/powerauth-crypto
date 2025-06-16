@@ -16,7 +16,6 @@
  */
 package com.wultra.security.powerauth.crypto.encryption;
 
-import com.wultra.security.powerauth.crypto.lib.encryptor.EncryptorFactory;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.EciesDecryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.EciesEncryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
@@ -37,7 +36,6 @@ import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.util.Base64;
@@ -55,7 +53,6 @@ public class EciesEncryptorTest {
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private final EncryptorFactory encryptorFactory = new EncryptorFactory();
 
     /**
      * Add crypto providers.
@@ -145,7 +142,6 @@ public class EciesEncryptorTest {
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
         final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(signByte, Base64.getDecoder().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
-        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
 
         byte[][] request = {
                 Base64.getDecoder().decode("aGVsbG8gd29ybGQh"),
@@ -301,7 +297,6 @@ public class EciesEncryptorTest {
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
         final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(signByte, Base64.getDecoder().decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
-        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
 
         byte[][] request = {
                 Base64.getDecoder().decode("aGVsbG8gd29ybGQh"),
