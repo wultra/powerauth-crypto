@@ -54,7 +54,17 @@ public enum EncryptorId {
     /**
      * Create token encryption.
      */
-    CREATE_TOKEN("/pa/token/create", EncryptorScope.ACTIVATION_SCOPE);
+    CREATE_TOKEN("/pa/token/create", EncryptorScope.ACTIVATION_SCOPE),
+
+    /**
+     * Change password encryption.
+     */
+    CHANGE_PASSWORD("/pa/password/change", EncryptorScope.ACTIVATION_SCOPE),
+
+    /**
+     * Set up biometry encryption.
+     */
+    SETUP_BIOMETRY("/pa/biometry/add", EncryptorScope.ACTIVATION_SCOPE);
 
     private final String value;
     private final EncryptorScope scope;
