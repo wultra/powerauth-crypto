@@ -37,7 +37,7 @@ import java.security.PublicKey;
 import java.util.Base64;
 
 /**
- * Shared secret implementation for hybrid scheme with ECDHE on curve P-384 and ML-KEM-768.
+ * Shared secret implementation for ML-KEM-768.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
@@ -50,7 +50,7 @@ public class SharedSecretPqc implements SharedSecret<SharedSecretRequestPqc, Sha
 
     @Override
     public SharedSecretAlgorithm getAlgorithm() {
-        return SharedSecretAlgorithm.EC_P384_ML_L3;
+        return SharedSecretAlgorithm.ML_L3;
     }
 
     @Override

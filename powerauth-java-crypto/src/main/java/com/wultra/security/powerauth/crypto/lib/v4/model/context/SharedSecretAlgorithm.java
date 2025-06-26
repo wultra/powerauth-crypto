@@ -37,6 +37,11 @@ public enum SharedSecretAlgorithm {
     /**
      * EC with P-384 curve and ML with level 3 (ML-KEM-768 / ML-DSA-65).
      */
-    EC_P384_ML_L3
+    EC_P384_ML_L3,
+
+    /**
+     * ML with level 3 (ML-KEM-768 / ML-DSA-65), testing only.
+     */
+    ML_L3
 
 }
