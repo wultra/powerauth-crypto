@@ -220,6 +220,16 @@ public class KeyFactory {
     }
 
     /**
+     * Derives {@code KDK_UTILITY} from {@code KEY_ACTIVATION_SECRET}.
+     * @param keyActivationSecret The activation secret key.
+     * @return Derived KDK for utility purposes.
+     * @throws GenericCryptoException In case of cryptographic failure.
+     */
+    public static SecretKey deriveKdkUtility(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return derive(keyActivationSecret, KeyLabel.UTIL);
+    }
+
+    /**
      * Derives {@code KDK_AUTHENTICATION_CODE} from {@code KEY_ACTIVATION_SECRET}.
      * @param keyActivationSecret The activation secret key.
      * @return Derived KDK for authentication codes.
@@ -297,16 +307,6 @@ public class KeyFactory {
      */
     private static SecretKey deriveKeyKdkAppVault2faFromKdk(SecretKey kdkVault) throws GenericCryptoException {
         return derive(kdkVault, KeyLabel.KDK_APP_VAULT_2FA);
-    }
-
-    /**
-     * Derives {@code KDK_UTILITY} from {@code KEY_ACTIVATION_SECRET}.
-     * @param keyActivationSecret The activation secret key.
-     * @return Derived KDK for utility purposes.
-     * @throws GenericCryptoException In case of cryptographic failure.
-     */
-    private static SecretKey deriveKdkUtility(SecretKey keyActivationSecret) throws GenericCryptoException {
-        return derive(keyActivationSecret, KeyLabel.UTIL);
     }
 
     /**

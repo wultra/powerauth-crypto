@@ -79,7 +79,16 @@ public enum KeyLabel {
     UTIL_MAC_PERSONALIZED_DATA("util/mac/personalized-data"),
 
     /** Label for deriving {@code KEY_E2EE_SHARED_INFO2} from {@code KDK_UTILITY}. */
-    UTIL_KEY_E2EE_SH2("util/key-e2ee-sh2");
+    UTIL_KEY_E2EE_SH2("util/key-e2ee-sh2"),
+
+    /** Label for runtime protection of {@code KEK_DEVICE_PRIVATE}. */
+    RP_KEK_DEVICE_PRIVATE("rp/kek-device-private"),
+
+    /** Label for runtime protection of {@code KDK_APP_VAULT_KNOWLEDGE}. */
+    RP_KDK_APP_VAULT_KNOWLEDGE("rp/kdk-app-vault-knowledge"),
+
+    /** Label for runtime protection of {@code KDK_APP_VAULT_2FA}. */
+    RP_KDK_APP_VAULT_2FA("rp/kdk-app-vault-2fa");
 
     private final String label;
 
