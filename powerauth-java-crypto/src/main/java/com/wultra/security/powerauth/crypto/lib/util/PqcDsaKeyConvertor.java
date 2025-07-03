@@ -34,6 +34,23 @@ public class PqcDsaKeyConvertor {
 
     private static final Logger logger = LoggerFactory.getLogger(PqcDsaKeyConvertor.class);
 
+    private final String algorithmName;
+
+    /**
+     * Constructs convertor for ML-DSA algorithm.
+     */
+    public PqcDsaKeyConvertor() {
+        this("ML-DSA");
+    }
+
+    /**
+     * Constructs convertor for a specific PQC DSA algorithm.
+     * @param algorithmName Algorithm name (e.g., "ML-DSA")
+     */
+    public PqcDsaKeyConvertor(String algorithmName) {
+        this.algorithmName = algorithmName;
+    }
+
     /**
      * Converts public key to byte array.
      *
@@ -47,7 +64,7 @@ public class PqcDsaKeyConvertor {
         }
         return publicKey.getEncoded();
     }
-    
+
     /**
      * Converts byte array to an ML-DSA public key.
      *
@@ -60,7 +77,7 @@ public class PqcDsaKeyConvertor {
             throw new GenericCryptoException("Missing public key bytes");
         }
         try {
-            final KeyFactory keyFactory = KeyFactory.getInstance("ML-DSA", "BC");
+            final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
             final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             return keyFactory.generatePublic(keySpec);
         } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -70,7 +87,7 @@ public class PqcDsaKeyConvertor {
     }
 
     /**
-     * Converts public key to byte array.
+     * Converts private key to byte array.
      *
      * @param privateKey An ML-DSA private key to be converted.
      * @return A byte array representation of the ML-DSA private key.
@@ -95,7 +112,7 @@ public class PqcDsaKeyConvertor {
             throw new GenericCryptoException("Missing public key bytes");
         }
         try {
-            final KeyFactory keyFactoryMlDsa = KeyFactory.getInstance("ML-DSA", "BC");
+            final KeyFactory keyFactoryMlDsa = KeyFactory.getInstance(algorithmName, "BC");
             final PKCS8EncodedKeySpec keySpecMlDsa = new PKCS8EncodedKeySpec(keyBytes);
             return keyFactoryMlDsa.generatePrivate(keySpecMlDsa);
         } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -103,5 +120,4 @@ public class PqcDsaKeyConvertor {
             throw new GenericCryptoException("Key conversion failed", e);
         }
     }
-
 }

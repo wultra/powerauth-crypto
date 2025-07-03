@@ -34,6 +34,23 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class PqcKemKeyConvertor {
 
+    private final String algorithmName;
+
+    /**
+     * Constructs convertor for ML-KEM algorithm.
+     */
+    public PqcKemKeyConvertor() {
+        this("ML-KEM");
+    }
+
+    /**
+     * Constructs convertor for a specific PQC KEM algorithm.
+     * @param algorithmName Algorithm name (e.g., "ML-KEM")
+     */
+    public PqcKemKeyConvertor(String algorithmName) {
+        this.algorithmName = algorithmName;
+    }
+
     /**
      * Convert public key for ML-KEM into bytes.
      * @param publicKey Public key.
@@ -77,7 +94,7 @@ public class PqcKemKeyConvertor {
             throw new GenericCryptoException("Missing public key bytes");
         }
         try {
-            final KeyFactory keyFactory = KeyFactory.getInstance("ML-KEM", "BC");
+            final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
             final PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
             if (!(publicKey instanceof MLKEMPublicKey)) {
                 throw new GenericCryptoException("Invalid public key");
@@ -99,7 +116,7 @@ public class PqcKemKeyConvertor {
             throw new GenericCryptoException("Missing private key bytes");
         }
         try {
-            final KeyFactory keyFactory = KeyFactory.getInstance("ML-KEM", "BC");
+            final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
             final PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
             if (!(privateKey instanceof MLKEMPrivateKey)) {
                 throw new GenericCryptoException("Invalid private key");
@@ -111,8 +128,7 @@ public class PqcKemKeyConvertor {
     }
 
     /**
-     * Converts a shared secret key (usually used for AES based operations) to a
-     * byte array.
+     * Converts a shared secret key (usually used for AES based operations) to a byte array.
      *
      * @param sharedSecretKey A shared key to be converted to bytes.
      * @return A byte array representation of the shared secret key.
@@ -126,8 +142,7 @@ public class PqcKemKeyConvertor {
     }
 
     /**
-     * Converts a byte array to the secret shared key (usually used for AES
-     * based operations).
+     * Converts a byte array to the secret shared key (usually used for AES based operations).
      *
      * @param bytesSecretKey Bytes representing the shared key.
      * @return An instance of the secret key by decoding from provided bytes.
@@ -139,5 +154,4 @@ public class PqcKemKeyConvertor {
         }
         return new SecretKeySpec(bytesSecretKey, "AES");
     }
-
 }
