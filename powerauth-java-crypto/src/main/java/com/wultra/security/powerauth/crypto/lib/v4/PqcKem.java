@@ -14,27 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.wultra.security.powerauth.crypto.lib.v4;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import lombok.NoArgsConstructor;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
-import org.bouncycastle.jcajce.spec.KEMExtractSpec;
-import org.bouncycastle.jcajce.spec.KEMGenerateSpec;
-import org.bouncycastle.jcajce.spec.MLKEMParameterSpec;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.security.*;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
- * Post-quantum key encapsulation mechanism.
+ * Post-quantum key encapsulation mechanism interface.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-@NoArgsConstructor
-public class PqcKem {
+public interface PqcKem {
 
     /**
      * Generate a PQC keypair.
@@ -42,15 +37,7 @@ public class PqcKem {
      * @return Keypair.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    public KeyPair generateKeyPair() throws GenericCryptoException {
-        try {
-            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ML-KEM", "BC");
-            keyPairGenerator.initialize(MLKEMParameterSpec.ml_kem_768);
-            return keyPairGenerator.generateKeyPair();
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            throw new GenericCryptoException("Error generating key pair", e);
-        }
-    }
+    KeyPair generateKeyPair() throws GenericCryptoException;
 
     /**
      * Encapsulate a shared secret key using a public key.
@@ -59,18 +46,7 @@ public class PqcKem {
      * @return Secret key with encapsulation.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    public SecretKeyWithEncapsulation encapsulate(PublicKey encapsulationKey) throws GenericCryptoException {
-        if (encapsulationKey == null) {
-            throw new GenericCryptoException("Missing public key during encapsulation");
-        }
-        try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
-            keyGenerator.init(new KEMGenerateSpec.Builder(encapsulationKey, "RAW", 256).withNoKdf().build());
-            return (SecretKeyWithEncapsulation) keyGenerator.generateKey();
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            throw new GenericCryptoException("Error during encapsulation", e);
-        }
-    }
+    SecretKeyWithEncapsulation encapsulate(PublicKey encapsulationKey) throws GenericCryptoException;
 
     /**
      * Decapsulate a shared secret key using a private key.
@@ -79,20 +55,5 @@ public class PqcKem {
      * @return Secret key.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    public SecretKey decapsulate(PrivateKey decapsulationKey, byte[] ciphertext) throws GenericCryptoException {
-        if (decapsulationKey == null) {
-            throw new GenericCryptoException("Missing public key during decapsulation");
-        }
-        if (ciphertext == null) {
-            throw new GenericCryptoException("Missing ciphertext during decapsulation");
-        }
-        try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
-            keyGenerator.init(new KEMExtractSpec.Builder(decapsulationKey, ciphertext, "RAW", 256).withNoKdf().build());
-            return keyGenerator.generateKey();
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            throw new GenericCryptoException("Error during decapsulation", e);
-        }
-    }
-
+    SecretKey decapsulate(PrivateKey decapsulationKey, byte[] ciphertext) throws GenericCryptoException;
 }

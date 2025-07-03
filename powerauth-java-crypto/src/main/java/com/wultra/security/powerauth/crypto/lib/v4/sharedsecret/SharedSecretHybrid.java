@@ -28,6 +28,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.PqcKem;
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecret;
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretClientContext;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyFactory;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
 import com.wultra.security.powerauth.crypto.lib.v4.model.*;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
@@ -55,7 +56,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
     private static final KeyConvertor KEY_CONVERTOR_EC = new KeyConvertor();
     private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new PqcKemKeyConvertor();
 
-    private static final PqcKem PQC_KEM = new PqcKem();
+    private static final PqcKem PQC_KEM = new MlKem();
 
     @Override
     public SharedSecretAlgorithm getAlgorithm() {

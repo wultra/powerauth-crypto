@@ -18,6 +18,7 @@
 package com.wultra.security.powerauth.crypto.lib.v4;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ class PqcKemTest {
      */
     @Test
     public void testPqcKem_Success() throws GenericCryptoException {
-        final PqcKem kem = new PqcKem();
+        final PqcKem kem = new MlKem();
         final KeyPair keyPair = kem.generateKeyPair();
         final SecretKeyWithEncapsulation secret = kem.encapsulate(keyPair.getPublic());
         final SecretKey sharedKey = kem.decapsulate(keyPair.getPrivate(), secret.getEncapsulation());
@@ -61,7 +62,7 @@ class PqcKemTest {
      */
     @Test
     public void testPqcKem_InvalidPrivateKey() throws GenericCryptoException {
-        final PqcKem kem = new PqcKem();
+        final PqcKem kem = new MlKem();
         final KeyPair keyPair = kem.generateKeyPair();
         final SecretKeyWithEncapsulation secret = kem.encapsulate(keyPair.getPublic());
         final KeyPair keyPair2 = kem.generateKeyPair();

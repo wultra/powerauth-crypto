@@ -26,6 +26,7 @@ import com.wultra.security.powerauth.crypto.lib.util.*;
 import com.wultra.security.powerauth.crypto.lib.v4.PqcDsa;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsa;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -50,7 +51,7 @@ public class PowerAuthClientActivation {
 
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
-    private static final PqcDsa PQC_DSA = new PqcDsa();
+    private static final PqcDsa PQC_DSA = new MlDsa();
 
     /**
      * Custom bytes for MAC for counter data.

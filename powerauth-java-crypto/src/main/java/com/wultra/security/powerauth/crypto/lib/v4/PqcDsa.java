@@ -14,23 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.wultra.security.powerauth.crypto.lib.v4;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import lombok.NoArgsConstructor;
-import org.bouncycastle.jcajce.spec.MLDSAParameterSpec;
 
-import java.security.*;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
- * Post-quantum digital signature algorithm.
+ * Post-quantum digital signature algorithm interface.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-@NoArgsConstructor
-public class PqcDsa {
+public interface PqcDsa {
 
     /**
      * Generate PQC DSA keypair.
@@ -38,15 +36,7 @@ public class PqcDsa {
      * @return Keypair.
      * @throws CryptoProviderException Thrown in case the cryptography provider is incorrectly initialized.
      */
-    public KeyPair generateKeyPair() throws CryptoProviderException {
-        try {
-            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("MLDSA", "BC");
-            keyPairGenerator.initialize(MLDSAParameterSpec.ml_dsa_65);
-            return keyPairGenerator.generateKeyPair();
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            throw new CryptoProviderException("Error generating key pair", e);
-        }
-    }
+    KeyPair generateKeyPair() throws CryptoProviderException;
 
     /**
      * Sign a message using PQC DSA.
@@ -56,22 +46,7 @@ public class PqcDsa {
      * @return Signature.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    public byte[] sign(PrivateKey privateKey, byte[] message) throws GenericCryptoException {
-        if (privateKey == null) {
-            throw new GenericCryptoException("Missing private key when signing a message");
-        }
-        if (message == null) {
-            throw new GenericCryptoException("Missing message to sign");
-        }
-        try {
-            final Signature mlDsa = Signature.getInstance("MLDSA", "BC");
-            mlDsa.initSign(privateKey);
-            mlDsa.update(message);
-            return mlDsa.sign();
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException e) {
-            throw new GenericCryptoException("Error during signature calculation", e);
-        }
-    }
+    byte[] sign(PrivateKey privateKey, byte[] message) throws GenericCryptoException;
 
     /**
      * Verify a message signature using PQC DSA.
@@ -81,24 +56,5 @@ public class PqcDsa {
      * @return True if signature was correct, false otherwise.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    public boolean verify(PublicKey publicKey, byte[] message, byte[] signature) throws GenericCryptoException {
-        if (publicKey == null) {
-            throw new GenericCryptoException("Missing public key when verifying a signature");
-        }
-        if (message == null) {
-            throw new GenericCryptoException("Missing message when verifying a signature");
-        }
-        if (signature == null) {
-            throw new GenericCryptoException("Missing signature to verify");
-        }
-        try {
-            final Signature mlDsa = Signature.getInstance("MLDSA", "BC");
-            mlDsa.initVerify(publicKey);
-            mlDsa.update(message);
-            return mlDsa.verify(signature);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException e) {
-            throw new GenericCryptoException("Error during signature verification", e);
-        }
-    }
-
+    boolean verify(PublicKey publicKey, byte[] message, byte[] signature) throws GenericCryptoException;
 }
