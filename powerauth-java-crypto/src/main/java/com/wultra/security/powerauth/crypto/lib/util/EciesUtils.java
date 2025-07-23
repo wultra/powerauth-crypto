@@ -64,7 +64,7 @@ public final class EciesUtils {
      * @param activationId Activation ID.
      * @param temporaryKeyId Temporary key ID.
      * @return Derived associated data.
-     * @throws EciesException In case that activation ID is required but is missing.
+     * @throws EciesException In case of missing parameters.
      */
     public static byte[] deriveAssociatedData(EncryptorScope scope, String protocolVersion, String applicationKey, String activationId, String temporaryKeyId) throws EciesException {
         if (protocolVersion == null) {
@@ -112,7 +112,7 @@ public final class EciesUtils {
      * @param applicationSecret Application's secret.
      * @param transportKey Transport key, required when scope is {@link EncryptorScope#ACTIVATION_SCOPE}.
      * @return Bytes representing SharedInfo2 base.
-     * @throws EciesException In case of some required parameter is missing or if underlying cryptographic primitive fail.
+     * @throws EciesException In case of some required parameter is missing or if underlying cryptographic primitive fails.
      */
     public static byte[] deriveSharedInfo2Base(EncryptorScope scope, String applicationSecret, byte[] transportKey) throws EciesException {
         if (applicationSecret == null) {

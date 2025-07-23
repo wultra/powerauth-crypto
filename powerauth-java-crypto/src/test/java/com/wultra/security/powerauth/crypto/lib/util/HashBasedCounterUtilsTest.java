@@ -16,6 +16,7 @@
  */
 package com.wultra.security.powerauth.crypto.lib.util;
 
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -58,9 +59,9 @@ public class HashBasedCounterUtilsTest {
             // Generate random CTR_DATA
             final byte[] ctrData = keyGenerator.generateRandomBytes(16);
             final byte[] ctrDataHashExpected = calculateCtrDataHash(ctrData, transportKey);
-            final byte[] ctrDataHashCalculated = hashBasedCounterUtils.calculateHashFromHashBasedCounter(ctrData, transportKey);
+            final byte[] ctrDataHashCalculated = hashBasedCounterUtils.calculateHashFromHashBasedCounter(ctrData, transportKey, ProtocolVersion.V33);
             assertArrayEquals(ctrDataHashExpected, ctrDataHashCalculated);
-            final boolean ctrDataHashVerified = hashBasedCounterUtils.verifyHashForHashBasedCounter(ctrDataHashCalculated, ctrData, transportKey);
+            final boolean ctrDataHashVerified = hashBasedCounterUtils.verifyHashForHashBasedCounter(ctrDataHashCalculated, ctrData, transportKey, ProtocolVersion.V33);
             assertTrue(ctrDataHashVerified);
         }
     }

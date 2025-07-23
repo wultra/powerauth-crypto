@@ -26,7 +26,7 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorExc
 public class EciesException extends EncryptorException {
 
     /**
-     * Default constructor.
+     * Empty constructor.
      */
     public EciesException() {
     }

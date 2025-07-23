@@ -1,13 +1,13 @@
 {
-  "description" : "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth keys from master shared secret key (masterSecretKey) => (signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey, transportKey, vaultEncryptionKey).",
+  "description" : "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth keys from master shared secret key (masterSecretKey) => (possessionFactorKey, knowledgeFactorKey, biometryFactorKey, transportKey, vaultEncryptionKey).",
   "data" : [ {
     "input" : {
       "masterSecretKey" : "+miyqJykCZQTNpAzn+ZShw=="
     },
     "output" : {
-      "signaturePossessionKey" : "M3p1tPYouptaX8z5Dhc2cw==",
-      "signatureKnowledgeKey" : "SG3aE8VTXg6wzkuNuZWaIg==",
-      "signatureBiometryKey" : "rhgOh1SxWu919w7F72Oqmw==",
+      "possessionFactorKey" : "M3p1tPYouptaX8z5Dhc2cw==",
+      "knowledgeFactorKey" : "SG3aE8VTXg6wzkuNuZWaIg==",
+      "biometryFactorKey" : "rhgOh1SxWu919w7F72Oqmw==",
       "transportKey" : "v8ZPpTuh1IIBaUnhkXcNbw==",
       "vaultEncryptionKey" : "6o4or/gFtBu5Wb1ayqdgyQ=="
     }
@@ -16,9 +16,9 @@
       "masterSecretKey" : "MAlCYLkgl98rx3qxj8EeBQ=="
     },
     "output" : {
-      "signaturePossessionKey" : "SHMjpmaAcjmJ4U0il5JO4g==",
-      "signatureKnowledgeKey" : "cEcVARzPVJugz/GCp7ltUw==",
-      "signatureBiometryKey" : "V5xh9DAxK4t1pRfAfsoq3Q==",
+      "possessionFactorKey" : "SHMjpmaAcjmJ4U0il5JO4g==",
+      "knowledgeFactorKey" : "cEcVARzPVJugz/GCp7ltUw==",
+      "biometryFactorKey" : "V5xh9DAxK4t1pRfAfsoq3Q==",
       "transportKey" : "jIRX1MstKdtNPJLv1GPo4A==",
       "vaultEncryptionKey" : "RTRPRbUueReUrYvEsJwwWQ=="
     }
@@ -27,9 +27,9 @@
       "masterSecretKey" : "XSi5BFqhEGnFQz9KmRPbLQ=="
     },
     "output" : {
-      "signaturePossessionKey" : "ZyvxLPrOPVe63KhkQZwCVw==",
-      "signatureKnowledgeKey" : "5QTj4UpfQlnw9rSlvbQt/A==",
-      "signatureBiometryKey" : "L48J8TQHHSNrfY3Wy4AH8A==",
+      "possessionFactorKey" : "ZyvxLPrOPVe63KhkQZwCVw==",
+      "knowledgeFactorKey" : "5QTj4UpfQlnw9rSlvbQt/A==",
+      "biometryFactorKey" : "L48J8TQHHSNrfY3Wy4AH8A==",
       "transportKey" : "lgaiLy6+Q2pwgXxHFjJaoA==",
       "vaultEncryptionKey" : "rwPvrCBibZ1zoeunW3ZQ3w=="
     }
@@ -38,9 +38,9 @@
       "masterSecretKey" : "BN35wN1V6KjmTJH9QDAzAQ=="
     },
     "output" : {
-      "signaturePossessionKey" : "qN+5qLMagpmk+CijNpHBzg==",
-      "signatureKnowledgeKey" : "mrj9+5lIJA2fabFC9nlf3g==",
-      "signatureBiometryKey" : "6FKT6YGkAekJaH8ywtHlkg==",
+      "possessionFactorKey" : "qN+5qLMagpmk+CijNpHBzg==",
+      "knowledgeFactorKey" : "mrj9+5lIJA2fabFC9nlf3g==",
+      "biometryFactorKey" : "6FKT6YGkAekJaH8ywtHlkg==",
       "transportKey" : "jk06AFNOJNNU5fS38MqU8g==",
       "vaultEncryptionKey" : "KqiioLVZcp7V3pGpNQYkPA=="
     }
@@ -49,9 +49,9 @@
       "masterSecretKey" : "UB8r5OfwXucRaugg9hcrkg=="
     },
     "output" : {
-      "signaturePossessionKey" : "7UQevgXBYzFh3rwUnTFTJA==",
-      "signatureKnowledgeKey" : "JU3GfqnHwwptWQgI2QwLmA==",
-      "signatureBiometryKey" : "d9a4T4RSZighZasiYDIjLA==",
+      "possessionFactorKey" : "7UQevgXBYzFh3rwUnTFTJA==",
+      "knowledgeFactorKey" : "JU3GfqnHwwptWQgI2QwLmA==",
+      "biometryFactorKey" : "d9a4T4RSZighZasiYDIjLA==",
       "transportKey" : "WuonKc/XqLOQrPzsGYqB2A==",
       "vaultEncryptionKey" : "J+ZIELA/HXzMlizi0MPn9w=="
     }
@@ -60,9 +60,9 @@
       "masterSecretKey" : "LF5kk8lpFKiZT9CLG/Lh+Q=="
     },
     "output" : {
-      "signaturePossessionKey" : "ePkhLMXtFHJyqfvaOrR4ew==",
-      "signatureKnowledgeKey" : "E4yHjjuGLSFe1DMy9qtKQQ==",
-      "signatureBiometryKey" : "6YQR51OULXgeDYmxeu/ImA==",
+      "possessionFactorKey" : "ePkhLMXtFHJyqfvaOrR4ew==",
+      "knowledgeFactorKey" : "E4yHjjuGLSFe1DMy9qtKQQ==",
+      "biometryFactorKey" : "6YQR51OULXgeDYmxeu/ImA==",
       "transportKey" : "3CE/5jk6ZlbW6swE49LNjw==",
       "vaultEncryptionKey" : "qGh5UsoV2xDW/fs6I/VAKA=="
     }
@@ -71,9 +71,9 @@
       "masterSecretKey" : "SiulPZwh6oBdady9fcQuxA=="
     },
     "output" : {
-      "signaturePossessionKey" : "GIkF6ezsxWreqrsIvZHqyQ==",
-      "signatureKnowledgeKey" : "iZrNXudnRFhiwsJ8R/8P/w==",
-      "signatureBiometryKey" : "5Vf7RY/9dWPUyXrzmzbLiA==",
+      "possessionFactorKey" : "GIkF6ezsxWreqrsIvZHqyQ==",
+      "knowledgeFactorKey" : "iZrNXudnRFhiwsJ8R/8P/w==",
+      "biometryFactorKey" : "5Vf7RY/9dWPUyXrzmzbLiA==",
       "transportKey" : "sY7I2ir8M0bh180ZBppHXQ==",
       "vaultEncryptionKey" : "vreoah8lhsFnIwz2BO+Vuw=="
     }
@@ -82,9 +82,9 @@
       "masterSecretKey" : "kUm6bEfo6/JB34HMIO2Kpg=="
     },
     "output" : {
-      "signaturePossessionKey" : "2ILzRkbVPqLdFD9+9GZtXw==",
-      "signatureKnowledgeKey" : "GNN5ogx+96uEm3ixgCWFrw==",
-      "signatureBiometryKey" : "zoOTA2+Oqf2X14ERO5d7jA==",
+      "possessionFactorKey" : "2ILzRkbVPqLdFD9+9GZtXw==",
+      "knowledgeFactorKey" : "GNN5ogx+96uEm3ixgCWFrw==",
+      "biometryFactorKey" : "zoOTA2+Oqf2X14ERO5d7jA==",
       "transportKey" : "rlkgY0t+T9Y9v20w334KjQ==",
       "vaultEncryptionKey" : "K3vFzV9t9j9fcxFK3ZK03w=="
     }
@@ -93,9 +93,9 @@
       "masterSecretKey" : "KCdW8V0wIDO8X6kITWC1Ig=="
     },
     "output" : {
-      "signaturePossessionKey" : "rK7wL7CJTS1hxzATJa+KOA==",
-      "signatureKnowledgeKey" : "ne5cGGudJUT87eZFNpZFSQ==",
-      "signatureBiometryKey" : "egroas853UzJOVjKhiGBSQ==",
+      "possessionFactorKey" : "rK7wL7CJTS1hxzATJa+KOA==",
+      "knowledgeFactorKey" : "ne5cGGudJUT87eZFNpZFSQ==",
+      "biometryFactorKey" : "egroas853UzJOVjKhiGBSQ==",
       "transportKey" : "KLwYOsYQMaMXZ0243/irJQ==",
       "vaultEncryptionKey" : "iUiHqiNVfMLOPtvNhAYoxw=="
     }
@@ -104,9 +104,9 @@
       "masterSecretKey" : "Qg4tigaFz3loEyHBR6py1Q=="
     },
     "output" : {
-      "signaturePossessionKey" : "+g1hTHA7hqBH3J7wxvS3+w==",
-      "signatureKnowledgeKey" : "yB0NjAkjmVaX4Glv81XiBA==",
-      "signatureBiometryKey" : "wXJlGUFNfIk6NjRlZ+L+eA==",
+      "possessionFactorKey" : "+g1hTHA7hqBH3J7wxvS3+w==",
+      "knowledgeFactorKey" : "yB0NjAkjmVaX4Glv81XiBA==",
+      "biometryFactorKey" : "wXJlGUFNfIk6NjRlZ+L+eA==",
       "transportKey" : "gEq/dfQiiNUN3iWnnbchZQ==",
       "vaultEncryptionKey" : "qVAL0MkP6fyuOUZ6lZLiOQ=="
     }
@@ -115,9 +115,9 @@
       "masterSecretKey" : "x2Zia+jCCzjXI78Iz9Op5A=="
     },
     "output" : {
-      "signaturePossessionKey" : "jwaug86OcD2yaeoHkH1nmA==",
-      "signatureKnowledgeKey" : "k5z2N1IpvQ78qKmBAsvRpQ==",
-      "signatureBiometryKey" : "zwAMN0WzjCMRZjFCDeMIKg==",
+      "possessionFactorKey" : "jwaug86OcD2yaeoHkH1nmA==",
+      "knowledgeFactorKey" : "k5z2N1IpvQ78qKmBAsvRpQ==",
+      "biometryFactorKey" : "zwAMN0WzjCMRZjFCDeMIKg==",
       "transportKey" : "Tj0ioHgiEj0hTV3QBo3VpA==",
       "vaultEncryptionKey" : "f6bFB4YufOEzMYVITddGOg=="
     }
@@ -126,9 +126,9 @@
       "masterSecretKey" : "+KnswNTzWlSMXlHVIfgvGg=="
     },
     "output" : {
-      "signaturePossessionKey" : "wWf8UpttKfG3G8RdwptHRQ==",
-      "signatureKnowledgeKey" : "6DtWXWL5Z31AHEkYhfb8CA==",
-      "signatureBiometryKey" : "zlWZN3bPNaqxIbX9TgEFZw==",
+      "possessionFactorKey" : "wWf8UpttKfG3G8RdwptHRQ==",
+      "knowledgeFactorKey" : "6DtWXWL5Z31AHEkYhfb8CA==",
+      "biometryFactorKey" : "zlWZN3bPNaqxIbX9TgEFZw==",
       "transportKey" : "MeW8KdYErIoOHMPAjp1o3A==",
       "vaultEncryptionKey" : "lKEX7PgsR4dFTOBwZjbAmQ=="
     }
@@ -137,9 +137,9 @@
       "masterSecretKey" : "mtOQFpeaNYO5WCB7DiEZ2Q=="
     },
     "output" : {
-      "signaturePossessionKey" : "mCjX/Civrl+rNMOALEOrFg==",
-      "signatureKnowledgeKey" : "h0mznLd3EOTMe1JjJK4uEQ==",
-      "signatureBiometryKey" : "FX1CGXSoXRAesvr9XQgxGQ==",
+      "possessionFactorKey" : "mCjX/Civrl+rNMOALEOrFg==",
+      "knowledgeFactorKey" : "h0mznLd3EOTMe1JjJK4uEQ==",
+      "biometryFactorKey" : "FX1CGXSoXRAesvr9XQgxGQ==",
       "transportKey" : "WPpjpoweRHs++m79fYnp/w==",
       "vaultEncryptionKey" : "XOXy9IQKiePHeXLfmTcWcA=="
     }
@@ -148,9 +148,9 @@
       "masterSecretKey" : "2ltJIERrT1JmL7iT6z7VYw=="
     },
     "output" : {
-      "signaturePossessionKey" : "HCNXV7xN8tkL/RUP+LFXjQ==",
-      "signatureKnowledgeKey" : "tCbtXHG+fbFcpKS4RtMNqw==",
-      "signatureBiometryKey" : "cyK/9EowVcSc/eNP2EOjrQ==",
+      "possessionFactorKey" : "HCNXV7xN8tkL/RUP+LFXjQ==",
+      "knowledgeFactorKey" : "tCbtXHG+fbFcpKS4RtMNqw==",
+      "biometryFactorKey" : "cyK/9EowVcSc/eNP2EOjrQ==",
       "transportKey" : "RkfDUXd7k8Z7u+sPd6S/sw==",
       "vaultEncryptionKey" : "kSq93xLm6ouoOqGl0F1ZAQ=="
     }
@@ -159,9 +159,9 @@
       "masterSecretKey" : "z0kD073M6WKnpc5f8Jvo5g=="
     },
     "output" : {
-      "signaturePossessionKey" : "tTIagTL0GJmMYQpDUbRagA==",
-      "signatureKnowledgeKey" : "NSQjMm3YSD/4HvZ7F/PZXQ==",
-      "signatureBiometryKey" : "O8q5cm8TxcKLxuPK41mHIg==",
+      "possessionFactorKey" : "tTIagTL0GJmMYQpDUbRagA==",
+      "knowledgeFactorKey" : "NSQjMm3YSD/4HvZ7F/PZXQ==",
+      "biometryFactorKey" : "O8q5cm8TxcKLxuPK41mHIg==",
       "transportKey" : "8vfso6ig5oxNXw0NoZ2/SQ==",
       "vaultEncryptionKey" : "Wkqa3/klI6gPDKLLsXpuyQ=="
     }
@@ -170,9 +170,9 @@
       "masterSecretKey" : "rYZhBoHu/41GsFDXEkDSxw=="
     },
     "output" : {
-      "signaturePossessionKey" : "mz6/ddpo/N49GslNZqna+g==",
-      "signatureKnowledgeKey" : "HFP5qA/0DaQYzlr37i9v/g==",
-      "signatureBiometryKey" : "9QxJU7No4bFfPkG1PJSesQ==",
+      "possessionFactorKey" : "mz6/ddpo/N49GslNZqna+g==",
+      "knowledgeFactorKey" : "HFP5qA/0DaQYzlr37i9v/g==",
+      "biometryFactorKey" : "9QxJU7No4bFfPkG1PJSesQ==",
       "transportKey" : "63YOF8speoJFsnGFlCsc1A==",
       "vaultEncryptionKey" : "LZ0TeH0c5obBqO7NswyM6w=="
     }
@@ -181,9 +181,9 @@
       "masterSecretKey" : "hueOQhrP/DV7UPjXRNx1+Q=="
     },
     "output" : {
-      "signaturePossessionKey" : "B4yry9hGLpuYc4tpW8Bewg==",
-      "signatureKnowledgeKey" : "PrJVwa98yTwYfpF/WlCOnw==",
-      "signatureBiometryKey" : "f/b4oBgh0B7LhAVzbaPeyg==",
+      "possessionFactorKey" : "B4yry9hGLpuYc4tpW8Bewg==",
+      "knowledgeFactorKey" : "PrJVwa98yTwYfpF/WlCOnw==",
+      "biometryFactorKey" : "f/b4oBgh0B7LhAVzbaPeyg==",
       "transportKey" : "sE+L2jw5Iv2X+3T2HmE6Ig==",
       "vaultEncryptionKey" : "yP1iDrf34VEeRujzOV6IAA=="
     }
@@ -192,9 +192,9 @@
       "masterSecretKey" : "9jsyfWbsaFfplD15D2Cl7g=="
     },
     "output" : {
-      "signaturePossessionKey" : "Uzvgs/+ypWVmfoCvPDS/vQ==",
-      "signatureKnowledgeKey" : "R58xO/cvbOVKgAWqwx9qZQ==",
-      "signatureBiometryKey" : "rT3p78yFM+dZ2GDPks0Prg==",
+      "possessionFactorKey" : "Uzvgs/+ypWVmfoCvPDS/vQ==",
+      "knowledgeFactorKey" : "R58xO/cvbOVKgAWqwx9qZQ==",
+      "biometryFactorKey" : "rT3p78yFM+dZ2GDPks0Prg==",
       "transportKey" : "hxu8Hj1U+KfyQiD8O/mqMw==",
       "vaultEncryptionKey" : "wUjVx5ekg96NrD8UDFJGzw=="
     }
@@ -203,9 +203,9 @@
       "masterSecretKey" : "/rmg+8vih9zF3WdC4LiTBQ=="
     },
     "output" : {
-      "signaturePossessionKey" : "35XksY1JBLsX6H5XhTOfbQ==",
-      "signatureKnowledgeKey" : "OYi8Tul0dCQwg8gevn+InQ==",
-      "signatureBiometryKey" : "F6Z8TZdzVpjqOa7ZKeNkzA==",
+      "possessionFactorKey" : "35XksY1JBLsX6H5XhTOfbQ==",
+      "knowledgeFactorKey" : "OYi8Tul0dCQwg8gevn+InQ==",
+      "biometryFactorKey" : "F6Z8TZdzVpjqOa7ZKeNkzA==",
       "transportKey" : "2lEvnK/CfSSMTjZV4Y8xhA==",
       "vaultEncryptionKey" : "6woOUH1E7s6IkUrU6Br4bg=="
     }
@@ -214,9 +214,9 @@
       "masterSecretKey" : "OfpzCUVwRchEp9ZSyq/SAQ=="
     },
     "output" : {
-      "signaturePossessionKey" : "1fNdxFxeuArl9be3NSTo7Q==",
-      "signatureKnowledgeKey" : "ibB9WmHlxJ64KBXc7DB7Eg==",
-      "signatureBiometryKey" : "hWRIJ4TEoI7UOnLOjiBwYQ==",
+      "possessionFactorKey" : "1fNdxFxeuArl9be3NSTo7Q==",
+      "knowledgeFactorKey" : "ibB9WmHlxJ64KBXc7DB7Eg==",
+      "biometryFactorKey" : "hWRIJ4TEoI7UOnLOjiBwYQ==",
       "transportKey" : "DPrsvPq2c+lMT8hZqrX8Vw==",
       "vaultEncryptionKey" : "BwajBn2ot3A8qMd7q1TezA=="
     }

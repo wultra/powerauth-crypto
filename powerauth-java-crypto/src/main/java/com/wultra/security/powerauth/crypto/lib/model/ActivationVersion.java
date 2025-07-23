@@ -24,12 +24,13 @@ package com.wultra.security.powerauth.crypto.lib.model;
 public enum ActivationVersion {
 
     /**
-     * Version 2.
-     */
-    VERSION_2,
-
-    /**
      * Version 3.
      */
-    VERSION_3
+    VERSION_3,
+
+    /**
+     * Version 4.
+     */
+    VERSION_4
+
 }

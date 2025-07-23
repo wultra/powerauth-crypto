@@ -20,29 +20,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wultra.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
 import com.wultra.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
-import com.wultra.security.powerauth.crypto.client.signature.PowerAuthClientSignature;
-import com.wultra.security.powerauth.crypto.lib.config.SignatureConfiguration;
-import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthSignatureFormat;
+import com.wultra.security.powerauth.crypto.client.authentication.PowerAuthClientAuthentication;
+import com.wultra.security.powerauth.crypto.lib.config.AuthenticationCodeConfiguration;
+import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
+import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthAuthenticationCodeFormat;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import com.wultra.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.util.model.TestSet;
+import com.wultra.security.powerauth.crypto.lib.v4.Aead;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kdf;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyLabel;
 import com.wultra.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
+import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.util.*;
 
@@ -58,7 +61,8 @@ public class GenerateVectorDataTest {
     private static File testVectorFolder;
     private static ObjectMapper objectMapper;
 
-    private final KeyConvertor keyConvertor = new KeyConvertor();
+    private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      * Register crypto providers
@@ -81,6 +85,163 @@ public class GenerateVectorDataTest {
         // Create Object Mapper
         objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    /**
+     * Characters used in {@link #getRandomString(int, int, String[])} method.
+     */
+    static final int[] RANDOM_STRING_CHARS = {
+            32, 33, 35, 38, 39, 40, 41, 43, 45, 46, 47,
+            48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+            65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
+            97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122
+    };
+
+    /**
+     * Generate random string or select random string from predefined set.
+     * @param minLength Minimum string length.
+     * @param maxLength Maximum string length.
+     * @param predefinedSet Predefined set of strings.
+     * @return Random string.
+     */
+    String getRandomString(int minLength, int maxLength, String[] predefinedSet) {
+        boolean fixedLength = minLength == maxLength;
+        int upperBound = fixedLength ? maxLength : maxLength - minLength;
+        int length = RANDOM.nextInt(upperBound);
+        if (predefinedSet != null && length < upperBound / 2) {
+            return predefinedSet[RANDOM.nextInt(predefinedSet.length)];
+        }
+        if (!fixedLength) {
+            length += minLength;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= length; i++) {
+            sb.appendCodePoint(RANDOM_STRING_CHARS[RANDOM.nextInt(RANDOM_STRING_CHARS.length)]);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Generate random bytes with random length. The length is within specified range.
+     * @param minLength Minimum requested number of bytes.
+     * @param maxLength Maximum requested number of bytes.
+     * @return Random data.
+     */
+    byte[] getRandomBytes(int minLength, int maxLength) {
+        int size = minLength == maxLength ? minLength : minLength + RANDOM.nextInt(maxLength - minLength) + 1;
+        byte[] bytes = new byte[size];
+        if (size > 0) {
+            RANDOM.nextBytes(bytes);
+        }
+        return bytes;
+    }
+
+
+    /**
+     * Generate test data for common KDF function based on KMAC-256, used in protocol V4.
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    void testKdfV4() throws Exception {
+        TestSet testSet = new TestSet("v4-kdf.json", "Test vectors for common KMAC-256 based KDF function used in protocol V4");
+        final String[] labels = {
+                KeyLabel.AUTH.value(),
+                KeyLabel.AUTH_POSSESSION.value(),
+                KeyLabel.AUTH_KNOWLEDGE.value(),
+                KeyLabel.AUTH_BIOMETRY.value(),
+                KeyLabel.SHARED_SECRET_EC_P384.value(),
+                KeyLabel.SHARED_SECRET_EC_P384_ML_L3.value(),
+                KeyLabel.AEAD_ENC.value(),
+                KeyLabel.AEAD_MAC.value(),
+                KeyLabel.VAULT.value(),
+                KeyLabel.VAULT_KEK_DEVICE_PRIVATE.value(),
+                KeyLabel.KDK_APP_VAULT_KNOWLEDGE.value(),
+                KeyLabel.KDK_APP_VAULT_2FA.value(),
+                KeyLabel.UTIL.value(),
+                KeyLabel.UTIL_MAC_CTR_DATA.value(),
+                KeyLabel.UTIL_MAC_STATUS.value(),
+                KeyLabel.UTIL_MAC_GET_APP_TEMP_KEY.value(),
+                KeyLabel.UTIL_MAC_GET_ACT_TEMP_KEY.value(),
+                KeyLabel.UTIL_MAC_PERSONALIZED_DATA.value(),
+                KeyLabel.UTIL_KEY_E2EE_SH2.value()
+        };
+        for (int i = 0; i < 100; i++) {
+            final String label = getRandomString(4, 20, labels);
+            final int key_size = 16 + (RANDOM.nextInt(4) * 16);
+            final int out_size = 16 + (RANDOM.nextInt(4) * 16);
+            final byte[] key = new byte[key_size];
+            RANDOM.nextBytes(key);
+            final byte[] custom = getRandomBytes(0, 96);
+            // derive key
+            final SecretKey derivedKey = Kdf.derive(new SecretKeySpec(key, "AES"), label, custom, out_size);
+            // store test vector
+            final Map<String, String> input = new HashMap<>();
+            input.put("key", Base64.getEncoder().encodeToString(key));
+            input.put("label", label);
+            input.put("custom", Base64.getEncoder().encodeToString(custom));
+            input.put("outSize", String.valueOf(out_size));
+            final Map<String, String> output = new HashMap<>();
+            output.put("derivedKey", Base64.getEncoder().encodeToString(derivedKey.getEncoded()));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for KDF function for passwords, based on KMAC-256, used in protocol V4.
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    void testPasswordKdfV4() throws Exception {
+        final String[] wellKnownPasswords = {
+                "nbusr123", "123456", "password1", "iloveyou", "querty123", "abc123"
+        };
+        TestSet testSet = new TestSet("v4-pbkdf.json", "Test vectors for password based KDF function used in protocol V4");
+        for (int i = 0; i < 100; i++) {
+            final String password = getRandomString(4, 16, wellKnownPasswords);
+            final byte[] salt = getRandomBytes(32, 48);
+            final int out_size = 16 + (RANDOM.nextInt(2) * 16);
+            // derive key
+            final SecretKey derivedKey = Kdf.derivePassword(password, salt, out_size);
+            // store test vector
+            final Map<String, String> input = new HashMap<>();
+            input.put("password", password);
+            input.put("salt", Base64.getEncoder().encodeToString(salt));
+            input.put("outSize", String.valueOf(out_size));
+            final Map<String, String> output = new HashMap<>();
+            output.put("derivedKey", Base64.getEncoder().encodeToString(derivedKey.getEncoded()));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test vectors for low-level AEAD encryption used in protocol V4.
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    void testAeadV4() throws Exception {
+        TestSet testSet = new TestSet("v4-aead.json", "Test vectors for low level AEAD encryption routines used in protocol V4");
+        for (int i = 0; i < 100; i++) {
+            byte[] key = getRandomBytes(32, 32);
+            byte[] keyContext = getRandomBytes(4, 32);
+            byte[] nonce = getRandomBytes(12, 12);
+            byte[] associatedData = getRandomBytes(8, 48);
+            byte[] plaintext = getRandomBytes(0, 256);
+            // encrypt data
+            byte[] ciphertext = Aead.seal(new SecretKeySpec(key, "AES"), keyContext, nonce, associatedData, plaintext);
+            // store test vector
+            final Map<String, String> input = new HashMap<>();
+            input.put("key", Base64.getEncoder().encodeToString(key));
+            input.put("keyContext", Base64.getEncoder().encodeToString(keyContext));
+            input.put("nonce", Base64.getEncoder().encodeToString(nonce));
+            input.put("associatedData", Base64.getEncoder().encodeToString(associatedData));
+            input.put("plaintext", Base64.getEncoder().encodeToString(plaintext));
+            final Map<String, String> output = new HashMap<>();
+            output.put("pqcCiphertext", Base64.getEncoder().encodeToString(ciphertext));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
     }
 
     /**
@@ -110,8 +271,8 @@ public class GenerateVectorDataTest {
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationCode", activationCode);
-            input.put("masterPrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(masterPrivateKey)));
-            input.put("masterPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(masterPublicKey)));
+            input.put("masterPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(masterPrivateKey)));
+            input.put("masterPublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, masterPublicKey)));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("activationSignature", Base64.getEncoder().encodeToString(activationSignature));
             testSet.addData(input, output);
@@ -146,12 +307,12 @@ public class GenerateVectorDataTest {
             SecretKey masterSecretKey = new KeyGenerator().computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());
 
             Map<String, String> input = new LinkedHashMap<>();
-            input.put("devicePrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())));
-            input.put("devicePublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(deviceKeyPair.getPublic())));
-            input.put("serverPrivateKey", Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(serverKeyPair.getPrivate())));
-            input.put("serverPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(serverKeyPair.getPublic())));
+            input.put("devicePrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(deviceKeyPair.getPrivate())));
+            input.put("devicePublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, deviceKeyPair.getPublic())));
+            input.put("serverPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(serverKeyPair.getPrivate())));
+            input.put("serverPublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, serverKeyPair.getPublic())));
             Map<String, String> output = new LinkedHashMap<>();
-            output.put("masterSecretKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)));
+            output.put("masterSecretKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(masterSecretKey)));
             testSet.addData(input, output);
         }
         writeTestVector(testSet);
@@ -175,7 +336,7 @@ public class GenerateVectorDataTest {
         PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
         PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 
-        TestSet testSet = new TestSet("compute-derived-keys.json", "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth keys from master shared secret key (masterSecretKey) => (signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey, transportKey, vaultEncryptionKey).");
+        TestSet testSet = new TestSet("compute-derived-keys.json", "For \"/pa/activation/prepare\", client needs to be able to derive standard PowerAuth keys from master shared secret key (masterSecretKey) => (possessionFactorKey, knowledgeFactorKey, biometryFactorKey, transportKey, vaultEncryptionKey).");
 
         int max = 20;
 
@@ -187,20 +348,20 @@ public class GenerateVectorDataTest {
             PowerAuthClientKeyFactory keyFactory = new PowerAuthClientKeyFactory();
 
             Map<String, String> input = new LinkedHashMap<>();
-            input.put("masterSecretKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(masterSecretKey)));
+            input.put("masterSecretKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(masterSecretKey)));
             Map<String, String> output = new LinkedHashMap<>();
-            output.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignaturePossessionKey(masterSecretKey))));
-            output.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureKnowledgeKey(masterSecretKey))));
-            output.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateClientSignatureBiometryKey(masterSecretKey))));
-            output.put("transportKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))));
-            output.put("vaultEncryptionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))));
+            output.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateClientPossessionFactorKey(masterSecretKey))));
+            output.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateClientKnowledgeFactorKey(masterSecretKey))));
+            output.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateClientBiometryFactorKey(masterSecretKey))));
+            output.put("transportKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateServerTransportKey(masterSecretKey))));
+            output.put("vaultEncryptionKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(keyFactory.generateServerEncryptedVaultKey(masterSecretKey))));
             testSet.addData(input, output);
         }
         writeTestVector(testSet);
     }
 
     /**
-     * Generate test data for signature validation.
+     * Generate test data for authentication code validation.
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
@@ -210,103 +371,103 @@ public class GenerateVectorDataTest {
      * @throws Exception In case any unknown error occurs.
      */
     @Test
-    public void testSignatureValidationV3() throws Exception {
+    public void testAuthenticationCodeValidationV3() throws Exception {
 
-        TestSet testSet = new TestSet("signatures-v3.json", "Client must be able to compute PowerAuth signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
+        TestSet testSet = new TestSet("authentication-v3.json", "Client must be able to compute PowerAuth authentication code (using 1FA, 2FA, 3FA factor keys) based on given data, counter and authentication code type");
 
         int max = 5;
         int keyMax = 2;
-        int signatureCount = 10;
+        int validationCount = 10;
         int dataMax = 256;
         for (int j = 0; j < max; j++) {
 
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
-            final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.0");
-            SignatureConfiguration signatureConfiguration = SignatureConfiguration.forFormat(signatureFormat);
-            PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
+            final PowerAuthAuthenticationCodeFormat format = PowerAuthAuthenticationCodeFormat.getFormatForVersion("3.0");
+            AuthenticationCodeConfiguration authenticationCodeConfiguration = AuthenticationCodeConfiguration.forFormat(format);
+            PowerAuthClientAuthentication clientAuth = new PowerAuthClientAuthentication();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
-            HashBasedCounter hashBasedCounter = new HashBasedCounter();
+            HashBasedCounter hashBasedCounter = new HashBasedCounter("3.0");
 
             for (int i = 0; i < keyMax; i++) {
 
-                // compute data signature
+                // compute authentication code
                 SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
-                SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
-                SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
-                SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
+                SecretKey possessionKey = clientKeyFactory.generateClientPossessionFactorKey(masterClientKey);
+                SecretKey knowledgeKey = clientKeyFactory.generateClientKnowledgeFactorKey(masterClientKey);
+                SecretKey biometryKey = clientKeyFactory.generateClientBiometryFactorKey(masterClientKey);
 
                 byte[] ctrData = hashBasedCounter.init();
 
-                for (int k = 0; k < signatureCount; k++) {
+                for (int k = 0; k < validationCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureConfiguration);
-                    String signatureType = "possession";
+                    String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(possessionKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCodeType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
-                    input.put("signatureType", signatureType);
+                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionKey)));
+                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeKey)));
+                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryKey)));
+                    input.put("authenticationCodeType", authenticationCodeType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
                     Map<String, String> output = new LinkedHashMap<>();
-                    output.put("signature", signature);
+                    output.put("authenticationCode", authenticationCode);
                     testSet.addData(input, output);
 
                     ctrData = hashBasedCounter.next(ctrData);
                 }
 
-                for (int k = 0; k < signatureCount; k++) {
+                for (int k = 0; k < validationCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureConfiguration);
-                    String signatureType = "possession_knowledge";
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionKey, knowledgeKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCodeType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
-                    input.put("signatureType", signatureType);
+                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionKey)));
+                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeKey)));
+                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryKey)));
+                    input.put("authenticationCodeType", authenticationCodeType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
                     Map<String, String> output = new LinkedHashMap<>();
-                    output.put("signature", signature);
+                    output.put("authenticationCode", authenticationCode);
                     testSet.addData(input, output);
 
                     ctrData = hashBasedCounter.next(ctrData);
                 }
 
-                for (int k = 0; k < signatureCount; k++) {
+                for (int k = 0; k < validationCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureConfiguration);
-                    String signatureType = "possession_knowledge_biometry";
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionKey, knowledgeKey, biometryKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCodeType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
-                    input.put("signatureType", signatureType);
+                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionKey)));
+                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeKey)));
+                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryKey)));
+                    input.put("authenticationCodeType", authenticationCodeType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
                     Map<String, String> output = new LinkedHashMap<>();
-                    output.put("signature", signature);
+                    output.put("authenticationCode", authenticationCode);
                     testSet.addData(input, output);
 
                     ctrData = hashBasedCounter.next(ctrData);
@@ -317,7 +478,7 @@ public class GenerateVectorDataTest {
     }
 
     /**
-     * Generate test data for signature validation.
+     * Generate test data for authentication code validation.
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
@@ -328,103 +489,103 @@ public class GenerateVectorDataTest {
      * @throws Exception In case any unknown error occurs.
      */
     @Test
-    public void testSignatureValidationV31Plus() throws Exception {
+    public void testAuthenticationCodeValidationV31Plus() throws Exception {
 
-        TestSet testSet = new TestSet("signatures-v31.json", "Client must be able to compute PowerAuth signature (using 1FA, 2FA, 3FA signature keys) based on given data, counter and signature type");
+        TestSet testSet = new TestSet("authentication-v31.json", "Client must be able to compute PowerAuth authentication code (using 1FA, 2FA, 3FA factor keys) based on given data, counter and authentication code type");
 
         int max = 5;
         int keyMax = 2;
-        int signatureCount = 10;
+        int validationCount = 10;
         int dataMax = 256;
         for (int j = 0; j < max; j++) {
 
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
-            final PowerAuthSignatureFormat signatureFormat = PowerAuthSignatureFormat.getFormatForSignatureVersion("3.1");
-            SignatureConfiguration signatureConfiguration = SignatureConfiguration.forFormat(signatureFormat);
-            PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
+            final PowerAuthAuthenticationCodeFormat format = PowerAuthAuthenticationCodeFormat.getFormatForVersion("3.1");
+            AuthenticationCodeConfiguration authenticationCodeConfiguration = AuthenticationCodeConfiguration.forFormat(format);
+            PowerAuthClientAuthentication clientAuth = new PowerAuthClientAuthentication();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
-            HashBasedCounter hashBasedCounter = new HashBasedCounter();
+            HashBasedCounter hashBasedCounter = new HashBasedCounter("3.1");
 
             for (int i = 0; i < keyMax; i++) {
 
-                // compute data signature
+                // compute authentication code
                 SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
-                SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
-                SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
-                SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
+                SecretKey possessionFactorKey = clientKeyFactory.generateClientPossessionFactorKey(masterClientKey);
+                SecretKey knowledgeFactorKey = clientKeyFactory.generateClientKnowledgeFactorKey(masterClientKey);
+                SecretKey biometryFactorKey = clientKeyFactory.generateClientBiometryFactorKey(masterClientKey);
 
                 byte[] ctrData = hashBasedCounter.init();
 
-                for (int k = 0; k < signatureCount; k++) {
+                for (int k = 0; k < validationCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureConfiguration);
-                    String signatureType = "possession";
+                    String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(possessionFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCodeType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
-                    input.put("signatureType", signatureType);
+                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionFactorKey)));
+                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeFactorKey)));
+                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryFactorKey)));
+                    input.put("authenticationCodeType", authenticationCodeType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
                     Map<String, String> output = new LinkedHashMap<>();
-                    output.put("signature", signature);
+                    output.put("authenticationCode", authenticationCode);
                     testSet.addData(input, output);
 
                     ctrData = hashBasedCounter.next(ctrData);
                 }
 
-                for (int k = 0; k < signatureCount; k++) {
+                for (int k = 0; k < validationCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureConfiguration);
-                    String signatureType = "possession_knowledge";
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCodeType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
-                    input.put("signatureType", signatureType);
+                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionFactorKey)));
+                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeFactorKey)));
+                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryFactorKey)));
+                    input.put("authenticationCodeType", authenticationCodeType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
                     Map<String, String> output = new LinkedHashMap<>();
-                    output.put("signature", signature);
+                    output.put("authenticationCode", authenticationCode);
                     testSet.addData(input, output);
 
                     ctrData = hashBasedCounter.next(ctrData);
                 }
 
-                for (int k = 0; k < signatureCount; k++) {
+                for (int k = 0; k < validationCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey, signatureBiometryKey), ctrData, signatureConfiguration);
-                    String signatureType = "possession_knowledge_biometry";
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey, biometryFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCodeType = "possession_knowledge_biometry";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
-                    input.put("signatureType", signatureType);
+                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionFactorKey)));
+                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeFactorKey)));
+                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryFactorKey)));
+                    input.put("authenticationCodeType", authenticationCodeType);
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
                     Map<String, String> output = new LinkedHashMap<>();
-                    output.put("signature", signature);
+                    output.put("authenticationCode", authenticationCode);
                     testSet.addData(input, output);
 
                     ctrData = hashBasedCounter.next(ctrData);
@@ -435,83 +596,83 @@ public class GenerateVectorDataTest {
     }
 
     @Test
-    public void testSignatureOfflineValidation() throws Exception {
+    public void testAuthenticationCodeOfflineValidation() throws Exception {
 
-        TestSet testSet = new TestSet("signatures-offline.json", "Client must be able to compute PowerAuth offline signature (using 1FA, 2FA signature keys) based on given data, counter and signature type");
+        TestSet testSet = new TestSet("authentication-offline.json", "Client must be able to compute PowerAuth offline authentication code (using 1FA, 2FA factor keys) based on given data, counter and authentication code type");
 
         int min = 4;
         int max = 9;
         int keyMax = 2;
-        int signatureCount = 10;
+        int validationCount = 10;
         int dataMax = 256;
         for (int j = min; j < max; j++) {
 
             // Prepare data
             KeyGenerator keyGenerator = new KeyGenerator();
 
-            KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+            KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PublicKey serverPublicKey = serverKeyPair.getPublic();
 
-            KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
+            KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
             PrivateKey devicePrivateKey = deviceKeyPair.getPrivate();
 
-            SignatureConfiguration signatureConfiguration = SignatureConfiguration.decimal(j);
-            PowerAuthClientSignature clientSignature = new PowerAuthClientSignature();
+            AuthenticationCodeConfiguration authenticationCodeConfiguration = AuthenticationCodeConfiguration.decimal(j);
+            PowerAuthClientAuthentication clientAuth = new PowerAuthClientAuthentication();
             PowerAuthClientKeyFactory clientKeyFactory = new PowerAuthClientKeyFactory();
 
-            HashBasedCounter hashBasedCounter = new HashBasedCounter();
+            HashBasedCounter hashBasedCounter = new HashBasedCounter("3.1");
 
             for (int i = 0; i < keyMax; i++) {
 
-                // compute data signature
+                // compute authentication code
                 SecretKey masterClientKey = clientKeyFactory.generateClientMasterSecretKey(devicePrivateKey, serverPublicKey);
-                SecretKey signaturePossessionKey = clientKeyFactory.generateClientSignaturePossessionKey(masterClientKey);
-                SecretKey signatureKnowledgeKey = clientKeyFactory.generateClientSignatureKnowledgeKey(masterClientKey);
-                SecretKey signatureBiometryKey = clientKeyFactory.generateClientSignatureBiometryKey(masterClientKey);
+                SecretKey possessionFactorKey = clientKeyFactory.generateClientPossessionFactorKey(masterClientKey);
+                SecretKey knowledgeFactorKey = clientKeyFactory.generateClientKnowledgeFactorKey(masterClientKey);
+                SecretKey biometryFactorKey = clientKeyFactory.generateClientBiometryFactorKey(masterClientKey);
 
                 byte[] ctrData = hashBasedCounter.init();
 
-                for (int k = 0; k < signatureCount; k++) {
+                for (int k = 0; k < validationCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Collections.singletonList(signaturePossessionKey), ctrData, signatureConfiguration);
-                    String signatureType = "possession";
+                    String authenticationCode = clientAuth.computeAuthCode(data, Collections.singletonList(possessionFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCodeType = "possession";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
-                    input.put("signatureType", signatureType);
-                    input.put("signatureComponentLength", String.valueOf(j));
+                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionFactorKey)));
+                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeFactorKey)));
+                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryFactorKey)));
+                    input.put("authenticationCodeType", authenticationCodeType);
+                    input.put("componentLength", String.valueOf(j));
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
                     Map<String, String> output = new LinkedHashMap<>();
-                    output.put("signature", signature);
+                    output.put("authenticationCode", authenticationCode);
                     testSet.addData(input, output);
 
                     ctrData = hashBasedCounter.next(ctrData);
                 }
 
-                for (int k = 0; k < signatureCount; k++) {
+                for (int k = 0; k < validationCount; k++) {
 
                     // generate random data
                     byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
 
-                    String signature = clientSignature.signatureForData(data, Arrays.asList(signaturePossessionKey, signatureKnowledgeKey), ctrData, signatureConfiguration);
-                    String signatureType = "possession_knowledge";
+                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey), ctrData, authenticationCodeConfiguration);
+                    String authenticationCodeType = "possession_knowledge";
 
                     Map<String, String> input = new LinkedHashMap<>();
-                    input.put("signaturePossessionKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signaturePossessionKey)));
-                    input.put("signatureKnowledgeKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureKnowledgeKey)));
-                    input.put("signatureBiometryKey", Base64.getEncoder().encodeToString(keyConvertor.convertSharedSecretKeyToBytes(signatureBiometryKey)));
-                    input.put("signatureType", signatureType);
-                    input.put("signatureComponentLength", String.valueOf(j));
+                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionFactorKey)));
+                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeFactorKey)));
+                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryFactorKey)));
+                    input.put("authenticationCodeType", authenticationCodeType);
+                    input.put("componentLength", String.valueOf(j));
                     input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
                     input.put("data", Base64.getEncoder().encodeToString(data));
                     Map<String, String> output = new LinkedHashMap<>();
-                    output.put("signature", signature);
+                    output.put("authenticationCode", authenticationCode);
                     testSet.addData(input, output);
 
                     ctrData = hashBasedCounter.next(ctrData);
@@ -559,8 +720,8 @@ public class GenerateVectorDataTest {
             byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
 
             Map<String, String> input = new LinkedHashMap<>();
-            input.put("devicePublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(devicePublicKey)));
-            input.put("serverPublicKey", Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(serverPublicKey)));
+            input.put("devicePublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, devicePublicKey)));
+            input.put("serverPublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, serverPublicKey)));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("devicePublicKeyCoordX", Base64.getEncoder().encodeToString(devicePublicKeyBytes));
             output.put("serverPublicKeyCoordX", Base64.getEncoder().encodeToString(serverPublicKeyBytes));
@@ -594,7 +755,7 @@ public class GenerateVectorDataTest {
             byte[] transportKey = keyGenerator.generateRandomBytes(16);
             byte[] challenge = keyGenerator.generateRandomBytes(16);
             byte[] nonce = keyGenerator.generateRandomBytes(16);
-            byte[] iv = keyDerivationUtils.deriveIvForStatusBlobEncryption(challenge, nonce, keyConvertor.convertBytesToSharedSecretKey(transportKey));
+            byte[] iv = keyDerivationUtils.deriveIvForStatusBlobEncryption(challenge, nonce, KEY_CONVERTOR.convertBytesToSharedSecretKey(transportKey));
             Map<String, String> input = new LinkedHashMap<>();
             input.put("transportKey", Base64.getEncoder().encodeToString(transportKey));
             input.put("challenge", Base64.getEncoder().encodeToString(challenge));
@@ -613,6 +774,7 @@ public class GenerateVectorDataTest {
      * <ul>
      *     <li>3.1</li>
      *     <li>3.2</li>
+     *     <li>3.3</li>
      * </ul>
      *
      * @throws Exception In case any unknown error occurs.
@@ -637,8 +799,8 @@ public class GenerateVectorDataTest {
 
         for (final ActivationStatusBlobInfoBuilder builder : testData) {
 
-            final SecretKey transportKey = keyGenerator.generateRandomSecretKey();
-            final byte[] transportKeyBytes = keyConvertor.convertSharedSecretKeyToBytes(transportKey);
+            final SecretKey transportKey = keyGenerator.generateRandomSecretKey(16);
+            final byte[] transportKeyBytes = KEY_CONVERTOR.convertSharedSecretKeyToBytes(transportKey);
             final byte[] ctrData = keyGenerator.generateRandomBytes(16);
             final byte[] challenge = keyGenerator.generateRandomBytes(16);
             final byte[] nonce = keyGenerator.generateRandomBytes(16);
@@ -648,10 +810,10 @@ public class GenerateVectorDataTest {
             for (int i = 0; i < builder.counterDistance; i++) {
                 ctrDataMoved = keyGenerator.convert32Bto16B(Hash.sha256(ctrDataMoved));
             }
-            final byte[] ctrDataHash = activation.calculateHashFromHashBasedCounter(ctrDataMoved, transportKey);
+            final byte[] ctrDataHash = activation.calculateHashFromHashBasedCounter(ctrDataMoved, transportKey, ProtocolVersion.V33);
 
             final ActivationStatusBlobInfo info = builder.ctrDataHash(ctrDataHash).build();
-            final byte[] encryptedStatusBlob = activation.encryptedStatusBlob(info, challenge, nonce, transportKey);
+            final byte[] encryptedStatusBlob = activation.encryptedStatusBlob(info, challenge, nonce, transportKey, ProtocolVersion.V33);
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("transportKey", Base64.getEncoder().encodeToString(transportKeyBytes));

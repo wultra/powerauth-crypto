@@ -57,9 +57,14 @@ public enum EncryptorId {
     CREATE_TOKEN("/pa/token/create", EncryptorScope.ACTIVATION_SCOPE),
 
     /**
-     * Recovery code confirmation encryption.
+     * Change password encryption.
      */
-    CONFIRM_RECOVERY_CODE("/pa/recovery/confirm", EncryptorScope.ACTIVATION_SCOPE);
+    CHANGE_PASSWORD("/pa/password/change", EncryptorScope.ACTIVATION_SCOPE),
+
+    /**
+     * Set up biometry encryption.
+     */
+    SETUP_BIOMETRY("/pa/biometry/add", EncryptorScope.ACTIVATION_SCOPE);
 
     private final String value;
     private final EncryptorScope scope;
@@ -95,7 +100,7 @@ public enum EncryptorId {
      * @param protocolVersion Version of protocol.
      * @return Bytes of sharedInfo1 parameter for ECIES scheme.
      */
-    public byte[] getEciesSharedInfo1(String protocolVersion) {
+    public byte[] getSharedInfo1(String protocolVersion) {
         final byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
         // 3.0, 3.1 or if version is unspecified, return value bytes
         if (protocolVersion == null || "3.0".equals(protocolVersion) || "3.1".equals(protocolVersion)) {

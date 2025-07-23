@@ -29,7 +29,15 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 /**
- * Class implementing server-side logic for PowerAuth vault encryption.
+ * Class implementing server-side logic for PowerAuth vault encryption (V3).
+ *
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>3.0</li>
+ *     <li>3.1</li>
+ *     <li>3.2</li>
+ *     <li>3.3</li>
+ * </ul>
  *
  * @author Petr Dvorak
  *
@@ -47,6 +55,7 @@ public class PowerAuthServerVault {
      *     <li>3.0</li>
      *     <li>3.1</li>
      *     <li>3.2</li>
+     *     <li>3.3</li>
      * </ul>
      *
      * @param serverPrivateKey Server private key KEY_SERVER_PRIVATE

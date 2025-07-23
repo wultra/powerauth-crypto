@@ -139,7 +139,6 @@ Note that the activation commit step can be skipped in case activation is commit
 ## Related Topics
 
 - [Activation Code Format](Activation-Code.md)
-- [Activation via Recovery Code](./Activation-via-Recovery-Code.md)
 - [Activation via Custom Credentials](./Activation-via-Custom-Credentials.md)
 - [Checking Activation Status](./Activation-Status.md)
 - [Key Derivation](./Key-derivation.md)

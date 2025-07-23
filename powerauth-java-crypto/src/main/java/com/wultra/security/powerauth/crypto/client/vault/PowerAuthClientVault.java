@@ -16,6 +16,7 @@
  */
 package com.wultra.security.powerauth.crypto.client.vault;
 
+import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.AESEncryptionUtils;
@@ -27,10 +28,17 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 
 /**
- * Class implementing client-side processes related to PowerAuth secure vault.
+ * Class implementing client-side processes related to PowerAuth secure vault (V3).
  *
- * @author Petr Dvorak
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>3.0</li>
+ *     <li>3.1</li>
+ *     <li>3.2</li>
+ *     <li>3.3</li>
+ * </ul>
  *
+ * @author Petr Dvorak, petr@wultra.com
  */
 public class PowerAuthClientVault {
 
@@ -44,6 +52,7 @@ public class PowerAuthClientVault {
      *     <li>3.0</li>
      *     <li>3.1</li>
      *     <li>3.2</li>
+     *     <li>3.3</li>
      * </ul>
      *
      * @param cVaultEncryptionKey Encrypted vault encryption key KEY_ENCRYPTION_VAULT.
@@ -92,7 +101,7 @@ public class PowerAuthClientVault {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] zeroBytes = new byte[16];
         byte[] keyBytes = aes.decrypt(cDevicePrivateKey, zeroBytes, vaultEncryptionKey);
-        return keyConvertor.convertBytesToPrivateKey(keyBytes);
+        return keyConvertor.convertBytesToPrivateKey(EcCurve.P256, keyBytes);
     }
 
 }

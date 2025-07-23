@@ -16,12 +16,16 @@
  */
 package com.wultra.security.powerauth.crypto.client.activation;
 
+import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
+import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -31,23 +35,55 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
-import java.util.Base64;
 
 /**
  * Class implementing a cryptography used on the client side in order
- * to complete the PowerAuth Client activation.
+ * to complete the PowerAuth Client activation (V3).
  *
- * @author Petr Dvorak
+ * <p><b>PowerAuth protocol versions:</b>
+ * <ul>
+ *     <li>3.0</li>
+ *     <li>3.1</li>
+ *     <li>3.2</li>
+ *     <li>3.3</li>
+ * </ul>
  *
+ * @author Petr Dvorak, petr@wultra.com
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class PowerAuthClientActivation {
 
-    private final SignatureUtils signatureUtils = new SignatureUtils();
-    private final KeyGenerator keyGenerator = new KeyGenerator();
-    private final KeyConvertor keyConvertor = new KeyConvertor();
+    private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
+    private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
 
     /**
-     * Verify the signature of activation code using Master Public Key.
+     * Generate a device related activation key pair.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
+     *
+     * @return A new device key pair.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public KeyPair generateDeviceKeyPair() throws CryptoProviderException {
+        return KEY_GENERATOR.generateKeyPair(EcCurve.P256);
+    }
+
+    /**
+     * Verify the activation code using Master Public Key.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
      *
      * @param activationCode Activation code.
      * @param signature Activation data signature.
@@ -59,49 +95,7 @@ public class PowerAuthClientActivation {
      */
     public boolean verifyActivationCodeSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
-        return signatureUtils.validateECDSASignature(bytes, signature, masterPublicKey);
-    }
-
-    /**
-     * Generate a device related activation key pair.
-     *
-     * @return A new device key pair.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     */
-    public KeyPair generateDeviceKeyPair() throws CryptoProviderException {
-        return keyGenerator.generateKeyPair();
-    }
-
-    /**
-     * Generate a new activation nonce.
-     *
-     * @return A new activation nonce.
-     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
-     */
-    public byte[] generateActivationNonce() throws CryptoProviderException {
-        return keyGenerator.generateRandomBytes(16);
-    }
-
-
-    /**
-     * Verify signature of the encrypted activation ID and server public key
-     * using a Master Public Key.
-     *
-     * @param activationId Activation ID
-     * @param C_serverPublicKey Encrypted server public key.
-     * @param signature Encrypted server public key signature.
-     * @param masterPublicKey Master Public Key.
-     * @return Returns "true" if signature matches encrypted data, "false" otherwise.
-     * @throws InvalidKeyException If provided master public key is invalid.
-     * @throws GenericCryptoException In case signature computation fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
-     */
-    public boolean verifyServerDataSignature(String activationId, byte[] C_serverPublicKey, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-        String activationIdBytesBase64 = Base64.getEncoder().encodeToString(activationIdBytes);
-        String C_serverPublicKeyBase64 = Base64.getEncoder().encodeToString(C_serverPublicKey);
-        byte[] result = (activationIdBytesBase64 + "&" + C_serverPublicKeyBase64).getBytes(StandardCharsets.UTF_8);
-        return signatureUtils.validateECDSASignature(result, signature, masterPublicKey);
+        return SIGNATURE_UTILS.validateECDSASignature(EcCurve.P256, bytes, signature, masterPublicKey);
     }
 
     /**
@@ -112,6 +106,7 @@ public class PowerAuthClientActivation {
      *     <li>3.0</li>
      *     <li>3.1</li>
      *     <li>3.2</li>
+     *     <li>3.3</li>
      * </ul>
      *
      * @param devicePublicKey Device public key.
@@ -128,6 +123,14 @@ public class PowerAuthClientActivation {
     /**
      * Compute a fingerprint for the activation. The fingerprint can be used for visual validation of exchanged public keys.
      *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
+     *
      * @param devicePublicKey Device public key.
      * @param serverPublicKey Server public key.
      * @param activationId Activation ID.
@@ -142,6 +145,14 @@ public class PowerAuthClientActivation {
 
     /**
      * Returns an activation status from the encrypted activation blob as described in PowerAuth Specification.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
      *
      * @param cStatusBlob Encrypted activation status blob.
      * @param challenge Challenge for activation status blob encryption. If non-null, then also {@code nonce} parameter must be provided.
@@ -161,14 +172,31 @@ public class PowerAuthClientActivation {
         AESEncryptionUtils aes = new AESEncryptionUtils();
         byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
         byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
+        return getStatusFromBlob(statusBlob);
+    }
 
+    /**
+     * Returns an activation status from the activation blob as described in PowerAuth Specification.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
+     *
+     * @param statusBlob Activation status blob.
+     * @return Status information from the status blob.
+     */
+    public ActivationStatusBlobInfo getStatusFromBlob(byte[] statusBlob) {
         // Prepare objects to read status info into
         ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
         ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
 
         // check if the prefix is OK
         int prefix = buffer.getInt(0);
-        statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE);
+        statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3);
 
         // fetch the activation status byte
         statusInfo.setActivationStatus(buffer.get(4));
@@ -178,6 +206,9 @@ public class PowerAuthClientActivation {
 
         // fetch the upgrade version status byte
         statusInfo.setUpgradeVersion(buffer.get(6));
+
+        // fetch the status flags
+        statusInfo.setStatusFlags(buffer.get(7));
 
         // fetch ctr byte value
         statusInfo.setCtrByte(buffer.get(12));
@@ -192,7 +223,7 @@ public class PowerAuthClientActivation {
         statusInfo.setCtrLookAhead(buffer.get(15));
 
         // extract counter data from second half of status blob
-        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, 32);
+        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, statusBlob.length);
         statusInfo.setCtrDataHash(ctrData);
 
         return statusInfo;
@@ -203,16 +234,29 @@ public class PowerAuthClientActivation {
      * received from the server is already hashed, so the function has to calculate hash from the client's counter
      * and then compare both values.
      *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>3.0</li>
+     *     <li>3.1</li>
+     *     <li>3.2</li>
+     *     <li>3.3</li>
+     * </ul>
+     *
      * @param receivedCtrDataHash Value received from the server, containing hash, calculated from hash based counter.
      * @param expectedCtrData Expected hash based counter.
      * @param transportKey Transport key.
+     * @param protocolVersion Protocol version.
      * @return {@code true} in case that received hash equals to hash calculated from counter data.
      * @throws InvalidKeyException When invalid key is provided.
      * @throws GenericCryptoException In case key derivation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey)
+    public boolean verifyHashForHashBasedCounter(byte[] receivedCtrDataHash, byte[] expectedCtrData, SecretKey transportKey, ProtocolVersion protocolVersion)
             throws CryptoProviderException, InvalidKeyException, GenericCryptoException {
-        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey);
+        if (protocolVersion.getMajorVersion() != 3) {
+            throw new GenericCryptoException("Unsupported protocol version: " + protocolVersion);
+        }
+        return new HashBasedCounterUtils().verifyHashForHashBasedCounter(receivedCtrDataHash, expectedCtrData, transportKey, protocolVersion);
     }
+
 }

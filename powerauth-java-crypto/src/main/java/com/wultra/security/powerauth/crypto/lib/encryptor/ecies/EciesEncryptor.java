@@ -169,6 +169,7 @@ public class EciesEncryptor {
         final Long timestamp = eciesParameters.getTimestamp();
         return encryptInternal(data, eciesParameters.getNonce(), timestamp, associatedData);
     }
+
     /**
      * Get parameter sharedInfo2 for ECIES.
      * @return Parameter sharedInfo2 for ECIES.

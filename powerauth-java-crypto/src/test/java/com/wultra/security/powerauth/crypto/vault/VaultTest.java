@@ -18,6 +18,7 @@ package com.wultra.security.powerauth.crypto.vault;
 
 import com.wultra.security.powerauth.crypto.client.keyfactory.PowerAuthClientKeyFactory;
 import com.wultra.security.powerauth.crypto.client.vault.PowerAuthClientVault;
+import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.enums.PowerAuthDerivedKey;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
@@ -79,8 +80,8 @@ public class VaultTest {
         PowerAuthServerVault serverVault = new PowerAuthServerVault();
 
         // Generate fake server and device keys
-        KeyPair deviceKeyPair = keyGenerator.generateKeyPair();
-        KeyPair serverKeyPair = keyGenerator.generateKeyPair();
+        KeyPair deviceKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
+        KeyPair serverKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
 
         // Deduce shared master secret keys
         SecretKey deviceMasterKey = keyGenerator.computeSharedKey(deviceKeyPair.getPrivate(), serverKeyPair.getPublic());

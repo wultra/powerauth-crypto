@@ -66,5 +66,4 @@ Besides [End-to-End Encryption](./End-To-End-Encryption.md) itself, the introduc
 - Secure Vault
 - MAC-based Tokens
 - Obtaining User Info
-- Confirmation of the Recovery Codes
 - Protocol upgrade

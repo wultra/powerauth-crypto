@@ -23,7 +23,8 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
 /**
  * The {@code ClientEncryptor} interface provides End-To-End Encryption for PowerAuth Clients.
  */
-public interface ServerEncryptor {
+public interface ServerEncryptor<Req extends EncryptedRequest, Res extends EncryptedResponse>  {
+
     /**
      * Get this encryptor's identifier.
      * @return This encryptor's identifier.
@@ -50,18 +51,16 @@ public interface ServerEncryptor {
     boolean canDecryptRequest();
 
     /**
-     * Build encryptor secrets that can be used in the external encryptor to decrypt the provided request. The external
+     * Derive encryptor secrets that can be used in the external encryptor to decrypt the provided request. The external
      * encryptor is typically running in a different application java environment without knowing the private keys.
      * The best example is cooperation between the PowerAuth Server and our PowerAuth Integration libraries for RESTful API.
-     * The server is using this function to calculate the shared secret that can be used in the integration library to
-     * actually decrypt the request from the client.
      *
      * @param request Request to encrypt in the external server encryptor. The request object should contain all parameters
      *                except the {@code encryptedData} and {@code mac} properties.
      * @return Object containing encrypted secrets for the external encryptor.
      * @throws EncryptorException In case of failure.
      */
-    EncryptorSecrets calculateSecretsForExternalEncryptor(EncryptedRequest request) throws EncryptorException;
+    EncryptorSecrets deriveSecretsForExternalEncryptor(Req request) throws EncryptorException;
 
     /**
      * Decrypt encrypted request data.
@@ -69,7 +68,7 @@ public interface ServerEncryptor {
      * @return Decrypted data.
      * @throws EncryptorException In case of failure.
      */
-    byte[] decryptRequest(EncryptedRequest request) throws EncryptorException;
+    byte[] decryptRequest(Req request) throws EncryptorException;
 
     /**
      * Determine whether response data can be encrypted. You cannot encrypt the response if you did not
@@ -80,9 +79,10 @@ public interface ServerEncryptor {
 
     /**
      * Encrypt response data.
-     * @param data Data to encrypt as response.
+     * @param plaintext Data to encrypt as response.
      * @return Object representing an encrypted response.
      * @throws EncryptorException In case of failure.
      */
-    EncryptedResponse encryptResponse(byte[] data) throws EncryptorException;
+    Res encryptResponse(byte[] plaintext) throws EncryptorException;
+
 }

@@ -107,12 +107,79 @@ public final class ByteUtils {
     }
 
     /**
+     * Generate zero bytes of given length.
+     * @param n Number of zero bytes.
+     * @return Byte aray.
+     */
+    public static byte[] zeroBytes(int n) {
+        return ByteBuffer.allocate(n).array();
+    }
+
+    /**
      * Encode a String into a byte array.
      * @param s String to encode.
      * @return Byte array.
      */
     public static byte[] encodeString(String s) {
         return s.getBytes(StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Return a subarray from an array.
+     * @param array Input array.
+     * @param start Subarray start index (included).
+     * @param length Subarray end index (excluded).
+     * @return Subarray.
+     */
+    public static byte[] subarray(byte[] array, int start, int length) {
+        if (array == null) {
+            throw new IllegalArgumentException("Input array is null");
+        }
+        if (start < 0) {
+            throw new IllegalArgumentException("Invalid start index");
+        }
+        if (length <= 0) {
+            throw new IllegalArgumentException("Invalid length");
+        }
+        if (length > array.length - start) {
+            throw new IllegalArgumentException("Invalid slicing of subarray");
+        }
+        byte[] result = new byte[length];
+        System.arraycopy(array, start, result, 0, length);
+        return result;
+    }
+
+    /**
+     * Copy bytes from source byte array into destination byte array.
+     * @param src Source byte array.
+     * @param srcPos Source byte array position.
+     * @param dest Destination byte array.
+     * @param destPos Destination byte array position.
+     * @param length Number of bytes to copy.
+     */
+    public static void copy(byte[] src, int srcPos, byte[] dest, int destPos, int length) {
+        if (src == null) {
+            throw new IllegalArgumentException("Source byte array is null");
+        }
+        if (dest == null) {
+            throw new IllegalArgumentException("Destination byte array is null");
+        }
+        if (length <= 0) {
+            throw new IllegalArgumentException("Invalid length for copy");
+        }
+        if (srcPos < 0 || srcPos >= src.length) {
+            throw new IndexOutOfBoundsException("Source position out of bounds: " + srcPos);
+        }
+        if (destPos < 0 || destPos >= dest.length) {
+            throw new IndexOutOfBoundsException("Destination position out of bounds: " + destPos);
+        }
+        if (srcPos + length > src.length) {
+            throw new IndexOutOfBoundsException("Source range exceeds array bounds: srcPos=" + srcPos + ", length=" + length);
+        }
+        if (destPos + length > dest.length) {
+            throw new IndexOutOfBoundsException("Destination range exceeds array bounds: destPos=" + destPos + ", length=" + length);
+        }
+        System.arraycopy(src, srcPos, dest, destPos, length);
     }
 
     /**

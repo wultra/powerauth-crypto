@@ -24,7 +24,9 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.model.EciesParam
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.model.EciesPayload;
 import com.wultra.security.powerauth.crypto.lib.encryptor.exception.EncryptorException;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
-import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ClientEncryptorSecrets;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ClientEciesSecrets;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedRequest;
+import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.EciesEncryptedResponse;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.util.EciesUtils;
@@ -38,9 +40,10 @@ import java.util.Base64;
  *     <li>3.0</li>
  *     <li>3.1</li>
  *     <li>3.2</li>
+ *     <li>3.3</li>
  * </ul>
  */
-public class ClientEciesEncryptor implements ClientEncryptor {
+public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedRequest, EciesEncryptedResponse> {
 
     private static final KeyGenerator keyGenerator = new KeyGenerator();
 
@@ -49,8 +52,8 @@ public class ClientEciesEncryptor implements ClientEncryptor {
     private final EciesRequestResponseValidator validator;
     private final byte[] associatedData;        // non-null for V3.2+
 
-    // Variables altered after configureKeys() call.
-    private ClientEncryptorSecrets encryptorSecrets;
+    // Variables altered after configureSecrets() call.
+    private ClientEciesSecrets encryptorSecrets;
 
     /**
      * SharedInfo2 base bytes.
@@ -96,7 +99,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
 
     @Override
     public void configureSecrets(EncryptorSecrets secrets) throws EncryptorException {
-        if (!(secrets instanceof ClientEncryptorSecrets clientSecrets)) {
+        if (!(secrets instanceof ClientEciesSecrets clientSecrets)) {
             throw new EncryptorException("Unsupported EncryptorSecrets object");
         }
         final byte[] sharedInfo2Base;
@@ -119,14 +122,14 @@ public class ClientEciesEncryptor implements ClientEncryptor {
     }
 
     @Override
-    public EncryptedRequest encryptRequest(byte[] data) throws EncryptorException {
+    public EciesEncryptedRequest encryptRequest(byte[] plaintext) throws EncryptorException {
         if (!canEncryptRequest()) {
             throw new EncryptorException("Encryptor is not ready for request encryption.");
         }
         // Prepare new envelope key. The function internally generate new ephemeral public key.
         final EciesEnvelopeKey envelopeKey = EciesEnvelopeKey.fromPublicKey(
                 encryptorSecrets.getServerPublicKey(),
-                encryptorId.getEciesSharedInfo1(encryptorParameters.getProtocolVersion())
+                encryptorId.getSharedInfo1(encryptorParameters.getProtocolVersion())
         );
         // Prepare nonce and timestamp for the request, if required.
         final byte[] requestNonce = generateRequestNonce();
@@ -145,7 +148,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
         // Prepare EciesParameters
         final EciesParameters eciesParameters = new EciesParameters(requestNonce, associatedData, requestTimestamp);
         // If everything is OK, then encrypt the data.
-        final EciesPayload eciesPayload = eciesEncryptor.encrypt(data,eciesParameters);
+        final EciesPayload eciesPayload = eciesEncryptor.encrypt(plaintext, eciesParameters);
         // Keep envelope key and nonce used for the request if protocol require use the same nonce also for the response.
         this.envelopeKey = envelopeKey;
         this.requestNonce = validator.isUseTimestamp() ? null : requestNonce;
@@ -156,7 +159,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
             throw new EncryptorException("The cryptogram value is null.");
         }
 
-        return new EncryptedRequest(
+        return new EciesEncryptedRequest(
                 encryptorParameters.getTemporaryKeyId(),
                 base64Encoder.encodeToString(eciesCryptogram.getEphemeralPublicKey()),
                 base64Encoder.encodeToString(eciesCryptogram.getEncryptedData()),
@@ -172,7 +175,7 @@ public class ClientEciesEncryptor implements ClientEncryptor {
     }
 
     @Override
-    public byte[] decryptResponse(EncryptedResponse response) throws EncryptorException {
+    public byte[] decryptResponse(EciesEncryptedResponse response) throws EncryptorException {
         if (!canDecryptResponse()) {
             throw new EncryptorException("Encryptor is not ready for response decryption.");
         }

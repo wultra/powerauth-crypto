@@ -17,6 +17,7 @@
 package com.wultra.security.powerauth.crypto.activation;
 
 import com.wultra.security.powerauth.crypto.client.activation.PowerAuthClientActivation;
+import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
@@ -40,7 +41,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class PowerAuthActivationTest {
 
-    private final KeyConvertor keyConvertor = new KeyConvertor();
+    private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
+    private static final IdentifierGenerator IDENTIFIER_GENERATOR = new IdentifierGenerator();
 
     /**
      * Add crypto providers.
@@ -57,9 +59,9 @@ public class PowerAuthActivationTest {
     @Test
     public void testGenerateKeys() throws CryptoProviderException {
         KeyGenerator keyGenerator = new KeyGenerator();
-        KeyPair kp = keyGenerator.generateKeyPair();
-        System.out.println("Private Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPrivateKeyToBytes(kp.getPrivate())));
-        System.out.println("Public Key: " + Base64.getEncoder().encodeToString(keyConvertor.convertPublicKeyToBytes(kp.getPublic())));
+        KeyPair kp = keyGenerator.generateKeyPair(EcCurve.P256);
+        System.out.println("Private Key: " + Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(kp.getPrivate())));
+        System.out.println("Public Key: " + Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, kp.getPublic())));
     }
 
     /**
@@ -83,7 +85,7 @@ public class PowerAuthActivationTest {
         KeyGenerator keyGenerator = new KeyGenerator();
         PowerAuthClientActivation clientActivation = new PowerAuthClientActivation();
         PowerAuthServerActivation serverActivation = new PowerAuthServerActivation();
-        KeyPair masterKeyPair = keyGenerator.generateKeyPair();
+        KeyPair masterKeyPair = keyGenerator.generateKeyPair(EcCurve.P256);
 
         // Generate master keypair
         PrivateKey masterPrivateKey = masterKeyPair.getPrivate();
@@ -92,8 +94,8 @@ public class PowerAuthActivationTest {
         for (int i = 0; i < 20; i++) {
 
             // SERVER: Generate data for activation
-            String activationId = new IdentifierGenerator().generateActivationId();
-            String activationCode = serverActivation.generateActivationCode();
+            String activationId = IDENTIFIER_GENERATOR.generateActivationId();
+            String activationCode = IDENTIFIER_GENERATOR.generateActivationCode();
             byte[] activationSignature = serverActivation.generateActivationSignature(activationCode, masterPrivateKey);
             KeyPair serverKeyPair = serverActivation.generateServerKeyPair();
             PrivateKey serverPrivateKey = serverKeyPair.getPrivate();
@@ -165,8 +167,8 @@ public class PowerAuthActivationTest {
             byte[] devicePublicKeyBytes = Base64.getDecoder().decode(devicePublicKeysBase64[i]);
             byte[] serverPublicKeyBytes = Base64.getDecoder().decode(serverPublicKeysBase64[i]);
             String activation1 = activationId[i];
-            PublicKey devicePublicKey = keyConvertor.convertBytesToPublicKey(devicePublicKeyBytes);
-            PublicKey serverPublicKey = keyConvertor.convertBytesToPublicKey(serverPublicKeyBytes);
+            PublicKey devicePublicKey = KEY_CONVERTOR.convertBytesToPublicKey(EcCurve.P256, devicePublicKeyBytes);
+            PublicKey serverPublicKey = KEY_CONVERTOR.convertBytesToPublicKey(EcCurve.P256, serverPublicKeyBytes);
             final String fingerprintClient = clientActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             final String fingerprintServer = serverActivation.computeActivationFingerprint(devicePublicKey, serverPublicKey, activation1);
             assertEquals(publicKeyFingerprint[i], fingerprintClient);

@@ -17,17 +17,10 @@
 
 package com.wultra.security.powerauth.crypto.lib.encryptor.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 /**
  * The {@code EncryptedResponse} object represents an encrypted request payload in PowerAuth End-To-End encryption scheme.
+ *
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
-@Data
-@AllArgsConstructor
-public class EncryptedResponse {
-    private String encryptedData;
-    private String mac;
-    private String nonce;
-    private Long timestamp;
+public interface EncryptedResponse {
 }

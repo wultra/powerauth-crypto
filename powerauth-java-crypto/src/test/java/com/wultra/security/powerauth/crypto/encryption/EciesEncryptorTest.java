@@ -16,11 +16,11 @@
  */
 package com.wultra.security.powerauth.crypto.encryption;
 
-import com.wultra.security.powerauth.crypto.lib.encryptor.EncryptorFactory;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.EciesDecryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.EciesEncryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.kdf.KdfX9_63;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.model.*;
+import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
@@ -36,7 +36,6 @@ import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.util.Base64;
@@ -54,7 +53,6 @@ public class EciesEncryptorTest {
 
     private final KeyGenerator keyGenerator = new KeyGenerator();
     private final KeyConvertor keyConvertor = new KeyConvertor();
-    private final EncryptorFactory encryptorFactory = new EncryptorFactory();
 
     /**
      * Add crypto providers.
@@ -72,7 +70,7 @@ public class EciesEncryptorTest {
     public void testKdf() throws GenericCryptoException, CryptoProviderException {
 
         for (int i = 0 ; i < 100 ; i++) {
-            final SecretKey secretKey = keyGenerator.generateRandomSecretKey();
+            final SecretKey secretKey = keyGenerator.generateRandomSecretKey(16);
             final byte[] secretKeyToBytes = keyConvertor.convertSharedSecretKeyToBytes(secretKey);
 
             // Implement reference KDF implementation
@@ -143,8 +141,7 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(signByte, Base64.getDecoder().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
-        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("Am8gztfnuf/yXRoGLZbY3po4QK1+rSqNByvWs51fN0TS"));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(signByte, Base64.getDecoder().decode("w1l1XbpjTOpHQvE+muGcCajD6qy8h4xwdcHkioxD098=")));
 
         byte[][] request = {
                 Base64.getDecoder().decode("aGVsbG8gd29ybGQh"),
@@ -299,8 +296,7 @@ public class EciesEncryptorTest {
         // This issue happens when the BigInteger representing the exported private key is negative (first byte is over 127), like in this case.
         // Newer version of mobile SDK test vector generator should add the 0x0 byte automatically to avoid spending hours over broken private key import...
         byte[] signByte = new byte[1];
-        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(ByteUtils.concat(signByte, Base64.getDecoder().decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
-        final PublicKey publicKey = keyConvertor.convertBytesToPublicKey(Base64.getDecoder().decode("A8307eCy64gHWt047YeZzPQ6P8ZbC0djHmDr6JGrgJWx"));
+        final PrivateKey privateKey = keyConvertor.convertBytesToPrivateKey(EcCurve.P256, ByteUtils.concat(signByte, Base64.getDecoder().decode("ALr4uyoOk2OY7bN73vzC0DPZerYLhjbFP/T17sn+MwOM")));
 
         byte[][] request = {
                 Base64.getDecoder().decode("aGVsbG8gd29ybGQh"),
