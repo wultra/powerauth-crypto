@@ -170,42 +170,6 @@ public class GenerateVectorDataTest {
     }
 
     /**
-     * Generate test data for activation data signature (V4).
-     *
-     * @throws Exception In case any unknown error occurs.
-     */
-    @Test
-    public void testVerifyActivationDataV4() throws Exception {
-        String activationCode;
-
-        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
-
-        TestSet testSet = new TestSet("verify-activation-data-signature-v4.json", "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted activation data (for version 3 of PowerAuth protocol: activation code) using the server master public key, for example when it's stored in the QR code.");
-
-        IdentifierGenerator identifierGenerator = new IdentifierGenerator();
-
-        int max = 20;
-        for (int i = 0; i < max; i++) {
-            activationCode = identifierGenerator.generateActivationCode();
-
-            KeyPair kp = activationServer.generateServerKeyPair();
-            PrivateKey masterPrivateKey = kp.getPrivate();
-            PublicKey masterPublicKey = kp.getPublic();
-
-            byte[] activationSignature = activationServer.generateActivationSignature(activationCode, masterPrivateKey);
-
-            Map<String, String> input = new LinkedHashMap<>();
-            input.put("activationCode", activationCode);
-            input.put("masterPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(masterPrivateKey)));
-            input.put("masterPublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, masterPublicKey)));
-            Map<String, String> output = new LinkedHashMap<>();
-            output.put("activationSignature", Base64.getEncoder().encodeToString(activationSignature));
-            testSet.addData(input, output);
-        }
-        writeTestVector(testSet);
-    }
-
-    /**
      * Generate test data for master key derivation.
      *
      * <p><b>PowerAuth protocol versions:</b>
