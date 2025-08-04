@@ -31,16 +31,12 @@ import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.util.model.TestSet;
-import com.wultra.security.powerauth.crypto.lib.v4.Aead;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kdf;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyLabel;
 import com.wultra.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -138,114 +134,7 @@ public class GenerateVectorDataTest {
 
 
     /**
-     * Generate test data for common KDF function based on KMAC-256, used in protocol V4.
-     * @throws Exception In case any unknown error occurs.
-     */
-    @Test
-    void testKdfV4() throws Exception {
-        TestSet testSet = new TestSet("v4-kdf.json", "Test vectors for common KMAC-256 based KDF function used in protocol V4");
-        final String[] labels = {
-                KeyLabel.AUTH.value(),
-                KeyLabel.AUTH_POSSESSION.value(),
-                KeyLabel.AUTH_KNOWLEDGE.value(),
-                KeyLabel.AUTH_BIOMETRY.value(),
-                KeyLabel.SHARED_SECRET_EC_P384.value(),
-                KeyLabel.SHARED_SECRET_EC_P384_ML_L3.value(),
-                KeyLabel.AEAD_ENC.value(),
-                KeyLabel.AEAD_MAC.value(),
-                KeyLabel.VAULT.value(),
-                KeyLabel.VAULT_KEK_DEVICE_PRIVATE.value(),
-                KeyLabel.KDK_APP_VAULT_KNOWLEDGE.value(),
-                KeyLabel.KDK_APP_VAULT_2FA.value(),
-                KeyLabel.UTIL.value(),
-                KeyLabel.UTIL_MAC_CTR_DATA.value(),
-                KeyLabel.UTIL_MAC_STATUS.value(),
-                KeyLabel.UTIL_MAC_GET_APP_TEMP_KEY.value(),
-                KeyLabel.UTIL_MAC_GET_ACT_TEMP_KEY.value(),
-                KeyLabel.UTIL_MAC_PERSONALIZED_DATA.value(),
-                KeyLabel.UTIL_KEY_E2EE_SH2.value()
-        };
-        for (int i = 0; i < 100; i++) {
-            final String label = getRandomString(4, 20, labels);
-            final int key_size = 16 + (RANDOM.nextInt(4) * 16);
-            final int out_size = 16 + (RANDOM.nextInt(4) * 16);
-            final byte[] key = new byte[key_size];
-            RANDOM.nextBytes(key);
-            final byte[] custom = getRandomBytes(0, 96);
-            // derive key
-            final SecretKey derivedKey = Kdf.derive(new SecretKeySpec(key, "AES"), label, custom, out_size);
-            // store test vector
-            final Map<String, String> input = new HashMap<>();
-            input.put("key", Base64.getEncoder().encodeToString(key));
-            input.put("label", label);
-            input.put("custom", Base64.getEncoder().encodeToString(custom));
-            input.put("outSize", String.valueOf(out_size));
-            final Map<String, String> output = new HashMap<>();
-            output.put("derivedKey", Base64.getEncoder().encodeToString(derivedKey.getEncoded()));
-            testSet.addData(input, output);
-        }
-        writeTestVector(testSet);
-    }
-
-    /**
-     * Generate test data for KDF function for passwords, based on KMAC-256, used in protocol V4.
-     * @throws Exception In case any unknown error occurs.
-     */
-    @Test
-    void testPasswordKdfV4() throws Exception {
-        final String[] wellKnownPasswords = {
-                "nbusr123", "123456", "password1", "iloveyou", "querty123", "abc123"
-        };
-        TestSet testSet = new TestSet("v4-pbkdf.json", "Test vectors for password based KDF function used in protocol V4");
-        for (int i = 0; i < 100; i++) {
-            final String password = getRandomString(4, 16, wellKnownPasswords);
-            final byte[] salt = getRandomBytes(32, 48);
-            final int out_size = 16 + (RANDOM.nextInt(2) * 16);
-            // derive key
-            final SecretKey derivedKey = Kdf.derivePassword(password, salt, out_size);
-            // store test vector
-            final Map<String, String> input = new HashMap<>();
-            input.put("password", password);
-            input.put("salt", Base64.getEncoder().encodeToString(salt));
-            input.put("outSize", String.valueOf(out_size));
-            final Map<String, String> output = new HashMap<>();
-            output.put("derivedKey", Base64.getEncoder().encodeToString(derivedKey.getEncoded()));
-            testSet.addData(input, output);
-        }
-        writeTestVector(testSet);
-    }
-
-    /**
-     * Generate test vectors for low-level AEAD encryption used in protocol V4.
-     * @throws Exception In case any unknown error occurs.
-     */
-    @Test
-    void testAeadV4() throws Exception {
-        TestSet testSet = new TestSet("v4-aead.json", "Test vectors for low level AEAD encryption routines used in protocol V4");
-        for (int i = 0; i < 100; i++) {
-            byte[] key = getRandomBytes(32, 32);
-            byte[] keyContext = getRandomBytes(4, 32);
-            byte[] nonce = getRandomBytes(12, 12);
-            byte[] associatedData = getRandomBytes(8, 48);
-            byte[] plaintext = getRandomBytes(0, 256);
-            // encrypt data
-            byte[] ciphertext = Aead.seal(new SecretKeySpec(key, "AES"), keyContext, nonce, associatedData, plaintext);
-            // store test vector
-            final Map<String, String> input = new HashMap<>();
-            input.put("key", Base64.getEncoder().encodeToString(key));
-            input.put("keyContext", Base64.getEncoder().encodeToString(keyContext));
-            input.put("nonce", Base64.getEncoder().encodeToString(nonce));
-            input.put("associatedData", Base64.getEncoder().encodeToString(associatedData));
-            input.put("plaintext", Base64.getEncoder().encodeToString(plaintext));
-            final Map<String, String> output = new HashMap<>();
-            output.put("pqcCiphertext", Base64.getEncoder().encodeToString(ciphertext));
-            testSet.addData(input, output);
-        }
-        writeTestVector(testSet);
-    }
-
-    /**
-     * Generate test data for activation data signature.
+     * Generate test data for activation data signature (V3).
      *
      * @throws Exception In case any unknown error occurs.
      */
@@ -256,6 +145,42 @@ public class GenerateVectorDataTest {
         PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
 
         TestSet testSet = new TestSet("verify-activation-data-signature-v3.json", "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted activation data (for version 3 of PowerAuth protocol: activation code) using the server master public key, for example when it's stored in the QR code.");
+
+        IdentifierGenerator identifierGenerator = new IdentifierGenerator();
+
+        int max = 20;
+        for (int i = 0; i < max; i++) {
+            activationCode = identifierGenerator.generateActivationCode();
+
+            KeyPair kp = activationServer.generateServerKeyPair();
+            PrivateKey masterPrivateKey = kp.getPrivate();
+            PublicKey masterPublicKey = kp.getPublic();
+
+            byte[] activationSignature = activationServer.generateActivationSignature(activationCode, masterPrivateKey);
+
+            Map<String, String> input = new LinkedHashMap<>();
+            input.put("activationCode", activationCode);
+            input.put("masterPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(masterPrivateKey)));
+            input.put("masterPublicKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPublicKeyToBytes(EcCurve.P256, masterPublicKey)));
+            Map<String, String> output = new LinkedHashMap<>();
+            output.put("activationSignature", Base64.getEncoder().encodeToString(activationSignature));
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for activation data signature (V4).
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testVerifyActivationDataV4() throws Exception {
+        String activationCode;
+
+        PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+
+        TestSet testSet = new TestSet("verify-activation-data-signature-v4.json", "For \"/pa/activation/prepare\", client needs to be able to verify the signature of the encrypted activation data (for version 3 of PowerAuth protocol: activation code) using the server master public key, for example when it's stored in the QR code.");
 
         IdentifierGenerator identifierGenerator = new IdentifierGenerator();
 

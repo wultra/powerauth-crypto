@@ -29,6 +29,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Class that is used for computing EC public key fingerprint. Goal of the public key fingerprint is to
@@ -57,36 +58,35 @@ public class ECPublicKeyFingerprint {
         }
         try {
             // Prepare fingerprint data
-            byte[] fingerprintData;
-            switch (activationVersion) {
-                case VERSION_3 -> {
-                    if (serverPublicKey == null) {
-                        throw new GenericCryptoException("Server public key is invalid");
-                    }
-                    if (activationId == null) {
-                        throw new GenericCryptoException("Activation ID is invalid");
-                    }
-                    // In version 3 the activation fingerprint is computed as devicePublicKeyBytes + activationIdBytes + serverPublicKeyBytes
-                    byte[] devicePublicKeyBytes = toByteArray(devicePublicKey);
-                    byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-                    byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
-                    ByteBuffer dataBuffer = ByteBuffer.allocate(devicePublicKeyBytes.length + activationIdBytes.length + serverPublicKeyBytes.length);
-                    dataBuffer.put(devicePublicKeyBytes);
-                    dataBuffer.put(activationIdBytes);
-                    dataBuffer.put(serverPublicKeyBytes);
-                    fingerprintData = dataBuffer.array();
+            final byte[] fingerprintData;
+            if (Objects.requireNonNull(activationVersion) == ActivationVersion.VERSION_3) {
+                if (serverPublicKey == null) {
+                    throw new GenericCryptoException("Server public key is invalid");
                 }
-                default -> throw new GenericCryptoException("Unsupported activation version: " + activationVersion);
+                if (activationId == null) {
+                    throw new GenericCryptoException("Activation ID is invalid");
+                }
+                // In version 3 the activation fingerprint is computed as devicePublicKeyBytes + activationIdBytes + serverPublicKeyBytes
+                final byte[] devicePublicKeyBytes = toByteArray(devicePublicKey);
+                final byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
+                final byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
+                final ByteBuffer dataBuffer = ByteBuffer.allocate(devicePublicKeyBytes.length + activationIdBytes.length + serverPublicKeyBytes.length);
+                dataBuffer.put(devicePublicKeyBytes);
+                dataBuffer.put(activationIdBytes);
+                dataBuffer.put(serverPublicKeyBytes);
+                fingerprintData = dataBuffer.array();
+            } else {
+                throw new GenericCryptoException("Unsupported activation version: " + activationVersion);
             }
 
             // Calculate fingerprint
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(fingerprintData);
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final byte[] hash = digest.digest(fingerprintData);
             if (hash.length < 4) { // assert
                 throw new GenericCryptoException("Invalid digest");
             }
-            int index = hash.length - 4;
-            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
+            final int index = hash.length - 4;
+            final int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
             return String.format("%0" + PowerAuthConfiguration.FINGERPRINT_LENGTH + "d", number);
         } catch (NoSuchAlgorithmException ex) {
             logger.warn(ex.getMessage(), ex);

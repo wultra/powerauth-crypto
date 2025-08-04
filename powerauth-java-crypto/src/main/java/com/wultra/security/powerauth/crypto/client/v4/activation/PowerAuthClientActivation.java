@@ -20,6 +20,7 @@ import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
+import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
@@ -27,6 +28,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.PqcDsa;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsa;
+import org.bouncycastle.jcajce.interfaces.MLDSAPublicKey;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -34,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 
 /**
@@ -104,7 +107,7 @@ public class PowerAuthClientActivation {
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyActivationCodeEcSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public boolean verifyActivationCodeEcdsa(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         final byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
         return SIGNATURE_UTILS.validateECDSASignature(EcCurve.P384, bytes, signature, masterPublicKey);
     }
@@ -125,7 +128,7 @@ public class PowerAuthClientActivation {
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyActivationCodePqcSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public boolean verifyActivationCodePqcdsa(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         final byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
         return PQC_DSA.verify(masterPublicKey, bytes, signature);
     }
@@ -146,8 +149,7 @@ public class PowerAuthClientActivation {
      * @throws GenericCryptoException In case fingerprint could not be calculated.
      */
     public String computeActivationEcFingerprint(PublicKey devicePublicKey, PublicKey serverPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
-        // TODO - support for crypto4
-        return "";
+        return HybridPublicKeyFingerprint.computeEcdsaFingerprint(((ECPublicKey) devicePublicKey), (ECPublicKey) serverPublicKey, activationId, ActivationVersion.VERSION_4);
     }
 
     /**
@@ -168,8 +170,7 @@ public class PowerAuthClientActivation {
      * @throws GenericCryptoException In case fingerprint could not be calculated.
      */
     public String computeActivationHybridFingerprint(PublicKey ecDevicePublicKey, PublicKey pqcDevicePublicKey, PublicKey ecServerPublicKey, PublicKey pqcServerPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
-        // TODO - support for crypto4
-        return "";
+        return HybridPublicKeyFingerprint.computeHybridFingerprint(((ECPublicKey) ecDevicePublicKey), (MLDSAPublicKey) pqcDevicePublicKey, (ECPublicKey) ecServerPublicKey, (MLDSAPublicKey) pqcServerPublicKey, activationId, ActivationVersion.VERSION_4);
     }
 
     /**
@@ -185,11 +186,11 @@ public class PowerAuthClientActivation {
      */
     public ActivationStatusBlobInfo getStatusFromBlob(byte[] statusBlob) {
         // Prepare objects to read status info into
-        ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
-        ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
+        final ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
+        final ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
 
         // check if the prefix is OK
-        int prefix = buffer.getInt(0);
+        final int prefix = buffer.getInt(0);
         statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V4);
 
         // fetch the activation status byte
@@ -217,7 +218,7 @@ public class PowerAuthClientActivation {
         statusInfo.setCtrLookAhead(buffer.get(15));
 
         // extract counter data from second half of status blob
-        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, statusBlob.length);
+        final byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, statusBlob.length);
         statusInfo.setCtrDataHash(ctrData);
 
         return statusInfo;
