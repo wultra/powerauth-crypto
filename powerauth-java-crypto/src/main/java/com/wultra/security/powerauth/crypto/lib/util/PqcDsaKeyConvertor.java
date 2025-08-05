@@ -19,8 +19,6 @@ package com.wultra.security.powerauth.crypto.lib.util;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jcajce.provider.asymmetric.mldsa.BCMLDSAPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.mldsa.BCMLDSAPublicKey;
-import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPrivateKey;
-import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
