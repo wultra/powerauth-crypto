@@ -17,8 +17,8 @@
 package com.wultra.security.powerauth.crypto.lib.util;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import org.bouncycastle.jcajce.interfaces.MLKEMPrivateKey;
-import org.bouncycastle.jcajce.interfaces.MLKEMPublicKey;
+import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPublicKey;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -61,7 +61,7 @@ public class PqcKemKeyConvertor {
         if (publicKey == null) {
             throw new GenericCryptoException("Missing public key");
         }
-        if (!(publicKey instanceof MLKEMPublicKey)) {
+        if (!publicKey.getClass().getName().equals(BCMLKEMPublicKey.class.getName())) {
             throw new GenericCryptoException("Invalid public key");
         }
         return publicKey.getEncoded();
@@ -77,10 +77,10 @@ public class PqcKemKeyConvertor {
         if (privateKey == null) {
             throw new GenericCryptoException("Missing private key");
         }
-        if (!(privateKey instanceof MLKEMPrivateKey mlkemPrivateKey)) {
+        if (!privateKey.getClass().getName().equals(BCMLKEMPrivateKey.class.getName())) {
             throw new GenericCryptoException("Invalid private key");
         }
-        return mlkemPrivateKey.getEncoded();
+        return privateKey.getEncoded();
     }
 
     /**
@@ -96,7 +96,7 @@ public class PqcKemKeyConvertor {
         try {
             final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
             final PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-            if (!(publicKey instanceof MLKEMPublicKey)) {
+            if (!publicKey.getClass().getName().equals(BCMLKEMPublicKey.class.getName())) {
                 throw new GenericCryptoException("Invalid public key");
             }
             return publicKey;
@@ -118,7 +118,7 @@ public class PqcKemKeyConvertor {
         try {
             final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
             final PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
-            if (!(privateKey instanceof MLKEMPrivateKey)) {
+            if (!privateKey.getClass().getName().equals(BCMLKEMPrivateKey.class.getName())) {
                 throw new GenericCryptoException("Invalid private key");
             }
             return privateKey;
