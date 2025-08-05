@@ -17,6 +17,10 @@
 package com.wultra.security.powerauth.crypto.lib.util;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import org.bouncycastle.jcajce.provider.asymmetric.mldsa.BCMLDSAPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.mldsa.BCMLDSAPublicKey;
+import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +66,9 @@ public class PqcDsaKeyConvertor {
         if (publicKey == null) {
             throw new GenericCryptoException("Missing public key");
         }
+        if (!publicKey.getClass().getName().equals(BCMLDSAPublicKey.class.getName())) {
+            throw new GenericCryptoException("Invalid public key");
+        }
         return publicKey.getEncoded();
     }
 
@@ -96,6 +103,9 @@ public class PqcDsaKeyConvertor {
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) throws GenericCryptoException {
         if (privateKey == null) {
             throw new GenericCryptoException("Missing private key");
+        }
+        if (!privateKey.getClass().getName().equals(BCMLDSAPrivateKey.class.getName())) {
+            throw new GenericCryptoException("Invalid public key");
         }
         return privateKey.getEncoded();
     }

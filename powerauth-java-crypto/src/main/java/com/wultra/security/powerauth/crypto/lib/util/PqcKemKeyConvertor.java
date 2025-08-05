@@ -95,11 +95,7 @@ public class PqcKemKeyConvertor {
         }
         try {
             final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
-            final PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-            if (!publicKey.getClass().getName().equals(BCMLKEMPublicKey.class.getName())) {
-                throw new GenericCryptoException("Invalid public key");
-            }
-            return publicKey;
+            return keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
             throw new GenericCryptoException("Public key conversion failed", e);
         }
@@ -117,11 +113,7 @@ public class PqcKemKeyConvertor {
         }
         try {
             final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
-            final PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
-            if (!privateKey.getClass().getName().equals(BCMLKEMPrivateKey.class.getName())) {
-                throw new GenericCryptoException("Invalid private key");
-            }
-            return privateKey;
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
             throw new GenericCryptoException("Private key conversion failed", e);
         }
