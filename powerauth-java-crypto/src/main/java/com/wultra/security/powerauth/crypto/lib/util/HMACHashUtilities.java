@@ -30,17 +30,18 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
 /**
- * Simple utility class for HMAC-SHA256 algorithm
- * @author Petr Dvorak, petr@wultra.com
+ * Simple utility class for HMAC algorithms.
  *
+ * @author Petr Dvorak, petr@wultra.com
+ * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class HMACHashUtilities {
 
     private static final Logger logger = LoggerFactory.getLogger(HMACHashUtilities.class);
 
     /**
-     * Compute a HMAC-SHA256 of given data with provided key bytes
-     * @param key Key for the HMAC-SHA256 algorithm
+     * Compute a HMAC-SHA256 of given data with provided key bytes.
+     * @param key Key for the HMAC-SHA256 algorithm.
      * @param data Data for the HMAC-SHA256 algorithm.
      * @return HMAC-SHA256 of given data using given key.
      * @throws GenericCryptoException In case hash computation fails.
@@ -48,8 +49,8 @@ public class HMACHashUtilities {
      */
     public byte[] hash(byte[] key, byte[] data) throws GenericCryptoException, CryptoProviderException {
         try {
-            Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA256");
+            final Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA256");
             hmacSha256.init(hmacKey);
             return hmacSha256.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
@@ -62,8 +63,8 @@ public class HMACHashUtilities {
     }
 
     /**
-     * Compute a HMAC-SHA256 of given data with provided key bytes
-     * @param hmacKey Key for the HMAC-SHA256 algorithm
+     * Compute a HMAC-SHA256 of given data with provided key bytes.
+     * @param hmacKey Key for the HMAC-SHA256 algorithm.
      * @param data Data for the HMAC-SHA256 algorithm.
      * @return HMAC-SHA256 of given data using given key.
      * @throws GenericCryptoException  In case hash computation fails.
@@ -71,9 +72,54 @@ public class HMACHashUtilities {
      */
     public byte[] hash(SecretKey hmacKey, byte[] data) throws GenericCryptoException, CryptoProviderException {
         try {
-            Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             hmacSha256.init(hmacKey);
             return hmacSha256.doFinal(data);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (InvalidKeyException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new GenericCryptoException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Compute a HMAC-SHA384 of given data with provided key bytes.
+     * @param key Key for the HMAC-SHA384 algorithm.
+     * @param data Data for the HMAC-SHA384 algorithm.
+     * @return HMAC-SHA384 of given data using given key.
+     * @throws GenericCryptoException In case hash computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public byte[] hash384(byte[] key, byte[] data) throws GenericCryptoException, CryptoProviderException {
+        try {
+            final Mac hmacSha384 = Mac.getInstance("HmacSHA384", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            final SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA384");
+            hmacSha384.init(hmacKey);
+            return hmacSha384.doFinal(data);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new CryptoProviderException(ex.getMessage(), ex);
+        } catch (InvalidKeyException ex) {
+            logger.warn(ex.getMessage(), ex);
+            throw new GenericCryptoException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Compute a HMAC-SHA384 of given data with provided key bytes.
+     * @param hmacKey Key for the HMAC-SHA384 algorithm.
+     * @param data Data for the HMAC-SHA384 algorithm.
+     * @return HMAC-SHA384 of given data using given key.
+     * @throws GenericCryptoException  In case hash computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public byte[] hash384(SecretKey hmacKey, byte[] data) throws GenericCryptoException, CryptoProviderException {
+        try {
+            final Mac hmacSha384 = Mac.getInstance("HmacSHA384", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            hmacSha384.init(hmacKey);
+            return hmacSha384.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
