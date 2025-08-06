@@ -48,18 +48,7 @@ public class HMACHashUtilities {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] hash(byte[] key, byte[] data) throws GenericCryptoException, CryptoProviderException {
-        try {
-            final Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            final SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA256");
-            hmacSha256.init(hmacKey);
-            return hmacSha256.doFinal(data);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new CryptoProviderException(ex.getMessage(), ex);
-        } catch (InvalidKeyException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+        return computeHmac("HmacSHA256", new SecretKeySpec(key, "HmacSHA256"), data);
     }
 
     /**
@@ -71,17 +60,7 @@ public class HMACHashUtilities {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] hash(SecretKey hmacKey, byte[] data) throws GenericCryptoException, CryptoProviderException {
-        try {
-            final Mac hmacSha256 = Mac.getInstance("HmacSHA256", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            hmacSha256.init(hmacKey);
-            return hmacSha256.doFinal(data);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new CryptoProviderException(ex.getMessage(), ex);
-        } catch (InvalidKeyException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+        return computeHmac("HmacSHA256", hmacKey, data);
     }
 
     /**
@@ -93,18 +72,7 @@ public class HMACHashUtilities {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] hash384(byte[] key, byte[] data) throws GenericCryptoException, CryptoProviderException {
-        try {
-            final Mac hmacSha384 = Mac.getInstance("HmacSHA384", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            final SecretKey hmacKey = new SecretKeySpec(key, "HmacSHA384");
-            hmacSha384.init(hmacKey);
-            return hmacSha384.doFinal(data);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new CryptoProviderException(ex.getMessage(), ex);
-        } catch (InvalidKeyException ex) {
-            logger.warn(ex.getMessage(), ex);
-            throw new GenericCryptoException(ex.getMessage(), ex);
-        }
+        return computeHmac("HmacSHA384", new SecretKeySpec(key, "HmacSHA384"), data);
     }
 
     /**
@@ -116,10 +84,23 @@ public class HMACHashUtilities {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] hash384(SecretKey hmacKey, byte[] data) throws GenericCryptoException, CryptoProviderException {
+        return computeHmac("HmacSHA384", hmacKey, data);
+    }
+
+    /**
+     * Compute a HMAC with given parameters.
+     * @param algorithm HMAC algorithm.
+     * @param key HMAC key.
+     * @param data HMAC input data.
+     * @return Computed HMAC value.
+     * @throws GenericCryptoException  In case hash computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    private byte[] computeHmac(String algorithm, SecretKey key, byte[] data) throws GenericCryptoException, CryptoProviderException {
         try {
-            final Mac hmacSha384 = Mac.getInstance("HmacSHA384", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            hmacSha384.init(hmacKey);
-            return hmacSha384.doFinal(data);
+            final Mac mac = Mac.getInstance(algorithm, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
+            mac.init(key);
+            return mac.doFinal(data);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
@@ -128,5 +109,4 @@ public class HMACHashUtilities {
             throw new GenericCryptoException(ex.getMessage(), ex);
         }
     }
-
 }
