@@ -20,6 +20,7 @@ import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.enums.ProtocolVersion;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationStatusBlobInfo;
+import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
@@ -27,6 +28,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.PqcDsa;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsa;
+import org.bouncycastle.jcajce.interfaces.MLDSAPublicKey;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -35,6 +37,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
 
 /**
  * Class implementing cryptography used on a server side in order to assure
@@ -89,7 +92,7 @@ public class PowerAuthServerActivation {
     }
 
     /**
-     * Generate signature for the activation code.
+     * Generate ECDSA signature for the activation code.
      * <p>
      * Signature is then computed using the master private key.
      *
@@ -105,10 +108,31 @@ public class PowerAuthServerActivation {
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] generateActivationSignature(String activationCode,
-                                              PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
+    public byte[] generateActivationSignatureEcdsa(String activationCode, PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        final byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
         return SIGNATURE_UTILS.computeECDSASignature(EcCurve.P384, bytes, masterPrivateKey);
+    }
+
+    /**
+     * Generate ML-DSA signature for the activation code.
+     * <p>
+     * Signature is then computed using the master private key.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>4.0</li>
+     * </ul>
+     *
+     * @param activationCode Short activation ID.
+     * @param masterPrivateKey Master Private Key.
+     * @return Signature of activation data using Master Private Key.
+     * @throws InvalidKeyException In case Master Private Key is invalid.
+     * @throws GenericCryptoException In case signature computation fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     */
+    public byte[] generateActivationSignatureMldsa(String activationCode, PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+        final byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
+        return PQC_DSA.sign(masterPrivateKey, bytes);
     }
 
     /**
@@ -199,8 +223,7 @@ public class PowerAuthServerActivation {
      * @throws GenericCryptoException In case fingerprint could not be calculated.
      */
     public String computeActivationEcFingerprint(PublicKey devicePublicKey, PublicKey serverPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
-        // TODO - support for crypto4
-        return "";
+        return HybridPublicKeyFingerprint.computeEcdsaFingerprint(((ECPublicKey) devicePublicKey), (ECPublicKey) serverPublicKey, activationId, ActivationVersion.VERSION_4);
     }
 
     /**
@@ -221,8 +244,7 @@ public class PowerAuthServerActivation {
      * @throws GenericCryptoException In case fingerprint could not be calculated.
      */
     public String computeActivationHybridFingerprint(PublicKey ecDevicePublicKey, PublicKey pqcDevicePublicKey, PublicKey ecServerPublicKey, PublicKey pqcServerPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
-        // TODO - support for crypto4
-        return "";
+        return HybridPublicKeyFingerprint.computeHybridFingerprint(((ECPublicKey) ecDevicePublicKey), (MLDSAPublicKey) pqcDevicePublicKey, (ECPublicKey) ecServerPublicKey, (MLDSAPublicKey) pqcServerPublicKey, activationId, ActivationVersion.VERSION_4);
     }
 
     /**

@@ -52,41 +52,38 @@ public class ECPublicKeyFingerprint {
      * @throws CryptoProviderException Thrown in case cryptography provider is initialized incorrectly.
      */
     public static String compute(ECPublicKey devicePublicKey, ECPublicKey serverPublicKey, String activationId, ActivationVersion activationVersion) throws GenericCryptoException, CryptoProviderException {
+        if (activationVersion != ActivationVersion.VERSION_3) {
+            throw new GenericCryptoException("Unsupported activation version: " + activationVersion);
+        }
         if (devicePublicKey == null) {
             throw new GenericCryptoException("Device public key is invalid");
         }
         try {
             // Prepare fingerprint data
-            byte[] fingerprintData;
-            switch (activationVersion) {
-                case VERSION_3 -> {
-                    if (serverPublicKey == null) {
-                        throw new GenericCryptoException("Server public key is invalid");
-                    }
-                    if (activationId == null) {
-                        throw new GenericCryptoException("Activation ID is invalid");
-                    }
-                    // In version 3 the activation fingerprint is computed as devicePublicKeyBytes + activationIdBytes + serverPublicKeyBytes
-                    byte[] devicePublicKeyBytes = toByteArray(devicePublicKey);
-                    byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-                    byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
-                    ByteBuffer dataBuffer = ByteBuffer.allocate(devicePublicKeyBytes.length + activationIdBytes.length + serverPublicKeyBytes.length);
-                    dataBuffer.put(devicePublicKeyBytes);
-                    dataBuffer.put(activationIdBytes);
-                    dataBuffer.put(serverPublicKeyBytes);
-                    fingerprintData = dataBuffer.array();
-                }
-                default -> throw new GenericCryptoException("Unsupported activation version: " + activationVersion);
+            final byte[] fingerprintData;
+            if (serverPublicKey == null) {
+                throw new GenericCryptoException("Server public key is invalid");
             }
-
+            if (activationId == null) {
+                throw new GenericCryptoException("Activation ID is invalid");
+            }
+            // In version 3 the activation fingerprint is computed as devicePublicKeyBytes + activationIdBytes + serverPublicKeyBytes
+            final byte[] devicePublicKeyBytes = toByteArray(devicePublicKey);
+            final byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
+            final byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
+            final ByteBuffer dataBuffer = ByteBuffer.allocate(devicePublicKeyBytes.length + activationIdBytes.length + serverPublicKeyBytes.length);
+            dataBuffer.put(devicePublicKeyBytes);
+            dataBuffer.put(activationIdBytes);
+            dataBuffer.put(serverPublicKeyBytes);
+            fingerprintData = dataBuffer.array();
             // Calculate fingerprint
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(fingerprintData);
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final byte[] hash = digest.digest(fingerprintData);
             if (hash.length < 4) { // assert
                 throw new GenericCryptoException("Invalid digest");
             }
-            int index = hash.length - 4;
-            int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
+            final int index = hash.length - 4;
+            final int number = (ByteBuffer.wrap(hash).getInt(index) & 0x7FFFFFFF) % (int) (Math.pow(10, PowerAuthConfiguration.FINGERPRINT_LENGTH));
             return String.format("%0" + PowerAuthConfiguration.FINGERPRINT_LENGTH + "d", number);
         } catch (NoSuchAlgorithmException ex) {
             logger.warn(ex.getMessage(), ex);

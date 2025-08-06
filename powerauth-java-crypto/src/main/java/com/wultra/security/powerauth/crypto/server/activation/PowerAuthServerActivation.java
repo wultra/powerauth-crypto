@@ -99,8 +99,6 @@ public class PowerAuthServerActivation {
         return SIGNATURE_UTILS.computeECDSASignature(EcCurve.P256, bytes, masterPrivateKey);
     }
 
-
-
     /**
      * Compute a fingerprint for the version 3 activation. The fingerprint can be used for visual validation of exchanged device public key.
      *

@@ -24,8 +24,6 @@ import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -94,7 +92,7 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public boolean verifyActivationCodeSignature(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
+        final byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
         return SIGNATURE_UTILS.validateECDSASignature(EcCurve.P256, bytes, signature, masterPublicKey);
     }
 
@@ -169,9 +167,9 @@ public class PowerAuthClientActivation {
         }
 
         // Decrypt the status blob
-        AESEncryptionUtils aes = new AESEncryptionUtils();
-        byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
-        byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
+        final AESEncryptionUtils aes = new AESEncryptionUtils();
+        final byte[] iv = new KeyDerivationUtils().deriveIvForStatusBlobEncryption(challenge, nonce, transportKey);
+        final byte[] statusBlob = aes.decrypt(cStatusBlob, iv, transportKey, "AES/CBC/NoPadding");
         return getStatusFromBlob(statusBlob);
     }
 
@@ -191,11 +189,11 @@ public class PowerAuthClientActivation {
      */
     public ActivationStatusBlobInfo getStatusFromBlob(byte[] statusBlob) {
         // Prepare objects to read status info into
-        ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
-        ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
+        final ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
+        final ByteBuffer buffer = ByteBuffer.wrap(statusBlob);
 
         // check if the prefix is OK
-        int prefix = buffer.getInt(0);
+        final int prefix = buffer.getInt(0);
         statusInfo.setValid(prefix == ActivationStatusBlobInfo.ACTIVATION_STATUS_MAGIC_VALUE_V3);
 
         // fetch the activation status byte
@@ -223,7 +221,7 @@ public class PowerAuthClientActivation {
         statusInfo.setCtrLookAhead(buffer.get(15));
 
         // extract counter data from second half of status blob
-        byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, statusBlob.length);
+        final byte[] ctrData = Arrays.copyOfRange(statusBlob, 16, statusBlob.length);
         statusInfo.setCtrDataHash(ctrData);
 
         return statusInfo;
