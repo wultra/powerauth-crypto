@@ -29,7 +29,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * Class that is used for computing EC public key fingerprint. Goal of the public key fingerprint is to
@@ -53,32 +52,30 @@ public class ECPublicKeyFingerprint {
      * @throws CryptoProviderException Thrown in case cryptography provider is initialized incorrectly.
      */
     public static String compute(ECPublicKey devicePublicKey, ECPublicKey serverPublicKey, String activationId, ActivationVersion activationVersion) throws GenericCryptoException, CryptoProviderException {
+        if (activationVersion != ActivationVersion.VERSION_3) {
+            throw new GenericCryptoException("Unsupported activation version: " + activationVersion);
+        }
         if (devicePublicKey == null) {
             throw new GenericCryptoException("Device public key is invalid");
         }
         try {
             // Prepare fingerprint data
             final byte[] fingerprintData;
-            if (Objects.requireNonNull(activationVersion) == ActivationVersion.VERSION_3) {
-                if (serverPublicKey == null) {
-                    throw new GenericCryptoException("Server public key is invalid");
-                }
-                if (activationId == null) {
-                    throw new GenericCryptoException("Activation ID is invalid");
-                }
-                // In version 3 the activation fingerprint is computed as devicePublicKeyBytes + activationIdBytes + serverPublicKeyBytes
-                final byte[] devicePublicKeyBytes = toByteArray(devicePublicKey);
-                final byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
-                final byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
-                final ByteBuffer dataBuffer = ByteBuffer.allocate(devicePublicKeyBytes.length + activationIdBytes.length + serverPublicKeyBytes.length);
-                dataBuffer.put(devicePublicKeyBytes);
-                dataBuffer.put(activationIdBytes);
-                dataBuffer.put(serverPublicKeyBytes);
-                fingerprintData = dataBuffer.array();
-            } else {
-                throw new GenericCryptoException("Unsupported activation version: " + activationVersion);
+            if (serverPublicKey == null) {
+                throw new GenericCryptoException("Server public key is invalid");
             }
-
+            if (activationId == null) {
+                throw new GenericCryptoException("Activation ID is invalid");
+            }
+            // In version 3 the activation fingerprint is computed as devicePublicKeyBytes + activationIdBytes + serverPublicKeyBytes
+            final byte[] devicePublicKeyBytes = toByteArray(devicePublicKey);
+            final byte[] activationIdBytes = activationId.getBytes(StandardCharsets.UTF_8);
+            final byte[] serverPublicKeyBytes = toByteArray(serverPublicKey);
+            final ByteBuffer dataBuffer = ByteBuffer.allocate(devicePublicKeyBytes.length + activationIdBytes.length + serverPublicKeyBytes.length);
+            dataBuffer.put(devicePublicKeyBytes);
+            dataBuffer.put(activationIdBytes);
+            dataBuffer.put(serverPublicKeyBytes);
+            fingerprintData = dataBuffer.array();
             // Calculate fingerprint
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
             final byte[] hash = digest.digest(fingerprintData);
