@@ -119,10 +119,10 @@ public class AuthenticationCodeUtils {
      */
     public String computeOnlineAuthCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException {
         final List<byte[]> components = computeAuthCodeComponents(data, factorKeys, ctrData);
-        final byte[] authCodeBytes = new byte[factorKeys.size() * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH];
+        final byte[] authCodeBytes = new byte[factorKeys.size() * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4];
         for (int i = 0; i < components.size(); i++) {
             final byte[] component = components.get(i);
-            ByteUtils.copy(component, 0, authCodeBytes, i * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH);
+            ByteUtils.copy(component, 0, authCodeBytes, i * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4);
         }
         return Base64.getEncoder().encodeToString(authCodeBytes);
     }
@@ -181,7 +181,7 @@ public class AuthenticationCodeUtils {
                 final byte[] keyDerivedCurrent = Kmac.kmac256(keyInner, ctrData, KMAC_AUTH_CODE_CUSTOM_BYTES);
                 keyDerived = Kmac.kmac256(keyDerivedCurrent, keyDerived, KMAC_AUTH_CODE_CUSTOM_BYTES);
             }
-            final byte[] component = Kmac.kmac256(keyDerived, data, KMAC_AUTH_CODE_CUSTOM_BYTES, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH);
+            final byte[] component = Kmac.kmac256(keyDerived, data, KMAC_AUTH_CODE_CUSTOM_BYTES, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4);
             components.add(component);
         }
         return components;
@@ -249,17 +249,17 @@ public class AuthenticationCodeUtils {
      * @throws GenericCryptoException In case authentication code computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private String computeAuthCodeBase64(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
+    private String computeAuthCodeBase64(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException {
         // Prepare array of bytes for a complete authentication code
-        final byte[] authenticationCodeBytes = new byte[factorKeys.size() * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH];
+        final byte[] authenticationCodeBytes = new byte[factorKeys.size() * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4];
         // Compute authentication code components
         final List<byte[]> authenticationCodeComponents = computeAuthCodeComponents(data, factorKeys, ctrData);
         // Convert authentication code components into one Base64 encoded string
         for (int i = 0; i < authenticationCodeComponents.size(); i++) {
             final byte[] component = authenticationCodeComponents.get(i);
-            final int sourceOffset = component.length - PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH;
-            final int destinationOffset = i * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH;
-            System.arraycopy(component, sourceOffset, authenticationCodeBytes, destinationOffset, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH);
+            final int sourceOffset = component.length - PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4;
+            final int destinationOffset = i * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4;
+            System.arraycopy(component, sourceOffset, authenticationCodeBytes, destinationOffset, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4);
         }
         // Finally, convert bytes into one Base64 string
         return Base64.getEncoder().encodeToString(authenticationCodeBytes);

@@ -123,24 +123,33 @@ public class ValueTypeValidator {
 
     /**
      * Validate if the provided authentication code is of a correct format.
+     * @param protocolVersion Protocol version.
      * @param authCode Authentication code candidate.
      * @return True if authentication code candidate has correct format, false otherwise.
      */
-    public static boolean isValidAuthCodeValue(String authCode) {
+    public static boolean isValidAuthCodeValue(String protocolVersion, String authCode) {
         if (authCode != null) {
-            switch (authCode.length()) {
-                case 8, 17, 26 -> {
+            final ProtocolVersion version = ProtocolVersion.fromValue(protocolVersion);
+            final int length = authCode.length();
+            switch (version) {
+                case V30 -> {
                     // "3.0" authentication code version uses "DECIMAL" format
                     return authCode.matches(AUTH_CODE_REGEX);
                 }
-                case 24, 44, 64 -> {
-                    // "3.1" and later authentication code uses "BASE64" format.
-                    // We don't need to validate an exact number of encoded bytes. This is due to fact,
-                    // that if input string length can only be 24, 44 or 64, then the encoded output length
-                    // must be 16, 32 or 48.
-                    return isValidBase64OfLengthRange(authCode, 16, 48);
+                case V31, V32, V33 -> {
+                    // "3.1" and later authentication code uses "BASE64" format with 16-byte component size.
+                    // Valid encoded lengths: 24, 44, 64 (decoded: 16, 32, 48 bytes)
+                    if (length == 24 || length == 44 || length == 64) {
+                        return isValidBase64OfLengthRange(authCode, 16, 48);
+                    }
+                    return false;
                 }
-                default -> {
+                case V40 -> {
+                    // "4.0" authentication code uses "BASE64" format with 32-byte component size.
+                    // Valid encoded lengths: 44, 88, 128 (decoded: 32, 64, 96 bytes)
+                    if (length == 44 || length == 88 || length == 128) {
+                        return isValidBase64OfLengthRange(authCode, 32, 96);
+                    }
                     return false;
                 }
             }

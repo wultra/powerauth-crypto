@@ -75,8 +75,14 @@ public class PowerAuthAuthorizationHttpHeaderValidator {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTH_CODE_EMPTY");
         }
 
+        // Check that version is present
+        final String version = header.getVersion();
+        if (version == null || version.isEmpty()) {
+            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTHORIZATION_VERSION_EMPTY");
+        }
+
         // Check if authentication code has correct format
-        if (!ValueTypeValidator.isValidAuthCodeValue(authCode)) {
+        if (!ValueTypeValidator.isValidAuthCodeValue(version, authCode)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTH_CODE_INVALID");
         }
 
@@ -89,12 +95,6 @@ public class PowerAuthAuthorizationHttpHeaderValidator {
         // Check if application key has correct format
         if (!ValueTypeValidator.isValidBase64OfLength(applicationKey, 16)) {
             throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_APPLICATION_INVALID");
-        }
-
-        // Check that version is present
-        final String version = header.getVersion();
-        if (version == null || version.isEmpty()) {
-            throw new InvalidPowerAuthHttpHeaderException("POWER_AUTH_AUTHORIZATION_VERSION_EMPTY");
         }
 
         // Check that version is correct
