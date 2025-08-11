@@ -95,15 +95,15 @@ public class AuthenticationCodeLegacyUtils {
      */
     private String computeAuthBase64Code(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException, CryptoProviderException {
         // Prepare array of bytes for a complete authentication code
-        final byte[] authenticationCodeBytes = new byte[factorKeys.size() * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH];
+        final byte[] authenticationCodeBytes = new byte[factorKeys.size() * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_LEGACY];
         // Compute authentication code components
         final List<byte[]> authenticationCodeComponents = computeAuthCodeComponents(data, factorKeys, ctrData);
         // Convert authentication code components into one Base64 encoded string
         for (int i = 0; i < authenticationCodeComponents.size(); i++) {
             final byte[] component = authenticationCodeComponents.get(i);
-            final int sourceOffset = component.length - PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH;
-            final int destinationOffset = i * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH;
-            System.arraycopy(component, sourceOffset, authenticationCodeBytes, destinationOffset, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH);
+            final int sourceOffset = component.length - PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_LEGACY;
+            final int destinationOffset = i * PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_LEGACY;
+            System.arraycopy(component, sourceOffset, authenticationCodeBytes, destinationOffset, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_LEGACY);
         }
         // Finally, convert bytes into one Base64 string
         return Base64.getEncoder().encodeToString(authenticationCodeBytes);
@@ -150,7 +150,7 @@ public class AuthenticationCodeLegacyUtils {
 
             final byte[] authenticationCodeBytes = hmac.hash(derivedKey, data);
             // Test whether calculated authentication code has sufficient amount of bytes.
-            if (authenticationCodeBytes.length < PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH) { // assert
+            if (authenticationCodeBytes.length < PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_LEGACY) { // assert
                 throw new IndexOutOfBoundsException();
             }
             components.add(authenticationCodeBytes);
@@ -188,7 +188,7 @@ public class AuthenticationCodeLegacyUtils {
         if (factorKeys.isEmpty() || factorKeys.size() > PowerAuthConfiguration.MAX_FACTOR_KEYS_COUNT) {
             throw new GenericCryptoException("Wrong number of factor keys");
         }
-        if (ctrData.length != PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH) {
+        if (ctrData.length != PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_LEGACY) {
             throw new GenericCryptoException("Invalid length of counter");
         }
         switch (configuration.getAuthenticationCodeFormat()) {
