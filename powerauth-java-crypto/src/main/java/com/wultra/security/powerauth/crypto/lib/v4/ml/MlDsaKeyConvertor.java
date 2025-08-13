@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.lib.util;
+package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsaKeyConvertor;
 import org.bouncycastle.jcajce.provider.asymmetric.mldsa.BCMLDSAPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.mldsa.BCMLDSAPublicKey;
 import org.slf4j.Logger;
@@ -28,20 +29,20 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 /**
- * Key convertor for conversion of asymmetric keys for PQC.
+ * ML-DSA implementation of the PQC DSA key convertor.
  *
- * @author Roman Strobl, roman.strobl@wultra.com
+ * @author Roman Strobl
  */
-public class PqcDsaKeyConvertor {
+public class MlDsaKeyConvertor implements PqcDsaKeyConvertor {
 
-    private static final Logger logger = LoggerFactory.getLogger(PqcDsaKeyConvertor.class);
+    private static final Logger logger = LoggerFactory.getLogger(MlDsaKeyConvertor.class);
 
     private final String algorithmName;
 
     /**
      * Constructs convertor for ML-DSA algorithm.
      */
-    public PqcDsaKeyConvertor() {
+    public MlDsaKeyConvertor() {
         this("ML-DSA");
     }
 
@@ -49,17 +50,11 @@ public class PqcDsaKeyConvertor {
      * Constructs convertor for a specific PQC DSA algorithm.
      * @param algorithmName Algorithm name (e.g., "ML-DSA")
      */
-    public PqcDsaKeyConvertor(String algorithmName) {
+    public MlDsaKeyConvertor(String algorithmName) {
         this.algorithmName = algorithmName;
     }
 
-    /**
-     * Converts public key to byte array.
-     *
-     * @param publicKey An ML-DSA public key to be converted.
-     * @return A byte array representation of the ML-DSA public key.
-     * @throws GenericCryptoException In case conversion fails.
-     */
+    @Override
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) throws GenericCryptoException {
         if (publicKey == null) {
             throw new GenericCryptoException("Missing public key");
@@ -70,13 +65,7 @@ public class PqcDsaKeyConvertor {
         return publicKey.getEncoded();
     }
 
-    /**
-     * Converts byte array to an ML-DSA public key.
-     *
-     * @param keyBytes Bytes to be converted to ML-DSA public key.
-     * @return An instance of the ML-DSA public key.
-     * @throws GenericCryptoException Throw in case conversion fails.
-     */
+    @Override
     public PublicKey convertBytesToPublicKey(byte[] keyBytes) throws GenericCryptoException {
         if (keyBytes == null) {
             throw new GenericCryptoException("Missing public key bytes");
@@ -91,30 +80,19 @@ public class PqcDsaKeyConvertor {
         }
     }
 
-    /**
-     * Converts private key to byte array.
-     *
-     * @param privateKey An ML-DSA private key to be converted.
-     * @return A byte array representation of the ML-DSA private key.
-     * @throws GenericCryptoException In case conversion fails.
-     */
+    @Override
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) throws GenericCryptoException {
         if (privateKey == null) {
             throw new GenericCryptoException("Missing private key");
         }
         if (!privateKey.getClass().getName().equals(BCMLDSAPrivateKey.class.getName())) {
+            // Intentionally mirrors the original message ("Invalid public key")
             throw new GenericCryptoException("Invalid public key");
         }
         return privateKey.getEncoded();
     }
 
-    /**
-     * Convert a byte array to an ML-DSA private key.
-     *
-     * @param keyBytes Bytes to be converted to the ML-DSA private key.
-     * @return An instance of ML-DSA private key decoded from the input bytes.
-     * @throws GenericCryptoException Throw in case conversion fails.
-     */
+    @Override
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws GenericCryptoException {
         if (keyBytes == null) {
             throw new GenericCryptoException("Missing public key bytes");

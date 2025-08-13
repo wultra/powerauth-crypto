@@ -21,7 +21,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
-import com.wultra.security.powerauth.crypto.lib.util.PqcKemKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.*;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestHybrid;
@@ -52,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SharedSecretHybridTest {
 
     private static final KeyConvertor KEY_CONVERTOR_EC = new KeyConvertor();
-    private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new PqcKemKeyConvertor();
+    private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new MlKemKeyConvertor();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {

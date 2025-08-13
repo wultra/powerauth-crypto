@@ -23,10 +23,11 @@ import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderEx
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.HMACHashUtilities;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
-import com.wultra.security.powerauth.crypto.lib.util.PqcDsaKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.util.SignatureUtils;
-import com.wultra.security.powerauth.crypto.lib.v4.PqcDsa;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsa;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsaKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsa;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsaKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import lombok.Data;
 import org.bouncycastle.asn1.ASN1EncodableVector;
@@ -62,7 +63,7 @@ public class TemporaryKeyTest {
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
     private static final PqcDsa PQC_DSA = new MlDsa();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
-    private static final PqcDsaKeyConvertor PQC_DSA_KEY_CONVERTOR = new PqcDsaKeyConvertor();
+    private static final PqcDsaKeyConvertor PQC_DSA_KEY_CONVERTOR = new MlDsaKeyConvertor();
 
 
     static {

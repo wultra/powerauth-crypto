@@ -17,7 +17,8 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
-import com.wultra.security.powerauth.crypto.lib.util.PqcKemKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestPqc;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.SharedSecretResponsePqc;
@@ -37,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 public class MlKemClientRequestTest {
 
-    private static final PqcKemKeyConvertor PQC_KEM_KEY_CONVERTOR = new PqcKemKeyConvertor();
+    private static final PqcKemKeyConvertor PQC_KEM_KEY_CONVERTOR = new MlKemKeyConvertor();
 
     static {
         Security.addProvider(new BouncyCastleProvider());

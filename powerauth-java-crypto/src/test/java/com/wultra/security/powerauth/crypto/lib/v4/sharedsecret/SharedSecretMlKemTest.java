@@ -19,7 +19,8 @@ package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wultra.security.powerauth.crypto.lib.util.PqcKemKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.SharedSecretClientContextPqc;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestPqc;
@@ -47,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class SharedSecretMlKemTest {
 
-    private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new PqcKemKeyConvertor();
+    private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new MlKemKeyConvertor();
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {

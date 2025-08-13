@@ -18,8 +18,10 @@ package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.v4.PqcDsa;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsa;
 import org.bouncycastle.jcajce.spec.MLDSAParameterSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.*;
 
@@ -30,6 +32,7 @@ import java.security.*;
  */
 public class MlDsa implements PqcDsa {
 
+    private static final Logger logger = LoggerFactory.getLogger(MlDsa.class);
 
     private final MLDSAParameterSpec dsaParameterSpec;
 
@@ -59,6 +62,7 @@ public class MlDsa implements PqcDsa {
             keyPairGenerator.initialize(dsaParameterSpec);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
+            logger.debug(e.getMessage(), e);
             throw new CryptoProviderException("Error generating key pair", e);
         }
     }
@@ -77,6 +81,7 @@ public class MlDsa implements PqcDsa {
             mlDsa.update(message);
             return mlDsa.sign();
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException e) {
+            logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Error during signature calculation", e);
         }
     }
@@ -98,6 +103,7 @@ public class MlDsa implements PqcDsa {
             mlDsa.update(message);
             return mlDsa.verify(signature);
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException e) {
+            logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Error during signature verification", e);
         }
     }

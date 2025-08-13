@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.wultra.security.powerauth.crypto.lib.v4;
+package com.wultra.security.powerauth.crypto.lib.v4.encryptor.aead;
 
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;

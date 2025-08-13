@@ -18,6 +18,7 @@
 package com.wultra.security.powerauth.crypto.lib.v4;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKem;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
