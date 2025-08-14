@@ -17,11 +17,13 @@
 package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.v4.PqcKem;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKem;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 import org.bouncycastle.jcajce.spec.KEMExtractSpec;
 import org.bouncycastle.jcajce.spec.KEMGenerateSpec;
 import org.bouncycastle.jcajce.spec.MLKEMParameterSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -33,6 +35,8 @@ import java.security.*;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class MlKem implements PqcKem {
+
+    private static final Logger logger = LoggerFactory.getLogger(MlKem.class);
 
     private final MLKEMParameterSpec kemParameterSpec;
 
@@ -62,6 +66,7 @@ public class MlKem implements PqcKem {
             keyPairGenerator.initialize(kemParameterSpec);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
+            logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Error generating key pair", e);
         }
     }
@@ -76,6 +81,7 @@ public class MlKem implements PqcKem {
             keyGenerator.init(new KEMGenerateSpec.Builder(encapsulationKey, "RAW", 256).withNoKdf().build());
             return (SecretKeyWithEncapsulation) keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
+            logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Error during encapsulation", e);
         }
     }
@@ -93,6 +99,7 @@ public class MlKem implements PqcKem {
             keyGenerator.init(new KEMExtractSpec.Builder(decapsulationKey, ciphertext, "RAW", 256).withNoKdf().build());
             return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
+            logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Error during decapsulation", e);
         }
     }

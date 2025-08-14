@@ -24,7 +24,7 @@ import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.*;
-import com.wultra.security.powerauth.crypto.lib.v4.PqcDsa;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsa;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsa;

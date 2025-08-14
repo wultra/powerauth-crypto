@@ -29,7 +29,6 @@ import com.wultra.security.powerauth.crypto.lib.util.AeadUtils;
 import com.wultra.security.powerauth.crypto.lib.util.ByteUtils;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.util.SideChannelUtils;
-import com.wultra.security.powerauth.crypto.lib.v4.Aead;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.exception.AeadException;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.request.AeadEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.response.AeadEncryptedResponse;

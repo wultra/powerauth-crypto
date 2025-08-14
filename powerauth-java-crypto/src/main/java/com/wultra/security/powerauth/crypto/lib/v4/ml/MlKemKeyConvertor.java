@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wultra.security.powerauth.crypto.lib.util;
+package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
 import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPublicKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,18 +31,20 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 /**
- * Key convertor for conversion of ML keys.
+ * ML-KEM implementation of the PQC KEM key convertor.
  *
- * @author Roman Strobl, roman.strobl@wultra.com
+ * @author Roman Strobl
  */
-public class PqcKemKeyConvertor {
+public class MlKemKeyConvertor implements PqcKemKeyConvertor {
+
+    private static final Logger logger = LoggerFactory.getLogger(MlKemKeyConvertor.class);
 
     private final String algorithmName;
 
     /**
      * Constructs convertor for ML-KEM algorithm.
      */
-    public PqcKemKeyConvertor() {
+    public MlKemKeyConvertor() {
         this("ML-KEM");
     }
 
@@ -47,16 +52,11 @@ public class PqcKemKeyConvertor {
      * Constructs convertor for a specific PQC KEM algorithm.
      * @param algorithmName Algorithm name (e.g., "ML-KEM")
      */
-    public PqcKemKeyConvertor(String algorithmName) {
+    public MlKemKeyConvertor(String algorithmName) {
         this.algorithmName = algorithmName;
     }
 
-    /**
-     * Convert public key for ML-KEM into bytes.
-     * @param publicKey Public key.
-     * @return Converted public key.
-     * @throws GenericCryptoException Thrown in case of conversion error.
-     */
+    @Override
     public byte[] convertPublicKeyToBytes(PublicKey publicKey) throws GenericCryptoException {
         if (publicKey == null) {
             throw new GenericCryptoException("Missing public key");
@@ -67,12 +67,7 @@ public class PqcKemKeyConvertor {
         return publicKey.getEncoded();
     }
 
-    /**
-     * Convert private key for ML-KEM into bytes.
-     * @param privateKey Private key.
-     * @return Converted private key.
-     * @throws GenericCryptoException Thrown in case of conversion error.
-     */
+    @Override
     public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) throws GenericCryptoException {
         if (privateKey == null) {
             throw new GenericCryptoException("Missing private key");
@@ -83,12 +78,7 @@ public class PqcKemKeyConvertor {
         return privateKey.getEncoded();
     }
 
-    /**
-     * Convert bytes into a public key.
-     * @param publicKeyBytes Public key bytes.
-     * @return Public key.
-     * @throws GenericCryptoException Thrown in case of conversion error.
-     */
+    @Override
     public PublicKey convertBytesToPublicKey(byte[] publicKeyBytes) throws GenericCryptoException {
         if (publicKeyBytes == null) {
             throw new GenericCryptoException("Missing public key bytes");
@@ -97,16 +87,12 @@ public class PqcKemKeyConvertor {
             final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
             return keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
+            logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Public key conversion failed", e);
         }
     }
 
-    /**
-     * Convert bytes to private key.
-     * @param privateKeyBytes Private key bytes.
-     * @return Private key.
-     * @throws GenericCryptoException Thrown in case of conversion error.
-     */
+    @Override
     public PrivateKey convertBytesToPrivateKey(byte[] privateKeyBytes) throws GenericCryptoException {
         if (privateKeyBytes == null) {
             throw new GenericCryptoException("Missing private key bytes");
@@ -115,17 +101,12 @@ public class PqcKemKeyConvertor {
             final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
             return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
+            logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Private key conversion failed", e);
         }
     }
 
-    /**
-     * Converts a shared secret key (usually used for AES based operations) to a byte array.
-     *
-     * @param sharedSecretKey A shared key to be converted to bytes.
-     * @return A byte array representation of the shared secret key.
-     * @throws GenericCryptoException Thrown in case of conversion error.
-     */
+    @Override
     public byte[] convertSharedSecretKeyToBytes(SecretKey sharedSecretKey) throws GenericCryptoException {
         if (sharedSecretKey == null) {
             throw new GenericCryptoException("Missing shared secret key");
@@ -133,13 +114,7 @@ public class PqcKemKeyConvertor {
         return sharedSecretKey.getEncoded();
     }
 
-    /**
-     * Converts a byte array to the secret shared key (usually used for AES based operations).
-     *
-     * @param bytesSecretKey Bytes representing the shared key.
-     * @return An instance of the secret key by decoding from provided bytes.
-     * @throws GenericCryptoException Thrown in case of conversion error.
-     */
+    @Override
     public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) throws GenericCryptoException {
         if (bytesSecretKey == null) {
             throw new GenericCryptoException("Missing shared secret key bytes");

@@ -24,11 +24,12 @@ import com.wultra.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.ActivationVersion;
 import com.wultra.security.powerauth.crypto.lib.util.HybridPublicKeyFingerprint;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
-import com.wultra.security.powerauth.crypto.lib.util.PqcDsaKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.util.model.TestSet;
-import com.wultra.security.powerauth.crypto.lib.v4.Aead;
+import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsaKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.encryptor.aead.Aead;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kdf;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyLabel;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsaKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import com.wultra.security.powerauth.crypto.server.v4.activation.PowerAuthServerActivation;
 import org.bouncycastle.jcajce.interfaces.MLDSAPublicKey;
@@ -58,7 +59,7 @@ public class GenerateVectorDataTest {
     private static ObjectMapper objectMapper;
 
     private static final KeyConvertor KEY_CONVERTOR_EC = new KeyConvertor();
-    private static final PqcDsaKeyConvertor KEY_CONVERTOR_PQC = new PqcDsaKeyConvertor();
+    private static final PqcDsaKeyConvertor KEY_CONVERTOR_PQC = new MlDsaKeyConvertor();
     private static final Random RANDOM = new SecureRandom();
 
     /**
