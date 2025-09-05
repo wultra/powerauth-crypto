@@ -141,11 +141,11 @@ public final class ByteUtils {
         if (length < 0) {
             throw new IllegalArgumentException("Invalid length");
         }
-        if (length == 0) {
-            return new byte[0];
-        }
         if (length > array.length - start) {
             throw new IllegalArgumentException("Invalid slicing of subarray");
+        }
+        if (length == 0) {
+            return new byte[0];
         }
         byte[] result = new byte[length];
         System.arraycopy(array, start, result, 0, length);
