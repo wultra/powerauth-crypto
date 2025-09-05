@@ -138,8 +138,11 @@ public final class ByteUtils {
         if (start < 0) {
             throw new IllegalArgumentException("Invalid start index");
         }
-        if (length <= 0) {
+        if (length < 0) {
             throw new IllegalArgumentException("Invalid length");
+        }
+        if (length == 0) {
+            return new byte[0];
         }
         if (length > array.length - start) {
             throw new IllegalArgumentException("Invalid slicing of subarray");
