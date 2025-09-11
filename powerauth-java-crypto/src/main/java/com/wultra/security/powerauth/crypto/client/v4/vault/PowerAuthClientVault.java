@@ -56,6 +56,13 @@ public class PowerAuthClientVault {
     /**
      * Encrypt original EC device private key KEY_DEVICE_PRIVATE using the vault
      * encryption key KEK_DEVICE_PRIVATE (AES-256).
+     *
+     * @param devicePrivateKey Device private key (P-384).
+     * @param vaultEncryptionKey Vault encryption key.
+     * @return Encrypted device private key.
+     * @throws InvalidKeyException In case key is invalid.
+     * @throws GenericCryptoException In case key encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] encryptEcDevicePrivateKey(PrivateKey devicePrivateKey, SecretKey vaultEncryptionKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
@@ -68,6 +75,13 @@ public class PowerAuthClientVault {
     /**
      * Encrypt original PQC device private key KEY_DEVICE_PRIVATE using the vault
      * encryption key KEK_DEVICE_PRIVATE (AES-256).
+     *
+     * @param devicePrivateKey Device private key (ML-DSA).
+     * @param vaultEncryptionKey Vault encryption key.
+     * @return Encrypted device private key.
+     * @throws InvalidKeyException In case key is invalid.
+     * @throws GenericCryptoException In case key encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public byte[] encryptPqcDevicePrivateKey(PrivateKey devicePrivateKey, SecretKey vaultEncryptionKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
@@ -80,6 +94,14 @@ public class PowerAuthClientVault {
     /**
      * Decrypt the original EC device private key KEY_DEVICE_PRIVATE using the vault
      * encryption key KEK_DEVICE_PRIVATE (AES-256).
+     *
+     * @param encryptedBytes Encrypted device private key (P-384).
+     * @param vaultEncryptionKey Vault encryption key.
+     * @return Decrypted device private key.
+     * @throws InvalidKeyException In case key is invalid.
+     * @throws InvalidKeySpecException In case key specification is invalid.
+     * @throws GenericCryptoException In case key encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public PrivateKey decryptEcDevicePrivateKey(byte[] encryptedBytes, SecretKey vaultEncryptionKey)
             throws InvalidKeyException, InvalidKeySpecException, GenericCryptoException, CryptoProviderException {
@@ -95,6 +117,13 @@ public class PowerAuthClientVault {
     /**
      * Decrypt the original PQC device private key KEY_DEVICE_PRIVATE using the vault
      * encryption key KEK_DEVICE_PRIVATE (AES-256).
+     *
+     * @param encryptedBytes Encrypted device private key (MLDSA).
+     * @param vaultEncryptionKey Vault encryption key.
+     * @return Decrypted device private key.
+     * @throws InvalidKeyException In case key is invalid.
+     * @throws GenericCryptoException In case key encryption fails.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public PrivateKey decryptPqcDevicePrivateKey(byte[] encryptedBytes, SecretKey vaultEncryptionKey)
             throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
