@@ -100,7 +100,7 @@ public class PowerAuthClientVault {
      * @return Decrypted device private key.
      * @throws InvalidKeyException In case key is invalid.
      * @throws InvalidKeySpecException In case key specification is invalid.
-     * @throws GenericCryptoException In case key encryption fails.
+     * @throws GenericCryptoException In case key decryption fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public PrivateKey decryptEcDevicePrivateKey(byte[] encryptedBytes, SecretKey vaultEncryptionKey)
