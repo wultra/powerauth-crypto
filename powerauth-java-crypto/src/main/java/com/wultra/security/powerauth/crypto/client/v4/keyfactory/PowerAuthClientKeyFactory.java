@@ -221,4 +221,16 @@ public class PowerAuthClientKeyFactory {
         return KeyFactory.deriveKeyE2eeSharedInfo2(keyActivationSecret);
     }
 
+    /**
+     * Generate a key encryption key for encrypting the device private key in vault unlock.
+     *
+     * @see KeyFactory#deriveKeyKekDevicePrivate(SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEK_DEVICE_PRIVATE.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyKekDevicePrivate(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyKekDevicePrivate(keyActivationSecret);
+    }
+
 }
