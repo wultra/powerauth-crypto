@@ -73,6 +73,7 @@ public class MlKemPrivateKeyTest {
 
         System.out.println("# ML-KEM-768 Test Vector (Imported Seed)");
         System.out.println("seed       = " + toBase64(seed));
+        System.out.println("pk         = " + toBase64(pub.getEncoded()));
         System.out.println("ct         = " + toBase64(ciphertext));
         System.out.println("ss         = " + toBase64(sharedSecret));
 
