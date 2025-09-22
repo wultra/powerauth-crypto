@@ -58,6 +58,7 @@ public class MlKemPrivateKeyTest {
         MLKEMPrivateKeyParameters priv = new MLKEMPrivateKeyParameters(params, seed);
         MLKEMPublicKeyParameters pub = priv.getPublicKeyParameters();
 
+        // Use fixed byte zeroed array for KEM test
         byte[] randBytes = new byte[32];
         MLKEMGenerator gen = new MLKEMGenerator(new SecureRandom());
         SecretWithEncapsulation swe = gen.internalGenerateEncapsulated(pub, randBytes);
@@ -68,8 +69,8 @@ public class MlKemPrivateKeyTest {
         MLKEMExtractor extractor = new MLKEMExtractor(priv);
         byte[] ssRecovered = extractor.extractSecret(ciphertext);
 
-        System.out.println("# ML-KEM-768 Test Vector");
-        System.out.println("seed(d||z) = " + toBase64(seed));
+        System.out.println("# ML-KEM-768 Test Vector (Imported Seed)");
+        System.out.println("seed       = " + toBase64(seed));
         System.out.println("ct         = " + toBase64(ciphertext));
         System.out.println("ss         = " + toBase64(sharedSecret));
 
@@ -88,6 +89,7 @@ public class MlKemPrivateKeyTest {
         MLKEMParameters params = MLKEMParameters.ml_kem_768;
         MLKEMPublicKeyParameters pub = new MLKEMPublicKeyParameters(params, publicKey.getPublicData());
 
+        // Use fixed byte zeroed array for KEM test
         byte[] randBytes = new byte[32];
         MLKEMGenerator gen = new MLKEMGenerator(new SecureRandom());
         SecretWithEncapsulation swe = gen.internalGenerateEncapsulated(pub, randBytes);
@@ -95,7 +97,8 @@ public class MlKemPrivateKeyTest {
         byte[] sharedSecret = swe.getSecret();
         byte[] ciphertext   = swe.getEncapsulation();
 
-        System.out.println("# ML-KEM-768 Test Vector");
+        System.out.println("# ML-KEM-768 Test Vector (Imported Private Key)");
+        System.out.println("priv      = " + clientPrivateKey);
         System.out.println("pk        = " + toBase64(publicKey.getPublicData()));
         System.out.println("ct        = " + toBase64(ciphertext));
         System.out.println("ss        = " + toBase64(sharedSecret));
