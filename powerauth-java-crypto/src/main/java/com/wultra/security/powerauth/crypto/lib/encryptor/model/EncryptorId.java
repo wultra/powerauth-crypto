@@ -42,9 +42,9 @@ public enum EncryptorId {
     ACTIVATION_LAYER_2("/pa/activation", EncryptorScope.APPLICATION_SCOPE),
 
     /**
-     * Upgrade protocol encryption.
+     * Upgrade start encryption.
      */
-    UPGRADE("/pa/upgrade", EncryptorScope.ACTIVATION_SCOPE),
+    UPGRADE_START("/pa/upgrade/start", EncryptorScope.APPLICATION_SCOPE),
 
     /**
      * Vault unlock encryption.
