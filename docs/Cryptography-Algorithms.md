@@ -1,4 +1,4 @@
-# PowerAuth Cryptography Algorithm List
+# PowerAuth Cryptography Algorithm Overview
 
 This document lists main cryptography algorithms used in the **PowerAuth** protocol, with emphasis on the shared secret computation, end-to-end encryption, and additional supporting cryptography algorithms.
 
