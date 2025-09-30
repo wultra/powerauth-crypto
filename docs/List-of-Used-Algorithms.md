@@ -44,7 +44,6 @@ The following algorithms are used in the PowerAuth cryptography scheme.
 | `SHA3-256`           | mobile, server | Hash function based on Keccak, used in various situations across the protocol.                                                       |
 | `CRC-16`             | mobile, server | Checksum for activation code validation (2 bytes of 12).                                                                             |
 | `PBKDF2 (HMAC-SHA1)` | mobile         | PIN‑to‑key derivation on device only (10.000 iterations). Strength is not security‑critical in this context.                         |
-| `Hash Functions`     | mobile, server | SHA‑3 family (SHA3‑256, SHAKE, KMAC), SHA‑384 (only for P‑384 ECDSA).                                                                |
 
 ### PowerAuth Protocol 3.x — **Legacy**
 
