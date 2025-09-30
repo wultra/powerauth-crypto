@@ -26,7 +26,6 @@
 - [Activation Code Format](./Activation-Code.md)
 - [Advanced Activation Flows](./Advanced-Activation-Flows)
 - [Implementation Details](./Implementation-notes.md)
-- [Cryptography Algorithm Overview](./Cryptography-Algorithms.md)
 - [List of Used Algorithms](./List-of-Used-Algorithms.md)
 - [List of Used Keys](./List-of-Used-Keys.md)
 
