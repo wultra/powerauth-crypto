@@ -4,14 +4,14 @@ The following algorithms are used in the PowerAuth cryptography scheme.
 
 ## Shared Secret Algorithm Suite IDs (4.0)
 
-| Suite ID             | Status     | Description |
-|----------------------|------------|-------------|
-| `EC_P384`            | Current    | **Curve:** NIST P‑384 (`secp384r1`). **Key Exchange:** ECDH with SHA‑3 KDF. **Signatures:** ECDSA with SHA‑384. Balanced performance and maturity, no PQC component. |
-| `EC_P384_ML_L3`      | Current    | **Hybrid PQC Level 3.** ECDH (P‑384) + ML‑KEM‑768. Secrets concatenated → KDF. **Signatures:** ECDSA P‑384 + SHA‑384, ML‑DSA‑65, or hybrid. Targets NIST PQC Level 3. |
-| `EC_P384_ML_L5`      | Current    | **Hybrid PQC Level 5.** ECDH (P‑384) + ML‑KEM‑1024. Secrets concatenated → KDF. **Signatures:** ECDSA P‑384 + SHA‑384, ML‑DSA‑87, or hybrid. Targets NIST PQC Level 5. |
-| `ML_L3` *(testing)*  | Testing    | PQC‑only: ML‑KEM‑768 / ML‑DSA‑65. No classical fallback. |
-| `ML_L5` *(testing)*  | Testing    | PQC‑only: ML‑KEM‑1024 / ML‑DSA‑87. No classical fallback. |
-| `EC_P256` *(legacy)* | Legacy     | **Curve:** NIST P‑256 (`secp256r1`). **Key Exchange:** ECDH. **Signatures:** ECDSA with SHA‑256. Retained for 3.x compatibility only. |
+| Suite ID             | Status     | Description                                                                                                                                                      |
+|----------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `EC_P384_ML_L3`      | Current    | **Hybrid PQC Level 3.** ECDH (P‑384) + ML‑KEM‑768. Secrets concatenated before KDF. **Signatures:** ECDSA P‑384 + SHA‑384, ML‑DSA‑65. Targets NIST PQC Level 3.  |
+| `EC_P384_ML_L5`      | Current    | **Hybrid PQC Level 5.** ECDH (P‑384) + ML‑KEM‑1024. Secrets concatenated before KDF. **Signatures:** ECDSA P‑384 + SHA‑384, ML‑DSA‑87. Targets NIST PQC Level 5. |
+| `EC_P384`            | Current    | **Curve:** NIST P‑384 (`secp384r1`). **Key Exchange:** ECDH with SHA‑3 KDF. **Signatures:** ECDSA with SHA‑384. No PQC component.                                |
+| `ML_L3` *(testing)*  | Testing    | PQC‑only: ML‑KEM‑768 / ML‑DSA‑65.                                                                                                                                |
+| `ML_L5` *(testing)*  | Testing    | PQC‑only: ML‑KEM‑1024 / ML‑DSA‑87.                                                                                                                               |
+| `EC_P256` *(legacy)* | Legacy     | **Curve:** NIST P‑256 (`secp256r1`). **Key Exchange:** ECDH. **Signatures:** ECDSA with SHA‑256. Retained for 3.x compatibility only.                            |
 
 ## End‑to‑End Encryption
 
@@ -27,7 +27,7 @@ The following algorithms are used in the PowerAuth cryptography scheme.
 
 ## List of Used Algorithms
 
-### PowerAuth Protocol 4.0 — **Current**
+### PowerAuth Protocol 4.x — **Current**
 
 **Current protocol version:** `4.0`
 
