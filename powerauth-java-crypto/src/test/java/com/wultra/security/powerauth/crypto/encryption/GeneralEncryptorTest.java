@@ -65,8 +65,7 @@ public class GeneralEncryptorTest {
             EncryptorId.ACTIVATION_SCOPE_GENERIC,
             EncryptorId.ACTIVATION_LAYER_2,
             EncryptorId.CREATE_TOKEN,
-            EncryptorId.VAULT_UNLOCK,
-            EncryptorId.UPGRADE
+            EncryptorId.VAULT_UNLOCK
     );
 
     @AllArgsConstructor
@@ -604,13 +603,11 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("PyZF8EKo90xFEIpTJGuL6uQVx6VyE62o2y3iAI0hkFH5WrSKuLDiLSlBdc1bSNJhiX2Iupe7XVtR6WUjl3ja5auSo+1CSjw22TZTJSnraKyC2Y7P5NdXX1ydO8l6DvH8XClIsMmxN0NKhU1jv80YLMotnqg="),
                 Base64.getDecoder().decode("HDZYhY7BswRNaz+kWNRe44+wJDxFaoygdrmfB1TH37yrKRxU"),
                 Base64.getDecoder().decode("NrkCKPoy0KSYy6BBSjnUFqY+a4N7mg89v5qAGn0jMV0rvBVjDpC1f6CpDW/9BdbSNeFDhsn6BhI16IkjDT6Q8gjHLQcphOR3CLH5nXmtIJh3iA=="),
-                Base64.getDecoder().decode("xLXAyu+7E2cm"),
                 Base64.getDecoder().decode("PD0kxR+y/Qxz9aKe6ELkV78="),
                 Base64.getDecoder().decode("AThxBRaaFKKJbuZ7v3LTQYIuqrbiLVz3QWFRTiGU6KK3Cqr2p4Ea4ju2wdrpiF8VDfLhdQ/zGfaj5TYGRURAx49kw8r/NuFbHFWc6z5Nz18HeItC++tfudOBE3qdfd7kgISA4Qut+vZDjw9NBcxkeg=="),
                 Base64.getDecoder().decode("ekKYoHUzjn1mTMdyr8FjHHMrn7g8RbHIg8U96ZXm+13oRsH/i9cXfjui7wtOGD9iOBrUU/K3Tt3R4S4M8ltJ1HUs8JBWDIwFnsKW08vNNdA40W0wPAJxgwNqFIkU/U4P"),
                 Base64.getDecoder().decode("AUXZK/yMIz499r4hH7LOxyVZUfkayI6JO58ZRm+ogjhE8wpsIC46m8Cv0Vk/mdMT4GptjtacHMSV8KBeaPfvtSvLAhVuaVdh2/dI"),
                 Base64.getDecoder().decode("mCEVFpjmoVOUcymairmXbZ7F+EkVT8vSNSENdxRGoK7Np3I3BkqTxzYWIYrEcjLE0HggHeBBGgpN3H2Dp/jGBTgiYpRS"),
-                Base64.getDecoder().decode("MRslr4vEEEqxHLYqFuObzVkI4IBhcGkDfRdmy13KzS9iJO7D11XlADmqEssBlz4QnHFAh/kP4pvVT37sGoSJ6qtrsUT2IOmJPRjCYKkBKoE5oDpIpQyF+gmQ7j51wVbVuUw="),
                 Base64.getDecoder().decode("1do2gvR5EfaBJyjJvH1SmfpAuURNX1cJz6O4CjS/fFH5NeoEvSUSxAW+HcVRUzjesx9Pa3k="),
                 Base64.getDecoder().decode("Z/z9HTTMEsrB4CkAKTe7WG1bZ6nyrYjU7mI="),
                 Base64.getDecoder().decode("QfLUmc8aalHnOIdTAyvkSrN3SevHhZOQrG1121032T/lrA=="),
@@ -621,13 +618,11 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("ZX74GcevJC9M683Oo4g2hxBbBVInpedTZyDvvMhBhlp4RI8xiJImSbHeYjKR+69YtQjej9Llnm22Sfw="),
                 Base64.getDecoder().decode("FLRp3SfS0YrXzRytpW9cFw=="),
                 Base64.getDecoder().decode("evLfjrto"),
-                Base64.getDecoder().decode("lhrPrbiUiQoydmb9tBfZoUNzRZ5Wl0xki7ULmWQmC0M3qpxSypGfn4isfBVl"),
                 Base64.getDecoder().decode("evMUiGvfLfjjUvHzLXC5qCQW9tgCKGqt8AbroYd2mSb8xVrXoxd7k01NDtihyyyuTlMxSy7VNqf1z7wM4Zw7W7K0nU7azkmdxET0i7toD1DQUrcyP4/Abnl0pfUqk2K8PcOd1iUFhbUi67lEfsQq6YbfradVi34="),
                 Base64.getDecoder().decode("HsnsnBC+N82xfkO46+PiDWzhoRufRzh59JN4bOA="),
                 Base64.getDecoder().decode("vT3kacynb6mchKh0eltMtETOAiipgGknLJSRzGdfrLHSwNH2PMlwZpUluofzu2lJ+KyCgwnq6OW3osnYoQPvr8CpjZwH2Aych9xV19faL+Fr8I7usuM/3Gj5Vqbl7Rnisj7XwYuTK1u+n4TV8DEr"),
                 Base64.getDecoder().decode("x4kw5XrYEkYiTA8ZuatClZyoYhpXEqGQ3lSYQ9TgMp2JXpd9prHI9nRgfL8EumiaD50RvihBrYKLLt6UNnVr9BJV2suGBQGQx3lstXL07Zy1yTKGbgmEFeVYsWcZg03Xvli8pWTfVrld8reSGxQ="),
                 Base64.getDecoder().decode("umWWeeSu6MARxC9ens7ZS+gPaW31aMUsachmqBJWBfezMeRTUAQELxq2aSdGsZeGUF8sQwXOOt2hzcXh+2CFVzEA/KEppRSTdYWEZwcI1srMhWK5F5gZDP/PKppOZf/Y9KDj1ajI2BhpAlFvEMUF"),
-                Base64.getDecoder().decode("XcdjVOTzbr5XJnCIPoTCNDuvoW3EPv3/dKxlT2O+JpjIF299bdOurU962XZwZxhKb3sih+gunRbRgLCFOpCn/l9Ns3ixYd5I7KGkJSrxE8K7hqw4V20b+qZdfUCho5B38Pbn7ITYMS1yraDLnGCd"),
                 Base64.getDecoder().decode("kQ+I2V3qgG/i6/Z6TXh3ruz0sk+6cGNqZX+DAqu8TD6glLi9x8HD6WqFsf3fDnbrlWXobU+7zhzCNB2YQIAYSP1nKhaYi/A6SlvAkbxc4W9+LTUu1la1Arb9cYdqHzKNXUZ4f4hkQpQGoEfvCTTqwzITfHxyn6cLSllj5nZlK0U="),
                 Base64.getDecoder().decode("TI9WMf+xw9SBRFR2XfNdCsoC"),
                 Base64.getDecoder().decode("jL4KoKtOATckhTpEJ0UKBByXHFV5r0Y3jfydkV1i+GYfaD0+wKo5l/z0ToQlqBRsqMV7LA=="),
@@ -638,13 +633,11 @@ public class GeneralEncryptorTest {
                 EncryptorId.APPLICATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_LAYER_2,
-                EncryptorId.UPGRADE,
                 EncryptorId.VAULT_UNLOCK,
                 EncryptorId.CREATE_TOKEN,
                 EncryptorId.APPLICATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_LAYER_2,
-                EncryptorId.UPGRADE,
                 EncryptorId.VAULT_UNLOCK,
                 EncryptorId.CREATE_TOKEN,
                 EncryptorId.APPLICATION_SCOPE_GENERIC,
@@ -657,11 +650,9 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0="),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0AAAAkMDM2Q0MxNEItRTRGOC00QjAxLUE4MjUtNTEyOTgzMkFDRERC"),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0AAAAkMDM2Q0MxNEItRTRGOC00QjAxLUE4MjUtNTEyOTgzMkFDRERC"),
-                Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0AAAAkMDM2Q0MxNEItRTRGOC00QjAxLUE4MjUtNTEyOTgzMkFDRERC"),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0="),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0AAAAkMDM2Q0MxNEItRTRGOC00QjAxLUE4MjUtNTEyOTgzMkFDRERC"),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0="),
-                Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0AAAAkMDM2Q0MxNEItRTRGOC00QjAxLUE4MjUtNTEyOTgzMkFDRERC"),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0AAAAkMDM2Q0MxNEItRTRGOC00QjAxLUE4MjUtNTEyOTgzMkFDRERC"),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0AAAAkMDM2Q0MxNEItRTRGOC00QjAxLUE4MjUtNTEyOTgzMkFDRERC"),
                 Base64.getDecoder().decode("AAAAAzMuMgAAABhsY2VYNXFlK08rU2IwdDhUUXFnMzVBPT0="),
@@ -672,13 +663,11 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("8BNzgMiTO9ELURm77VQD/72TCN3Cf6TlQWp57wUfe4boH2baIQ2z2eqqpWs6P+24"),
                 Base64.getDecoder().decode("wFdoVzNTn3tRElimPDuheWSYGbh+kG0NTEF08fkhMvMm8+Nsc4TnYWhCQYx12l0d"),
                 Base64.getDecoder().decode("smZ9wr2s80pA6n2xCUALKuuCjIU8/bTW2X+bW8o2iXeq0D5rQVRSSszfqaX+YJ1Q"),
-                Base64.getDecoder().decode("/OB2HgA2ZmsBx2AUQifDxIs91LraUt5TciHtgKYYwI3/Nd/svUY8VrAN5Qg5cn9P"),
                 Base64.getDecoder().decode("Y4Yde9z91lhdqsOYfALJT7LuB1VBDHhXL68bYa5Ia3onLy8PVLUKBm3+lGz1Si08"),
                 Base64.getDecoder().decode("BC+IYb9PlXskecV5pHZhv/vdlHa3YfwE4kZ/g0dO26W2/+bSI+LUOhZQr3xe/Yy7"),
                 Base64.getDecoder().decode("hlSE7oddA9IUKuT+S/5+GJlN35i1fdZ8q8UXFVJr1b9Y0CTkMZyV85DDqnP/PQLI"),
                 Base64.getDecoder().decode("24bk9iBebrq2bTpY7x7kjZpA28xj5+IDn1+YmKEWKY6S4tRngOVsjX3yy9M0l4pW"),
                 Base64.getDecoder().decode("IxqrAPtP7jKfEUfADFS7XaOdg6chPr2mRof1Dz7mKTrjPYpTNaChY/28qzagHytv"),
-                Base64.getDecoder().decode("y3GCO2K/VeWLF1EBrfhmlx6Wuf+GeSssjnWyTT522wuBHWb0vsZCuP78pIbAAas6"),
                 Base64.getDecoder().decode("ujybVXEbKeU3M0WTk4Zb5rwDuWzDKTWBjAqZa6LMMzdZGhdl1lXfvl5W+PWc8m4R"),
                 Base64.getDecoder().decode("v0Vj+eDF5U3dhrfUYo+LVp5qa966gNdfwrlGArrgi/X3QKCRCiu2qkggSg3BiiKX"),
                 Base64.getDecoder().decode("O7XcnEXwVYxBHP8ooQ5wBQ3/RWp813XuAL/nPsz7SuBAqTyKEc42HJax7BiTC2Fc"),
@@ -709,14 +698,6 @@ public class GeneralEncryptorTest {
                         "bySXBDU/9mDx9T8i9DFWX7Xn4O6HZK2EMLpA+ogv3eM=",
                         "6p2OQ20Ezjd+RcCAr2w34w==",
                         1691762307384L
-                ),
-                new EciesEncryptedRequest(
-                        null,
-                        "AnjhcBNyzpyUs8TnvW164zfwVk6UQjof8zueumjUADlB",
-                        "rQDj9EseF9GvJY6a0YCExA==",
-                        "Mpu0lek/SXf7JvxnlEngv/Bx8nFhxi54vHVrBr0f7H8=",
-                        "0qdMsQVKjhE8gwRm8It2Vg==",
-                        1691762307385L
                 ),
                 new EciesEncryptedRequest(
                         null,
@@ -756,14 +737,6 @@ public class GeneralEncryptorTest {
                         "K0Ep8dWNhD99yZm/mShFy53DYbTCntm582rlWwskPfcKTE7b/7gBFbXaGly1o9cmQ9Wv9RjBx8Ai4rda/KKbyMq3ZaX6ljAWFpOmqUIgMUQ=",
                         "Zr7vEn6WBYkFFZRAvq3UdRR/OWF2uOK0ABik9fytOUo=",
                         "20zLGrzcBPr6aPWQTOESuQ==",
-                        1691762307387L
-                ),
-                new EciesEncryptedRequest(
-                        null,
-                        "A4o3ZVufjyXvJnc98rvHxTbQgCpY1dwMkJs4mKkT78up",
-                        "8hYJGXgHLD8tH9sFrRlU6fxGWU/JdlSBpPkL178OFRdORMXTY/ReMRbajQD3bXKzXjmhdYR5X13fHsmiuvHIQVPRFB0ZyS43HT/uEDpWh8SWByKjNB5je6ftEySsmpKGp0KvmjXgiIRX7TiRzwJ03g==",
-                        "VX9TB4hPM7/6U/NQvBNR6VaP1loyq2ZhcmEu4NWCU7g=",
-                        "Z5XV6HOqZ3ftaxEkdgjIwQ==",
                         1691762307387L
                 ),
                 new EciesEncryptedRequest(
@@ -820,12 +793,6 @@ public class GeneralEncryptorTest {
                         1691762307385L
                 ),
                 new EciesEncryptedResponse(
-                        "kKtNt76jdmC8ooSTxVhxl4Gm1eahP3tn3I5F4qE+rFv1vCgSfTP+BZq15mAtmPxX",
-                        "4OCRqhwFd3ZzxOAYatNSW99FmehINKYl/u551IW+Li0=",
-                        "Z7e1oAU+54be5c/UVd0I9A==",
-                        1691762307385L
-                ),
-                new EciesEncryptedResponse(
                         "VQLfGVujKbLbjYDdiXHnc4nqOPo5IQO00o2IpJRuHOQylW5dciR52EFrPVNXiQL17rDVVMmldeGRzilbB938zb8t9QIpYyJsfdI8bTd4fNJrU274CZKjeW9bi0pZrSJ+KmgVW1Ie7oMJ0Nw/m6blUCxQHDdoQgL6ogTPY21GBRo=",
                         "3srmFyVru0ah43aoyuro1Ra0AZhPVZ/IRYrHLF+BaYg=",
                         "sN703PpZgrNxMEtyLqmUSA==",
@@ -853,12 +820,6 @@ public class GeneralEncryptorTest {
                         "YGOcH+UPrtD6xL5wkSW9M5W5HPQgTT5qCapbC1rOH4k9Cv1sDpnMjCT4ePn2K1j80YyxU0KHuQJB/R7Rz/iUbNmnV8Ri+mvCjv5OthkD+P5vcWxUfeg1LCX5KLBROjPkbRejxO91+VmQiwy+gjBWoQ==",
                         "3oraw0O9CgIfTHJ4h08xEzVxHlLOXxjz9kajjaBp/7Q=",
                         "ucp8o29LdMCJd+1L1ulLAg==",
-                        1691762307387L
-                ),
-                new EciesEncryptedResponse(
-                        "FcwUzp8ee8of47XNQjQKDz9DjpzofDn6chMLiX7UvZaJn++hEpDfIN/v03qSKIOZiNf4cI1fgiC5WoSXDLXfZSjivJGLOiXzYW+TqGCkcr/DZzoo0/GvXH01/F3h7q5GhdDy+QH2TmKinz6Bbebziw==",
-                        "ZE7JejfCs6hryHPg2OD1wl89kjt4wqxaTjuUoXueSI4=",
-                        "5kv5XPhqzNxkbwlVSzwgBw==",
                         1691762307387L
                 ),
                 new EciesEncryptedResponse(
@@ -943,13 +904,11 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("f+jScpA8qs2OAR2TWqnDD6W00yUYsdIGuE1nCsqKvVBDfedwA6XBHy4z/ey3"),
                 Base64.getDecoder().decode("5jM1pRKPJpkv16zg9A5ZcEY3KXGr3p2de1hWZVsVKXL7PIzljrl2Lxg3RfWuf9myS17OBu7d2nO7SD1Sl3U2KtJA3+B1c202TqdQEXRT"),
                 Base64.getDecoder().decode("K6cp8f5FyfsE3kv2HJubaJ9b5ILXAMc="),
-                Base64.getDecoder().decode("5p4zk5/DaPiw2oFP0LSygOJD/VDGEfPQMcI1JO1iSqO4XYUr0yeKciDFxQ5r9Ji8C8ETJKD1/5hlJGURXw=="),
                 Base64.getDecoder().decode("jC7527ZbuLU3ddoeSHOaE2f93sqL9IKyf9pjoIpU/6h0DowFlVmMibIyKWnL2dkDmKeIGFhh4EzvEcAnk7b5bU9Jv7ItenE3bxDu55NQXQs2XjZLqwb+gdjt6f2dZx6s3K/1+hG8zv2QYc1y5Ielnus="),
                 Base64.getDecoder().decode("17e8s/ckRIR52A964Vb/AXZ/Gcv4yT1RCS42ZUiwegzk"),
                 Base64.getDecoder().decode("OhwnzC44O5E8bplAyUT+HjAoJ5nuaXxpZryl17DHSmHFBRjejBznYYHCl2UUDYTpgT00j8Fvu+GtS3i9jr704r/z5XENGsb5aqitVERSiPQDWXHSeF5w/L45U535NzjJCv9gudDSXrPaP2mB"),
                 Base64.getDecoder().decode("EsSeJzVFi30Ph7KGBamnpavP2IVJQyXSyh3AR/YX5w9hRVsT7dEqVrCvP7WSRX5X9HCvQU3aqqB/OLVGMF8B81o08p/7WExeaf1PylcbRqomHwqBgO64LdAXa80="),
                 Base64.getDecoder().decode("PNhn+JpA6ivlcZXpYBM9SJgAqrGUJ1Fs422sJDJyHqPFmBaZOlyYQGM3hSexgNtU47iQyiz+qfdslFNszKiCohV1fx0C6nmH4xn96333ISVx7i8YmM+SI06LWfdb"),
-                Base64.getDecoder().decode("w/kWbwDE27WzyTzi/SNm7a4V7MGZaShVR9LaSaj+y0nT/6CBfdk/4POlqyXpJD31D+mL7c8z2dOFyktHNJccliODZI0="),
                 Base64.getDecoder().decode("QHMC/ZEQ0A1uEQtslxYtaeBCI4R8cklIjOThRuCykszKHq5cnYjARUIFLiHzDfClIwZIxaRY7qm4etYWiwzxv9pEI2y08dtWfeywaroWFUPJI+Zr5/1S79fDleYx2QYqxZnBFVogSNgg7A9eOxRtv99/u96atw=="),
                 Base64.getDecoder().decode("oHXR8sAoeoo+o9RzysQqiZeYkQffKDf5ab+RZNyrF9jax+eVEIhA6uOrZ784aw8CnzKqqJNRW352T1l7JbliEhhtTllzqjY3g3KMGI+vEg=="),
                 Base64.getDecoder().decode("tW44GiuzI4cYlPRuRk9xSzQBkISv1BS+vIvZMGufm3acrE9w0QoUgzt1YZV0kHRVJy1+smchfK42"),
@@ -960,13 +919,11 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("Q0o+ObtisXK/MO/0W+DggFD6cnlhUrSCHocN3Mu1IYrFgxswSk2VELlCF3U7OzPwFS1g3vcwxTYdjCGyyAcVECODy68Dd2Tv0vLlDfYjB5D8+E75BCrYhwRbh3W3OaC0VxI8V3xh125mFx0PWRXJuxf1yKB3rtY="),
                 Base64.getDecoder().decode("6UfrYjWYCkBIK9Ori7qB1KEfWwz5DYGVaKYxcz8OLWpfO8xtON8xa4a9ORaTRCKbKYMHh6zloo5/Zn7bZ8YmguicAmWB1gqqwtUDyYtTMwAjyXLmKs2shftLQYtauUSkWNc="),
                 Base64.getDecoder().decode("GMHLlB1cZzelL0+5/JUOVnUzI44eN54zxA=="),
-                Base64.getDecoder().decode("qYTFk6IaB2B3roQRjIyzAzegiRSgVpPmjifyQQ7e+fWKwm8="),
                 Base64.getDecoder().decode("Cl0eRW9Aq7auie9qaXpYsWbES2fNmbqRM6U2sxU="),
                 Base64.getDecoder().decode("vhdJ0uPZVyeVEdxSo3ErO2Dogay5oL7b/cL/BRhellDBq8X67puO+50fgOAgfL0bpQMZBZh/uLgxBrGf2bVOzTpO8R6WOYxjg0FnOdb91/VbGSvTncwbX71U"),
                 Base64.getDecoder().decode("x/WlUGQzvMB1zu64EYtpzq8="),
                 Base64.getDecoder().decode("k0+sImOGUwOb/1s8U1uI5uZ8gZaszNuU4pKWq2d775m/iAUB7f0o6kVnfDzZZvEXfEzXlKZsdzf2bE/5KJ1q2WsMhxwlbPCZ+zWzhD3lPMueXK7Sas8EOQ=="),
                 Base64.getDecoder().decode("qxljpcx47/22kqbxnjZhbDq6tL8nWJp9fcR/bN7/dh64rsLxeT2mQdQAdhUw8bMbUlv113sco8bI+Y0z/R4ZWlDThcLus6WZOyizKEVipIZzAteUmWww"),
-                Base64.getDecoder().decode("AMC6x6qz309wM6mbk85poct0k18dW4Xg0TyzqNRMOrNxdESxgdt+X7uqINrGGT80uaDuk8K5BXgd6vIGn0cnPkiW"),
                 Base64.getDecoder().decode("zZZA"),
                 Base64.getDecoder().decode("F6aVUJhxIkRBjsyPk1yH"),
                 Base64.getDecoder().decode("Ggd98d/1vIPsmJqV2yry1je2eXYrHUQNiGFATp6JoKJX2w=="),
@@ -977,13 +934,11 @@ public class GeneralEncryptorTest {
                 EncryptorId.APPLICATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_LAYER_2,
-                EncryptorId.UPGRADE,
                 EncryptorId.VAULT_UNLOCK,
                 EncryptorId.CREATE_TOKEN,
                 EncryptorId.APPLICATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_SCOPE_GENERIC,
                 EncryptorId.ACTIVATION_LAYER_2,
-                EncryptorId.UPGRADE,
                 EncryptorId.VAULT_UNLOCK,
                 EncryptorId.CREATE_TOKEN,
                 EncryptorId.APPLICATION_SCOPE_GENERIC,
@@ -996,11 +951,9 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkRDNEODJBNkItNDdDRi00MjI1LUJCRTUtQkFEOTZGQjg0Q0E0"),
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkQ0YyRTlBNDgtOTA4NS00QUEzLThGODUtRkZBRkQyMzgwNjA5AAAAJDEyMjFDRDE1LTkwOTItNDc3OS1BMTU3LTA0REMyMjlBNjNGNw=="),
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkQ0YyRTlBNDgtOTA4NS00QUEzLThGODUtRkZBRkQyMzgwNjA5AAAAJDEyMjFDRDE1LTkwOTItNDc3OS1BMTU3LTA0REMyMjlBNjNGNw=="),
-                Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkQ0YyRTlBNDgtOTA4NS00QUEzLThGODUtRkZBRkQyMzgwNjA5AAAAJDEyMjFDRDE1LTkwOTItNDc3OS1BMTU3LTA0REMyMjlBNjNGNw=="),
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkRDNEODJBNkItNDdDRi00MjI1LUJCRTUtQkFEOTZGQjg0Q0E0"),
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkQ0YyRTlBNDgtOTA4NS00QUEzLThGODUtRkZBRkQyMzgwNjA5AAAAJDEyMjFDRDE1LTkwOTItNDc3OS1BMTU3LTA0REMyMjlBNjNGNw=="),
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkRDNEODJBNkItNDdDRi00MjI1LUJCRTUtQkFEOTZGQjg0Q0E0"),
-                Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkQ0YyRTlBNDgtOTA4NS00QUEzLThGODUtRkZBRkQyMzgwNjA5AAAAJDEyMjFDRDE1LTkwOTItNDc3OS1BMTU3LTA0REMyMjlBNjNGNw=="),
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkQ0YyRTlBNDgtOTA4NS00QUEzLThGODUtRkZBRkQyMzgwNjA5AAAAJDEyMjFDRDE1LTkwOTItNDc3OS1BMTU3LTA0REMyMjlBNjNGNw=="),
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkQ0YyRTlBNDgtOTA4NS00QUEzLThGODUtRkZBRkQyMzgwNjA5AAAAJDEyMjFDRDE1LTkwOTItNDc3OS1BMTU3LTA0REMyMjlBNjNGNw=="),
                 Base64.getDecoder().decode("AAAAAzMuMwAAABhXUUJlTmdDSEdsVzU4cnpVbFA3RWhnPT0AAAAkRDNEODJBNkItNDdDRi00MjI1LUJCRTUtQkFEOTZGQjg0Q0E0"),
@@ -1011,13 +964,11 @@ public class GeneralEncryptorTest {
                 Base64.getDecoder().decode("k074hGF+oBZMhhh6BS6CY+4/aaN5TrIwDsVEwn/WjyXWgNSqshjiANmOR36L/Shc"),
                 Base64.getDecoder().decode("ocMfq8QlGi+/5e/xilUCZUxqh1Z4PqZmmNgmDnm1BLZbFZuh8pFvx28zAo8moHkz"),
                 Base64.getDecoder().decode("XSS+JT0S8o2fXPArZZ/MY+9MqExJV5pG1lCrSJwzlY/i5irGdshKl5PN2h8mChNm"),
-                Base64.getDecoder().decode("8FIKg1R4BQFtlANmy0f27fWQaINgL9vlr3hLym/xt1MQ3bofjwVIYqu7wGiJD43n"),
                 Base64.getDecoder().decode("OaRGAw2XdkzsHzcUXj8l/uglAVVFtuzMjvR9+5+kTFIz+9SP4KDXJwugYEZ3sL6u"),
                 Base64.getDecoder().decode("JBm52ZtwKYBBxV7Ar5Wtf4Y9OTDv9OU2pFEv7WJYA74yMJRQcALWugqV79CG5Aqf"),
                 Base64.getDecoder().decode("2YtkBfXRrhUffeu98I38CCfdkR33/8c+C82j52YSIlwJ5KcauOk47WXjOczOkFsg"),
                 Base64.getDecoder().decode("eP8jZvzxPBOv7E+w39z2JsGJEXNskfxQgPV8R0X4aY9nlgyESMa8A5fbrAgh70QY"),
                 Base64.getDecoder().decode("kScXW3XPZF8vQzwAPs1H1kH8V7nT1TRXHpYRKI8LrnZ37VEtToEKizwxAW8YV67A"),
-                Base64.getDecoder().decode("1jpx3WEzDxbt2hjfTY/3rEbVTuhZagFLxhZne9l3N17jJov2hrOd2Vc8tJfKDGXC"),
                 Base64.getDecoder().decode("A0sds7ZIaPKsR10Q7ai/E/Y8grHSbS4WYKck4zLVEdkejcDwXpAvRfUcxg7bw+fm"),
                 Base64.getDecoder().decode("u1wtm4Ll21Y5FkSF9lbURDcuz425PK6HOSKWoMgUZMeMjwvBtJIdkXmtuaeaISpL"),
                 Base64.getDecoder().decode("nxPNGpOegXx9wNc4blM250eyYKY+zZ2DGf3Zfp9irTZ7jpzcEO7fb5BAx1YnbTed"),
@@ -1048,14 +999,6 @@ public class GeneralEncryptorTest {
                         "mbyD0Z341x6pkXNwhA8Q8DQzP9Pk6E3CkYxJ+7pAauA=",
                         "L9wCRvnLTUkla7IAlrprEQ==",
                         1723109505420L
-                ),
-                new EciesEncryptedRequest(
-                        "1221CD15-9092-4779-A157-04DC229A63F7",
-                        "AgjDJvBgQubjJsc3mG/usmz1Saachm56h+L7Ao+ODS+G",
-                        "OnI4x+FwViNe3zACnpkhLib5U8s37EKPYlcp7+EP+0R9EYYkEfQoosyavXMvcULam0TvdixhIt98xWsW6UPrDA==",
-                        "o123KQc+4MLuxG1rlfS/uFVTsChp1mIrwokpIsXeGRE=",
-                        "dYXDUMkh3AcATXwenSdDyg==",
-                        1723109505421L
                 ),
                 new EciesEncryptedRequest(
                         "1221CD15-9092-4779-A157-04DC229A63F7",
@@ -1095,14 +1038,6 @@ public class GeneralEncryptorTest {
                         "6E5yo1+y/Nv9A9uTr2dWijEAoOMOlCX39fdCDE5ohbBw6slMbFBIC6HUn7qBs8dBgMNJTatJEp/twGJZyaT6+WMOZRI7ec7/bOImrN9kjwkYq70gY/UHPETUyBkczYc+",
                         "1j6ULk0WucfGFjiN9T7oGykuh0BriYv3Y0y/FK7X+hw=",
                         "/KUGtLbpCgqW+KyTfP/1FQ==",
-                        1723109505423L
-                ),
-                new EciesEncryptedRequest(
-                        "1221CD15-9092-4779-A157-04DC229A63F7",
-                        "Ajqbv+0CUuWHZQuiU1d+Z8x4sbXDB37sm0Kbjp95kzPI",
-                        "OKr4ceWyBbLTxzZhv5RQvlG44K+n+ohw4JUbV30lC0KIypNl0uKwdzSQtK5eljKXdfYxaLSuY+Gwj/NK+xdQkdMXskLeXluey5GET23HaL4=",
-                        "048mD+C38ojf0M0CpEU/uLuZbRLlZVFfzCCK/2f0+KI=",
-                        "K+XqUGF5lUKgTz0yaJ9p2g==",
                         1723109505423L
                 ),
                 new EciesEncryptedRequest(
@@ -1159,12 +1094,6 @@ public class GeneralEncryptorTest {
                         1723109505421L
                 ),
                 new EciesEncryptedResponse(
-                        "Y8KAD1G9wUpoTXpA0UKMI4PaUgS43uUFrOTBR3cCoBUdOWS4HizPdF+3SxdkbP5Z",
-                        "QfQzM+0z0re6/AWMNOI8uP7syAeCtud+TkDt+H1X/tM=",
-                        "A/+VbdsF+0s8HvJrBAtBCQ==",
-                        1723109505421L
-                ),
-                new EciesEncryptedResponse(
                         "+Jqs/d97p0Qau9ixhL23cctRnUwowZuTzvA3MHsBH24=",
                         "AgBS0dF5RSfPlvbqgtFpMwj2QSDQUXIUcZdNUyJPzO0=",
                         "iu0blftcv9NCHb0mJVqRKA==",
@@ -1192,12 +1121,6 @@ public class GeneralEncryptorTest {
                         "0fWvysKeg3naheL/A5cJjTiA+BmhZYbDkHVK63JPosXDhqZzqPrJ0/KvPE116ELpG2FzQP5LnD0Jk9eJ627p67nMhJD+jQkRFQgqKeggViiw+zEsQtp/dcIN3ZpdR+zh",
                         "TIe67QK7kYFlMI7tEMB5+DdqwVdAUNbje/xVyrLEwwI=",
                         "LdNF+2cVBklgSNtd8VgVHQ==",
-                        1723109505423L
-                ),
-                new EciesEncryptedResponse(
-                        "WKwK5/O9ebjhrec16gMbS5tuAiYSE7/7oxMRc+DU8ZU6FSNUewK8O0cVOV3sT6++6U3QgPJLbgRIBP6lZjvAUcrzXlwjNjQJEmO3816BOo8=",
-                        "Eo0IFaMj5O9ZPfq5DCqS+6m0swuEGgoVfihAKtDTnsg=",
-                        "miiZTny2CvOrBZkjD+eaLA==",
                         1723109505423L
                 ),
                 new EciesEncryptedResponse(
