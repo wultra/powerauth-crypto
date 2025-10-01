@@ -57,18 +57,45 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
     private static final KeyConvertor KEY_CONVERTOR_EC = new KeyConvertor();
     private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new MlKemKeyConvertor();
 
-    private static final PqcKem PQC_KEM = new MlKem();
+    private PqcKem pqcKem;
+
+    private final SharedSecretAlgorithm sharedSecretAlgorithm;
+
+    /**
+     * Default hybrid EC + PQC shared secret algorithm.
+     */
+    public SharedSecretHybrid() {
+        this.sharedSecretAlgorithm = SharedSecretAlgorithm.EC_P384_ML_L3;
+        try {
+            this.pqcKem = new MlKem(sharedSecretAlgorithm.getMlKemParameterSpec());
+        } catch (GenericCryptoException e) {
+            // impossible case
+        }
+    }
+
+    /**
+     * Hybrid EC + PQC shared secret algorithm.
+     * @param sharedSecretAlgorithm Shared secret algorithm to use.
+     */
+    public SharedSecretHybrid(SharedSecretAlgorithm sharedSecretAlgorithm) {
+        this.sharedSecretAlgorithm = sharedSecretAlgorithm;
+        try {
+            this.pqcKem = new MlKem(sharedSecretAlgorithm.getMlKemParameterSpec());
+        } catch (GenericCryptoException e) {
+            // impossible case
+        }
+    }
 
     @Override
     public SharedSecretAlgorithm getAlgorithm() {
-        return SharedSecretAlgorithm.EC_P384_ML_L3;
+        return sharedSecretAlgorithm;
     }
 
     @Override
     public RequestCryptogram generateRequestCryptogram() throws GenericCryptoException {
         try {
             final KeyPair ecClientEcKeyPair = KEY_GENERATOR.generateKeyPair(EcCurve.P384);
-            final KeyPair pqcClientKeyPair = PQC_KEM.generateKeyPair();
+            final KeyPair pqcClientKeyPair = pqcKem.generateKeyPair();
             final byte[] ecPublicKeyRaw = KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, ecClientEcKeyPair.getPublic());
             final String ecPublicKeyBase64 = Base64.getEncoder().encodeToString(ecPublicKeyRaw);
             final byte[] pqcPublicKeyRaw = KEY_CONVERTOR_PQC.convertPublicKeyToBytes(pqcClientKeyPair.getPublic());
@@ -93,7 +120,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final PublicKey pqcClientKemEncapsulationKey = KEY_CONVERTOR_PQC.convertBytesToPublicKey(pqcClientPublicKeyRaw);
             final KeyPair ecServerKeyPair = KEY_GENERATOR.generateKeyPair(EcCurve.P384);
             final SecretKey ecSharedKey = KEY_GENERATOR.computeSharedKey(ecServerKeyPair.getPrivate(), ecClientPublicKey, true);
-            final SecretKeyWithEncapsulation pqcKeyWithEncaps = PQC_KEM.encapsulate(pqcClientKemEncapsulationKey);
+            final SecretKeyWithEncapsulation pqcKeyWithEncaps = pqcKem.encapsulate(pqcClientKemEncapsulationKey);
             final byte[] ecSharedKeyBytes = KEY_CONVERTOR_EC.convertSharedSecretKeyToBytes(ecSharedKey);
             final byte[] pqcSharedKeyBytes = pqcKeyWithEncaps.getEncoded();
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);
@@ -121,7 +148,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final PrivateKey ecClientPrivateKey = clientContext.getEcPrivateKey();
             final SecretKey ecSharedKey = KEY_GENERATOR.computeSharedKey(ecClientPrivateKey, ecServerPublicKey, true);
             final PrivateKey pqcClientDecapsKey = clientContext.getPqcKemDecapsulationKey();
-            final SecretKey pqcSharedKey = PQC_KEM.decapsulate(pqcClientDecapsKey, pqcPqcKemCipherText);
+            final SecretKey pqcSharedKey = pqcKem.decapsulate(pqcClientDecapsKey, pqcPqcKemCipherText);
             final byte[] ecSharedKeyBytes = KEY_CONVERTOR_EC.convertSharedSecretKeyToBytes(ecSharedKey);
             final byte[] pqcSharedKeyBytes = KEY_CONVERTOR_PQC.convertSharedSecretKeyToBytes(pqcSharedKey);
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);

@@ -48,16 +48,43 @@ public class SharedSecretPqc implements SharedSecret<SharedSecretRequestPqc, Sha
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
     private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new MlKemKeyConvertor();
 
-    private static final PqcKem PQC_KEM = new MlKem();
+    private PqcKem pqcKem;
+
+    private final SharedSecretAlgorithm sharedSecretAlgorithm;
+
+    /**
+     * Default PQC shared secret algorithm.
+     */
+    public SharedSecretPqc() {
+        this.sharedSecretAlgorithm = SharedSecretAlgorithm.EC_P384_ML_L3;
+        try {
+            this.pqcKem = new MlKem(sharedSecretAlgorithm.getMlKemParameterSpec());
+        } catch (GenericCryptoException e) {
+            // impossible case
+        }
+    }
+
+    /**
+     * PQC shared secret algorithm.
+     * @param sharedSecretAlgorithm Shared secret algorithm to use.
+     */
+    public SharedSecretPqc(SharedSecretAlgorithm sharedSecretAlgorithm) {
+        this.sharedSecretAlgorithm = sharedSecretAlgorithm;
+        try {
+            this.pqcKem = new MlKem(sharedSecretAlgorithm.getMlKemParameterSpec());
+        } catch (GenericCryptoException e) {
+            // impossible case
+        }
+    }
 
     @Override
     public SharedSecretAlgorithm getAlgorithm() {
-        return SharedSecretAlgorithm.ML_L3;
+        return sharedSecretAlgorithm;
     }
 
     @Override
     public RequestCryptogram generateRequestCryptogram() throws GenericCryptoException {
-        final KeyPair pqcClientKeyPair = PQC_KEM.generateKeyPair();
+        final KeyPair pqcClientKeyPair = pqcKem.generateKeyPair();
         final byte[] pqcPublicKeyRaw = KEY_CONVERTOR_PQC.convertPublicKeyToBytes(pqcClientKeyPair.getPublic());
         final String pqcPublicKeyBase64 = Base64.getEncoder().encodeToString(pqcPublicKeyRaw);
         final SharedSecretRequestPqc request = new SharedSecretRequestPqc(pqcPublicKeyBase64);
@@ -72,7 +99,7 @@ public class SharedSecretPqc implements SharedSecret<SharedSecretRequestPqc, Sha
         }
         final byte[] pqcClientPublicKeyRaw = Base64.getDecoder().decode(request.getPqcEncapsulationKey());
         final PublicKey pqcClientKemEncapsulationKey = KEY_CONVERTOR_PQC.convertBytesToPublicKey(pqcClientPublicKeyRaw);
-        final SecretKeyWithEncapsulation pqcKeyWithEncaps = PQC_KEM.encapsulate(pqcClientKemEncapsulationKey);
+        final SecretKeyWithEncapsulation pqcKeyWithEncaps = pqcKem.encapsulate(pqcClientKemEncapsulationKey);
         final SecretKey pqcSecretKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(pqcKeyWithEncaps.getEncoded());
         final String pqcSharedSecret = Base64.getEncoder().encodeToString(pqcKeyWithEncaps.getEncapsulation());
         final SharedSecretResponsePqc serverResponse = new SharedSecretResponsePqc(pqcSharedSecret);
@@ -86,7 +113,7 @@ public class SharedSecretPqc implements SharedSecret<SharedSecretRequestPqc, Sha
         }
         final byte[] pqcPqcKemCipherText = Base64.getDecoder().decode(serverResponse.getPqcCiphertext());
         final PrivateKey pqcClientDecapsKey = clientContext.getPqcKemDecapsulationKey();
-        return PQC_KEM.decapsulate(pqcClientDecapsKey, pqcPqcKemCipherText);
+        return pqcKem.decapsulate(pqcClientDecapsKey, pqcPqcKemCipherText);
     }
 
 }
