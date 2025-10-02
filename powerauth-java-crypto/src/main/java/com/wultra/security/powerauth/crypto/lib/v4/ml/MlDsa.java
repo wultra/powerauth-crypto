@@ -16,6 +16,7 @@
  */
 package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
+import com.wultra.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsa;
@@ -58,7 +59,7 @@ public class MlDsa implements PqcDsa {
     @Override
     public KeyPair generateKeyPair() throws CryptoProviderException {
         try {
-            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("MLDSA", "BC");
+            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("MLDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             keyPairGenerator.initialize(dsaParameterSpec);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
@@ -76,7 +77,7 @@ public class MlDsa implements PqcDsa {
             throw new GenericCryptoException("Missing message to sign");
         }
         try {
-            final Signature mlDsa = Signature.getInstance("MLDSA", "BC");
+            final Signature mlDsa = Signature.getInstance("MLDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             mlDsa.initSign(privateKey);
             mlDsa.update(message);
             return mlDsa.sign();
@@ -98,7 +99,7 @@ public class MlDsa implements PqcDsa {
             throw new GenericCryptoException("Missing signature to verify");
         }
         try {
-            final Signature mlDsa = Signature.getInstance("MLDSA", "BC");
+            final Signature mlDsa = Signature.getInstance("MLDSA", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             mlDsa.initVerify(publicKey);
             mlDsa.update(message);
             return mlDsa.verify(signature);
