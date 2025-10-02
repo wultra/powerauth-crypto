@@ -33,17 +33,16 @@ The following algorithms are used in the PowerAuth cryptography scheme.
 
 #### Cryptographic Primitives
 
-| Algorithm            | Impacts        | Note                                                                                                                                 |
-|----------------------|----------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `AEAD`               | mobile, server | Symmetric encryption in AEAD scheme using AES with 256 bit keys. CTR mode is used for encryption, integrity guaranteed via KMAC‑256. |
-| `KMAC-256`           | mobile, server | Message authentication and AEAD tag, also used in KDF constructions and factor keys: Possession, Knowledge, Biometry.                |
-| `ECDH P-384`         | mobile, server | Key agreement for classical part of hybrid and for EC_P384 suite on curve `secp384r1`.                                               |
-| `ECDSA P-384`        | mobile, server | Asymmetric signatures based on ECDSA with SHA‑384 on curve `secp384r1`.                                                              |
-| `ML-KEM-768/1024`    | mobile, server | PQC key encapsulation used in Level‑3/Level‑5 hybrid and PQC‑only suites.                                                            |
-| `ML-DSA-65/87`       | mobile, server | Asymmetric signatures based on the ML-DSA PQC signature scheme.                                                                      |
-| `SHA3-256`           | mobile, server | Hash function based on Keccak, used in various situations across the protocol.                                                       |
-| `CRC-16`             | mobile, server | Checksum for activation code validation (2 bytes of 12).                                                                             |
-| `PBKDF2 (HMAC-SHA1)` | mobile         | PIN‑to‑key derivation on device only (10.000 iterations). Strength is not security‑critical in this context.                         |
+| Algorithm            | Impacts        | Note                                                                                                                                                                        |
+|----------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AEAD`               | mobile, server | Symmetric encryption in AEAD scheme using AES with 256 bit keys. CTR mode is used for encryption, integrity guaranteed via KMAC‑256.                                        |
+| `KMAC-256`           | mobile, server | Message authentication and AEAD tag, also used in KDF constructions and factor keys: Possession, Knowledge, Biometry. On mobile, KMAC-256 is used for PIN-to-ke derivation. |
+| `ECDH P-384`         | mobile, server | Key agreement for classical part of hybrid and for EC_P384 suite on curve `secp384r1`.                                                                                      |
+| `ECDSA P-384`        | mobile, server | Asymmetric signatures based on ECDSA with SHA‑384 on curve `secp384r1`.                                                                                                     |
+| `ML-KEM-768/1024`    | mobile, server | PQC key encapsulation used in Level‑3/Level‑5 hybrid and PQC‑only suites.                                                                                                   |
+| `ML-DSA-65/87`       | mobile, server | Asymmetric signatures based on the ML-DSA PQC signature scheme.                                                                                                             |
+| `SHA3-256`           | mobile, server | Hash function based on Keccak, used in various situations across the protocol.                                                                                              |
+| `CRC-16`             | mobile, server | Checksum for activation code validation (2 bytes of 12).                                                                                                                    |
 
 ### PowerAuth Protocol 3.x — **Legacy**
 
