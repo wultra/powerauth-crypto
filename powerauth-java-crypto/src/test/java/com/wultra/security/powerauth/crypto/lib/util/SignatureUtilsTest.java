@@ -17,6 +17,7 @@
 
 package com.wultra.security.powerauth.crypto.lib.util;
 
+import com.wultra.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,11 +49,11 @@ class SignatureUtilsTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        KeyPairGenerator keyPairGeneratorP256 = KeyPairGenerator.getInstance("EC", "BC");
+        KeyPairGenerator keyPairGeneratorP256 = KeyPairGenerator.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
         keyPairGeneratorP256.initialize(new ECGenParameterSpec("secp256r1"));
         keyPairP256 = keyPairGeneratorP256.generateKeyPair();
 
-        KeyPairGenerator keyPairGeneratorP384 = KeyPairGenerator.getInstance("EC", "BC");
+        KeyPairGenerator keyPairGeneratorP384 = KeyPairGenerator.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
         keyPairGeneratorP384.initialize(new ECGenParameterSpec("secp384r1"));
         keyPairP384 = keyPairGeneratorP384.generateKeyPair();
     }

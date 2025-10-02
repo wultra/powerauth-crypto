@@ -16,6 +16,7 @@
  */
 package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
+import com.wultra.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKem;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
@@ -62,7 +63,7 @@ public class MlKem implements PqcKem {
     @Override
     public KeyPair generateKeyPair() throws GenericCryptoException {
         try {
-            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ML-KEM", "BC");
+            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ML-KEM", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             keyPairGenerator.initialize(kemParameterSpec);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
@@ -77,7 +78,7 @@ public class MlKem implements PqcKem {
             throw new GenericCryptoException("Missing public key during encapsulation");
         }
         try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
+            final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             keyGenerator.init(new KEMGenerateSpec.Builder(encapsulationKey, "RAW", 256).withNoKdf().build());
             return (SecretKeyWithEncapsulation) keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
@@ -95,7 +96,7 @@ public class MlKem implements PqcKem {
             throw new GenericCryptoException("Missing ciphertext during decapsulation");
         }
         try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", "BC");
+            final KeyGenerator keyGenerator = KeyGenerator.getInstance("ML-KEM", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             keyGenerator.init(new KEMExtractSpec.Builder(decapsulationKey, ciphertext, "RAW", 256).withNoKdf().build());
             return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {

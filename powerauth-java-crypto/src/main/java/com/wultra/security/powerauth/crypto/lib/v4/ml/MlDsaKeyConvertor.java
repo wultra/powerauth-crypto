@@ -16,6 +16,7 @@
  */
 package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
+import com.wultra.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsaKeyConvertor;
 import org.bouncycastle.jcajce.provider.asymmetric.mldsa.BCMLDSAPrivateKey;
@@ -71,7 +72,7 @@ public class MlDsaKeyConvertor implements PqcDsaKeyConvertor {
             throw new GenericCryptoException("Missing public key bytes");
         }
         try {
-            final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, "BC");
+            final KeyFactory keyFactory = KeyFactory.getInstance(algorithmName, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             return keyFactory.generatePublic(keySpec);
         } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -98,7 +99,7 @@ public class MlDsaKeyConvertor implements PqcDsaKeyConvertor {
             throw new GenericCryptoException("Missing public key bytes");
         }
         try {
-            final KeyFactory keyFactoryMlDsa = KeyFactory.getInstance(algorithmName, "BC");
+            final KeyFactory keyFactoryMlDsa = KeyFactory.getInstance(algorithmName, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             final PKCS8EncodedKeySpec keySpecMlDsa = new PKCS8EncodedKeySpec(keyBytes);
             return keyFactoryMlDsa.generatePrivate(keySpecMlDsa);
         } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidKeySpecException e) {
