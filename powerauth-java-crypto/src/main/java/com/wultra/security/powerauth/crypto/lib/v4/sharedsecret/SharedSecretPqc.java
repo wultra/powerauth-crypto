@@ -39,7 +39,7 @@ import java.security.PublicKey;
 import java.util.Base64;
 
 /**
- * Shared secret implementation for ML-KEM-768.
+ * Shared secret implementation for ML-KEM.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
@@ -56,7 +56,7 @@ public class SharedSecretPqc implements SharedSecret<SharedSecretRequestPqc, Sha
      * Default PQC shared secret algorithm.
      */
     public SharedSecretPqc() {
-        this.sharedSecretAlgorithm = SharedSecretAlgorithm.EC_P384_ML_L3;
+        this.sharedSecretAlgorithm = SharedSecretAlgorithm.ML_L3;
         try {
             this.pqcKem = new MlKem(sharedSecretAlgorithm.getMlKemParameterSpec());
         } catch (GenericCryptoException e) {

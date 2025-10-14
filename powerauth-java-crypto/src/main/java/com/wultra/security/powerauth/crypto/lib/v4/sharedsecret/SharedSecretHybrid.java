@@ -47,7 +47,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
 /**
- * Shared secret implementation for hybrid scheme with ECDHE on curve P-384 and ML-KEM-768.
+ * Shared secret implementation for hybrid scheme with ECDHE on curve P-384 and ML-KEM.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
