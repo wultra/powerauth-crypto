@@ -56,12 +56,7 @@ public class SharedSecretPqc implements SharedSecret<SharedSecretRequestPqc, Sha
      * Default PQC shared secret algorithm.
      */
     public SharedSecretPqc() {
-        this.sharedSecretAlgorithm = SharedSecretAlgorithm.ML_L3;
-        try {
-            this.pqcKem = new MlKem(sharedSecretAlgorithm.getMlKemParameterSpec());
-        } catch (GenericCryptoException e) {
-            // impossible case
-        }
+        this(SharedSecretAlgorithm.ML_L3);
     }
 
     /**

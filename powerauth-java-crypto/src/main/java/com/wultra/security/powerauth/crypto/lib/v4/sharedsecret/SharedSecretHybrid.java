@@ -65,12 +65,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
      * Default hybrid EC + PQC shared secret algorithm.
      */
     public SharedSecretHybrid() {
-        this.sharedSecretAlgorithm = SharedSecretAlgorithm.EC_P384_ML_L3;
-        try {
-            this.pqcKem = new MlKem(sharedSecretAlgorithm.getMlKemParameterSpec());
-        } catch (GenericCryptoException e) {
-            // impossible case
-        }
+        this(SharedSecretAlgorithm.EC_P384_ML_L3);
     }
 
     /**
