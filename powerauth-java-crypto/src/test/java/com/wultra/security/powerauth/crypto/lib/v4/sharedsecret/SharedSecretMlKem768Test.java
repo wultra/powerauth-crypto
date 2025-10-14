@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.model.SharedSecretClientContextPqc;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestPqc;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
@@ -46,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class SharedSecretMlKemTest {
+public class SharedSecretMlKem768Test {
 
     private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new MlKemKeyConvertor();
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -57,7 +58,7 @@ public class SharedSecretMlKemTest {
 
     @Test
     public void testMlKem_Success() throws Exception {
-        SharedSecretPqc sharedSecretPqc = new SharedSecretPqc();
+        SharedSecretPqc sharedSecretPqc = new SharedSecretPqc(SharedSecretAlgorithm.ML_L3);
         RequestCryptogram request = sharedSecretPqc.generateRequestCryptogram();
         assertNotNull(request);
         assertNotNull(request.getSharedSecretRequest());
@@ -84,7 +85,7 @@ public class SharedSecretMlKemTest {
     }
 
     private static Stream<Map<String, String>> jsonDataMlkem_768_Provider() throws IOException {
-        InputStream stream = SharedSecretMlKemTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/MLKEM_768_Test_Vectors.json");
+        InputStream stream = SharedSecretMlKem768Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/MLKEM_768_Test_Vectors.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("mlkem_test_vectors").stream();
     }
@@ -92,7 +93,7 @@ public class SharedSecretMlKemTest {
     @ParameterizedTest
     @MethodSource("jsonDataMlkem_768_Provider")
     public void testEcdheMlkemWithTestVectors(Map<String, String> vector) throws Exception {
-        SharedSecretPqc sharedSecretPqc = new SharedSecretPqc();
+        SharedSecretPqc sharedSecretPqc = new SharedSecretPqc(SharedSecretAlgorithm.ML_L3);
         PrivateKey pqcClientPrivateKey = KEY_CONVERTOR_PQC.convertBytesToPrivateKey(Base64.getDecoder().decode(vector.get("pqcClientPrivateKey")));
         SharedSecretClientContextPqc clientContext = new SharedSecretClientContextPqc(pqcClientPrivateKey);
         SharedSecretResponsePqc response = new SharedSecretResponsePqc(vector.get("pqcCiphertext"));
@@ -108,7 +109,7 @@ public class SharedSecretMlKemTest {
     public void generateTestVectors() throws Exception {
         final List<Map<String, String>> vectors = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            SharedSecretPqc sharedSecretPqc = new SharedSecretPqc();
+            SharedSecretPqc sharedSecretPqc = new SharedSecretPqc(SharedSecretAlgorithm.ML_L3);
             RequestCryptogram request = sharedSecretPqc.generateRequestCryptogram();
             SharedSecretRequestPqc clientRequest = (SharedSecretRequestPqc) request.getSharedSecretRequest();
             SharedSecretClientContextPqc clientContext = (SharedSecretClientContextPqc) request.getSharedSecretClientContext();
