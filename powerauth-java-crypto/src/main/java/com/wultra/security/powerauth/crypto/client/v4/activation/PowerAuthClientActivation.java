@@ -30,6 +30,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsa;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import org.bouncycastle.jcajce.interfaces.MLDSAPublicKey;
+import org.bouncycastle.jcajce.spec.MLDSAParameterSpec;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -55,7 +56,18 @@ public class PowerAuthClientActivation {
 
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
-    private static final PqcDsa PQC_DSA = new MlDsa();
+    private static PqcDsa pqcDsaMlL3;
+    private static PqcDsa pqcDsaMlL5;
+
+    static {
+        try {
+            pqcDsaMlL3 = new MlDsa(MLDSAParameterSpec.ml_dsa_65);
+            pqcDsaMlL5 = new MlDsa(MLDSAParameterSpec.ml_dsa_87);
+        } catch (GenericCryptoException e) {
+            // impossible case
+        }
+    }
+
 
     /**
      * Custom bytes for MAC for counter data.
@@ -85,11 +97,17 @@ public class PowerAuthClientActivation {
      *     <li>4.0</li>
      * </ul>
      *
+     * @param sharedSecretAlgorithm Shared secret algorithm.
      * @return A new device PQC key pair.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case of unsupported shared secret algorithm.
      */
-    public KeyPair generateDevicePqcKeyPair() throws CryptoProviderException {
-        return PQC_DSA.generateKeyPair();
+    public KeyPair generateDevicePqcKeyPair(SharedSecretAlgorithm sharedSecretAlgorithm) throws CryptoProviderException, GenericCryptoException {
+        return switch (sharedSecretAlgorithm) {
+            case ML_L3, EC_P384_ML_L3 -> pqcDsaMlL3.generateKeyPair();
+            case ML_L5, EC_P384_ML_L5 -> pqcDsaMlL5.generateKeyPair();
+            default -> throw new GenericCryptoException("Unsupported cryptography algorithm: " + sharedSecretAlgorithm);
+        };
     }
 
     /**
@@ -129,9 +147,13 @@ public class PowerAuthClientActivation {
      * @throws GenericCryptoException In case signature computation fails.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean verifyActivationCodePqcdsa(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public boolean verifyActivationCodePqcDsa(String activationCode, byte[] signature, PublicKey masterPublicKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         final byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
-        return PQC_DSA.verify(masterPublicKey, bytes, signature);
+        return switch (masterPublicKey.getAlgorithm()) {
+            case "ML-DSA-65" -> pqcDsaMlL3.verify(masterPublicKey, bytes, signature);
+            case "ML-DSA-87" -> pqcDsaMlL5.verify(masterPublicKey, bytes, signature);
+            default -> throw new GenericCryptoException("Unsupported algorithm: " + masterPublicKey.getAlgorithm());
+        };
     }
 
     /**
