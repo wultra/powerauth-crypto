@@ -42,10 +42,10 @@ public class MlKem implements PqcKem {
     private final MLKEMParameterSpec kemParameterSpec;
 
     /**
-     * Construct with default parameter spec (ml_kem_768).
+     * Construct with default parameter spec (ml_kem_1024).
      */
     public MlKem() {
-        this.kemParameterSpec = MLKEMParameterSpec.ml_kem_768;
+        this.kemParameterSpec = MLKEMParameterSpec.ml_kem_1024;
     }
 
     /**
