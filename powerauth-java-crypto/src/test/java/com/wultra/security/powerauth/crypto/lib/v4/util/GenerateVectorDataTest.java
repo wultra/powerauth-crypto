@@ -343,7 +343,7 @@ public class GenerateVectorDataTest {
 
             final String activationId = generator.generateActivationId();
 
-            final String fingerprintPqc = HybridPublicKeyFingerprint.computeHybridFingerprint(devicePublicKeyEcdsa, devicePublicKeyMldsa, serverPublicKeyEcdsa, serverPublicKeyMldsa, activationId, ActivationVersion.VERSION_4);
+            final String fingerprintPqc = HybridPublicKeyFingerprint.computeHybridFingerprint(SharedSecretAlgorithm.EC_P384_ML_L3, devicePublicKeyEcdsa, devicePublicKeyMldsa, serverPublicKeyEcdsa, serverPublicKeyMldsa, activationId, ActivationVersion.VERSION_4);
 
             final Map<String, String> input = new LinkedHashMap<>();
             input.put("algorithmName", SharedSecretAlgorithm.EC_P384_ML_L3.name());

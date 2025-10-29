@@ -28,6 +28,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsa;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsa;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import org.bouncycastle.jcajce.interfaces.MLDSAPublicKey;
 
 import javax.crypto.SecretKey;
@@ -227,13 +228,14 @@ public class PowerAuthServerActivation {
     }
 
     /**
-     * Compute a fingerprint for the version 4 activation for algorithm EC_P384_ML_L3. The fingerprint can be used for visual validation of exchanged device public key.
+     * Compute a fingerprint for the version 4 activation for algorithm EC_P384_ML_*. The fingerprint can be used for visual validation of exchanged device public key.
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>4.0</li>
      * </ul>
      *
+     * @param sharedSecretAlgorithm Shared secret algorithm.
      * @param ecDevicePublicKey EC device public key.
      * @param pqcDevicePublicKey PQC device public key.
      * @param ecServerPublicKey EC server public key.
@@ -243,8 +245,8 @@ public class PowerAuthServerActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      * @throws GenericCryptoException In case fingerprint could not be calculated.
      */
-    public String computeActivationHybridFingerprint(PublicKey ecDevicePublicKey, PublicKey pqcDevicePublicKey, PublicKey ecServerPublicKey, PublicKey pqcServerPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
-        return HybridPublicKeyFingerprint.computeHybridFingerprint(((ECPublicKey) ecDevicePublicKey), (MLDSAPublicKey) pqcDevicePublicKey, (ECPublicKey) ecServerPublicKey, (MLDSAPublicKey) pqcServerPublicKey, activationId, ActivationVersion.VERSION_4);
+    public String computeActivationHybridFingerprint(SharedSecretAlgorithm sharedSecretAlgorithm, PublicKey ecDevicePublicKey, PublicKey pqcDevicePublicKey, PublicKey ecServerPublicKey, PublicKey pqcServerPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
+        return HybridPublicKeyFingerprint.computeHybridFingerprint(sharedSecretAlgorithm, ((ECPublicKey) ecDevicePublicKey), (MLDSAPublicKey) pqcDevicePublicKey, (ECPublicKey) ecServerPublicKey, (MLDSAPublicKey) pqcServerPublicKey, activationId, ActivationVersion.VERSION_4);
     }
 
     /**

@@ -120,7 +120,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final byte[] pqcSharedKeyBytes = pqcKeyWithEncaps.getEncoded();
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);
             final SecretKey hybridKey = KEY_CONVERTOR_EC.convertBytesToSharedSecretKey(hybridKeyBytes);
-            final SecretKey sharedSecret = KeyFactory.deriveKeySharedSecretHybrid(hybridKey);
+            final SecretKey sharedSecret = KeyFactory.deriveKeySharedSecretHybrid(sharedSecretAlgorithm, hybridKey);
             final byte[] ecServerPublicKey = KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, ecServerKeyPair.getPublic());
             final String ecServerPublicKeyBase64 = Base64.getEncoder().encodeToString(ecServerPublicKey);
             final String encapsBase64 = Base64.getEncoder().encodeToString(pqcKeyWithEncaps.getEncapsulation());
@@ -148,7 +148,7 @@ public class SharedSecretHybrid implements SharedSecret<SharedSecretRequestHybri
             final byte[] pqcSharedKeyBytes = KEY_CONVERTOR_PQC.convertSharedSecretKeyToBytes(pqcSharedKey);
             final byte[] hybridKeyBytes = ByteUtils.concat(ecSharedKeyBytes, pqcSharedKeyBytes);
             final SecretKey hybridKey = KEY_CONVERTOR_EC.convertBytesToSharedSecretKey(hybridKeyBytes);
-            return KeyFactory.deriveKeySharedSecretHybrid(hybridKey);
+            return KeyFactory.deriveKeySharedSecretHybrid(sharedSecretAlgorithm, hybridKey);
         } catch (CryptoProviderException | InvalidKeySpecException | InvalidKeyException e) {
             throw new GenericCryptoException("Shared secret generation failed", e);
         }

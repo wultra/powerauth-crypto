@@ -29,7 +29,7 @@ import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 
 /**
- * Class that is used for computing public key fingerprint for algorithms EC_P384 and EC_P384_ML_L3.
+ * Class that is used for computing public key fingerprint for algorithms EC_P384 and EC_P384_ML_*.
  * The goal of the public key fingerprint is to enable user to visually check that the public key was
  * successfully exchanged between client and server.
  *
@@ -56,6 +56,7 @@ public class HybridPublicKeyFingerprint {
     /**
      * Compute activation fingerprint for ECDSA or hybrid ECDSA + ML-DSA.
      *
+     * @param sharedSecretAlgorithm Shared secret algorithm.
      * @param ecDevicePublicKey EC device public key.
      * @param pqcDevicePublicKey PQC device public key.
      * @param ecServerPublicKey EC server public key.
@@ -65,11 +66,11 @@ public class HybridPublicKeyFingerprint {
      * @return Fingerprint of the public keys.
      * @throws GenericCryptoException In case fingerprint could not be calculated.
      */
-    public static String computeHybridFingerprint(ECPublicKey ecDevicePublicKey, MLDSAPublicKey pqcDevicePublicKey, ECPublicKey ecServerPublicKey, MLDSAPublicKey pqcServerPublicKey, String activationId, ActivationVersion activationVersion) throws GenericCryptoException {
+    public static String computeHybridFingerprint(SharedSecretAlgorithm sharedSecretAlgorithm, ECPublicKey ecDevicePublicKey, MLDSAPublicKey pqcDevicePublicKey, ECPublicKey ecServerPublicKey, MLDSAPublicKey pqcServerPublicKey, String activationId, ActivationVersion activationVersion) throws GenericCryptoException {
         if (activationVersion != ActivationVersion.VERSION_4) {
             throw new GenericCryptoException("Unsupported activation version: " + activationVersion);
         }
-        return computeEcP384MlL3Fingerprint(ecDevicePublicKey, pqcDevicePublicKey, ecServerPublicKey, pqcServerPublicKey, activationId);
+        return computeEcP384MlFingerprint(sharedSecretAlgorithm, ecDevicePublicKey, pqcDevicePublicKey, ecServerPublicKey, pqcServerPublicKey, activationId);
     }
 
     private static String computeEcP384Fingerprint(ECPublicKey ecDevicePublicKey, ECPublicKey ecServerPublicKey, String activationId) throws GenericCryptoException {
@@ -85,12 +86,15 @@ public class HybridPublicKeyFingerprint {
         return computeTruncatedFingerprint(fingerprintBytes);
     }
 
-    private static String computeEcP384MlL3Fingerprint(ECPublicKey ecDevicePublicKey, MLDSAPublicKey pqcDevicePublicKey, ECPublicKey ecServerPublicKey, MLDSAPublicKey pqcServerPublicKey, String activationId) throws GenericCryptoException {
+    private static String computeEcP384MlFingerprint(SharedSecretAlgorithm sharedSecretAlgorithm, ECPublicKey ecDevicePublicKey, MLDSAPublicKey pqcDevicePublicKey, ECPublicKey ecServerPublicKey, MLDSAPublicKey pqcServerPublicKey, String activationId) throws GenericCryptoException {
         if (ecDevicePublicKey == null || pqcDevicePublicKey == null || ecServerPublicKey == null || pqcServerPublicKey == null || activationId == null) {
-            throw new GenericCryptoException("Missing data for EC_P384_ML_L3 fingerprint computation");
+            throw new GenericCryptoException("Missing data for hybrid fingerprint computation");
+        }
+        if (sharedSecretAlgorithm != SharedSecretAlgorithm.EC_P384_ML_L3 && sharedSecretAlgorithm != SharedSecretAlgorithm.EC_P384_ML_L5) {
+            throw new GenericCryptoException("Hybrid shared secret algorithm expected for fingerprint, requested algorithm: " + sharedSecretAlgorithm);
         }
         final byte[] fingerprintBytes = ByteUtils.concat(
-                SharedSecretAlgorithm.EC_P384_ML_L3.name().getBytes(StandardCharsets.UTF_8),
+                sharedSecretAlgorithm.name().getBytes(StandardCharsets.UTF_8),
                 getNormalizedPublicKeyBytes(ecDevicePublicKey),
                 getNormalizedPublicKeyBytes(pqcDevicePublicKey),
                 activationId.getBytes(StandardCharsets.UTF_8),
