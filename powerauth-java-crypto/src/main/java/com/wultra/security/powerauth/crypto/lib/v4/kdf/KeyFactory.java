@@ -18,6 +18,7 @@
 package com.wultra.security.powerauth.crypto.lib.v4.kdf;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 
 import javax.crypto.SecretKey;
 
@@ -80,12 +81,17 @@ public class KeyFactory {
     /**
      * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID_BASE} for algorithm EC_P384_ML_L3.
      *
+     * @param sharedSecretAlgorithm Shared secret algorithm.
      * @param keySharedSecretHybridBase Shared secret from hybrid key exchange.
      * @return Derived hybrid shared secret key.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
-    public static SecretKey deriveKeySharedSecretHybrid(SecretKey keySharedSecretHybridBase) throws GenericCryptoException {
-        return derive(keySharedSecretHybridBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L3);
+    public static SecretKey deriveKeySharedSecretHybrid(SharedSecretAlgorithm sharedSecretAlgorithm, SecretKey keySharedSecretHybridBase) throws GenericCryptoException {
+        return switch (sharedSecretAlgorithm) {
+            case EC_P384_ML_L3 -> derive(keySharedSecretHybridBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L3);
+            case EC_P384_ML_L5 -> derive(keySharedSecretHybridBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L5);
+            default -> throw new GenericCryptoException("Unsupported shared secret algorithm: " + sharedSecretAlgorithm);
+        };
     }
 
     /**

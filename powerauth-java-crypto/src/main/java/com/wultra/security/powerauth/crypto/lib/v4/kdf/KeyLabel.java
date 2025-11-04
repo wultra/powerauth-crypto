@@ -42,6 +42,9 @@ public enum KeyLabel {
     /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID} (algorithm EC_P384_ML_L3). */
     SHARED_SECRET_EC_P384_ML_L3("shared-secret/ec-p384-ml-l3"),
 
+    /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID} (algorithm EC_P384_ML_L5). */
+    SHARED_SECRET_EC_P384_ML_L5("shared-secret/ec-p384-ml-l5"),
+
     /** Label for deriving {@code KEY_ENC} from {@code BASE_KEY}. */
     AEAD_ENC("aead/enc"),
 

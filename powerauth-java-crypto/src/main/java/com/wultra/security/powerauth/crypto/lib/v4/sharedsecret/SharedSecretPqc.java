@@ -56,7 +56,7 @@ public class SharedSecretPqc implements SharedSecret<SharedSecretRequestPqc, Sha
      * Default PQC shared secret algorithm.
      */
     public SharedSecretPqc() {
-        this(SharedSecretAlgorithm.ML_L3);
+        this(SharedSecretAlgorithm.ML_L5);
     }
 
     /**

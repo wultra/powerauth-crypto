@@ -28,7 +28,9 @@ import com.wultra.security.powerauth.crypto.lib.v4.api.PqcDsa;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.CustomString;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlDsa;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import org.bouncycastle.jcajce.interfaces.MLDSAPublicKey;
+import org.bouncycastle.jcajce.spec.MLDSAParameterSpec;
 
 import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
@@ -54,7 +56,17 @@ public class PowerAuthServerActivation {
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
-    private static final PqcDsa PQC_DSA = new MlDsa();
+    private static PqcDsa pqcDsaMlL3;
+    private static PqcDsa pqcDsaMlL5;
+
+    static {
+        try {
+            pqcDsaMlL3 = new MlDsa(MLDSAParameterSpec.ml_dsa_65);
+            pqcDsaMlL5 = new MlDsa(MLDSAParameterSpec.ml_dsa_87);
+        } catch (GenericCryptoException e) {
+            // impossible case
+        }
+    }
 
     /**
      * Custom bytes for MAC for counter data.
@@ -84,11 +96,17 @@ public class PowerAuthServerActivation {
      *     <li>4.0</li>
      * </ul>
      *
+     * @param sharedSecretAlgorithm Shared secret algorithm.
      * @return A new server key pair.
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
+     * @throws GenericCryptoException In case of unsupported shared secret algorithm.
      */
-    public KeyPair generatePqcServerKeyPair() throws CryptoProviderException {
-        return PQC_DSA.generateKeyPair();
+    public KeyPair generatePqcServerKeyPair(SharedSecretAlgorithm sharedSecretAlgorithm) throws CryptoProviderException, GenericCryptoException {
+        return switch (sharedSecretAlgorithm) {
+            case ML_L3, EC_P384_ML_L3 -> pqcDsaMlL3.generateKeyPair();
+            case ML_L5, EC_P384_ML_L5 -> pqcDsaMlL5.generateKeyPair();
+            default -> throw new GenericCryptoException("Unsupported cryptography algorithm: " + sharedSecretAlgorithm);
+        };
     }
 
     /**
@@ -126,13 +144,15 @@ public class PowerAuthServerActivation {
      * @param activationCode Short activation ID.
      * @param masterPrivateKey Master Private Key.
      * @return Signature of activation data using Master Private Key.
-     * @throws InvalidKeyException In case Master Private Key is invalid.
      * @throws GenericCryptoException In case signature computation fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public byte[] generateActivationSignatureMldsa(String activationCode, PrivateKey masterPrivateKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
+    public byte[] generateActivationSignatureMldsa(String activationCode, PrivateKey masterPrivateKey) throws GenericCryptoException {
         final byte[] bytes = activationCode.getBytes(StandardCharsets.UTF_8);
-        return PQC_DSA.sign(masterPrivateKey, bytes);
+        return switch (masterPrivateKey.getAlgorithm()) {
+            case "ML-DSA-65" -> pqcDsaMlL3.sign(masterPrivateKey, bytes);
+            case "ML-DSA-87" -> pqcDsaMlL5.sign(masterPrivateKey, bytes);
+            default -> throw new GenericCryptoException("Unsupported algorithm: " + masterPrivateKey.getAlgorithm());
+        };
     }
 
     /**
@@ -227,13 +247,14 @@ public class PowerAuthServerActivation {
     }
 
     /**
-     * Compute a fingerprint for the version 4 activation for algorithm EC_P384_ML_L3. The fingerprint can be used for visual validation of exchanged device public key.
+     * Compute a fingerprint for the version 4 activation for algorithm EC_P384_ML_*. The fingerprint can be used for visual validation of exchanged device public key.
      *
      * <p><b>PowerAuth protocol versions:</b>
      * <ul>
      *     <li>4.0</li>
      * </ul>
      *
+     * @param sharedSecretAlgorithm Shared secret algorithm.
      * @param ecDevicePublicKey EC device public key.
      * @param pqcDevicePublicKey PQC device public key.
      * @param ecServerPublicKey EC server public key.
@@ -243,8 +264,8 @@ public class PowerAuthServerActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      * @throws GenericCryptoException In case fingerprint could not be calculated.
      */
-    public String computeActivationHybridFingerprint(PublicKey ecDevicePublicKey, PublicKey pqcDevicePublicKey, PublicKey ecServerPublicKey, PublicKey pqcServerPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
-        return HybridPublicKeyFingerprint.computeHybridFingerprint(((ECPublicKey) ecDevicePublicKey), (MLDSAPublicKey) pqcDevicePublicKey, (ECPublicKey) ecServerPublicKey, (MLDSAPublicKey) pqcServerPublicKey, activationId, ActivationVersion.VERSION_4);
+    public String computeActivationHybridFingerprint(SharedSecretAlgorithm sharedSecretAlgorithm, PublicKey ecDevicePublicKey, PublicKey pqcDevicePublicKey, PublicKey ecServerPublicKey, PublicKey pqcServerPublicKey, String activationId) throws GenericCryptoException, CryptoProviderException {
+        return HybridPublicKeyFingerprint.computeHybridFingerprint(sharedSecretAlgorithm, ((ECPublicKey) ecDevicePublicKey), (MLDSAPublicKey) pqcDevicePublicKey, (ECPublicKey) ecServerPublicKey, (MLDSAPublicKey) pqcServerPublicKey, activationId, ActivationVersion.VERSION_4);
     }
 
     /**

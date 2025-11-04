@@ -262,22 +262,30 @@ public class GenerateVectorDataTest {
             final PrivateKey masterPrivateKeyEcdsa = kpEcdsa.getPrivate();
             final PublicKey masterPublicKeyEcdsa = kpEcdsa.getPublic();
 
-            final KeyPair kpMldsa = activationServer.generatePqcServerKeyPair();
-            final PrivateKey masterPrivateKeyMldsa = kpMldsa.getPrivate();
-            final PublicKey masterPublicKeyMldsa = kpMldsa.getPublic();
+            final KeyPair kpMldsa65 = activationServer.generatePqcServerKeyPair(SharedSecretAlgorithm.EC_P384_ML_L3);
+            final PrivateKey masterPrivateKeyMldsa65 = kpMldsa65.getPrivate();
+            final PublicKey masterPublicKeyMldsa65 = kpMldsa65.getPublic();
+
+            final KeyPair kpMldsa87 = activationServer.generatePqcServerKeyPair(SharedSecretAlgorithm.EC_P384_ML_L5);
+            final PrivateKey masterPrivateKeyMldsa87 = kpMldsa87.getPrivate();
+            final PublicKey masterPublicKeyMldsa87 = kpMldsa87.getPublic();
 
             final byte[] activationSignatureEcdsa = activationServer.generateActivationSignatureEcdsa(activationCode, masterPrivateKeyEcdsa);
-            final byte[] activationSignatureMldsa = activationServer.generateActivationSignatureMldsa(activationCode, masterPrivateKeyMldsa);
+            final byte[] activationSignatureMldsa65 = activationServer.generateActivationSignatureMldsa(activationCode, masterPrivateKeyMldsa65);
+            final byte[] activationSignatureMldsa87 = activationServer.generateActivationSignatureMldsa(activationCode, masterPrivateKeyMldsa87);
 
             Map<String, String> input = new LinkedHashMap<>();
             input.put("activationCode", activationCode);
             input.put("masterPrivateKeyEcdsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPrivateKeyToBytes(masterPrivateKeyEcdsa)));
             input.put("masterPublicKeyEcdsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, masterPublicKeyEcdsa)));
-            input.put("masterPrivateKeyMldsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(masterPrivateKeyMldsa)));
-            input.put("masterPublicKeyMldsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPublicKeyToBytes(masterPublicKeyMldsa)));
+            input.put("masterPrivateKeyMldsa65", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(masterPrivateKeyMldsa65)));
+            input.put("masterPublicKeyMldsa65", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPublicKeyToBytes(masterPublicKeyMldsa65)));
+            input.put("masterPrivateKeyMldsa87", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(masterPrivateKeyMldsa87)));
+            input.put("masterPublicKeyMldsa87", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPublicKeyToBytes(masterPublicKeyMldsa87)));
             Map<String, String> output = new LinkedHashMap<>();
             output.put("activationSignatureEcdsa", Base64.getEncoder().encodeToString(activationSignatureEcdsa));
-            output.put("activationSignatureMldsa", Base64.getEncoder().encodeToString(activationSignatureMldsa));
+            output.put("activationSignatureMldsa65", Base64.getEncoder().encodeToString(activationSignatureMldsa65));
+            output.put("activationSignatureMldsa87", Base64.getEncoder().encodeToString(activationSignatureMldsa87));
             testSet.addData(input, output);
         }
         writeTestVector(testSet);
@@ -334,8 +342,8 @@ public class GenerateVectorDataTest {
         for (int i = 0; i < max; i++) {
             final KeyPair kpServerEcdsa = activationServer.generateEcServerKeyPair();
             final KeyPair kpDeviceEcdsa = activationClient.generateDeviceEcKeyPair();
-            final KeyPair kpServerMldsa = activationServer.generatePqcServerKeyPair();
-            final KeyPair kpDeviceMldsa = activationClient.generateDevicePqcKeyPair();
+            final KeyPair kpServerMldsa = activationServer.generatePqcServerKeyPair(SharedSecretAlgorithm.EC_P384_ML_L3);
+            final KeyPair kpDeviceMldsa = activationClient.generateDevicePqcKeyPair(SharedSecretAlgorithm.EC_P384_ML_L3);
             final ECPublicKey serverPublicKeyEcdsa = (ECPublicKey) kpServerEcdsa.getPublic();
             final ECPublicKey devicePublicKeyEcdsa = (ECPublicKey) kpDeviceEcdsa.getPublic();
             final MLDSAPublicKey serverPublicKeyMldsa = (MLDSAPublicKey) kpServerMldsa.getPublic();
@@ -343,10 +351,51 @@ public class GenerateVectorDataTest {
 
             final String activationId = generator.generateActivationId();
 
-            final String fingerprintPqc = HybridPublicKeyFingerprint.computeHybridFingerprint(devicePublicKeyEcdsa, devicePublicKeyMldsa, serverPublicKeyEcdsa, serverPublicKeyMldsa, activationId, ActivationVersion.VERSION_4);
+            final String fingerprintPqc = HybridPublicKeyFingerprint.computeHybridFingerprint(SharedSecretAlgorithm.EC_P384_ML_L3, devicePublicKeyEcdsa, devicePublicKeyMldsa, serverPublicKeyEcdsa, serverPublicKeyMldsa, activationId, ActivationVersion.VERSION_4);
 
             final Map<String, String> input = new LinkedHashMap<>();
             input.put("algorithmName", SharedSecretAlgorithm.EC_P384_ML_L3.name());
+            input.put("devicePublicKeyEcdsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, devicePublicKeyEcdsa)));
+            input.put("serverPublicKeyEcdsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, serverPublicKeyEcdsa)));
+            input.put("devicePublicKeyMldsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPublicKeyToBytes(devicePublicKeyMldsa)));
+            input.put("serverPublicKeyMldsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPublicKeyToBytes(serverPublicKeyMldsa)));
+            final Map<String, String> output = new LinkedHashMap<>();
+            output.put("activationId", activationId);
+            output.put("fingerprint", fingerprintPqc);
+            testSet.addData(input, output);
+        }
+        writeTestVector(testSet);
+    }
+
+    /**
+     * Generate test data for public key fingerprint V4 test for algorithm EC_P384_ML_L5.
+     *
+     * @throws Exception In case any unknown error occurs.
+     */
+    @Test
+    public void testPublicKeyFingerprintV4EcP384MlL5() throws Exception {
+        final PowerAuthServerActivation activationServer = new PowerAuthServerActivation();
+        final PowerAuthClientActivation activationClient = new PowerAuthClientActivation();
+        final IdentifierGenerator generator = new IdentifierGenerator();
+        final TestSet testSet = new TestSet("public-key-fingerprint-ec-p384-ml-l5-v4.json", "Fingerprint values for provided public keys, used for visual verification of the successful and untampered public key exchange.");
+
+        int max = 100;
+        for (int i = 0; i < max; i++) {
+            final KeyPair kpServerEcdsa = activationServer.generateEcServerKeyPair();
+            final KeyPair kpDeviceEcdsa = activationClient.generateDeviceEcKeyPair();
+            final KeyPair kpServerMldsa = activationServer.generatePqcServerKeyPair(SharedSecretAlgorithm.EC_P384_ML_L5);
+            final KeyPair kpDeviceMldsa = activationClient.generateDevicePqcKeyPair(SharedSecretAlgorithm.EC_P384_ML_L5);
+            final ECPublicKey serverPublicKeyEcdsa = (ECPublicKey) kpServerEcdsa.getPublic();
+            final ECPublicKey devicePublicKeyEcdsa = (ECPublicKey) kpDeviceEcdsa.getPublic();
+            final MLDSAPublicKey serverPublicKeyMldsa = (MLDSAPublicKey) kpServerMldsa.getPublic();
+            final MLDSAPublicKey devicePublicKeyMldsa = (MLDSAPublicKey) kpDeviceMldsa.getPublic();
+
+            final String activationId = generator.generateActivationId();
+
+            final String fingerprintPqc = HybridPublicKeyFingerprint.computeHybridFingerprint(SharedSecretAlgorithm.EC_P384_ML_L3, devicePublicKeyEcdsa, devicePublicKeyMldsa, serverPublicKeyEcdsa, serverPublicKeyMldsa, activationId, ActivationVersion.VERSION_4);
+
+            final Map<String, String> input = new LinkedHashMap<>();
+            input.put("algorithmName", SharedSecretAlgorithm.EC_P384_ML_L5.name());
             input.put("devicePublicKeyEcdsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, devicePublicKeyEcdsa)));
             input.put("serverPublicKeyEcdsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPublicKeyToBytes(EcCurve.P384, serverPublicKeyEcdsa)));
             input.put("devicePublicKeyMldsa", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPublicKeyToBytes(devicePublicKeyMldsa)));

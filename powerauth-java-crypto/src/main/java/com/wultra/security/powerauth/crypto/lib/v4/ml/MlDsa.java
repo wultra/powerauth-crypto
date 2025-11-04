@@ -38,10 +38,10 @@ public class MlDsa implements PqcDsa {
     private final MLDSAParameterSpec dsaParameterSpec;
 
     /**
-     * Construct with default parameter spec (ml_dsa_65).
+     * Construct with default parameter spec (ml_dsa_87).
      */
     public MlDsa() {
-        this.dsaParameterSpec = MLDSAParameterSpec.ml_dsa_65;
+        this.dsaParameterSpec = MLDSAParameterSpec.ml_dsa_87;
     }
 
     /**
