@@ -1,6 +1,7 @@
 package com.wultra.security.powerauth.crypto.lib.v4.model.request;
 
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretRequest;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class DefaultSharedSecretRequest implements SharedSecretRequest {
     /**
      * Used algorithm.
      */
-    private String algorithm;
+    private SharedSecretAlgorithm algorithm;
 
     /**
      * Encapsulation keys encoded as Base64.

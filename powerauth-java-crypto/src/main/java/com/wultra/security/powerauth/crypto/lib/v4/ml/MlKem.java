@@ -53,11 +53,10 @@ public class MlKem implements Kem {
     /**
      * Construct with a specific parameter spec.
      * @param kemParameterSpec Algorithm parameter spec.
-     * @throws GenericCryptoException In case of missing parameter specification.
      */
-    public MlKem(MLKEMParameterSpec kemParameterSpec) throws GenericCryptoException {
+    public MlKem(MLKEMParameterSpec kemParameterSpec) {
         if (kemParameterSpec == null) {
-            throw new GenericCryptoException("Missing ML-KEM parameter specification");
+            throw new IllegalArgumentException("Missing ML-KEM parameter specification");
         }
         this.kemParameterSpec = kemParameterSpec;
     }

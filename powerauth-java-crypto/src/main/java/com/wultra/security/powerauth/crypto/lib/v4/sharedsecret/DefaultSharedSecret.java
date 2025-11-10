@@ -80,7 +80,7 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
                 encapsulationKeys.add(Base64.getEncoder().encodeToString(publicBytes));
             }
             final DefaultSharedSecretRequest request = new DefaultSharedSecretRequest(
-                    algorithm.name(),
+                    algorithm,
                     encapsulationKeys
             );
             final DefaultSharedSecretClientContext context = new DefaultSharedSecretClientContext(decapsulationKeys);
@@ -95,7 +95,7 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
         if (request == null || request.getAlgorithm() == null || request.getEncapsulationKeys() == null) {
             throw new GenericCryptoException("Invalid shared secret request");
         }
-        if (!request.getAlgorithm().equals(algorithm.name())) {
+        if (!request.getAlgorithm().equals(algorithm)) {
             throw new GenericCryptoException("Unexpected algorithm: " + request.getAlgorithm());
         }
         List<String> encapsulationKeys = request.getEncapsulationKeys();
