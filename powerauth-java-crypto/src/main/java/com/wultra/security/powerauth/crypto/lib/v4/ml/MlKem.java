@@ -18,7 +18,7 @@ package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
 import com.wultra.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKem;
+import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 import org.bouncycastle.jcajce.spec.KEMExtractSpec;
 import org.bouncycastle.jcajce.spec.KEMGenerateSpec;
@@ -35,9 +35,11 @@ import java.security.*;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class MlKem implements PqcKem {
+public class MlKem implements Kem {
 
     private static final Logger logger = LoggerFactory.getLogger(MlKem.class);
+
+    private static final MlKemKeyConvertor KEY_CONVERTOR = new MlKemKeyConvertor();
 
     private final MLKEMParameterSpec kemParameterSpec;
 
@@ -103,6 +105,16 @@ public class MlKem implements PqcKem {
             logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Error during decapsulation", e);
         }
+    }
+
+    @Override
+    public byte[] convertPublicKeyToBytes(PublicKey publicKey) throws GenericCryptoException {
+        return KEY_CONVERTOR.convertPublicKeyToBytes(publicKey);
+    }
+
+    @Override
+    public PublicKey convertBytesToPublicKey(byte[] publicKeyBytes) throws GenericCryptoException {
+        return KEY_CONVERTOR.convertBytesToPublicKey(publicKeyBytes);
     }
 
 }

@@ -21,11 +21,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
-import com.wultra.security.powerauth.crypto.lib.v4.model.*;
+import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
+import com.wultra.security.powerauth.crypto.lib.v4.dh.DhKem;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.DefaultSharedSecretClientContext;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.DefaultSharedSecretRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestEcdhe;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.DefaultSharedSecretResponse;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.response.SharedSecretResponseEcdhe;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,8 +42,7 @@ import java.security.Security;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for shared secret calculation for ECDHE on curve P-384.
@@ -58,33 +60,34 @@ public class SharedSecretEcdheTest {
 
     @Test
     public void testEcdhe_Success() throws Exception {
-        SharedSecretEcdhe sharedSecretEcdhe = new SharedSecretEcdhe();
-        RequestCryptogram request = sharedSecretEcdhe.generateRequestCryptogram();
+        List<Kem> kems = List.of(new DhKem());
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384, kems);
+        RequestCryptogram request = sharedSecret.generateRequestCryptogram();
         assertNotNull(request);
         assertNotNull(request.getSharedSecretRequest());
         assertNotNull(request.getSharedSecretClientContext());
 
-        SharedSecretRequestEcdhe clientRequest = (SharedSecretRequestEcdhe) request.getSharedSecretRequest();
-        SharedSecretClientContextEcdhe clientContext = (SharedSecretClientContextEcdhe) request.getSharedSecretClientContext();
+        DefaultSharedSecretRequest clientRequest = (DefaultSharedSecretRequest) request.getSharedSecretRequest();
+        DefaultSharedSecretClientContext clientContext = (DefaultSharedSecretClientContext) request.getSharedSecretClientContext();
 
-        ResponseCryptogram serverResponse = sharedSecretEcdhe.generateResponseCryptogram(clientRequest);
+        ResponseCryptogram serverResponse = sharedSecret.generateResponseCryptogram(clientRequest);
         assertNotNull(serverResponse);
         assertNotNull(serverResponse.getSharedSecretResponse());
         assertNotNull(serverResponse.getSecretKey());
 
-        SecretKey derivedSharedSecret = sharedSecretEcdhe.computeSharedSecret(
+        SecretKey derivedSharedSecret = sharedSecret.computeSharedSecret(
                 clientContext,
-                (SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()
+                (DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()
         );
         assertNotNull(derivedSharedSecret);
 
-        assertEquals(
-                derivedSharedSecret,
-                serverResponse.getSecretKey()
+        assertArrayEquals(
+                derivedSharedSecret.getEncoded(),
+                serverResponse.getSecretKey().getEncoded()
         );
     }
 
-    private static Stream<Map<String, String>> jsonDataEcdhe_P384_Provider() throws IOException  {
+    private static Stream<Map<String, String>> jsonDataEcdhe_P384_Provider() throws IOException {
         InputStream stream = SharedSecretEcdheTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_Test_Vectors.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("ecdhe_test_vectors").stream();
@@ -93,31 +96,37 @@ public class SharedSecretEcdheTest {
     @ParameterizedTest
     @MethodSource("jsonDataEcdhe_P384_Provider")
     public void testEcdheWithTestVectors(Map<String, String> vector) throws Exception {
-        SharedSecretEcdhe sharedSecretEcdhe = new SharedSecretEcdhe();
+        List<Kem> kems = List.of(new DhKem());
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384, kems);
         PrivateKey clientPrivateKey = KEY_CONVERTOR.convertBytesToPrivateKey(EcCurve.P384, Base64.getDecoder().decode(vector.get("ecClientPrivateKey")));
-        SharedSecretClientContextEcdhe clientContext = new SharedSecretClientContextEcdhe(clientPrivateKey);
-        SharedSecretResponseEcdhe response = new SharedSecretResponseEcdhe(vector.get("ecServerPublicKey"));
-        SecretKey sharedSecret = sharedSecretEcdhe.computeSharedSecret(
-                clientContext,
-                response
+        DefaultSharedSecretClientContext clientContext = new DefaultSharedSecretClientContext(List.of(clientPrivateKey));
+        DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(List.of(vector.get("ecServerPublicKey")));
+        SecretKey sharedSecretKey = sharedSecret.computeSharedSecret(clientContext, response);
+        assertNotNull(sharedSecretKey);
+        assertEquals(
+                vector.get("sharedSecret"),
+                Base64.getEncoder().encodeToString(sharedSecretKey.getEncoded())
         );
-        assertNotNull(sharedSecret);
-        assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedSecret"));
     }
 
     @Test
     public void generateTestVectors() throws Exception {
         final List<Map<String, String>> vectors = new ArrayList<>();
+        List<Kem> kems = List.of(new DhKem());
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384, kems);
         for (int i = 0; i < 100; i++) {
-            SharedSecretEcdhe sharedSecretEcdhe = new SharedSecretEcdhe();
-            RequestCryptogram request = sharedSecretEcdhe.generateRequestCryptogram();
-            SharedSecretRequestEcdhe clientRequest = (SharedSecretRequestEcdhe) request.getSharedSecretRequest();
-            SharedSecretClientContextEcdhe clientContext = (SharedSecretClientContextEcdhe) request.getSharedSecretClientContext();
-            ResponseCryptogram serverResponse = sharedSecretEcdhe.generateResponseCryptogram(clientRequest);
+            RequestCryptogram request = sharedSecret.generateRequestCryptogram();
+            DefaultSharedSecretRequest clientRequest = (DefaultSharedSecretRequest) request.getSharedSecretRequest();
+            DefaultSharedSecretClientContext clientContext = (DefaultSharedSecretClientContext) request.getSharedSecretClientContext();
+            ResponseCryptogram serverResponse = sharedSecret.generateResponseCryptogram(clientRequest);
             Map<String, String> vector = new LinkedHashMap<>();
-            vector.put("ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(clientContext.getPrivateKey())));
-            vector.put("ecServerPublicKey", ((SharedSecretResponseEcdhe) serverResponse.getSharedSecretResponse()).getEcServerPublicKey());
-            vector.put("sharedSecret", Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded()));
+            byte[] clientPrivateKeyBytes = KEY_CONVERTOR.convertPrivateKeyToBytes(clientContext.getDecapsulationKeys().get(0));
+            String ecClientPrivateKeyB64 = Base64.getEncoder().encodeToString(clientPrivateKeyBytes);
+            String ecServerPublicKeyB64 = ((DefaultSharedSecretResponse)serverResponse.getSharedSecretResponse()).getEncapsulatedKeys().get(0);
+            String sharedSecretB64 = Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded());
+            vector.put("ecClientPrivateKey", ecClientPrivateKeyB64);
+            vector.put("ecServerPublicKey", ecServerPublicKeyB64);
+            vector.put("sharedSecret", sharedSecretB64);
             vectors.add(vector);
         }
         Map<String, Object> root = Map.of("ecdhe_test_vectors", vectors);

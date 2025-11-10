@@ -68,28 +68,21 @@ public class KeyFactory {
     }
 
     /**
-     * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_ECDHE_BASE} for algorithm EC_P384.
-     *
-     * @param keySharedSecretEcdheBase Shared secret from ECDHE key exchange.
-     * @return Derived shared secret key.
-     * @throws GenericCryptoException In case of cryptographic failure.
-     */
-    public static SecretKey deriveKeySharedSecretEcdhe(SecretKey keySharedSecretEcdheBase) throws GenericCryptoException {
-        return derive(keySharedSecretEcdheBase, KeyLabel.SHARED_SECRET_EC_P384);
-    }
-
-    /**
      * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID_BASE} for algorithm EC_P384_ML_L3.
      *
      * @param sharedSecretAlgorithm Shared secret algorithm.
-     * @param keySharedSecretHybridBase Shared secret from hybrid key exchange.
+     * @param keySharedSecretBase Shared secret from hybrid key exchange.
+     * @param diversifier Diversifier for derivation.
      * @return Derived hybrid shared secret key.
      * @throws GenericCryptoException In case of cryptographic failure.
      */
-    public static SecretKey deriveKeySharedSecretHybrid(SharedSecretAlgorithm sharedSecretAlgorithm, SecretKey keySharedSecretHybridBase) throws GenericCryptoException {
+    public static SecretKey deriveKeySharedSecret(SharedSecretAlgorithm sharedSecretAlgorithm, SecretKey keySharedSecretBase, byte[] diversifier) throws GenericCryptoException {
         return switch (sharedSecretAlgorithm) {
-            case EC_P384_ML_L3 -> derive(keySharedSecretHybridBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L3);
-            case EC_P384_ML_L5 -> derive(keySharedSecretHybridBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L5);
+            case EC_P384 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_EC_P384, diversifier);
+            case EC_P384_ML_L3 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L3, diversifier);
+            case EC_P384_ML_L5 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L5, diversifier);
+            case ML_L3 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_ML_L3, diversifier);
+            case ML_L5 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_ML_L5, diversifier);
             default -> throw new GenericCryptoException("Unsupported shared secret algorithm: " + sharedSecretAlgorithm);
         };
     }

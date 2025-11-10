@@ -134,7 +134,6 @@ public class GenerateVectorDataTest {
         return bytes;
     }
 
-
     /**
      * Generate test data for common KDF function based on KMAC-256, used in protocol V4.
      * @throws Exception In case any unknown error occurs.
@@ -149,6 +148,9 @@ public class GenerateVectorDataTest {
                 KeyLabel.AUTH_BIOMETRY.value(),
                 KeyLabel.SHARED_SECRET_EC_P384.value(),
                 KeyLabel.SHARED_SECRET_EC_P384_ML_L3.value(),
+                KeyLabel.SHARED_SECRET_EC_P384_ML_L5.value(),
+                KeyLabel.SHARED_SECRET_ML_L3.value(),
+                KeyLabel.SHARED_SECRET_ML_L5.value(),
                 KeyLabel.AEAD_ENC.value(),
                 KeyLabel.AEAD_MAC.value(),
                 KeyLabel.VAULT.value(),
@@ -171,7 +173,7 @@ public class GenerateVectorDataTest {
             RANDOM.nextBytes(key);
             final byte[] custom = getRandomBytes(0, 96);
             // derive key
-            final SecretKey derivedKey = Kdf.derive(new SecretKeySpec(key, "AES"), label, custom, out_size);
+            final SecretKey derivedKey = Kdf.derive(new SecretKeySpec(key, "RAW"), label, custom, out_size);
             // store test vector
             final Map<String, String> input = new HashMap<>();
             input.put("key", Base64.getEncoder().encodeToString(key));
@@ -227,7 +229,7 @@ public class GenerateVectorDataTest {
             final byte[] associatedData = getRandomBytes(8, 48);
             final byte[] plaintext = getRandomBytes(0, 256);
             // encrypt data
-            final byte[] ciphertext = Aead.seal(new SecretKeySpec(key, "AES"), keyContext, nonce, associatedData, plaintext);
+            final byte[] ciphertext = Aead.seal(new SecretKeySpec(key, "RAW"), keyContext, nonce, associatedData, plaintext);
             // store test vector
             final Map<String, String> input = new HashMap<>();
             input.put("key", Base64.getEncoder().encodeToString(key));

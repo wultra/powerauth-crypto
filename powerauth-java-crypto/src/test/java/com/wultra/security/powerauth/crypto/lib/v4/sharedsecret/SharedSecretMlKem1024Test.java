@@ -19,14 +19,16 @@ package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
 import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKemKeyConvertor;
-import com.wultra.security.powerauth.crypto.lib.v4.model.SharedSecretClientContextPqc;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.DefaultSharedSecretClientContext;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.DefaultSharedSecretRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestPqc;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.DefaultSharedSecretResponse;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.response.SharedSecretResponsePqc;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -58,23 +60,25 @@ public class SharedSecretMlKem1024Test {
 
     @Test
     public void testMlKem_Success() throws Exception {
-        SharedSecretPqc sharedSecretPqc = new SharedSecretPqc(SharedSecretAlgorithm.ML_L5);
-        RequestCryptogram request = sharedSecretPqc.generateRequestCryptogram();
+        List<Kem> kems = List.of(new MlKem(SharedSecretAlgorithm.ML_L5.getMlKemParameterSpec()));
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.ML_L5, kems);
+
+        RequestCryptogram request = sharedSecret.generateRequestCryptogram();
         assertNotNull(request);
         assertNotNull(request.getSharedSecretRequest());
         assertNotNull(request.getSharedSecretClientContext());
 
-        SharedSecretRequestPqc clientRequest = (SharedSecretRequestPqc) request.getSharedSecretRequest();
-        SharedSecretClientContextPqc clientContext = (SharedSecretClientContextPqc) request.getSharedSecretClientContext();
+        DefaultSharedSecretRequest clientRequest = (DefaultSharedSecretRequest) request.getSharedSecretRequest();
+        DefaultSharedSecretClientContext clientContext = (DefaultSharedSecretClientContext) request.getSharedSecretClientContext();
 
-        ResponseCryptogram serverResponse = sharedSecretPqc.generateResponseCryptogram(clientRequest);
+        ResponseCryptogram serverResponse = sharedSecret.generateResponseCryptogram(clientRequest);
         assertNotNull(serverResponse);
         assertNotNull(serverResponse.getSharedSecretResponse());
         assertNotNull(serverResponse.getSecretKey());
 
-        SecretKey derivedSharedSecret = sharedSecretPqc.computeSharedSecret(
+        SecretKey derivedSharedSecret = sharedSecret.computeSharedSecret(
                 clientContext,
-                (SharedSecretResponsePqc) serverResponse.getSharedSecretResponse()
+                (DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()
         );
         assertNotNull(derivedSharedSecret);
 
@@ -92,31 +96,33 @@ public class SharedSecretMlKem1024Test {
 
     @ParameterizedTest
     @MethodSource("jsonDataMlkem_1024_Provider")
-    public void testEcdheMlkemWithTestVectors(Map<String, String> vector) throws Exception {
-        SharedSecretPqc sharedSecretPqc = new SharedSecretPqc(SharedSecretAlgorithm.ML_L5);
+    public void testMlKemWithTestVectors(Map<String, String> vector) throws Exception {
+        List<Kem> kems = List.of(new MlKem(SharedSecretAlgorithm.ML_L5.getMlKemParameterSpec()));
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.ML_L5, kems);
         PrivateKey pqcClientPrivateKey = KEY_CONVERTOR_PQC.convertBytesToPrivateKey(Base64.getDecoder().decode(vector.get("pqcClientPrivateKey")));
-        SharedSecretClientContextPqc clientContext = new SharedSecretClientContextPqc(pqcClientPrivateKey);
-        SharedSecretResponsePqc response = new SharedSecretResponsePqc(vector.get("pqcCiphertext"));
-        SecretKey sharedSecret = sharedSecretPqc.computeSharedSecret(
-                clientContext,
-                response
+        DefaultSharedSecretClientContext clientContext = new DefaultSharedSecretClientContext(List.of(pqcClientPrivateKey));
+        DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(List.of(vector.get("pqcCiphertext")));
+        SecretKey sharedSecretKey = sharedSecret.computeSharedSecret(clientContext, response);
+        assertNotNull(sharedSecretKey);
+        assertEquals(
+                vector.get("sharedSecret"),
+                Base64.getEncoder().encodeToString(sharedSecretKey.getEncoded())
         );
-        assertNotNull(sharedSecret);
-        assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedSecret"));
     }
 
     @Test
     public void generateTestVectors() throws Exception {
-        final List<Map<String, String>> vectors = new ArrayList<>();
+        List<Map<String, String>> vectors = new ArrayList<>();
+        List<Kem> kems = List.of(new MlKem(SharedSecretAlgorithm.ML_L5.getMlKemParameterSpec()));
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.ML_L5, kems);
         for (int i = 0; i < 100; i++) {
-            SharedSecretPqc sharedSecretPqc = new SharedSecretPqc(SharedSecretAlgorithm.ML_L5);
-            RequestCryptogram request = sharedSecretPqc.generateRequestCryptogram();
-            SharedSecretRequestPqc clientRequest = (SharedSecretRequestPqc) request.getSharedSecretRequest();
-            SharedSecretClientContextPqc clientContext = (SharedSecretClientContextPqc) request.getSharedSecretClientContext();
-            ResponseCryptogram serverResponse = sharedSecretPqc.generateResponseCryptogram(clientRequest);
+            RequestCryptogram request = sharedSecret.generateRequestCryptogram();
+            DefaultSharedSecretRequest clientRequest = (DefaultSharedSecretRequest) request.getSharedSecretRequest();
+            DefaultSharedSecretClientContext clientContext = (DefaultSharedSecretClientContext) request.getSharedSecretClientContext();
+            ResponseCryptogram serverResponse = sharedSecret.generateResponseCryptogram(clientRequest);
             Map<String, String> vector = new LinkedHashMap<>();
-            vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getPqcKemDecapsulationKey())));
-            vector.put("pqcCiphertext", ((SharedSecretResponsePqc) serverResponse.getSharedSecretResponse()).getPqcCiphertext());
+            vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getDecapsulationKeys().get(0))));
+            vector.put("pqcCiphertext", ((DefaultSharedSecretResponse)serverResponse.getSharedSecretResponse()).getEncapsulatedKeys().get(0));
             vector.put("sharedSecret", Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded()));
             vectors.add(vector);
         }
