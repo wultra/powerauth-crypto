@@ -20,7 +20,6 @@ package com.wultra.security.powerauth.crypto.lib.util;
 import com.wultra.security.powerauth.crypto.lib.config.AuthenticationCodeConfiguration;
 import com.wultra.security.powerauth.crypto.lib.config.DecimalAuthenticationCodeConfiguration;
 import com.wultra.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
-import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import lombok.NoArgsConstructor;
@@ -40,6 +39,8 @@ import java.util.List;
 @NoArgsConstructor
 public class AuthenticationCodeUtils {
 
+    private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
+
     private static final byte[] KMAC_AUTH_CODE_CUSTOM_BYTES = "PA4CODE".getBytes(StandardCharsets.UTF_8);
 
     /**
@@ -56,9 +57,8 @@ public class AuthenticationCodeUtils {
      * @param configuration Format of authentication code to produce and parameters for the authentication code.
      * @return PowerAuth authentication code for given data.
      * @throws GenericCryptoException In case authentication code computation fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public String computeAuthCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException, CryptoProviderException {
+    public String computeAuthCode(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration configuration) throws GenericCryptoException {
         if (factorKeys == null) {
             throw new GenericCryptoException("Missing factorKeys parameter");
         }
@@ -71,17 +71,13 @@ public class AuthenticationCodeUtils {
         if (ctrData.length != PowerAuthConfiguration.AUTH_CODE_COUNTER_LENGTH) {
             throw new GenericCryptoException("Invalid length of counter");
         }
-        switch (configuration.getAuthenticationCodeFormat()) {
-            case BASE64 -> {
-                return computeAuthCodeBase64(data, factorKeys, ctrData);
-            }
+        return switch (configuration.getAuthenticationCodeFormat()) {
+            case BASE64 -> computeAuthCodeBase64(data, factorKeys, ctrData);
             case DECIMAL -> {
                 final Integer len = ((DecimalAuthenticationCodeConfiguration) configuration).getLength();
-                return computeAuthCodeDecimal(data, factorKeys, ctrData, len);
+                yield computeAuthCodeDecimal(data, factorKeys, ctrData, len);
             }
-            default ->
-                    throw new GenericCryptoException("Unsupported format of PowerAuth authentication code.");
-        }
+        };
     }
 
     /**
@@ -99,9 +95,8 @@ public class AuthenticationCodeUtils {
      * @param powerAuthConfiguration Format of authentication code to produce and parameters for the authentication code.
      * @return Return "true" if authentication code matches, "false" otherwise.
      * @throws GenericCryptoException In case authentication code computation fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    public boolean validateAuthCode(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration powerAuthConfiguration) throws GenericCryptoException, CryptoProviderException {
+    public boolean validateAuthCode(byte[] data, String authenticationCode, List<SecretKey> factorKeys, byte[] ctrData, AuthenticationCodeConfiguration powerAuthConfiguration) throws GenericCryptoException {
         return SideChannelUtils.constantTimeAreEqual(
                 authenticationCode.getBytes(StandardCharsets.UTF_8),
                 computeAuthCode(data, factorKeys, ctrData, powerAuthConfiguration).getBytes(StandardCharsets.UTF_8)
@@ -110,6 +105,11 @@ public class AuthenticationCodeUtils {
 
     /**
      * Compute online authentication code for given data using a secret factor keys and counter byte array.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>4.0</li>
+     * </ul>
      *
      * @param data Data to be signed.
      * @param factorKeys Keys for computing the authentication code.
@@ -129,6 +129,11 @@ public class AuthenticationCodeUtils {
 
     /**
      * Compute offline authentication code for given data using a secret factor keys and counter byte array.
+     *
+     * <p><b>PowerAuth protocol versions:</b>
+     * <ul>
+     *     <li>4.0</li>
+     * </ul>
      *
      * @param data Data to be signed.
      * @param factorKeys Keys for computing the authentication code.
@@ -173,15 +178,14 @@ public class AuthenticationCodeUtils {
             throw new GenericCryptoException("Invalid length of counter data");
         }
         final List<byte[]> components = new ArrayList<>();
-        for (int i = 0; i < factorKeys.size(); i++) {
-            final SecretKey key = factorKeys.get(0);
-            byte[] keyDerived = Kmac.kmac256(key, ctrData, KMAC_AUTH_CODE_CUSTOM_BYTES);
-            for (int j = 0; j < i; j++) {
-                final SecretKey keyInner = factorKeys.get(j + 1);
-                final byte[] keyDerivedCurrent = Kmac.kmac256(keyInner, ctrData, KMAC_AUTH_CODE_CUSTOM_BYTES);
-                keyDerived = Kmac.kmac256(keyDerivedCurrent, keyDerived, KMAC_AUTH_CODE_CUSTOM_BYTES);
+        for (int i = 1; i <= factorKeys.size(); i++) {
+            byte[] derivedKeyBytes = null;
+            for (int j = 1; j <= i; j++) {
+                final byte[] intermediateData = ByteUtils.concat(ctrData, derivedKeyBytes);
+                derivedKeyBytes = Kmac.kmac256(factorKeys.get(j - 1), intermediateData, KMAC_AUTH_CODE_CUSTOM_BYTES);
             }
-            final byte[] component = Kmac.kmac256(keyDerived, data, KMAC_AUTH_CODE_CUSTOM_BYTES, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4);
+            final SecretKey derivedKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(derivedKeyBytes);
+            final byte[] component = Kmac.kmac256(derivedKey, data, KMAC_AUTH_CODE_CUSTOM_BYTES, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4);
             components.add(component);
         }
         return components;
@@ -203,17 +207,16 @@ public class AuthenticationCodeUtils {
      *               is null, the default system value (8) is used.
      * @return Decimal formatted PowerAuth authentication code for given data.
      * @throws GenericCryptoException In case authentication code computation fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
-    private String computeAuthCodeDecimal(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, Integer length) throws GenericCryptoException, CryptoProviderException {
+    private String computeAuthCodeDecimal(byte[] data, List<SecretKey> factorKeys, byte[] ctrData, Integer length) throws GenericCryptoException {
         // Determine the length of the authentication code component, validate length
         final int decimalLength;
         if (length != null) {
             if (length < 4) {
-                throw new CryptoProviderException("Length must be at least 4, provided: " + length);
+                throw new GenericCryptoException("Length must be at least 4, provided: " + length);
             }
             if (length > 8) {
-                throw new CryptoProviderException("Length must be less or equal to 8, provided: " + length);
+                throw new GenericCryptoException("Length must be less or equal to 8, provided: " + length);
             }
             decimalLength = length;
         } else {
@@ -247,7 +250,6 @@ public class AuthenticationCodeUtils {
      * @param ctrData Counter byte array / derived key index.
      * @return Base64 formatted PowerAuth authentication code for given data.
      * @throws GenericCryptoException In case authentication code computation fails.
-     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     private String computeAuthCodeBase64(byte[] data, List<SecretKey> factorKeys, byte[] ctrData) throws GenericCryptoException {
         // Prepare array of bytes for a complete authentication code

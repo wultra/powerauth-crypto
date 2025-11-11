@@ -108,8 +108,7 @@ class AuthorizationCodeUtilsTest {
         final Map<String, Object> root = new LinkedHashMap<>();
         root.put("auth_code_test_vectors", vectors);
 
-        System.out.println("== Generated vectors for authorization codes ==");
         System.out.println(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root));
-
     }
+
 }
