@@ -39,8 +39,6 @@ import java.util.List;
 @NoArgsConstructor
 public class AuthenticationCodeUtils {
 
-    private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
-
     private static final byte[] KMAC_AUTH_CODE_CUSTOM_BYTES = "PA4CODE".getBytes(StandardCharsets.UTF_8);
 
     /**
@@ -184,8 +182,7 @@ public class AuthenticationCodeUtils {
                 final byte[] intermediateData = ByteUtils.concat(ctrData, derivedKeyBytes);
                 derivedKeyBytes = Kmac.kmac256(factorKeys.get(j - 1), intermediateData, KMAC_AUTH_CODE_CUSTOM_BYTES);
             }
-            final SecretKey derivedKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(derivedKeyBytes);
-            final byte[] component = Kmac.kmac256(derivedKey, data, KMAC_AUTH_CODE_CUSTOM_BYTES, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4);
+            final byte[] component = Kmac.kmac256(derivedKeyBytes, data, KMAC_AUTH_CODE_CUSTOM_BYTES, PowerAuthConfiguration.AUTH_CODE_BINARY_LENGTH_V4);
             components.add(component);
         }
         return components;
