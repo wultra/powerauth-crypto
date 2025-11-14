@@ -103,7 +103,7 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
             throw new GenericCryptoException("Unexpected count of encapsulation keys");
         }
 
-        final List<SecretKey> secretKeys = new ArrayList<>();
+        final List<byte[]> secretKeys = new ArrayList<>();
         final List<String> encapsulatedKeys = new ArrayList<>();
 
         try {
@@ -113,18 +113,13 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
                 final PublicKey publicKey = kem.convertBytesToPublicKey(publicBytes);
 
                 final SecretKeyWithEncapsulation secretWithEncaps = kem.encapsulate(publicKey);
-                final SecretKey secret = KEY_CONVERTOR.convertBytesToSharedSecretKey(secretWithEncaps.getEncoded());
                 final byte[] encapsulated = secretWithEncaps.getEncapsulation();
 
-                secretKeys.add(secret);
+                secretKeys.add(secretWithEncaps.getEncoded());
                 encapsulatedKeys.add(Base64.getEncoder().encodeToString(encapsulated));
             }
 
-            final byte[] concatenatedBytes = ByteUtils.concat(
-                    secretKeys.stream()
-                            .map(KEY_CONVERTOR::convertSharedSecretKeyToBytes)
-                            .toArray(byte[][]::new)
-            );
+            final byte[] concatenatedBytes = ByteUtils.concat(secretKeys.toArray(byte[][]::new));
 
             final SecretKey concatenatedKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(concatenatedBytes);
             final SecretKey derived = KeyFactory.deriveKeySharedSecret(algorithm, concatenatedKey, diversifier);
@@ -150,20 +145,16 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
         }
 
         try {
-            final List<SecretKey> secretKeys = new ArrayList<>();
+            final List<byte[]> secretKeys = new ArrayList<>();
             for (int i = 0; i < kemAlgorithms.size(); i++) {
                 final Kem kem = kemAlgorithms.get(i);
                 final PrivateKey privateKey = decapKeys.get(i);
                 final byte[] ciphertext = Base64.getDecoder().decode(encapsulatedKeys.get(i));
                 final SecretKey secret = kem.decapsulate(privateKey, ciphertext);
-                secretKeys.add(secret);
+                secretKeys.add(secret.getEncoded());
             }
 
-            final byte[] concatenatedBytes = ByteUtils.concat(
-                    secretKeys.stream()
-                            .map(KEY_CONVERTOR::convertSharedSecretKeyToBytes)
-                            .toArray(byte[][]::new)
-            );
+            final byte[] concatenatedBytes = ByteUtils.concat(secretKeys.toArray(byte[][]::new));
 
             final SecretKey concatenatedKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(concatenatedBytes);
             return KeyFactory.deriveKeySharedSecret(algorithm, concatenatedKey, diversifier);
