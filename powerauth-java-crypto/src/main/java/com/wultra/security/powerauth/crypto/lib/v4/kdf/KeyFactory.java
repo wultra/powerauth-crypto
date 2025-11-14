@@ -77,14 +77,7 @@ public class KeyFactory {
      * @throws GenericCryptoException In case of cryptographic failure.
      */
     public static SecretKey deriveKeySharedSecret(SharedSecretAlgorithm sharedSecretAlgorithm, SecretKey keySharedSecretBase, byte[] diversifier) throws GenericCryptoException {
-        return switch (sharedSecretAlgorithm) {
-            case EC_P384 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_EC_P384, diversifier);
-            case EC_P384_ML_L3 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L3, diversifier);
-            case EC_P384_ML_L5 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L5, diversifier);
-            case ML_L3 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_ML_L3, diversifier);
-            case ML_L5 -> derive(keySharedSecretBase, KeyLabel.SHARED_SECRET_ML_L5, diversifier);
-            default -> throw new GenericCryptoException("Unsupported shared secret algorithm: " + sharedSecretAlgorithm);
-        };
+        return derive(keySharedSecretBase, KeyLabel.SHARED_SECRET + "/" + sharedSecretAlgorithm.name(), diversifier);
     }
 
     /**
@@ -381,6 +374,19 @@ public class KeyFactory {
      */
     private static SecretKey derive(SecretKey sourceKey, KeyLabel label, byte[] diversifier) throws GenericCryptoException {
         return Kdf.derive(sourceKey, label.value(), diversifier, 32);
+    }
+
+    /**
+     * Derive a key using KDF with diversifier and default length of 32 bytes.
+     *
+     * @param sourceKey   Secret key used as input for the derivation.
+     * @param label       String label used to uniquely identify the derived key purpose.
+     * @param diversifier Diversifier bytes.
+     * @return Derived secret key.
+     * @throws GenericCryptoException Thrown in case of any cryptographic error.
+     */
+    private static SecretKey derive(SecretKey sourceKey, String label, byte[] diversifier) throws GenericCryptoException {
+        return Kdf.derive(sourceKey, label, diversifier, 32);
     }
 
 }

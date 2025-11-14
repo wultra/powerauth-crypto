@@ -36,20 +36,8 @@ public enum KeyLabel {
     /** Label for deriving {@code KEY_AUTHENTICATION_CODE_BIOMETRY} from {@code KDK_AUTHENTICATION_CODE}. */
     AUTH_BIOMETRY("auth/biometry"),
 
-    /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_ECDHE} (algorithm EC_P384). */
-    SHARED_SECRET_EC_P384("shared-secret/EC_P384"),
-
-    /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID} (algorithm EC_P384_ML_L3). */
-    SHARED_SECRET_EC_P384_ML_L3("shared-secret/EC_P384_ML_L3"),
-
-    /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID} (algorithm EC_P384_ML_L5). */
-    SHARED_SECRET_EC_P384_ML_L5("shared-secret/EC_P384_ML_L5"),
-
-    /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_ML} (algorithm ML_L3). */
-    SHARED_SECRET_ML_L3("shared-secret/ML_L3"),
-
-    /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_ML} (algorithm ML_L5). */
-    SHARED_SECRET_ML_L5("shared-secret/ML_L5"),
+    /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET}. */
+    SHARED_SECRET("shared-secret"),
 
     /** Label for deriving {@code KEY_ENC} from {@code BASE_KEY}. */
     AEAD_ENC("aead/enc"),
