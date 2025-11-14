@@ -97,66 +97,6 @@ public class SharedSecretHybrid768Test {
         );
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class HybridTestEntry {
-        private String clientContext;
-        private DefaultSharedSecretRequest request;
-        private DefaultSharedSecretResponse response;
-        private String sharedSecret;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class HybridTestData {
-        private HybridTestEntry[] testData;
-    }
-
-    @Test
-    public void testHybridFromClient() throws Exception {
-        /*
-         Usage of this test:
-
-         1. In PowerAuthCore project
-            - Open `SharedSecretTests.cpp`
-            - Enable `genTestVectors_EC_P384_ML_L3` test method (uncomment the method in Unit test's constructor)
-            - Run unit tests
-            - Copy result printed in `genTestVectors_EC_P384_ML_L3()` function
-            - Paste test data to `ECDHE_P384_MLKEM_768_Client_Vectors.json` (see below)
-         2. Run this test case
-            - Copy result printed in the test case
-         3. In PowerAuthCore project
-            - Paste result to `ECDHE_P384_MLKEM_768_Client_Vectors.json`
-            - Run script: `src/PowerAuthTests/TestData/update-pa2-files.sh`
-            - Disable `genTestVectors_EC_P384_ML_L3` test method
-            - Run unit test
-         */
-
-        // TODO - update test vectors in PowerAuthCore, update test
-        /*
-        InputStream stream = SharedSecretHybrid768Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_MLKEM_768_Client_Vectors.json");
-        assertNotNull(stream);
-        HybridTestData hybridTestData = MAPPER.readValue(stream, new TypeReference<>() {});
-        assertNotNull(hybridTestData);
-
-        List<Kem> kems = List.of(
-                new DhKem(),
-                new MlKem(SharedSecretAlgorithm.EC_P384_ML_L3.getMlKemParameterSpec())
-        );
-        DefaultSharedSecret algorithm = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384_ML_L3, kems);
-
-        for (HybridTestEntry entry : hybridTestData.getTestData()) {
-            ResponseCryptogram responseCryptogram = algorithm.generateResponseCryptogram(entry.getRequest());
-            entry.setSharedSecret(Base64.getEncoder().encodeToString(responseCryptogram.getSecretKey().getEncoded()));
-            entry.setResponse((DefaultSharedSecretResponse) responseCryptogram.getSharedSecretResponse());
-        }
-
-        System.out.println(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(hybridTestData));
-        */
-    }
-
     private static Stream<Map<String, String>> jsonDataEcdhe_P384_Mlkem_768_Provider() throws IOException {
         InputStream stream = SharedSecretHybrid768Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_MLKEM_768_Test_Vectors.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
