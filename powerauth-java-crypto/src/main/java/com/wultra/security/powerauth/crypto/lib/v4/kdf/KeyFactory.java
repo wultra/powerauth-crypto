@@ -18,7 +18,6 @@
 package com.wultra.security.powerauth.crypto.lib.v4.kdf;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 
 import javax.crypto.SecretKey;
 
@@ -65,19 +64,6 @@ public class KeyFactory {
     public static SecretKey deriveKeyAuthenticationCodeBiometry(SecretKey keyActivationSecret) throws GenericCryptoException {
         SecretKey kdkAuthenticationCode = deriveKdkAuthenticationCode(keyActivationSecret);
         return deriveKeyAuthenticationCodeBiometryFromKdk(kdkAuthenticationCode);
-    }
-
-    /**
-     * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID_BASE} for algorithm EC_P384_ML_L3.
-     *
-     * @param sharedSecretAlgorithm Shared secret algorithm.
-     * @param keySharedSecretBase Shared secret from hybrid key exchange.
-     * @param diversifier Diversifier for derivation.
-     * @return Derived hybrid shared secret key.
-     * @throws GenericCryptoException In case of cryptographic failure.
-     */
-    public static SecretKey deriveKeySharedSecret(SharedSecretAlgorithm sharedSecretAlgorithm, SecretKey keySharedSecretBase, byte[] diversifier) throws GenericCryptoException {
-        return derive(keySharedSecretBase, KeyLabel.SHARED_SECRET + "/" + sharedSecretAlgorithm.name(), diversifier);
     }
 
     /**
@@ -374,19 +360,6 @@ public class KeyFactory {
      */
     private static SecretKey derive(SecretKey sourceKey, KeyLabel label, byte[] diversifier) throws GenericCryptoException {
         return Kdf.derive(sourceKey, label.value(), diversifier, 32);
-    }
-
-    /**
-     * Derive a key using KDF with diversifier and default length of 32 bytes.
-     *
-     * @param sourceKey   Secret key used as input for the derivation.
-     * @param label       String label used to uniquely identify the derived key purpose.
-     * @param diversifier Diversifier bytes.
-     * @return Derived secret key.
-     * @throws GenericCryptoException Thrown in case of any cryptographic error.
-     */
-    private static SecretKey derive(SecretKey sourceKey, String label, byte[] diversifier) throws GenericCryptoException {
-        return Kdf.derive(sourceKey, label, diversifier, 32);
     }
 
 }

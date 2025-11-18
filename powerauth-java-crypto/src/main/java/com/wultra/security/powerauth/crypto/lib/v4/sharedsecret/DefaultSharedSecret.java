@@ -17,11 +17,12 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
+import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.ByteUtils;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.api.*;
-import com.wultra.security.powerauth.crypto.lib.v4.kdf.KeyFactory;
+import com.wultra.security.powerauth.crypto.lib.v4.kdf.Kmac;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.DefaultSharedSecretClientContext;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.DefaultSharedSecretRequest;
@@ -31,6 +32,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCrypto
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -44,12 +46,15 @@ import java.util.*;
  */
 public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> {
 
+    private static final byte[] KDF_CUSTOM_BYTES = "KDF".getBytes(StandardCharsets.UTF_8);
+    private static final String LABEL_PREFIX_SHARED_SECRET = "shared-secret/";
     private static final String VERSION = "4.0";
+
+    private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
     private final SharedSecretAlgorithm algorithm;
     private final List<Kem> kemAlgorithms;
-    private final byte[] diversifier;
 
     /**
      * Construct a default shared secret implementation.
@@ -59,7 +64,6 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
     public DefaultSharedSecret(SharedSecretAlgorithm algorithm, List<Kem> kemAlgorithms) {
         this.algorithm = algorithm;
         this.kemAlgorithms = Collections.unmodifiableList(kemAlgorithms);
-        this.diversifier = ByteUtils.encodeString(VERSION);
     }
 
     @Override
@@ -119,12 +123,10 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
                 encapsulatedKeys.add(Base64.getEncoder().encodeToString(encapsulated));
             }
 
-            final byte[] concatenatedBytes = ByteUtils.concat(secretKeys.toArray(byte[][]::new));
+            final byte[] salt = KEY_GENERATOR.generateRandomBytes(32);
+            final SecretKey derived = deriveSharedSecret(secretKeys, salt);
 
-            final SecretKey concatenatedKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(concatenatedBytes);
-            final SecretKey derived = KeyFactory.deriveKeySharedSecret(algorithm, concatenatedKey, diversifier);
-
-            final DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(encapsulatedKeys);
+            final DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(salt, encapsulatedKeys);
             return new ResponseCryptogram(response, derived);
         } catch (Exception e) {
             throw new GenericCryptoException("Failed to generate response cryptogram", e);
@@ -133,7 +135,7 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
 
     @Override
     public SecretKey computeSharedSecret(DefaultSharedSecretClientContext context, DefaultSharedSecretResponse response) throws GenericCryptoException {
-        if (context == null || response == null || context.getDecapsulationKeys() == null || response.getEncapsulatedKeys() == null) {
+        if (context == null || response == null || context.getDecapsulationKeys() == null || response.getSalt() == null || response.getEncapsulatedKeys() == null) {
             throw new GenericCryptoException("Invalid shared secret response");
         }
 
@@ -154,13 +156,39 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
                 secretKeys.add(secret.getEncoded());
             }
 
-            final byte[] concatenatedBytes = ByteUtils.concat(secretKeys.toArray(byte[][]::new));
-
-            final SecretKey concatenatedKey = KEY_CONVERTOR.convertBytesToSharedSecretKey(concatenatedBytes);
-            return KeyFactory.deriveKeySharedSecret(algorithm, concatenatedKey, diversifier);
+            return deriveSharedSecret(secretKeys, response.getSalt());
         } catch (Exception e) {
             throw new GenericCryptoException("Failed to compute shared secret", e);
         }
+    }
+
+
+    /**
+     * Shared secret derivation according to NIST Special Publication 800-56C.
+     */
+    private SecretKey deriveSharedSecret(List<byte[]> secretKeys, byte[] salt) throws GenericCryptoException {
+        if (secretKeys == null || secretKeys.isEmpty()) {
+            throw new GenericCryptoException("Missing shared secrets for KDF");
+        }
+        if (salt == null || salt.length == 0) {
+            throw new GenericCryptoException("Missing salt for KDF");
+        }
+        final byte[][] secretKeyBytes = secretKeys.toArray(byte[][]::new);          // key conversion to byte[][]
+        final byte[] concatenatedBytes = ByteUtils.concatWithSizes(secretKeyBytes); // concatenated secrets Z with their sizes
+        final String label = LABEL_PREFIX_SHARED_SECRET + algorithm.name();         // label, e.g. shared-secret/EC_P384_ML_L5
+        final byte[] fixedInfo = ByteUtils.concatStrings(label, VERSION);           // fixedInfo = label || version
+        final byte[] x = ByteUtils.concat(
+                ByteUtils.encodeInt(1),                                             // counter
+                concatenatedBytes,                                                  // || Z
+                fixedInfo                                                           // || fixedInfo
+        );
+        final byte[] sharedSecret = Kmac.kmac256(                                   // mapped from: H(x) = KMAC(salt, x, H_outputBits, S)
+                salt,
+                x,
+                KDF_CUSTOM_BYTES,
+                32
+        );
+        return KEY_CONVERTOR.convertBytesToSharedSecretKey(sharedSecret);           // return converted secret key
     }
 
 }

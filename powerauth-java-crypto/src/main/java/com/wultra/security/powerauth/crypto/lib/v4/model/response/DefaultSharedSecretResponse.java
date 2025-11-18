@@ -18,6 +18,11 @@ import java.util.List;
 public class DefaultSharedSecretResponse implements SharedSecretResponse {
 
     /**
+     * Salt used during shared secret key derivation.
+     */
+    private byte[] salt;
+
+    /**
      * Encapsulated keys encoded as Base64.
      */
     private List<String> encapsulatedKeys;

@@ -32,9 +32,6 @@ import com.wultra.security.powerauth.crypto.lib.v4.model.request.DefaultSharedSe
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.DefaultSharedSecretResponse;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -114,7 +111,8 @@ public class SharedSecretHybrid768Test {
         PrivateKey ecClientPrivateKey = KEY_CONVERTOR_EC.convertBytesToPrivateKey(EcCurve.P384, Base64.getDecoder().decode(vector.get("ecClientPrivateKey")));
         PrivateKey pqcClientPrivateKey = KEY_CONVERTOR_PQC.convertBytesToPrivateKey(Base64.getDecoder().decode(vector.get("pqcClientPrivateKey")));
         DefaultSharedSecretClientContext clientContext = new DefaultSharedSecretClientContext(List.of(ecClientPrivateKey, pqcClientPrivateKey));
-        DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(List.of(vector.get("ecServerPublicKey"), vector.get("pqcCiphertext")));
+        byte[] salt = Base64.getDecoder().decode(vector.get("salt"));
+        DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(salt, List.of(vector.get("ecServerPublicKey"), vector.get("pqcCiphertext")));
         SecretKey sharedSecretKey = sharedSecret.computeSharedSecret(clientContext, response);
         assertNotNull(sharedSecretKey);
         assertEquals(
@@ -141,6 +139,7 @@ public class SharedSecretHybrid768Test {
             vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getDecapsulationKeys().get(1))));
             vector.put("ecServerPublicKey", ((DefaultSharedSecretResponse)serverResponse.getSharedSecretResponse()).getEncapsulatedKeys().get(0));
             vector.put("pqcCiphertext", ((DefaultSharedSecretResponse)serverResponse.getSharedSecretResponse()).getEncapsulatedKeys().get(1));
+            vector.put("salt", Base64.getEncoder().encodeToString(((DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()).getSalt()));
             vector.put("sharedSecret", Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded()));
             vectors.add(vector);
         }

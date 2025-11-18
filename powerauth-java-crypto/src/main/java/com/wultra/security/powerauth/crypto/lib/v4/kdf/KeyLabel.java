@@ -36,9 +36,6 @@ public enum KeyLabel {
     /** Label for deriving {@code KEY_AUTHENTICATION_CODE_BIOMETRY} from {@code KDK_AUTHENTICATION_CODE}. */
     AUTH_BIOMETRY("auth/biometry"),
 
-    /** Label for deriving {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET}. */
-    SHARED_SECRET("shared-secret"),
-
     /** Label for deriving {@code KEY_ENC} from {@code BASE_KEY}. */
     AEAD_ENC("aead/enc"),
 

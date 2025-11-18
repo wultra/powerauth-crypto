@@ -100,7 +100,8 @@ public class SharedSecretEcdheTest {
         DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384, kems);
         PrivateKey clientPrivateKey = KEY_CONVERTOR.convertBytesToPrivateKey(EcCurve.P384, Base64.getDecoder().decode(vector.get("ecClientPrivateKey")));
         DefaultSharedSecretClientContext clientContext = new DefaultSharedSecretClientContext(List.of(clientPrivateKey));
-        DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(List.of(vector.get("ecServerPublicKey")));
+        byte[] salt = Base64.getDecoder().decode(vector.get("salt"));
+        DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(salt, List.of(vector.get("ecServerPublicKey")));
         SecretKey sharedSecretKey = sharedSecret.computeSharedSecret(clientContext, response);
         assertNotNull(sharedSecretKey);
         assertEquals(
@@ -124,8 +125,10 @@ public class SharedSecretEcdheTest {
             String ecClientPrivateKeyB64 = Base64.getEncoder().encodeToString(clientPrivateKeyBytes);
             String ecServerPublicKeyB64 = ((DefaultSharedSecretResponse)serverResponse.getSharedSecretResponse()).getEncapsulatedKeys().get(0);
             String sharedSecretB64 = Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded());
+            String salt = Base64.getEncoder().encodeToString(((DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()).getSalt());
             vector.put("ecClientPrivateKey", ecClientPrivateKeyB64);
             vector.put("ecServerPublicKey", ecServerPublicKeyB64);
+            vector.put("salt", salt);
             vector.put("sharedSecret", sharedSecretB64);
             vectors.add(vector);
         }
