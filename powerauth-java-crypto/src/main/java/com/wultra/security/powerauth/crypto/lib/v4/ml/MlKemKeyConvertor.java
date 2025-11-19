@@ -120,6 +120,6 @@ public class MlKemKeyConvertor implements PqcKemKeyConvertor {
         if (bytesSecretKey == null) {
             throw new GenericCryptoException("Missing shared secret key bytes");
         }
-        return new SecretKeySpec(bytesSecretKey, "AES");
+        return new SecretKeySpec(bytesSecretKey, "RAW");
     }
 }

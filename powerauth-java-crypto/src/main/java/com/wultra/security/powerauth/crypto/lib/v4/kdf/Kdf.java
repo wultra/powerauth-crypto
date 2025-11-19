@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class Kdf {
 
-    private static final byte[] KDF_CUSTOM_BYTES_PREFIX = (CustomString.PA4KDF.value() + ":").getBytes(StandardCharsets.UTF_8);
+    private static final byte[] KDF_CUSTOM_BYTES = CustomString.PA4KDF.value().getBytes(StandardCharsets.UTF_8);
     private static final byte[] PBKDF_CUSTOM_BYTES = CustomString.PA4PBKDF.value().getBytes(StandardCharsets.UTF_8);
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
@@ -56,8 +56,11 @@ public class Kdf {
         if (diversifier == null) {
             diversifier = new byte[0];
         }
-        final byte[] custom = ByteUtils.concat(KDF_CUSTOM_BYTES_PREFIX, label.getBytes(StandardCharsets.UTF_8));
-        final byte[] output = Kmac.kmac256(key, diversifier, custom, outLength);
+        final byte[] data = ByteUtils.concatWithSizes(
+                ByteUtils.encodeString(label),
+                diversifier
+        );
+        final byte[] output = Kmac.kmac256(key, data, KDF_CUSTOM_BYTES, outLength);
         return KEY_CONVERTOR.convertBytesToSharedSecretKey(output);
     }
 

@@ -18,7 +18,6 @@
 package com.wultra.security.powerauth.crypto.lib.v4.kdf;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
 
 import javax.crypto.SecretKey;
 
@@ -65,33 +64,6 @@ public class KeyFactory {
     public static SecretKey deriveKeyAuthenticationCodeBiometry(SecretKey keyActivationSecret) throws GenericCryptoException {
         SecretKey kdkAuthenticationCode = deriveKdkAuthenticationCode(keyActivationSecret);
         return deriveKeyAuthenticationCodeBiometryFromKdk(kdkAuthenticationCode);
-    }
-
-    /**
-     * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_ECDHE_BASE} for algorithm EC_P384.
-     *
-     * @param keySharedSecretEcdheBase Shared secret from ECDHE key exchange.
-     * @return Derived shared secret key.
-     * @throws GenericCryptoException In case of cryptographic failure.
-     */
-    public static SecretKey deriveKeySharedSecretEcdhe(SecretKey keySharedSecretEcdheBase) throws GenericCryptoException {
-        return derive(keySharedSecretEcdheBase, KeyLabel.SHARED_SECRET_EC_P384);
-    }
-
-    /**
-     * Derives {@code KEY_SHARED_SECRET} from {@code KEY_SHARED_SECRET_HYBRID_BASE} for algorithm EC_P384_ML_L3.
-     *
-     * @param sharedSecretAlgorithm Shared secret algorithm.
-     * @param keySharedSecretHybridBase Shared secret from hybrid key exchange.
-     * @return Derived hybrid shared secret key.
-     * @throws GenericCryptoException In case of cryptographic failure.
-     */
-    public static SecretKey deriveKeySharedSecretHybrid(SharedSecretAlgorithm sharedSecretAlgorithm, SecretKey keySharedSecretHybridBase) throws GenericCryptoException {
-        return switch (sharedSecretAlgorithm) {
-            case EC_P384_ML_L3 -> derive(keySharedSecretHybridBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L3);
-            case EC_P384_ML_L5 -> derive(keySharedSecretHybridBase, KeyLabel.SHARED_SECRET_EC_P384_ML_L5);
-            default -> throw new GenericCryptoException("Unsupported shared secret algorithm: " + sharedSecretAlgorithm);
-        };
     }
 
     /**

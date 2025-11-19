@@ -21,17 +21,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
 import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
+import com.wultra.security.powerauth.crypto.lib.v4.dh.DhKem;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKemKeyConvertor;
-import com.wultra.security.powerauth.crypto.lib.v4.model.*;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.DefaultSharedSecretClientContext;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.DefaultSharedSecretRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestHybrid;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.DefaultSharedSecretResponse;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.response.SharedSecretResponseHybrid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,80 +63,35 @@ public class SharedSecretHybrid768Test {
 
     @Test
     public void testHybrid_Success() throws Exception {
-        SharedSecretHybrid sharedSecretHybrid = new SharedSecretHybrid(SharedSecretAlgorithm.EC_P384_ML_L3);
-        RequestCryptogram request = sharedSecretHybrid.generateRequestCryptogram();
+        List<Kem> kems = List.of(
+                new DhKem(),
+                new MlKem(SharedSecretAlgorithm.EC_P384_ML_L3.getMlKemParameterSpec())
+        );
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384_ML_L3, kems);
+
+        RequestCryptogram request = sharedSecret.generateRequestCryptogram();
         assertNotNull(request);
         assertNotNull(request.getSharedSecretRequest());
         assertNotNull(request.getSharedSecretClientContext());
 
-        SharedSecretRequestHybrid clientRequest = (SharedSecretRequestHybrid) request.getSharedSecretRequest();
-        SharedSecretClientContextHybrid clientContext = (SharedSecretClientContextHybrid) request.getSharedSecretClientContext();
+        DefaultSharedSecretRequest clientRequest = (DefaultSharedSecretRequest) request.getSharedSecretRequest();
+        DefaultSharedSecretClientContext clientContext = (DefaultSharedSecretClientContext) request.getSharedSecretClientContext();
 
-        ResponseCryptogram serverResponse = sharedSecretHybrid.generateResponseCryptogram(clientRequest);
+        ResponseCryptogram serverResponse = sharedSecret.generateResponseCryptogram(clientRequest);
         assertNotNull(serverResponse);
         assertNotNull(serverResponse.getSharedSecretResponse());
         assertNotNull(serverResponse.getSecretKey());
 
-        SecretKey derivedSharedSecret = sharedSecretHybrid.computeSharedSecret(
+        SecretKey derivedSharedSecret = sharedSecret.computeSharedSecret(
                 clientContext,
-                (SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()
+                (DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()
         );
         assertNotNull(derivedSharedSecret);
 
-        assertEquals(
-                derivedSharedSecret,
-                serverResponse.getSecretKey()
+        assertArrayEquals(
+                derivedSharedSecret.getEncoded(),
+                serverResponse.getSecretKey().getEncoded()
         );
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class HybridTestEntry {
-        private String clientContext;
-        private SharedSecretRequestHybrid request;
-        private SharedSecretResponseHybrid response;
-        private String sharedSecret;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class HybridTestData {
-        private HybridTestEntry[] testData;
-    }
-
-    @Test
-    public void testHybridFromClient() throws Exception {
-        /*
-         Usage of this test:
-
-         1. In PowerAuthCore project
-            - Open `SharedSecretTests.cpp`
-            - Enable `genTestVectors_EC_P384_ML_L3` test method (uncomment the method in Unit test's constructor)
-            - Run unit tests
-            - Copy result printed in `genTestVectors_EC_P384_ML_L3()` function
-            - Paste test data to `ECDHE_P384_MLKEM_768_Client_Vectors.json` (see below)
-         2. Run this test case
-            - Copy result printed in the test case
-         3. In PowerAuthCore project
-            - Paste result to `ECDHE_P384_MLKEM_768_Client_Vectors.json`
-            - Run script: `src/PowerAuthTests/TestData/update-pa2-files.sh`
-            - Disable `genTestVectors_EC_P384_ML_L3` test method
-            - Run unit test
-         */
-        InputStream stream = SharedSecretHybrid768Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_MLKEM_768_Client_Vectors.json");
-        assertNotNull(stream);
-        HybridTestData hybridTestData = MAPPER.readValue(stream, new TypeReference<>() {});
-        assertNotNull(hybridTestData);
-
-        SharedSecretHybrid algorithm = new SharedSecretHybrid(SharedSecretAlgorithm.EC_P384_ML_L3);
-        for (HybridTestEntry entry : hybridTestData.getTestData()) {
-             final ResponseCryptogram responseCryptogram = algorithm.generateResponseCryptogram(entry.getRequest());
-             entry.setSharedSecret(Base64.getEncoder().encodeToString(responseCryptogram.getSecretKey().getEncoded()));
-             entry.setResponse((SharedSecretResponseHybrid) responseCryptogram.getSharedSecretResponse());
-        }
-        System.out.println(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(hybridTestData));
     }
 
     private static Stream<Map<String, String>> jsonDataEcdhe_P384_Mlkem_768_Provider() throws IOException {
@@ -148,33 +103,43 @@ public class SharedSecretHybrid768Test {
     @ParameterizedTest
     @MethodSource("jsonDataEcdhe_P384_Mlkem_768_Provider")
     public void testEcdheMlkemWithTestVectors(Map<String, String> vector) throws Exception {
-        SharedSecretHybrid sharedSecretHybrid = new SharedSecretHybrid(SharedSecretAlgorithm.EC_P384_ML_L3);
+        List<Kem> kems = List.of(
+                new DhKem(),
+                new MlKem(SharedSecretAlgorithm.EC_P384_ML_L3.getMlKemParameterSpec())
+        );
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384_ML_L3, kems);
         PrivateKey ecClientPrivateKey = KEY_CONVERTOR_EC.convertBytesToPrivateKey(EcCurve.P384, Base64.getDecoder().decode(vector.get("ecClientPrivateKey")));
         PrivateKey pqcClientPrivateKey = KEY_CONVERTOR_PQC.convertBytesToPrivateKey(Base64.getDecoder().decode(vector.get("pqcClientPrivateKey")));
-        SharedSecretClientContextHybrid clientContext = new SharedSecretClientContextHybrid(ecClientPrivateKey, pqcClientPrivateKey);
-        SharedSecretResponseHybrid response = new SharedSecretResponseHybrid(vector.get("ecServerPublicKey"), vector.get("pqcCiphertext"));
-        SecretKey sharedSecret = sharedSecretHybrid.computeSharedSecret(
-                clientContext,
-                response
+        DefaultSharedSecretClientContext clientContext = new DefaultSharedSecretClientContext(List.of(ecClientPrivateKey, pqcClientPrivateKey));
+        String salt = vector.get("salt");
+        DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(salt, List.of(vector.get("ecServerPublicKey"), vector.get("pqcCiphertext")));
+        SecretKey sharedSecretKey = sharedSecret.computeSharedSecret(clientContext, response);
+        assertNotNull(sharedSecretKey);
+        assertEquals(
+                vector.get("sharedSecret"),
+                Base64.getEncoder().encodeToString(sharedSecretKey.getEncoded())
         );
-        assertNotNull(sharedSecret);
-        assertEquals(Base64.getEncoder().encodeToString(sharedSecret.getEncoded()), vector.get("sharedSecret"));
     }
 
     @Test
     public void generateTestVectors() throws Exception {
-        final List<Map<String, String>> vectors = new ArrayList<>();
+        List<Map<String, String>> vectors = new ArrayList<>();
+        List<Kem> kems = List.of(
+                new DhKem(),
+                new MlKem(SharedSecretAlgorithm.EC_P384_ML_L3.getMlKemParameterSpec())
+        );
+        DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384_ML_L3, kems);
         for (int i = 0; i < 100; i++) {
-            SharedSecretHybrid sharedSecretHybrid = new SharedSecretHybrid(SharedSecretAlgorithm.EC_P384_ML_L3);
-            RequestCryptogram request = sharedSecretHybrid.generateRequestCryptogram();
-            SharedSecretRequestHybrid clientRequest = (SharedSecretRequestHybrid) request.getSharedSecretRequest();
-            SharedSecretClientContextHybrid clientContext = (SharedSecretClientContextHybrid) request.getSharedSecretClientContext();
-            ResponseCryptogram serverResponse = sharedSecretHybrid.generateResponseCryptogram(clientRequest);
+            RequestCryptogram request = sharedSecret.generateRequestCryptogram();
+            DefaultSharedSecretRequest clientRequest = (DefaultSharedSecretRequest) request.getSharedSecretRequest();
+            DefaultSharedSecretClientContext clientContext = (DefaultSharedSecretClientContext) request.getSharedSecretClientContext();
+            ResponseCryptogram serverResponse = sharedSecret.generateResponseCryptogram(clientRequest);
             Map<String, String> vector = new LinkedHashMap<>();
-            vector.put("ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPrivateKeyToBytes(clientContext.getEcPrivateKey())));
-            vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getPqcKemDecapsulationKey())));
-            vector.put("ecServerPublicKey", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getEcServerPublicKey());
-            vector.put("pqcCiphertext", ((SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()).getPqcCiphertext());
+            vector.put("ecClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_EC.convertPrivateKeyToBytes(clientContext.getDecapsulationKeys().get(0))));
+            vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getDecapsulationKeys().get(1))));
+            vector.put("ecServerPublicKey", ((DefaultSharedSecretResponse)serverResponse.getSharedSecretResponse()).getEncapsulatedKeys().get(0));
+            vector.put("pqcCiphertext", ((DefaultSharedSecretResponse)serverResponse.getSharedSecretResponse()).getEncapsulatedKeys().get(1));
+            vector.put("salt", ((DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()).getSalt());
             vector.put("sharedSecret", Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded()));
             vectors.add(vector);
         }

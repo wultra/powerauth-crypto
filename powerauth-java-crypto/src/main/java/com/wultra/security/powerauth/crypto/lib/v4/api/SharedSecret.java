@@ -29,7 +29,7 @@ import javax.crypto.SecretKey;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public interface SharedSecret<Req extends SharedSecretRequest, Res extends SharedSecretResponse, Ctx extends SharedSecretClientContext> {
+public interface SharedSecret {
 
     /**
      * Get algorithm for the shared secret implementation.
@@ -50,7 +50,7 @@ public interface SharedSecret<Req extends SharedSecretRequest, Res extends Share
      * @return Response cryptogram.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    ResponseCryptogram generateResponseCryptogram(Req request) throws GenericCryptoException;
+    ResponseCryptogram generateResponseCryptogram(SharedSecretRequest request) throws GenericCryptoException;
 
     /**
      * Generate a shared secret key.
@@ -59,6 +59,6 @@ public interface SharedSecret<Req extends SharedSecretRequest, Res extends Share
      * @return Shared secret key.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
-    SecretKey computeSharedSecret(Ctx clientContext, Res serverResponse) throws GenericCryptoException;
+    SecretKey computeSharedSecret(SharedSecretClientContext clientContext, SharedSecretResponse serverResponse) throws GenericCryptoException;
 
 }

@@ -25,14 +25,14 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 /**
- * Post-quantum key encapsulation mechanism interface.
+ * Key encapsulation mechanism interface.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public interface PqcKem {
+public interface Kem {
 
     /**
-     * Generate a PQC keypair.
+     * Generate a keypair.
      *
      * @return Keypair.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
@@ -56,4 +56,21 @@ public interface PqcKem {
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     SecretKey decapsulate(PrivateKey decapsulationKey, byte[] ciphertext) throws GenericCryptoException;
+
+    /**
+     * Conversion method to convert public key to a byte array.
+     * @param publicKey Public key.
+     * @return Public key encoded as a byte array.
+     * @throws GenericCryptoException Thrown in case of any cryptography error.
+     */
+    byte[] convertPublicKeyToBytes(PublicKey publicKey) throws GenericCryptoException;
+
+    /**
+     * Conversion method to convert public key encoded as a byte array to a public key.
+     * @param publicKeyBytes Public key encoded as a byte array.
+     * @return Public key.
+     * @throws GenericCryptoException Thrown in case of any cryptography error.
+     */
+    PublicKey convertBytesToPublicKey(byte[] publicKeyBytes) throws GenericCryptoException;
+
 }

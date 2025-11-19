@@ -261,7 +261,7 @@ public class KeyConvertor {
      * @return An instance of the secret key by decoding from provided bytes.
      */
     public SecretKey convertBytesToSharedSecretKey(byte[] bytesSecretKey) {
-        return new SecretKeySpec(bytesSecretKey, "AES");
+        return new SecretKeySpec(bytesSecretKey, "RAW");
     }
 
 }

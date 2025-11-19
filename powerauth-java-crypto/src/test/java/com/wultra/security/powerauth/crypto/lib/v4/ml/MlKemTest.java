@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package com.wultra.security.powerauth.crypto.lib.v4;
+package com.wultra.security.powerauth.crypto.lib.v4.ml;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKem;
-import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
+import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
@@ -32,23 +31,23 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests for PQC key encapsulation mechanism.
+ * Tests for PQC key encapsulation mechanism ML-KEM.
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-class PqcKemTest {
+class MlKemTest {
 
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
     /**
-     * PQC KEM success test.
+     * ML-KEM success test.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     @Test
-    public void testPqcKem_Success() throws GenericCryptoException {
-        final PqcKem kem = new MlKem();
+    public void testMlKem_Success() throws GenericCryptoException {
+        final Kem kem = new MlKem();
         final KeyPair keyPair = kem.generateKeyPair();
         final SecretKeyWithEncapsulation secret = kem.encapsulate(keyPair.getPublic());
         final SecretKey sharedKey = kem.decapsulate(keyPair.getPrivate(), secret.getEncapsulation());
@@ -58,12 +57,12 @@ class PqcKemTest {
     }
 
     /**
-     * PQC KEM success test.
+     * ML-KEM invalid private key test.
      * @throws GenericCryptoException Thrown in case of any cryptography error.
      */
     @Test
-    public void testPqcKem_InvalidPrivateKey() throws GenericCryptoException {
-        final PqcKem kem = new MlKem();
+    public void testMlKem_InvalidPrivateKey() throws GenericCryptoException {
+        final Kem kem = new MlKem();
         final KeyPair keyPair = kem.generateKeyPair();
         final SecretKeyWithEncapsulation secret = kem.encapsulate(keyPair.getPublic());
         final KeyPair keyPair2 = kem.generateKeyPair();

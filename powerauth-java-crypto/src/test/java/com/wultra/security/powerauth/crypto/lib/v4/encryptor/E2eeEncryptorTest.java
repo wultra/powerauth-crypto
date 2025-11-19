@@ -25,16 +25,20 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.ServerEncryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.*;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
+import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
+import com.wultra.security.powerauth.crypto.lib.v4.dh.DhKem;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.aead.ClientAeadEncryptor;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.request.AeadEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.context.AeadSecrets;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.response.AeadEncryptedResponse;
-import com.wultra.security.powerauth.crypto.lib.v4.model.*;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.DefaultSharedSecretClientContext;
+import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
+import com.wultra.security.powerauth.crypto.lib.v4.model.request.DefaultSharedSecretRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.model.request.RequestCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.request.SharedSecretRequestHybrid;
+import com.wultra.security.powerauth.crypto.lib.v4.model.response.DefaultSharedSecretResponse;
 import com.wultra.security.powerauth.crypto.lib.v4.model.response.ResponseCryptogram;
-import com.wultra.security.powerauth.crypto.lib.v4.model.response.SharedSecretResponseHybrid;
-import com.wultra.security.powerauth.crypto.lib.v4.sharedsecret.SharedSecretHybrid;
+import com.wultra.security.powerauth.crypto.lib.v4.sharedsecret.DefaultSharedSecret;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -291,14 +295,16 @@ public class E2eeEncryptorTest {
     }
 
     private SecretKey deriveSecretKey() throws GenericCryptoException {
-        final SharedSecretHybrid sharedSecretHybrid = new SharedSecretHybrid();
-        final RequestCryptogram request = sharedSecretHybrid.generateRequestCryptogram();
-        final SharedSecretRequestHybrid clientRequest = (SharedSecretRequestHybrid) request.getSharedSecretRequest();
-        final SharedSecretClientContextHybrid clientContext = (SharedSecretClientContextHybrid) request.getSharedSecretClientContext();
-        final ResponseCryptogram serverResponse = sharedSecretHybrid.generateResponseCryptogram(clientRequest);
-        return sharedSecretHybrid.computeSharedSecret(
-                clientContext,
-                (SharedSecretResponseHybrid) serverResponse.getSharedSecretResponse()
+        final List<Kem> kems = List.of(
+                new DhKem(),
+                new MlKem(SharedSecretAlgorithm.EC_P384_ML_L3.getMlKemParameterSpec())
+        );
+        final DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.EC_P384_ML_L3, kems);
+        final RequestCryptogram request = sharedSecret.generateRequestCryptogram();
+        final DefaultSharedSecretRequest clientRequest = (DefaultSharedSecretRequest) request.getSharedSecretRequest();
+        final DefaultSharedSecretClientContext clientContext = (DefaultSharedSecretClientContext) request.getSharedSecretClientContext();
+        final ResponseCryptogram serverResponse = sharedSecret.generateResponseCryptogram(clientRequest);
+        return sharedSecret.computeSharedSecret(clientContext, (DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()
         );
     }
 
