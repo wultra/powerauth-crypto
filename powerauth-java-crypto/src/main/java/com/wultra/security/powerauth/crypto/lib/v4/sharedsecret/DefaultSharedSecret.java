@@ -44,7 +44,7 @@ import java.util.*;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> {
+public class DefaultSharedSecret implements SharedSecret {
 
     private static final byte[] KDF_CUSTOM_BYTES = "KDF".getBytes(StandardCharsets.UTF_8);
     private static final String LABEL_PREFIX_SHARED_SECRET = "shared-secret/";
@@ -95,8 +95,11 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
     }
 
     @Override
-    public ResponseCryptogram generateResponseCryptogram(DefaultSharedSecretRequest request) throws GenericCryptoException {
-        if (request == null || request.getAlgorithm() == null || request.getEncapsulationKeys() == null) {
+    public ResponseCryptogram generateResponseCryptogram(SharedSecretRequest requestObject) throws GenericCryptoException {
+        if (!(requestObject instanceof DefaultSharedSecretRequest request)) {
+            throw new GenericCryptoException("Invalid shared secret request instance");
+        }
+        if (request.getAlgorithm() == null || request.getEncapsulationKeys() == null) {
             throw new GenericCryptoException("Invalid shared secret request");
         }
         if (!request.getAlgorithm().equals(algorithm)) {
@@ -135,8 +138,14 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
     }
 
     @Override
-    public SecretKey computeSharedSecret(DefaultSharedSecretClientContext context, DefaultSharedSecretResponse response) throws GenericCryptoException {
-        if (context == null || response == null || context.getDecapsulationKeys() == null || response.getSalt() == null || response.getEncapsulatedKeys() == null) {
+    public SecretKey computeSharedSecret(SharedSecretClientContext contextObject, SharedSecretResponse responseObject) throws GenericCryptoException {
+        if (!(contextObject instanceof DefaultSharedSecretClientContext context)) {
+            throw new GenericCryptoException("Invalid shared secret request instance");
+        }
+        if (!(responseObject instanceof DefaultSharedSecretResponse response)) {
+            throw new GenericCryptoException("Invalid shared secret request instance");
+        }
+        if (context.getDecapsulationKeys() == null || response.getSalt() == null || response.getEncapsulatedKeys() == null) {
             throw new GenericCryptoException("Invalid shared secret response");
         }
 

@@ -20,10 +20,7 @@ package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecret;
 import com.wultra.security.powerauth.crypto.lib.v4.dh.DhKem;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
-import com.wultra.security.powerauth.crypto.lib.v4.model.context.DefaultSharedSecretClientContext;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
-import com.wultra.security.powerauth.crypto.lib.v4.model.request.DefaultSharedSecretRequest;
-import com.wultra.security.powerauth.crypto.lib.v4.model.response.DefaultSharedSecretResponse;
 import org.bouncycastle.jcajce.spec.MLKEMParameterSpec;
 
 import java.util.List;
@@ -35,13 +32,13 @@ import java.util.List;
  */
 public final class SharedSecretFactory {
 
-    private static final SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> SHARED_SECRET_ECDHE =
+    private static final SharedSecret SHARED_SECRET_ECDHE =
             new DefaultSharedSecret(
                     SharedSecretAlgorithm.EC_P384,
                     List.of(new DhKem())
             );
 
-    private static final SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> SHARED_SECRET_HYBRID_ML_L3 =
+    private static final SharedSecret SHARED_SECRET_HYBRID_ML_L3 =
             new DefaultSharedSecret(
                     SharedSecretAlgorithm.EC_P384_ML_L3,
                     List.of(
@@ -50,7 +47,7 @@ public final class SharedSecretFactory {
                     )
             );
 
-    private static final SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> SHARED_SECRET_HYBRID_ML_L5 =
+    private static final SharedSecret SHARED_SECRET_HYBRID_ML_L5 =
             new DefaultSharedSecret(
                     SharedSecretAlgorithm.EC_P384_ML_L5,
                     List.of(
@@ -59,13 +56,13 @@ public final class SharedSecretFactory {
                     )
             );
 
-    private static final SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> SHARED_SECRET_ML_L3 =
+    private static final SharedSecret SHARED_SECRET_ML_L3 =
             new DefaultSharedSecret(
                     SharedSecretAlgorithm.ML_L3,
                     List.of(new MlKem(MLKEMParameterSpec.ml_kem_768))
             );
 
-    private static final SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> SHARED_SECRET_ML_L5 =
+    private static final SharedSecret SHARED_SECRET_ML_L5 =
             new DefaultSharedSecret(
                     SharedSecretAlgorithm.ML_L5,
                     List.of(new MlKem(MLKEMParameterSpec.ml_kem_1024))
@@ -81,7 +78,7 @@ public final class SharedSecretFactory {
      * Get ECDHE (P-384) shared secret algorithm implementation.
      * @return ECDHE (P-384) shared secret algorithm implementation.
      */
-    public static SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> getEcdhe() {
+    public static SharedSecret getEcdhe() {
         return SHARED_SECRET_ECDHE;
     }
 
@@ -89,7 +86,7 @@ public final class SharedSecretFactory {
      * Get ECDHE (P-384) + ML-KEM (level 3) shared secret algorithm implementation.
      * @return ECDHE (P-384) + ML-KEM (level 3) shared secret algorithm implementation.
      */
-    public static SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> getHybridMlL3() {
+    public static SharedSecret getHybridMlL3() {
         return SHARED_SECRET_HYBRID_ML_L3;
     }
 
@@ -97,7 +94,7 @@ public final class SharedSecretFactory {
      * Get ECDHE (P-384) + ML-KEM (level 5) shared secret algorithm implementation.
      * @return ECDHE (P-384) + ML-KEM (level 5) shared secret algorithm implementation.
      */
-    public static SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> getHybridMlL5() {
+    public static SharedSecret getHybridMlL5() {
         return SHARED_SECRET_HYBRID_ML_L5;
     }
 
@@ -105,7 +102,7 @@ public final class SharedSecretFactory {
      * Get ML-KEM (level 3) shared secret algorithm implementation.
      * @return ML-KEM (level 3) shared secret algorithm implementation.
      */
-    public static SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> getMlL3() {
+    public static SharedSecret getMlL3() {
         return SHARED_SECRET_ML_L3;
     }
 
@@ -113,7 +110,7 @@ public final class SharedSecretFactory {
      * Get ML-KEM (level 5) shared secret algorithm implementation.
      * @return ML-KEM (level 5) shared secret algorithm implementation.
      */
-    public static SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> getMlL5() {
+    public static SharedSecret getMlL5() {
         return SHARED_SECRET_ML_L5;
     }
 
@@ -122,7 +119,7 @@ public final class SharedSecretFactory {
      * @param algorithm Shared secret algorithm.
      * @return Shared secret algorithm implementation.
      */
-    public static SharedSecret<DefaultSharedSecretRequest, DefaultSharedSecretResponse, DefaultSharedSecretClientContext> forAlgorithm(SharedSecretAlgorithm algorithm) {
+    public static SharedSecret forAlgorithm(SharedSecretAlgorithm algorithm) {
         return switch (algorithm) {
             case EC_P384 -> SHARED_SECRET_ECDHE;
             case EC_P384_ML_L3 -> SHARED_SECRET_HYBRID_ML_L3;
