@@ -181,8 +181,11 @@ public class DefaultSharedSecret implements SharedSecret {
         if (secretKeys == null || secretKeys.isEmpty()) {
             throw new GenericCryptoException("Missing shared secrets for KDF");
         }
-        if (salt == null || salt.length == 0) {
+        if (salt == null) {
             throw new GenericCryptoException("Missing salt for KDF");
+        }
+        if (salt.length != 32) {
+            throw new GenericCryptoException("Invalid salt for KDF");
         }
         final byte[][] secretKeyBytes = secretKeys.toArray(byte[][]::new);          // key conversion to byte[][]
         final byte[] concatenatedBytes = ByteUtils.concatWithSizes(secretKeyBytes); // concatenated secrets Z with their sizes
