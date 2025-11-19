@@ -4,6 +4,7 @@ import com.wultra.security.powerauth.crypto.lib.v4.api.SharedSecretResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class DefaultSharedSecretResponse implements SharedSecretResponse {
     /**
      * Salt used during shared secret key derivation.
      */
+    @ToString.Exclude
     private String salt;
 
     /**
