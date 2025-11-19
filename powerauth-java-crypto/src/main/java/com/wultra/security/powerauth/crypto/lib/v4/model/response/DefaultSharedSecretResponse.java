@@ -20,7 +20,7 @@ public class DefaultSharedSecretResponse implements SharedSecretResponse {
     /**
      * Salt used during shared secret key derivation.
      */
-    private byte[] salt;
+    private String salt;
 
     /**
      * Encapsulated keys encoded as Base64.

@@ -124,9 +124,10 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
             }
 
             final byte[] salt = KEY_GENERATOR.generateRandomBytes(32);
+            final String saltEncoded = Base64.getEncoder().encodeToString(salt);
             final SecretKey derived = deriveSharedSecret(secretKeys, salt);
 
-            final DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(salt, encapsulatedKeys);
+            final DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(saltEncoded, encapsulatedKeys);
             return new ResponseCryptogram(response, derived);
         } catch (Exception e) {
             throw new GenericCryptoException("Failed to generate response cryptogram", e);
@@ -156,7 +157,8 @@ public class DefaultSharedSecret implements SharedSecret<DefaultSharedSecretRequ
                 secretKeys.add(secret.getEncoded());
             }
 
-            return deriveSharedSecret(secretKeys, response.getSalt());
+            final byte[] salt = Base64.getDecoder().decode(response.getSalt());
+            return deriveSharedSecret(secretKeys, salt);
         } catch (Exception e) {
             throw new GenericCryptoException("Failed to compute shared secret", e);
         }

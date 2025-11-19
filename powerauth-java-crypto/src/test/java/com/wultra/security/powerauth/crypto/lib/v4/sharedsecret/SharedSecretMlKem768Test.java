@@ -101,7 +101,7 @@ public class SharedSecretMlKem768Test {
         DefaultSharedSecret sharedSecret = new DefaultSharedSecret(SharedSecretAlgorithm.ML_L3, kems);
         PrivateKey pqcClientPrivateKey = KEY_CONVERTOR_PQC.convertBytesToPrivateKey(Base64.getDecoder().decode(vector.get("pqcClientPrivateKey")));
         DefaultSharedSecretClientContext clientContext = new DefaultSharedSecretClientContext(List.of(pqcClientPrivateKey));
-        byte[] salt = Base64.getDecoder().decode(vector.get("salt"));
+        String salt = vector.get("salt");
         DefaultSharedSecretResponse response = new DefaultSharedSecretResponse(salt, List.of(vector.get("pqcCiphertext")));
         SecretKey sharedSecretKey = sharedSecret.computeSharedSecret(clientContext, response);
         assertNotNull(sharedSecretKey);
@@ -124,7 +124,7 @@ public class SharedSecretMlKem768Test {
             Map<String, String> vector = new LinkedHashMap<>();
             vector.put("pqcClientPrivateKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR_PQC.convertPrivateKeyToBytes(clientContext.getDecapsulationKeys().get(0))));
             vector.put("pqcCiphertext", ((DefaultSharedSecretResponse)serverResponse.getSharedSecretResponse()).getEncapsulatedKeys().get(0));
-            vector.put("salt", Base64.getEncoder().encodeToString(((DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()).getSalt()));
+            vector.put("salt", ((DefaultSharedSecretResponse) serverResponse.getSharedSecretResponse()).getSalt());
             vector.put("sharedSecret", Base64.getEncoder().encodeToString(serverResponse.getSecretKey().getEncoded()));
             vectors.add(vector);
         }
