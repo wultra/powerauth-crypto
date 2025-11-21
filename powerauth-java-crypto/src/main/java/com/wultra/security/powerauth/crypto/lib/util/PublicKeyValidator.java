@@ -46,7 +46,7 @@ public class PublicKeyValidator {
         // Subgroup order validation is not necessary for NIST curves because they have cofactor = 1.
         // Check that cofactor = 1 to guard against accidentally supporting curves with cofactor > 1.
         if (!curve.getCofactor().equals(BigInteger.ONE)) {
-            throw new GenericCryptoException("Invalid cofactor " + curve.getCofactor() + " for curve " + curve.getClass().getSimpleName());
+            throw new GenericCryptoException("Curve " + curve.getClass().getSimpleName() + " has unsupported cofactor " + curve.getCofactor());
         }
     }
 

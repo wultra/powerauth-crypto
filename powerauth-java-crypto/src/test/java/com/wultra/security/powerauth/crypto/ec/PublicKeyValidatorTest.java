@@ -64,7 +64,7 @@ public class PublicKeyValidatorTest {
 
             new PublicKeyValidator().validate(curve, point);
         });
-        assertEquals("Invalid cofactor 4 for curve SecT233K1Curve", e.getMessage());
+        assertEquals("Curve SecT233K1Curve has unsupported cofactor 4", e.getMessage());
     }
 
 }
