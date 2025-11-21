@@ -233,4 +233,16 @@ public class PowerAuthClientKeyFactory {
         return KeyFactory.deriveKeyKekDevicePrivate(keyActivationSecret);
     }
 
+    /**
+     * Generate a MAC key for personalized data used in offline code tags.
+     *
+     * @see KeyFactory#deriveKeyMacPersonalizedData(SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEY_MAC_PERSONALIZED_DATA.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyMacPersonalizedData(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyMacPersonalizedData(keyActivationSecret);
+    }
+
 }
