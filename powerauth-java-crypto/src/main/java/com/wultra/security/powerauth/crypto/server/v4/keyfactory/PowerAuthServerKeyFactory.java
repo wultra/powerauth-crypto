@@ -223,4 +223,53 @@ public class PowerAuthServerKeyFactory {
         return KeyFactory.deriveKeyE2eeSharedInfo2(keyActivationSecret);
     }
 
+    /**
+     * Generate a MAC key for personalized data used in offline code tags.
+     *
+     * @see KeyFactory#deriveKeyMacPersonalizedData(SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEY_MAC_PERSONALIZED_DATA.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyMacPersonalizedData(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyMacPersonalizedData(keyActivationSecret);
+    }
+
+    /**
+     * Generate a key encryption key for encrypting the device private key in vault unlock.
+     *
+     * @see KeyFactory#deriveKeyKekDevicePrivate(SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KEK_DEVICE_PRIVATE.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyKekDevicePrivate(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyKekDevicePrivate(keyActivationSecret);
+    }
+
+    /**
+     * Generate a key encryption key for vault used after knowledge-based 2FA authorization.
+     *
+     * @see KeyFactory#deriveKeyKdkAppVaultKnowledge(SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KDK_APP_VAULT_KNOWLEDGE.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyKdkAppVaultKnowledge(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyKdkAppVaultKnowledge(keyActivationSecret);
+    }
+
+    /**
+     * Generate a key encryption key for vault provided after any 2FA authorization.
+     *
+     * @see KeyFactory#deriveKeyKdkAppVault2fa(SecretKey)
+     * @param keyActivationSecret Activation secret key KEY_ACTIVATION_SECRET.
+     * @return An instance of key KDK_APP_VAULT_2FA.
+     * @throws GenericCryptoException In case key derivation fails.
+     */
+    public SecretKey generateKeyKdkAppVault2fa(SecretKey keyActivationSecret) throws GenericCryptoException {
+        return KeyFactory.deriveKeyKdkAppVault2fa(keyActivationSecret);
+    }
+
+
 }
