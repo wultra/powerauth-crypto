@@ -31,7 +31,7 @@ public class PublicKeyValidator {
      * Validate the public key:
      * <ul>
      *   <li>check that the EC point is not the point at infinity</li>
-     *   <li>check that point order matches the order defined in EC curve</li>
+     *   <li>check that the curve cofactor is equal to 1 and subgroup order check can be omitted</li>
      * </ul>
      *
      * @param curve EC curve.

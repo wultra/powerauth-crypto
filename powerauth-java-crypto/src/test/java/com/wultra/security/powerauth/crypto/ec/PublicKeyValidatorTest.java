@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-public class PublicKeyValidatorTest {
+class PublicKeyValidatorTest {
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -47,7 +47,7 @@ public class PublicKeyValidatorTest {
      * Infinity is encoded as 0x00 only, it can be imported, but it's an invalid point for a public key.
      */
     @Test
-    public void testRejectPointAtInfinity() {
+    void testRejectPointAtInfinity() {
         GenericCryptoException e = assertThrows(GenericCryptoException.class, () -> {
             byte[] pointAtInfinity = new byte[] { 0x00 };
             new KeyConvertor().convertBytesToPublicKey(EcCurve.P256, pointAtInfinity);
@@ -56,7 +56,7 @@ public class PublicKeyValidatorTest {
     }
 
     @Test
-    public void testUnsupportedCurveWithCofactorGreaterThanOne() {
+    void testUnsupportedCurveWithCofactorGreaterThanOne() {
         GenericCryptoException e = assertThrows(GenericCryptoException.class, () -> {
             var params = CustomNamedCurves.getByName("sect233k1");
             var curve = params.getCurve();
