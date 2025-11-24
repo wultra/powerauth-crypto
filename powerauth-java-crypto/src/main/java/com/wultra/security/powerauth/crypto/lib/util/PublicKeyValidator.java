@@ -17,7 +17,6 @@
 package com.wultra.security.powerauth.crypto.lib.util;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
-import org.bouncycastle.math.ec.ECAlgorithms;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 
@@ -32,7 +31,7 @@ public class PublicKeyValidator {
      * Validate the public key:
      * <ul>
      *   <li>check that the EC point is not the point at infinity</li>
-     *   <li>check that point order matches the order defined in EC curve</li>
+     *   <li>check that the curve cofactor is equal to 1 and subgroup order check can be omitted</li>
      * </ul>
      *
      * @param curve EC curve.
@@ -44,10 +43,10 @@ public class PublicKeyValidator {
             throw new GenericCryptoException("Invalid public key with point equal to the point at infinity");
         }
 
-        final BigInteger n = curve.getOrder();
-        final ECPoint calculatedPoint = ECAlgorithms.referenceMultiply(point, n);
-        if (!calculatedPoint.isInfinity()) {
-            throw new GenericCryptoException("Point order does not match the order defined in EC curve");
+        // Subgroup order validation is not necessary for NIST curves because they have cofactor = 1.
+        // Check that cofactor = 1 to guard against accidentally supporting curves with cofactor > 1.
+        if (!curve.getCofactor().equals(BigInteger.ONE)) {
+            throw new GenericCryptoException("Curve " + curve.getClass().getSimpleName() + " has unsupported cofactor " + curve.getCofactor());
         }
     }
 

@@ -19,17 +19,12 @@ package com.wultra.security.powerauth.crypto.ec;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
-import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
-import org.bouncycastle.math.ec.custom.sec.SecP384R1Curve;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.security.Security;
 import java.util.Base64;
 
@@ -192,46 +187,6 @@ public class InvalidPointTest {
                 keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("BLcL8EPBRJNXVvj0V4w2nPlg7lEKWg+Q6To3OiHw0Tl/Si4N7VelFWu4LrQxTDf9QVU5Wn5RmIryiczlMbnBcZI=")));
 
         assertEquals("Invalid point coordinates", exception.getMessage());
-    }
-
-    /**
-     * Test of validation for point order for curve P-256. The point is correct, however the curve parameters
-     * have been altered to simulate an EC curve fault attack.
-     */
-    @Test
-    public void testValidationInvalidOrder_P256() throws IllegalAccessException, NoSuchFieldException {
-        KeyConvertor keyConvertor = new KeyConvertor();
-        SecP256R1Curve p256curve = (SecP256R1Curve) CustomNamedCurves.getByName("secp256r1").getCurve();
-        Class<?> parentClass = p256curve.getClass().getSuperclass().getSuperclass();
-        Field orderField = parentClass.getDeclaredField("order");
-        orderField.setAccessible(true);
-        BigInteger orderValid = p256curve.getOrder();
-        orderField.set(p256curve, orderValid.add(BigInteger.ONE));
-        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
-            keyConvertor.convertBytesToPublicKey(EcCurve.P256, Base64.getDecoder().decode("BJBAcEeM25rL3lo5GIM9J4ygFzkkY3dPe6dKx6x17XNdG1Jy+FlH31rejjCHYVKcLs8lgKjJTKzyxrxMe+kK4KY=")));
-
-        assertEquals("Point order does not match the order defined in EC curve", exception.getMessage());
-        orderField.set(p256curve, orderValid);
-    }
-
-    /**
-     * Test of validation for point order for curve P-384. The point is correct, however the curve parameters
-     * have been altered to simulate an EC curve fault attack.
-     */
-    @Test
-    public void testValidationInvalidOrder_P384() throws IllegalAccessException, NoSuchFieldException {
-        KeyConvertor keyConvertor = new KeyConvertor();
-        SecP384R1Curve p384curve = (SecP384R1Curve) CustomNamedCurves.getByName("secp384r1").getCurve();
-        Class<?> parentClass = p384curve.getClass().getSuperclass().getSuperclass();
-        Field orderField = parentClass.getDeclaredField("order");
-        orderField.setAccessible(true);
-        BigInteger orderValid = p384curve.getOrder();
-        orderField.set(p384curve, orderValid.add(BigInteger.ONE));
-        final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
-                keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("BHeMuzGxIpretqc1qXwFOFVgBXhkJkuESepqW6gLIGlgDOqrP9uoNYv7kth9rCICs2/XW+sw/bu51Fhg4+VNrllfyOdXBZKHc8A/UUlL1ST5EUAmjzHerPld5IVn2r6oIg==")));
-
-        assertEquals("Point order does not match the order defined in EC curve", exception.getMessage());
-        orderField.set(p384curve, orderValid);
     }
 
 }
