@@ -23,6 +23,7 @@ import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderEx
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
+import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKemKeyConvertor;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.hpke.HPKE;
 import org.bouncycastle.crypto.hpke.HPKEContext;
@@ -35,6 +36,8 @@ import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation;
 import org.bouncycastle.math.ec.ECPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -51,6 +54,8 @@ import java.security.spec.InvalidKeySpecException;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class DhKem implements Kem {
+
+    private static final Logger logger = LoggerFactory.getLogger(DhKem.class);
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
@@ -116,6 +121,7 @@ public class DhKem implements Kem {
         try {
             return KEY_CONVERTOR.convertBytesToPublicKey(EcCurve.P384, publicKeyBytes);
         } catch (CryptoProviderException | InvalidKeySpecException e) {
+            logger.debug(e.getMessage(), e);
             throw new GenericCryptoException("Could not convert bytes to public key", e);
         }
     }

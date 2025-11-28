@@ -32,6 +32,8 @@ import com.wultra.security.powerauth.crypto.lib.v4.encryptor.exception.AeadExcep
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.context.AeadSecrets;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.request.AeadEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.response.AeadEncryptedResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -43,6 +45,8 @@ import java.util.Base64;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class ServerAeadEncryptor implements ServerEncryptor<AeadEncryptedRequest, AeadEncryptedResponse> {
+
+    private static final Logger logger = LoggerFactory.getLogger(ServerAeadEncryptor.class);
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
@@ -149,6 +153,7 @@ public class ServerAeadEncryptor implements ServerEncryptor<AeadEncryptedRequest
             final SecretKey sharedSecret = KEY_CONVERTOR.convertBytesToSharedSecretKey(encryptorSecrets.getEnvelopeKey());
             return Aead.open(sharedSecret, keyContext, associatedDataFinal, ciphertext);
         } catch (GenericCryptoException | CryptoProviderException | InvalidKeyException e) {
+            logger.debug(e.getMessage(), e);
             throw new EncryptorException("Decryption failed", e);
         }
     }
@@ -186,6 +191,7 @@ public class ServerAeadEncryptor implements ServerEncryptor<AeadEncryptedRequest
                     responseTimestamp
             );
         } catch (CryptoProviderException | GenericCryptoException | InvalidKeyException e) {
+            logger.debug(e.getMessage(), e);
             throw new EncryptorException("Encryption failed", e);
         }
     }
