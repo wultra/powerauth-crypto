@@ -29,10 +29,13 @@ import com.wultra.security.powerauth.crypto.lib.util.AeadUtils;
 import com.wultra.security.powerauth.crypto.lib.util.ByteUtils;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.util.SideChannelUtils;
+import com.wultra.security.powerauth.crypto.lib.v4.dh.DhKem;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.exception.AeadException;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.request.AeadEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.response.AeadEncryptedResponse;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.context.AeadSecrets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
@@ -45,6 +48,8 @@ import java.util.Base64;
  * @author Roman Strobl, roman.strobl@wultra.com
  */
 public class ClientAeadEncryptor implements ClientEncryptor<AeadEncryptedRequest, AeadEncryptedResponse> {
+
+    private static final Logger logger = LoggerFactory.getLogger(ClientAeadEncryptor.class);
 
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
@@ -144,6 +149,7 @@ public class ClientAeadEncryptor implements ClientEncryptor<AeadEncryptedRequest
                     requestTimestamp
             );
         } catch (CryptoProviderException | GenericCryptoException | InvalidKeyException e) {
+            logger.debug(e.getMessage(), e);
             throw new EncryptorException("Encryption failed", e);
         }
     }
@@ -185,6 +191,7 @@ public class ClientAeadEncryptor implements ClientEncryptor<AeadEncryptedRequest
             final SecretKey sharedSecret = KEY_CONVERTOR.convertBytesToSharedSecretKey(encryptorSecrets.getEnvelopeKey());
             return Aead.open(sharedSecret, keyContext, associatedDataFinal, ciphertext);
         } catch (GenericCryptoException | CryptoProviderException | InvalidKeyException e) {
+            logger.debug(e.getMessage(), e);
             throw new EncryptorException("Decryption failed", e);
         }
     }
@@ -212,6 +219,7 @@ public class ClientAeadEncryptor implements ClientEncryptor<AeadEncryptedRequest
             } while (SideChannelUtils.constantTimeAreEqual(requestNonce, responseNonce));
             return ByteUtils.concat(requestNonce, responseNonce);
         } catch (CryptoProviderException e) {
+            logger.debug(e.getMessage(), e);
             throw new AeadException("Failed to generate request nonce", e);
         }
     }
