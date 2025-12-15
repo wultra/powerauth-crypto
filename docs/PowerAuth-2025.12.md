@@ -9,6 +9,7 @@ It provides high security resistant to known quantum attacks.
 For updating to 2025.12, please follow these migration guides:
 
 - [PowerAuth Server - Migration from version 1.10.0 to version 2.0.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-2.0.0.md)
+- [Enrollment Server - Migration from version 1.10.0 to version 2.0.0](https://github.com/wultra/enrollment-server/blob/develop/docs/PowerAuth-Enrollment-Server-2.0.0.md)
 - [PowerAuth Push Server - Migration from version 1.10.0 to version 2.0.0](https://github.com/wultra/powerauth-push-server/blob/develop/docs/PowerAuth-Push-Server-2.0.0.md)
 - [PowerAuth Web Flow - Migration from version 1.10.0 to version 2.0.0](https://github.com/wultra/powerauth-webflow/blob/develop/docs/Web-Flow-2.0.0.md)
 
