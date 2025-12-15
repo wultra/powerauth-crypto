@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>powerauth-java-crypto</artifactId>
-	<packaging>jar</packaging>
+	<name>powerauth-java-crypto</name>
 
 	<parent>
 		<groupId>com.wultra.security</groupId>
