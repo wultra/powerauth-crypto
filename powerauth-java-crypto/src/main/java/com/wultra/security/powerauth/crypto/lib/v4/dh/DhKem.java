@@ -46,7 +46,6 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.function.Supplier;
 
 /**
  * DHKEM implementation as a KEM implemented over ECDHE with curve P-384.
@@ -63,13 +62,6 @@ public class DhKem implements Kem {
     private static final byte[] INFO = "DHKEM-P384".getBytes(StandardCharsets.UTF_8);
     private static final int SHARED_SECRET_BYTES_LENGTH = 48;
 
-    private final Supplier<HPKE> hpkeSupplier = () -> new HPKE(
-            HPKE.mode_base,
-            HPKE.kem_P384_SHA384,
-            HPKE.kdf_HKDF_SHA384,
-            HPKE.aead_EXPORT_ONLY
-    );
-
     @Override
     public KeyPair generateKeyPair() throws GenericCryptoException {
         try {
@@ -83,7 +75,7 @@ public class DhKem implements Kem {
     public SecretKeyWithEncapsulation encapsulate(PublicKey encapsulationKey) throws GenericCryptoException {
         try {
             final AsymmetricKeyParameter keyParameterPublic = PublicKeyFactory.createKey(encapsulationKey.getEncoded());
-            final HPKEContextWithEncapsulation senderCtx = hpkeSupplier.get().setupBaseS(keyParameterPublic, INFO);
+            final HPKEContextWithEncapsulation senderCtx = createHpkeInstance().setupBaseS(keyParameterPublic, INFO);
             final byte[] sharedSecret = senderCtx.export(INFO, SHARED_SECRET_BYTES_LENGTH);
             final byte[] encapsulation = senderCtx.getEncapsulation();
             final SecretKey secretKey = new SecretKeySpec(sharedSecret, "RAW");
@@ -99,7 +91,7 @@ public class DhKem implements Kem {
             final ECPrivateKeyParameters privParam = (ECPrivateKeyParameters) PrivateKeyFactory.createKey(decapsulationKey.getEncoded());
             final ECPublicKeyParameters pubParam = toPublicKey(privParam);
             final AsymmetricCipherKeyPair receiverKeyPair = new AsymmetricCipherKeyPair(pubParam, privParam);
-            final HPKEContext receiverCtx = hpkeSupplier.get().setupBaseR(ciphertext, receiverKeyPair, INFO);
+            final HPKEContext receiverCtx = createHpkeInstance().setupBaseR(ciphertext, receiverKeyPair, INFO);
             final byte[] sharedSecret = receiverCtx.export(INFO, SHARED_SECRET_BYTES_LENGTH);
             return new SecretKeySpec(sharedSecret, "RAW");
         } catch (Exception e) {
@@ -130,6 +122,15 @@ public class DhKem implements Kem {
         final ECDomainParameters domainParam = privParam.getParameters();
         final ECPoint q = domainParam.getG().multiply(privParam.getD());
         return new ECPublicKeyParameters(q, domainParam);
+    }
+
+    private HPKE createHpkeInstance() {
+        return new HPKE(
+                HPKE.mode_base,
+                HPKE.kem_P384_SHA384,
+                HPKE.kdf_HKDF_SHA384,
+                HPKE.aead_EXPORT_ONLY
+        );
     }
 
 }
