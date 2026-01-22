@@ -45,7 +45,7 @@ In case the data for offline authentication is being normalized, then the follow
 
 ## Factor keys
 
-All authentication code factor keys are initially derived from `KDK_AUTHENTICATION_CODE` - an intermediate key derivation key. The major difference against V3.x protocol is that knowledge and biometry factor keys may change over time. See [F6. Dynamic factor keys](F6-dynamic-factor-keys.md) for more details.
+All authentication code factor keys are initially derived from `KDK_AUTHENTICATION_CODE` - an intermediate key derivation key.
 
 ### Possession factor
 
@@ -270,11 +270,8 @@ PowerAuth Server validates the authentication code using the following mechanism
 
 1. Find the activation record using activation ID.
 1. Check the record state. If it is other than `ACTIVE`, or if a declared application version is unsupported, terminate the validation and report error.
-1. Obtain `KEY_SERVER_PRIV` and `KEY_DEVICE_PUB` from the record.
-1. Compute `KEY_MASTER_SECRET`.
-	- `KEY_MASTER_SECRET = ByteUtils.convert32Bto16B(ECDH.phase(KEY_SERVER_PRIV, KEY_DEVICE_PUB))`
+1. Obtain `KEY_ACTIVATION_SECRET` for the activation (stored in encrypted form in the database).
 1. Compute required factor keys (`KEY_AUTHENTICATION_CODE_POSSESSION`, `KEY_AUTHENTICATION_CODE_KNOWLEDGE` or `KEY_AUTHENTICATION_CODE_BIOMETRY`).
-	- see protocol V4 key derivation sections (and [F6. Dynamic factor keys](F6-dynamic-factor-keys.md) when applicable).
 1. Compute the expected authentication code for obtained data and check if the expected authentication code matches the one sent with the client. Since the PowerAuth Client may be ahead with counter from PowerAuth Server, server should try couple extra indexes ahead:
 
 ```java
