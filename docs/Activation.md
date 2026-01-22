@@ -1,13 +1,13 @@
 # Activation
 
-Before a mobile app can perform authentication and transaction signing, it must first register with the server. In order to establish strong device binding, a key exchange must take a place first. We call this key exchange process "the activation". During the activation, user needs to enter some credential to the mobile app to authenticate the key exchange.
+Before a mobile app can perform authentication and transaction verification, it must first register with the server. In order to establish strong device binding, a key exchange must take a place first. We call this key exchange process "the activation". During the activation, user needs to enter some credential to the mobile app to authenticate the key exchange.
 
 The following components typically play role in the process of activation via activation code:
 
 - **PowerAuth Mobile SDK** - An SDK embedded in the mobile client application.
 - **Enrollment Server** - A front-end facing server application that is deployed in demilitarized zone (DMZ) in order to accommodate a communication between the PowerAuth Mobile SDK and PowerAuth Server.
 - **Activation Code Delivery Application** - An application (for example Internet banking) that initiates the activation process by requesting and then displaying or sending the activation code for the use in the PowerAuth Mobile SDK.
-- **PowerAuth Server** - A server application hidden deep in the secure infrastructure. It stores activation records and verifies the request signatures.
+- **PowerAuth Server** - A server application hidden deep in the secure infrastructure. It stores activation records and verifies the request authentication codes.
 
 ![Architecture Overview](./resources/images/arch_big_picture.png)
 
@@ -46,11 +46,11 @@ A good place to review the exact request and response payload structure is in th
 
 ## Key Derivation
 
-After completing the activation flow, the mobile app and PowerAuth Server must derive additional factor specific signing keys that are based on a shared secret established during the activation.
+After completing the activation flow, the mobile app and PowerAuth Server must derive additional factor specific authentication keys that are based on a shared secret established during the activation.
 
 The mobile app then stores these derived keys and throws away the unencrypted device private key and any intermediate products of the activation process. Only the derived keys are stored on the mobile app using a method appropriate for the particular key.
 
-For example, a signature key related to the "knowledge factor" is stored encrypted using a key derived from a PIN code, a signature key related to the "biometry factor" is stored encrypted with a key that is retrieved from the biometric module of the device, etc.
+For example, an authentication key related to the "knowledge factor" is stored encrypted using a key derived from a PIN code, an authentication key related to the "biometry factor" is stored encrypted with a key that is retrieved from the biometric module of the device, etc.
 
 The detailed description of the [Key Derivation](./Key-derivation.md) is available in a separate chapter.
 
@@ -64,13 +64,13 @@ The following diagram shows transitions between activation states:
 
 ![Activation Lifecycle](./resources/images/arch_activation_lifecycle.png)
 
-| State              | Description |
-|--------------------|-------------|
-| `CREATED`          | The activation record is created using an external channel, such as the Internet banking, but the key exchange between the client and server did not happen yet. |
-| `PENDING_COMMIT`   | The activation record is created and key exchange between the client and server already took place, but the activation record needs additional approval before it can be used. |
-| `ACTIVE`           | The activation record is created and active. It is ready to be used for typical use-cases, such as generating signatures. |
-| `BLOCKED`          | The activation record is blocked and cannot be used for most of the use-cases, such as generating signatures. It can be unblocked and activated again. |
-| `REMOVED`          | The activation record is removed and permanently blocked. It cannot be used for generating signatures or ever unblocked. |
+| State            | Description                                                                                                                                                                    |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `CREATED`        | The activation record is created using an external channel, such as the Internet banking, but the key exchange between the client and server did not happen yet.               |
+| `PENDING_COMMIT` | The activation record is created and key exchange between the client and server already took place, but the activation record needs additional approval before it can be used. |
+| `ACTIVE`         | The activation record is created and active. It is ready to be used for typical use-cases, such as generating authentication codes.                                             |
+| `BLOCKED`        | The activation record is blocked and cannot be used for most of the use-cases, such as generating authentication codes. It can be unblocked and activated again.                |
+| `REMOVED`        | The activation record is removed and permanently blocked. It cannot be used for generating authentication codes or ever unblocked.                                              |
 
 ## Related Topics
 

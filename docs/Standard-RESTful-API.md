@@ -23,7 +23,7 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 
 ## Security Features
 
-Before you continue, we suggest reading the [End-To-End encryption](./End-To-End-Encryption.md) and [Computing and Validating Signatures](./Computing-and-Validating-Signatures.md) documents, describing encryption and authentication mechanism used in the RESTful APIs.
+Before you continue, we suggest reading the [End-To-End encryption](./End-To-End-Encryption.md) and [Computing and Validating Signatures](Computing-and-Validating-Authentication-Codes.md) documents, describing encryption and authentication mechanism used in the RESTful APIs.
 
 ## Content Type
 

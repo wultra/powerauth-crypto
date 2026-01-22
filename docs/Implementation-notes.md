@@ -4,7 +4,7 @@ Following implementation notes use simplified Java code with definitions from th
 
 ## Used Cryptography
 
-A PowerAuth key exchange mechanism is based on **ECDH** key exchange algorithm with **P256r1 curve**. Additionally, an **ECDSA** (more specifically, **SHA256withECDSA** algorighm) is used for signing data sent from the service provider using a provider's Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0. Later on, each signature attempt increments this counter. A related hash-based counter is initialized as well with a random value and it is updated with each signature attempt. The PowerAuth signature is computed using data, shared master secret and counter using the **HMAC** algorithm.
+A PowerAuth key exchange mechanism is based on **ECDH** key exchange algorithm with **P256r1 curve**. Additionally, an **ECDSA** (more specifically, **SHA256withECDSA** algorighm) is used for signing data sent from the service provider using a provider's Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0. Later on, each authorization attempt increments this counter. A related hash-based counter is initialized as well with a random value and it is updated with each authentication attempt. The PowerAuth authentication code is computed using data, shared master secret and counter using the **HMAC** algorithm.
 
 ## Key Derivation Functions
 
@@ -95,11 +95,11 @@ MMMMM-MMMMM-MMMMM-MUTOA
 
 In order to explicitly bind a client application with the cryptography, an application key and application secret are introduced. Both values follow the same format - 16B encoded as Base64, application ID must be unique.
 
-Both identifiers are embedded in the PowerAuth Client application (for example, defined as a constants in the source code).
+Both identifiers are embedded in the PowerAuth Client application (for example, defined as constants in the source code).
 
-Application key is sent with every PowerAuth Signature as `pa_application_key`.
+Application key is sent with every PowerAuth Authentication as `pa_application_key`.
 
-Application secret enters the signature algorithm in final HMAC_SHA256 as a part of the `DATA` and hence it is a part of the PowerAuth signature (sent implicitly in `pa_signature`). It never travels from the application in plain text format.
+Application secret enters the authentication algorithm in final HMAC_SHA256 as a part of the `DATA` and hence it is a part of the PowerAuth authentication (sent implicitly in `pa_auth_code`). It never travels from the application in plain text format.
 
 ## Entering Values in Client Application
 

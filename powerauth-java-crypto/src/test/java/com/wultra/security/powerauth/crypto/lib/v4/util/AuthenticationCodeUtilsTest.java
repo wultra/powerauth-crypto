@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author Roman Strobl, roman.strobl@wultra.com
  */
-class AuthorizationCodeUtilsTest {
+class AuthenticationCodeUtilsTest {
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
@@ -55,7 +55,7 @@ class AuthorizationCodeUtilsTest {
     }
 
     static Stream<Map<String, String>> authCode_Provider() throws IOException {
-        final InputStream stream = AuthorizationCodeUtilsTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/util/Auth_Code_Test_Vectors.json");
+        final InputStream stream = AuthenticationCodeUtilsTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/util/Auth_Code_Test_Vectors.json");
         final Map<String, List<Map<String, String>>> authCodes = MAPPER.readValue(stream, new TypeReference<>() {});
         return authCodes.get("auth_code_test_vectors").stream();
     }

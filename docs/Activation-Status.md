@@ -69,7 +69,7 @@ where:
     ```
 - `${FAIL_COUNT}` - 1 byte representing information about the number of failed attempts at the moment.
 - `${MAX_FAIL_COUNT}` - 1 byte representing information about the maximum allowed number of failed attempts.
-- `${CTR_LOOK_AHEAD}` - 1 byte representing constant for a look ahead window, used on the server to validate the signature.
+- `${CTR_LOOK_AHEAD}` - 1 byte representing constant for a look ahead window, used on the server to validate the authentication code.
 - `${CTR_DATA_HASH}` - 16 bytes containing hash from current value of a hash-based counter:
     ```java
     SecretKey KEY_TRANSPORT_CTR = KDF.derive(KEY_TRANSPORT, 4000);

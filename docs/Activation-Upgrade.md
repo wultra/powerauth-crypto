@@ -16,7 +16,7 @@ As you can see, to determine whether the upgrade is possible is quite easy. The 
 Due to changes we have introduced in protocol version 3, the main purpose of the upgrade is to securely acquire an initial value of hash-based counter (we call this value as `CTR_DATA`). In order to do that, there are two new endpoints in PowerAuth RESTful API:
 
 - `/pa/v3/upgrade/start` - PowerAuth Client initiates an upgrade process. The response contains an initial `CTR_DATA` value. The whole request and response is protected by our ECIES encryption scheme.
-- `/pa/v3/upgrade/commit` - PowerAuth Client commits and finishes the upgrade process. The request must be signed with PowerAuth Signature in version 3, with the "possession" factor involved.
+- `/pa/v3/upgrade/commit` - PowerAuth Client commits and finishes the upgrade process. The request must be verified with PowerAuth Authentication Code in version 3, with the "possession" factor involved.
 
 ### Upgrade Start endpoint
 
@@ -36,7 +36,7 @@ Diagram explained:
    - This step is basically a prevention that upgrade cannot be started, once the activation is already upgraded.
 
 4. Generate `CTR_DATA` only once
-   - Server should not re-generate `CTR_DATA` for each subsequent call to "start". If we do such thing, then the attacker may change the value on the server, because our ECIES doesn't prevent against replay attacks. That will basically invalidate the activation on the server, because client will no longer be able to calculate a valid signature.
+   - Server should not re-generate `CTR_DATA` for each subsequent call to "start". If we do such thing, then the attacker may change the value on the server, because our ECIES doesn't prevent against replay attacks. That will basically invalidate the activation on the server, because client will no longer be able to calculate a valid authentication code.
    
 5. Return `CTR_DATA` in response object.
    - Note that the sequence doesn't show ECIES request decryption and the response encryption.
@@ -60,11 +60,11 @@ Diagram explained:
 
 4. If database doesn't contain `CTR_DATA`, then "401 - Unauthorized" error is returned.
 
-5. PowerAuth Server validates signature. The validation must enforce signature version V3, to check, whether the client calculated the signature with right `CTR_DATA`.
+5. PowerAuth Server validates the authentication code. The validation must enforce the authentication code version V3, to check, whether the client calculated the authentication code with right `CTR_DATA`.
    - In case of failure, the "401 - Unauthorized" error is returned.
 
 6. PowerAuth Server now can set version of activation to V3 
-   - From this point, only `V3` signatures will be accepted on the server. 
+   - From this point, only `V3` authentication codes will be accepted on the server. 
    - The client also gets `V3` in the next encrypted activation status blob.
 
 ### PowerAuth Client sequence
@@ -90,10 +90,10 @@ The PowerAuth Client is typically implementing the upgrade process as a silent, 
 
 6. Client can upgrade its local activation data to protocol `V3`. This step has following implications: 
    - Client must store `CTR_DATA` into its persistent data storage.
-   - Each next PowerAuth Signature will be calculated as `V3`.
+   - Each next PowerAuth authentication code will be calculated as `V3`.
 
 7. Commit the upgrade process, by requesting `/pa/v3/upgrade/commit` endpoint
-   - The request is signed with `V3` signature
+   - The request is verified with `V3` authentication code
 
 If the last step succeeds without an error, then the protocol is fully migrated to version 3. 
 

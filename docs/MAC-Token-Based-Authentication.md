@@ -1,6 +1,6 @@
 # MAC Token Based Authentication
 
-While standard PowerAuth signatures are suitable for requests where a high degree of authenticity and integrity is required, for high-volume common access requests, the strong sequentiality caused by the use of a counter might be too restricting. Signed requests must be sent one by one, and a request needs to wait for the previous one to complete. This causes both data processing to be slow and the programming task related to request synchronization to be unnecessarily difficult.
+While standard PowerAuth authentication codes are suitable for requests where a high degree of authenticity and integrity is required, for high-volume common access requests, the strong sequentiality caused by the use of a counter might be too restricting. Signed requests must be sent one by one, and a request needs to wait for the previous one to complete. This causes both data processing to be slow and the programming task related to request synchronization to be unnecessarily difficult.
 
 This is why PowerAuth also supports simplified MAC Token-Based Authentication. As the name suggests, the authentication is achieved by computing a MAC (also called a "digest") using a pre-shared token.
 
@@ -11,7 +11,7 @@ There are a couple of very important things to keep in mind while using MAC Toke
 - **Data Integrity** - Since the resulting digest does not include any request data, it does not prevent data from being modified.
 - **Single Factor** - While the token has information about the factors used while the token was created, which is handy while distinguishing different grades of information (for example, some more sensitive info may require a token that was created using 2FA), the authentication as such uses only a single factor. It does not include PIN/password or biometric information at all.
 
-As a result, you must use MAC Token-Based Authentication for read-only operations only. In other words, use the MAC Token-Based Authentication to access resources, not to create or modify them. We recommend using the 1FA PowerAuth signature for active operations that create or modify resources but do not require user's interaction. This way, you avoid having repeated or inconsistent data while allowing access to information that needs to be frequently accessed.
+As a result, you must use MAC Token-Based Authentication for read-only operations only. In other words, use the MAC Token-Based Authentication to access resources, not to create or modify them. We recommend using the 1FA PowerAuth authentication code for active operations that create or modify resources but do not require user's interaction. This way, you avoid having repeated or inconsistent data while allowing access to information that needs to be frequently accessed.
 
 Examples:
 
@@ -19,7 +19,7 @@ Examples:
 
 Accessing simple information about the account, such as account name, balance of the account, and last three transactions, from Apple Watch.
 
-**PowerAuth 1FA Signature**
+**PowerAuth 1FA Authentication Codes**
 
 Creating a quick, low-value payment from an iPhone app.
 
@@ -27,11 +27,11 @@ Creating a quick, low-value payment from an iPhone app.
 
 In order to create a new token, the client application must call a PowerAuth Standard RESTful API endpoint `/pa/v3/token/create`.
 
-This endpoint must be called with a standard PowerAuth signature. It can be any type of signature - 1FA or 2FA. The token then implicitly carries the information about the signature it was issued with. Using the PowerAuth signature assures the authenticity and integrity of the data sent during the request.
+This endpoint must be called with a standard PowerAuth authentication code. It can be any type of authentication code - 1FA or 2FA. The token then implicitly carries the information about the authentication code it was issued with. Using the PowerAuth authentication code assures the authenticity and integrity of the data sent during the request.
 
 The endpoint then uses the same request and response encryption principles as described in a dedicated chapter for [End-to-End Encryption](./End-To-End-Encryption.md).
 
-Upon receiving and successfully validating a request authenticated using a PowerAuth signature, the server generates a new token for a given activation ID. Information about the used signature type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client.
+Upon receiving and successfully validating a request authenticated using a PowerAuth authentication code, the server generates a new token for a given activation ID. Information about the used authentication code type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client.
 
 The decrypted response data payload contains the following raw response format:
 
@@ -104,9 +104,9 @@ You can remove a token with a given ID anytime by sending a signed request to th
 }
 ```
 
-You can use any signature type to authenticate the token removal request. All signature types are allowed because the tokens are mostly used for simplified access. Allowing the user to restrict the access again should be simple, as long as there is at least some authentication that would prevent removing token to the malicious party (causing DoS to the legitimate user).
+You can use any authentication code type to authenticate the token removal request. All authentication code types are allowed because the tokens are mostly used for simplified access. Allowing the user to restrict the access again should be simple, as long as there is at least some authentication that would prevent removing token to the malicious party (causing DoS to the legitimate user).
 
-If the signature validation is successful and after validating that the token is associated with the activation used for computing the signature, the token is removed on the server side. The response object only confirms the removal and the payload is typically ignored in the PowerAuth Mobile SDK:
+If the authentication code validation is successful and after validating that the token is associated with the activation used for computing the authentication code, the token is removed on the server side. The response object only confirms the removal and the payload is typically ignored in the PowerAuth Mobile SDK:
 
 ```json
 {
