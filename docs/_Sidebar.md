@@ -12,7 +12,7 @@
 
 **Authentication**
 
-- [Authentication Codes](Computing-and-Validating-Authentication-Codes.md)
+- [Authentication Codes](./Computing-and-Validating-Authentication-Codes.md)
 - [MAC Token Based Authentication](./MAC-Token-Based-Authentication.md)
 
 **Encryption**

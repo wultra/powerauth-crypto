@@ -2,7 +2,7 @@
 
 # PowerAuth authentication code
 
-While PowerAuth can be used for authentication any type of data, the main objective of the protocol is to allow authenticating HTTP requests sent to the server in order to prove consistency, authenticity and integrity (CIA) of the data that were sent in the request.
+While PowerAuth can be used for authentication of any type of data, the main objective of the protocol is to allow authenticating HTTP requests sent to the server in order to prove consistency, authenticity and integrity (CIA) of the data that were sent in the request.
 
 In practical deployment, Intermediate Server Application is responsible for building the normalized data for the purpose of computing the authentication code and passing it to PowerAuth Server, since it knows details about the networking operation (for example, it knows what endpoint is being signed, what HTTP method it uses, etc.). PowerAuth Server can then just simply accept any data and authentication code and perform authentication code validation. In an ideal world, PowerAuth Server should know nothing about the business domain it is used in.
 
@@ -278,7 +278,7 @@ PowerAuth Server validates the authentication code using the following mechanism
 boolean verifyAuthenticationCode(byte[] data, List<SecretKey> factorKeys, int CTR, byte[] CTR_DATA, int CTR_LOOK_AHEAD) {
     boolean verified = false;
     byte[] CTR_DATA_ITER = CTR_DATA;
-    for (int CTR_ITER = CTR; CTR_ITER++; CTR_ITER < CRT + CTR_LOOK_AHEAD) {
+    for (int CTR_ITER = CTR; CTR_ITER++; CTR_ITER < CTR + CTR_LOOK_AHEAD) {
         //... compute authentication code for given CTR_DATA_ITER, data and
         //    factor keys (see the algorithm above)
         String AUTH_CODE = computeAuthenticationCode(data, factorKeys, CTR_DATA_ITER);
