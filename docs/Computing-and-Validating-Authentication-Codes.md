@@ -201,13 +201,17 @@ String computeOfflineAuthenticationCode(byte[] data, List<SecretKey> factorKeys,
 }
 ```
 
-### Hash based counter
+### Hash-based Counter
+
+The `CTR_DATA` is a hash-based counter used to guarantee freshness of authentication codes and to prevent replay attacks. It is initialized with a random value during activation (or protocol upgrade) and then advanced deterministically after each operation. Unlike the numeric counter, `CTR_DATA` is updated using a one-way cryptographic function, so the next value cannot be predicted backwards and does not leak information about the number of requests. The next counter value is computed using:
 
 ```java
 byte[] CTR_DATA_next = Hash.sha3_256(CTR_DATA);
 ```
 
-### Loop unrolling
+### Loop Unrolling
+
+The following examples explain how multi-factor authentication code components are derived from factor keys in the protocol. The core idea is that each additional factor extends a KMAC-based derivation chain, where `CTR_DATA` is always part of the input and `||` denotes byte concatenation. For 1F, the derived key is computed directly from `CTR_DATA` using factor 0 and then used to compute the MAC over request data. For 2F and 3F, the derivation becomes nested, so that factor 1 depends on the result of factor 0, and factor 2 depends on the result of factor 1 (which already includes factor 0). This chaining binds factors together in a deterministic order and ensures that the resulting authentication code cannot be computed or validated correctly unless all required factors are available.
 
 #### 1F component
 
