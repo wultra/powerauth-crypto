@@ -1,6 +1,6 @@
 # Activation
 
-Before a mobile app can perform authentication and transaction authentication, it must first register with the server. In order to establish strong device binding, a key exchange must take a place first. We call this key exchange process "the activation". During the activation, user needs to enter some credential to the mobile app to authenticate the key exchange.
+Before a mobile app can perform authentication and transaction verification, it must first register with the server. In order to establish strong device binding, a key exchange must take a place first. We call this key exchange process "the activation". During the activation, user needs to enter some credential to the mobile app to authenticate the key exchange.
 
 The following components typically play role in the process of activation via activation code:
 
