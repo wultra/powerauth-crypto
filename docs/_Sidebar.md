@@ -10,9 +10,9 @@
 - [Key Derivation](./Key-derivation.md)
 - [Checking Activation Status](./Activation-Status.md)
 
-**Signatures**
+**Authentication**
 
-- [Signatures](./Computing-and-Validating-Signatures.md)
+- [Authentication Codes](Computing-and-Validating-Authentication-Codes.md)
 - [MAC Token Based Authentication](./MAC-Token-Based-Authentication.md)
 
 **Encryption**
@@ -32,7 +32,7 @@
 **Tutorials**
 
 - [Authentication in Mobile Banking Apps (SCA)](https://developers.wultra.com/tutorials/posts/Mobile-First-Authentication/)
-- [Verifying PowerAuth Signatures On The Server](https://developers.wultra.com/tutorials/posts/Manual-Signature-Verification/)
+- [Verifying PowerAuth Authentication Codes On The Server](https://developers.wultra.com/tutorials/posts/Manual-Signature-Verification/)
 
 **API Reference**
 

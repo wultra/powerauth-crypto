@@ -228,7 +228,7 @@ HTTP header example:
       activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
   ```
 <!-- begin box warning -->
-Note, that the header must not be added to the request, when activation scoped encryption is combined with [PowerAuth Signature](./Computing-and-Validating-Signatures.md).
+Note, that the header must not be added to the request, when activation scoped encryption is combined with [PowerAuth Authentication Code](Computing-and-Validating-Authentication-Codes.md).
 <!-- end -->
 
 #### Encrypted Response
