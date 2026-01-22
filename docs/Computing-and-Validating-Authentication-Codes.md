@@ -2,7 +2,7 @@
 
 # PowerAuth authentication code
 
-While PowerAuth can be used for signing any type of data, the main objective of the protocol is to allow signing of HTTP requests sent to the server in order to prove consistency, authenticity and integrity (CIA) of the data that were sent in the request.
+While PowerAuth can be used for authentication any type of data, the main objective of the protocol is to allow authenticating HTTP requests sent to the server in order to prove consistency, authenticity and integrity (CIA) of the data that were sent in the request.
 
 In practical deployment, Intermediate Server Application is responsible for building the normalized data for the purpose of computing the authentication code and passing it to PowerAuth Server, since it knows details about the networking operation (for example, it knows what endpoint is being signed, what HTTP method it uses, etc.). PowerAuth Server can then just simply accept any data and authentication code and perform authentication code validation. In an ideal world, PowerAuth Server should know nothing about the business domain it is used in.
 
@@ -120,7 +120,7 @@ List<byte[]> computeAuthenticationCodeComponents(byte[] data, List<SecretKey> fa
 }
 ```
 
-### Signing HTTP Requests
+### Authenticating HTTP Requests
 
 PowerAuth authentication code for online purposes can be obtained in the following manner:
 
@@ -161,7 +161,7 @@ X-PowerAuth-Authorization: PowerAuth
 
 ### Offline authentication code
 
-Offline authentication codes are used in case when the mobile device is not connected to the internet. The computation of such authentication code is similar to signing HTTP requests, but the final string is more human readable and can be easily manually retyped. Also, some of the attributes that would otherwise be present in the HTTP header need to have static value:
+Offline authentication codes are used in case when the mobile device is not connected to the internet. The computation of such authentication code is similar to authenticating HTTP requests, but the final string is more human readable and can be easily manually retyped. Also, some of the attributes that would otherwise be present in the HTTP header need to have static value:
 
 | Parameter                | Value                                        |
 |--------------------------|----------------------------------------------|
