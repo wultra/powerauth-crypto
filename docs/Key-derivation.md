@@ -95,4 +95,4 @@ The primary use-case for having an encrypted vault is storage of the original de
 byte[] C_KEY_DEVICE_PRIVATE = AES.encrypt(KEY_DEVICE_PRIVATE, ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT);
 ```
 
-Since `KEY_ENCRYPTION_VAULT` is not stored on the client side, it must be fetched using authenticated request on server for decryption. Once the server verifies the authentication status (signature matches) and returns encrypted `KEY_ENCRYPTION_VAULT` key, client can decrypt it and then decrypt `KEY_DEVICE_PRIVATE`. The whole request and response protection is based on our ECIES scheme.
+Since `KEY_ENCRYPTION_VAULT` is not stored on the client side, it must be fetched using authenticated request on server for decryption. Once the server verifies the authentication status (signature matches) and returns encrypted `KEY_ENCRYPTION_VAULT` key, client can decrypt it and then decrypt `KEY_DEVICE_PRIVATE`. The whole request and response protection is based on our encryption scheme.

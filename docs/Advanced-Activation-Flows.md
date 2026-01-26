@@ -116,7 +116,7 @@ Now it depends whether the user has to retype OTP back to the Master Front-End A
 
 1. For the first case, the implementation is straightforward. Once the user retypes OTP back to Master Front-End Application, the activation can be completed on PowerAuth Server by calling [`commitActivation`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-commitactivation) method. In case the commit fails, the number of commit attempts is limited to the [`MAX_FAILED_ATTEMPTS`](Computing-and-Validating-Authentication-Codes.md#constants-and-variables).
 
-2. In case the OTP is retyped in the mobile application, the additional RESTful endpoint has to be implemented on the Intermediate Server Application. We recommend to use our [ECIES encryption](End-To-End-Encryption.md) to protect such endpoint. In case the commit fails, the number of commit attempts is limited to the [`MAX_FAILED_ATTEMPTS`](Computing-and-Validating-Authentication-Codes.md#constants-and-variables).
+2. In case the OTP is retyped in the mobile application, the additional RESTful endpoint has to be implemented on the Intermediate Server Application. We recommend to use our [End-to-End encryption](End-To-End-Encryption.md) to protect such endpoint. In case the commit fails, the number of commit attempts is limited to the [`MAX_FAILED_ATTEMPTS`](Computing-and-Validating-Authentication-Codes.md#constants-and-variables).
 
 For both cases, it's recommended to generate a new OTP in case that delivery failed (e.g. user did not receive SMS). You can use [`updateActivationOtp`](https://github.com/wultra/powerauth-server/blob/develop/docs/WebServices-Methods.md#method-updateactivationotp) method to set a new OTP to the PowerAuth Server.
 
@@ -143,7 +143,7 @@ There are multiple ways how to implement custom activation and confirm it with a
    1. The mobile application receives the response from the server and completes the key exchange on the mobile side.
    1. The user waits for OTP delivery via the out-of-band channel.
    1. The user retypes OTP.
-   1. Mobile application then commits the activation with OTP, by calling a custom RESTful endpoint, protected with our [ECIES encryption](End-To-End-Encryption.md) scheme.
+   1. Mobile application then commits the activation with OTP, by calling a custom RESTful endpoint, protected with our [End-to-End encryption](End-To-End-Encryption.md) scheme.
 
 1. Intermediate Server Application then receives the commit request:
 

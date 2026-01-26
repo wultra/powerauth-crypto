@@ -78,15 +78,15 @@ The Activation Code Delivery Application plays no active role in the process of 
    PublicKey KEY_DEVICE_PUBLIC = keyPair.getPublic()
    ```
 
-1. PowerAuth Mobile SDK encrypts the payload containing `KEY_DEVICE_PUBLIC` with an application scoped ECIES (level 2, `sh1="/pa/activation"`). Let's call the result of this step as `ACTIVATION_DATA`.
+1. PowerAuth Mobile SDK encrypts the payload containing `KEY_DEVICE_PUBLIC` with an application scoped encryption (level 2, `sh1="/pa/activation"`). Let's call the result of this step as `ACTIVATION_DATA`.
 
-1. PowerAuth Mobile SDK encrypts payload containing `ACTIVATION_DATA` and `ACTIVATION_CODE` with an application scoped ECIES (level 1, `sh1="/pa/generic/application"`) and sends HTTPS request to the `/pa/v3/activation/create` endpoint.
+1. PowerAuth Mobile SDK encrypts payload containing `ACTIVATION_DATA` and `ACTIVATION_CODE` with an application scoped encryption (level 1, `sh1="/pa/generic/application"`) and sends HTTPS request to the `/pa/v3/activation/create` endpoint.
 
-1. Enrollment Server decrypts the ECIES envelope, with an application scoped ECIES (level 1, `sh1="/pa/generic/application"`) and calls PowerAuth Server with `ACTIVATION_DATA`. At this step, the `ACTIVATION_CODE` is be used to identify the pending activation.
+1. Enrollment Server decrypts the encryption envelope, with an application scoped encryption (level 1, `sh1="/pa/generic/application"`) and calls PowerAuth Server with `ACTIVATION_DATA`. At this step, the `ACTIVATION_CODE` is be used to identify the pending activation.
 
 1. PowerAuth Server receives `ACTIVATION_CODE` and `ACTIVATION_DATA` from Enrollment Server. The `ACTIVATION_CODE` identifies the record for a pending activation. If the record is unknown, then server returns a generic error.
 
-1. PowerAuth Server decrypts `ACTIVATION_DATA` using an application scoped ECIES (level 2, `sh1="/pa/activation"`) and stores `KEY_DEVICE_PUBLIC` at given record.
+1. PowerAuth Server decrypts `ACTIVATION_DATA` using an application scoped encryption (level 2, `sh1="/pa/activation"`) and stores `KEY_DEVICE_PUBLIC` at given record.
 
 1. PowerAuth Server generates its key pair `(KEY_SERVER_PRIVATE, KEY_SERVER_PUBLIC)`.
    ```java
@@ -102,9 +102,9 @@ The Activation Code Delivery Application plays no active role in the process of 
 
 1. PowerAuth Server changes the record status to `PENDING_COMMIT`.
 
-1. PowerAuth Server encrypts response, containing `ACTIVATION_ID`, `CTR_DATA`, `KEY_SERVER_PUBLIC` with the same key as was used for ECIES level 2 decryption. This data is one more time encrypted by Enrollment Server, with the same key from ECIES level 1, and the response is sent to the PowerAuth Client.
+1. PowerAuth Server encrypts response, containing `ACTIVATION_ID`, `CTR_DATA`, `KEY_SERVER_PUBLIC` with the same key as was used for level 2 encryption. This data is one more time encrypted by Enrollment Server, with the same key from level 1 encryption, and the response is sent to the PowerAuth Client.
 
-1. PowerAuth Mobile SDK decrypts the response with both levels of ECIES, in the right order and receives `ACTIVATION_ID`, `KEY_SERVER_PUBLIC`, `CTR_DATA` and stores all that values locally in the volatile memory on the device.
+1. PowerAuth Mobile SDK decrypts the response with both levels of encryption, in the right order and receives `ACTIVATION_ID`, `KEY_SERVER_PUBLIC`, `CTR_DATA` and stores all that values locally in the volatile memory on the device.
 
 1. PowerAuth Mobile SDK uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
    ```java
