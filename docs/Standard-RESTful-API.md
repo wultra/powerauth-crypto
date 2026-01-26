@@ -11,6 +11,7 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 
 - [`/pa/v4/activation/create`](#initiate-activation) - Create a new activation, perform a key exchange based on activation code.
 - [`/pa/v4/activation/status`](#activation-status) - Query for an activation status.
+- [`/pa/v4/activation/confirm`](#activation-confirm) - Confirm activation (requires authentication).
 - [`/pa/v4/activation/remove`](#activation-remove) - Remove an activation (requires authentication).
 - [`/pa/v4/token/create`](#create-token) - Create a token (requires authentication and encryption).
 - [`/pa/v4/token/remove`](#remove-token) - Remove a token (requires authentication).
@@ -254,6 +255,56 @@ Activation ID and encryption context are provided via standard PowerAuth request
       "_comment": "Any object data, such as timestamp, service status info, etc."
     }
   }
+}
+```
+<!-- end -->
+
+<!-- begin api POST /pa/v4/activation/confirm -->
+### Activation Confirm
+
+Confirm an activation after it was created on mobile device. This call finalizes the activation and may optionally enable biometry.
+
+The endpoint is authenticated using standard PowerAuth authentication with `POSSESSION_KNOWLEDGE` 2FA authentication.
+
+<!-- begin remove -->
+| Request parameter | Value                       |
+|-------------------|-----------------------------|
+| Method            | `POST`                      |
+| Resource URI      | `/pa/v4/activation/confirm` |
+<!-- end -->
+
+#### Request
+
+##### Authentication Parameters
+
+| Request parameter    | Value                    |
+|----------------------|--------------------------|
+| Method               | `POST`                   |
+| Authentication uriId | `/pa/activation/confirm` |
+
+##### Authorization Header
+
+```
+X-PowerAuth-Authorization: PowerAuth ...
+```
+
+##### Body
+
+```json
+{
+  "requestObject": {
+    "enableBiometry": true
+  }
+}
+```
+
+The `enableBiometry` flag is optional. If set to true, the server enables the default biometric factor.
+
+#### Response 200
+
+```json
+{
+  "status": "OK"
 }
 ```
 <!-- end -->
