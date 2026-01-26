@@ -16,6 +16,9 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 - [`/pa/v4/token/remove`](#remove-token) - Remove a token (requires authentication).
 - [`/pa/v4/vault/unlock`](#vault-unlock) - Get a key to unlock secure vault (requires authentication and encryption).
 - [`/pa/v4/auth/validate`](#validate-authentication-code) - Validate an authentication code (requires authentication).
+- [`/pa/v4/password/change`](#password-change) - Change password for the knowledge factor (requires authentication).
+- [`/pa/v4/biometry/add`](#enable-biometry) - Enable the biometry factor (requires authentication).
+- [`/pa/v4/biometry/remove`](#remove-biometry) - Remove the biometry factor (requires authentication).
 - [`/pa/v4/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires encryption).
 - [`/pa/v4/upgrade/confirm`](#upgrade-confirm) - Finishes a protocol upgrade (requires authentication).
 - [`/pa/v4/keystore/create`](#create-new-key-pair) - Create a new temporary key pair for end-to-end encryption.
@@ -82,11 +85,11 @@ PowerAuth Client sends the following data on the server:
 - Request values encrypted with level 2 encryption:
     - `activationName` - Visual representation of the device, for example "Johnny's iPhone" or "Samsung Galaxy S".
     - `sharedSecretRequest` - Request for deriving a shared secret.
-      - `algorithm` - Cryptography algorithm suite name used for deriving the shared secret.
-      - `encapsulationKeys` - List of Base-64 encoded encapsulation keys in order specified by used algorithm suite.
+        - `algorithm` - Cryptography algorithm suite name used for deriving the shared secret.
+        - `encapsulationKeys` - List of Base-64 encoded encapsulation keys in order specified by used algorithm suite.
     - `devicePublicKeys` - Represents device public keys.
-      - `ecdsa` - ECDSA device public key encoded in Base-64 encoding.
-      - `mldsa` - MLDSA device public key encoded in Base-64 encoding.
+        - `ecdsa` - ECDSA device public key encoded in Base-64 encoding.
+        - `mldsa` - MLDSA device public key encoded in Base-64 encoding.
     - `activationOtp` - Optional authentication OTP used for additional user authentication.
     - `platform` - User device platform, e.g. `ios`, `android`, `hw` and `unknown`.
     - `deviceInfo` - Information about the user device, e.g. `iPhone12,3`.
@@ -102,11 +105,11 @@ PowerAuth Server decrypts both levels of encryption and returns the following da
 - Response values encrypted with level 2 encryption
     - `activationId` - Represents a long `ACTIVATION_ID` that uniquely identifies given activation records.
     - `sharedSecretResponse` - Response for deriving a shared secret.
-      - `salt` - Salt used for the shared secret derivation encoded in Base-64 encoding.
-      - `encapsulatedKeys` - List of Base-64 encoded encapsulated keys in order specified by used algorithm suite.
+        - `salt` - Salt used for the shared secret derivation encoded in Base-64 encoding.
+        - `encapsulatedKeys` - List of Base-64 encoded encapsulated keys in order specified by used algorithm suite.
     - `serverPublicKeys` - Represents server public keys.
-      - `ecdsa` - ECDSA server public key encoded in Base-64 encoding.
-      - `mldsa` - MLDSA server public key encoded in Base-64 encoding.
+        - `ecdsa` - ECDSA server public key encoded in Base-64 encoding.
+        - `mldsa` - MLDSA server public key encoded in Base-64 encoding.
     - `ctrData` - Initial value for hash-based counter.
 - Response values encrypted with level 1 encryption
     - `customAttributes` - Structure for application-specific data.
@@ -588,6 +591,138 @@ The JSON request body can contain any valid JSON data:
 ```
 <!-- end -->
 
+
+<!-- begin api POST /pa/v4/password/change -->
+### Password Change
+
+Change password (PIN) for the knowledge factor.
+
+#### Request
+
+Authenticated request using standard PowerAuth authentication using `POSSESSION_KNOWLEDGE` 2FA authentication.
+
+##### Authentication Parameters
+
+| Request parameter    | Value                 |
+|----------------------|-----------------------|
+| Method               | `POST`                |
+| Authentication uriId | `/pa/password/change` |
+
+The request is encrypted using standard end-to-end encryption in activation scope, `sh1="/pa/password/change"`.
+ 
+##### Authorization Header
+
+```
+X-PowerAuth-Authorization: PowerAuth ...
+```
+
+##### Body
+
+```json
+{
+  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
+  "encryptedData" : "...",
+  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
+  "timestamp" : 1769425681453
+}
+```
+
+#### Response 200
+
+```json
+{
+  "encryptedData": "...",
+  "timestamp": 1769425681453
+}
+```
+<!-- end -->
+
+<!-- begin api POST /pa/v4/biometry/add -->
+### Enable Biometry
+
+Enable the dynamic biometry factor.
+
+#### Request
+
+Authenticated request using standard PowerAuth authentication using `POSSESSION_KNOWLEDGE` 2FA authentication.
+
+##### Authentication Parameters
+
+| Request parameter    | Value              |
+|----------------------|--------------------|
+| Method               | `POST`             |
+| Authentication uriId | `/pa/biometry/add` |
+
+##### Authorization Header
+
+```
+X-PowerAuth-Authorization: PowerAuth ...
+```
+
+##### Body
+
+```json
+{
+  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
+  "encryptedData" : "...",
+  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
+  "timestamp" : 1769425681453
+}
+```
+
+#### Response 200
+
+```json
+{
+  "encryptedData": "...",
+  "timestamp": 1769425681453
+}
+```
+<!-- end -->
+
+<!-- begin api POST /pa/v4/biometry/remove -->
+### Remove Biometry
+
+Disable the dynamic biometry factor.
+
+#### Request
+
+Authenticated request using standard PowerAuth authentication authentication using `POSSESSION` 1FA authentication.
+
+##### Authentication Parameters
+
+| Request parameter    | Value                 |
+|----------------------|-----------------------|
+| Method               | `POST`                |
+| Authentication uriId | `/pa/biometry/remove` |
+
+##### Authorization Header
+
+```
+X-PowerAuth-Authorization: PowerAuth ...
+```
+
+##### Body
+
+```json
+{
+  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
+  "encryptedData" : "...",
+  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
+  "timestamp" : 1769425681453
+}
+```
+
+#### Response 200
+
+```json
+{
+  "encryptedData": "...",
+  "timestamp": 1769425681453
+}
+```
+<!-- end -->
+
 ## Protocol Upgrade API
 
 <!-- begin api POST /pa/v4/upgrade/start -->
@@ -749,7 +884,7 @@ If the `activationId` is present (and represents an existing activation), the pa
 
 - Application scope: Secret key is derived using the SHA3-256 algorithm using application secret `APP_SECRET`.
 - Activation scope: Secret key is derived using the KMAC-256 algorithm using application secret `APP_SECRET` and key `KEY_E2EE_SHARED_INFO2`.
-  
+
 #### Response 200
 
 The JSON response contains an encoded JWT payload (signed with `ES384` and optionally with `MLDSA`) in a standard request envelope:
