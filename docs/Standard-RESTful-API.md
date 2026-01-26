@@ -687,7 +687,7 @@ Disable the dynamic biometry factor.
 
 #### Request
 
-Authenticated request using standard PowerAuth authentication authentication using `POSSESSION` 1FA authentication.
+Authenticated request using standard PowerAuth authentication using `POSSESSION` 1FA authentication.
 
 ##### Authentication Parameters
 
