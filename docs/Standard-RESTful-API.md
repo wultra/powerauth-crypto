@@ -238,18 +238,18 @@ This endpoint also returns a `customObject` object with custom application speci
 
 #### Request
 
-```json
-{
-}
-```
+Activation ID and encryption context are provided via standard PowerAuth request context (authentication headers and parameters). This endpoint does not use a JSON request body.
 
 #### Response 200
 
 ```json
 {
-  "activationStatus": "19gyYaW5ZhdGl...", 
-  "customObject": {
-    "_comment": "Any object data, such as timestamp, service status info, etc."
+  "status": "OK",
+  "responseObject": {
+    "activationStatus": "19gyYaW5ZhdGl...",
+    "customObject": {
+      "_comment": "Any object data, such as timestamp, service status info, etc."
+    }
   }
 }
 ```
@@ -370,8 +370,11 @@ The JSON object after the decryption:
 
 ```json
 {
-  "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb",  
-  "tokenSecret": "VqAXEhziiT27lxoqREjtcQ=="
+  "status": "OK",
+  "responseObject": {
+    "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb",
+    "tokenSecret": "VqAXEhziiT27lxoqREjtcQ=="
+  }
 }
 ```
 <!-- end -->
@@ -698,7 +701,9 @@ X-PowerAuth-Authorization: PowerAuth ...
 #### Response 200
 
 ```json
-{}
+{
+  "status": "OK"
+}
 ```
 <!-- end -->
 
@@ -751,6 +756,7 @@ The JSON response contains an encoded JWT payload (signed with `ES384` and optio
 
 ```json
 {
+  "status": "OK",
   "responseObject": {
     "jwt": "..."
   }
