@@ -702,23 +702,15 @@ Authenticated request using standard PowerAuth authentication authentication usi
 X-PowerAuth-Authorization: PowerAuth ...
 ```
 
-##### Body
+#### Request
 
-```json
-{
-  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
-  "encryptedData" : "...",
-  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
-  "timestamp" : 1769425681453
-}
-```
+This endpoint does not use a request body.
 
 #### Response 200
 
 ```json
 {
-  "encryptedData": "...",
-  "timestamp": 1769425681453
+  "status": "OK"
 }
 ```
 <!-- end -->
