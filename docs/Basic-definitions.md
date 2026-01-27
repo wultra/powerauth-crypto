@@ -41,16 +41,6 @@ Decrypt bytes using symmetric key with given initialization vector and given cip
 byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key, String transformation);
 ```
 
-### Password KDF
-
-An algorithm for key stretching, converts a short password into long key by performing KMAC-based derivation on the original data. Implementations must make sure resulting key is converted into a format usable by the AES algorithm.
-
-The following method will stretch the password using provided salt:
-
-```java
-SecretKey expandedKey = KDF.derivePassword(byte[] password, byte[] salt);
-```
-
 ### Generic KDF
 
 Keys are derived from an original secret using hierarchical string labels to guarantee that derived keys are never reused for different purposes.
@@ -67,6 +57,16 @@ If raw bytes are required:
 
 ```java
 byte[] bytes = KDF.deriveBytes(byte[] secret, String label, int length);
+```
+
+### Password KDF
+
+An algorithm for key stretching, converts a short password into long key by performing KMAC-based derivation on the original data. Implementations must make sure resulting key is converted into a format usable by the AES algorithm.
+
+The following method will stretch the password using provided salt:
+
+```java
+SecretKey expandedKey = KDF.derivePassword(byte[] password, byte[] salt);
 ```
 
 ### ECDSA Signatures
