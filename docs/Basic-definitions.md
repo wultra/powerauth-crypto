@@ -61,7 +61,7 @@ byte[] bytes = KDF.deriveBytes(byte[] secret, String label, int length);
 
 ### Password KDF
 
-An algorithm for key stretching, converts a short password into long key by performing KMAC-based derivation on the original data. Implementations must make sure resulting key is converted into a format usable by the AES algorithm.
+An algorithm for key stretching, converts a short password into long key by performing KMAC-based derivation on the original data.
 
 The following method will stretch the password using provided salt:
 
