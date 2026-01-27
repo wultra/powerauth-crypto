@@ -96,8 +96,8 @@ PowerAuth Client sends the following data on the server:
     - `deviceInfo` - Information about the user device, e.g. `iPhone12,3`.
     - `extras` - Any client side attributes associated with this activation, like a more detailed information about the client, etc.
 - Request encrypted with level 1 encryption:
-    - `activationType` - Assume that standard activation is using "CODE" constant as an activation type.
-    - `activationCode` - Represents an `ACTIVATION_CODE` value
+    - `type` - Assume that standard activation is using "CODE" constant as an activation type.
+    - `identityAttributes` - Contains the `ACTIVATION_CODE` value inside this map, mapped using the `code` key.
 - Not encrypted values (HTTP header)
     - `applicationKey` - Represents an application with a given `APPLICATION_KEY`
 
@@ -156,7 +156,7 @@ The JSON request object before level 1 encryption. The `activationData` field co
 
 ```json
 {
-  "activationType": "CODE",
+  "type": "CODE",
   "identityAttributes": {
     "code": "VVVVV-VVVVV-VVVVV-VTFVA"
   },
