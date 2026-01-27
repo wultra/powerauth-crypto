@@ -1,4 +1,4 @@
-# List of used keys
+# List of Used Keys
 
 The following keys are used in the PowerAuth cryptography scheme.
 
