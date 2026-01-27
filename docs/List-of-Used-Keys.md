@@ -41,8 +41,6 @@ The following keys are used in the PowerAuth cryptography scheme.
 | `KEK_AUTHENTICATION_CODE_KNOWLEDGE`  | Derived from user's password or PIN            | Encrypts and decrypts `KEY_AUTHENTICATION_CODE_KNOWLEDGE` on the client.                                                                                     |
 | `KEK_AUTHENTICATION_CODE_BIOMETRY`   | Platform specific                              | Encrypts and decrypts `KEY_AUTHENTICATION_CODE_BIOMETRY` on the client.                                                                                      |
 
-> TODO: the table above is not updated yet.
-
 ## Index registry
 
 The following table contains the list of all derivation indexes for KDF function used in the protocol.
