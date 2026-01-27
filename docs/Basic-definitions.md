@@ -220,18 +220,6 @@ SecretKey KDK_UTILITY = KDF.derive(masterKey, "util");
 SecretKey KEY_STATUS = KDF.derive(KDK_UTILITY, "util/mac/status");
 ```
 
-### KDF_INTERNAL
-
-A second key derivation function for internal algorithm purposes.
-
-A KMAC-based derivation is used for internal indices, producing fixed-length symmetric keys.
-
-To obtain a key derived from a master key using a provided index:
-
-```java
-SecretKey derivedKey = KDF_INTERNAL.derive(SecretKey masterKey, byte[] index);
-```
-
 ## Helper Functions
 
 These functions are used in the pseudo-codes:
