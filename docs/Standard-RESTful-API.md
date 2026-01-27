@@ -232,7 +232,7 @@ The `activationData` contains an encrypted level 2 response. So, the JSON respon
 <!-- begin api POST /pa/v4/activation/status -->
 ### Activation Status
 
-Get the status of an activation with given activation ID. The PowerAuth Server response contains an encrypted activation status blob. The endpoint is encrypted using standard PowerAuth end-to-end encryption. More information about the format of status blob and encryption can be found in the [chapter on activation status cryptography](./Activation-Status.md).
+Get the status of an activation with given activation ID. The PowerAuth Server response contains an activation status blob. The endpoint is encrypted using standard PowerAuth end-to-end encryption. More information about the format of status blob and encryption can be found in the [chapter on activation status cryptography](./Activation-Status.md).
 
 This endpoint also returns a `customObject` object with custom application specific data. This object may be used for example to provide service specific data (current timestamp, info about service status, ...) in order to minimize number of required request in practical deployments (for example, mobile banking needs to ask for the service status data on application launch).
 
