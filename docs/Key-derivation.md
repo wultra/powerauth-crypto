@@ -44,17 +44,7 @@ The concrete method for obtaining device‑specific data is platform dependent a
 SecretKey KEY_AUTHENTICATION_CODE_KNOWLEDGE = KDF.derive(KDK_AUTHENTICATION_CODE, "auth/knowledge");
 ```
 
-This key is stored encrypted using a key derived from a password or PIN  code. PowerAuth Client should derive the encryption key using PBKDF2 (or platform equivalent):
-
-``` java
-char[] password = "1234".toCharArray();
-byte[] salt = Generator.randomBytes(16);
-int iterations = 10000;
-int lengthInBits = 256;
-SecretKey KEK_AUTHENTICATION_CODE_KNOWLEDGE = PBKDF2.expand(password, salt, iterations, lengthInBits);
-
-// Store encrypted KEY_AUTHENTICATION_CODE_KNOWLEDGE together with salt
-```
+This key is stored encrypted using a key derived from a password or PIN code using the Password-based KDF.
 
 The knowledge factor key may change over time (for example after password change). The server maintains current and next versions of this key.
 

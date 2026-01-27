@@ -76,9 +76,7 @@ Example:
 SecretKey KEY = KDF.derive(SOURCE_KEY, "auth/possession");
 ```
 
-In addition:
-
-- **PBKDF2** is used only for deriving device encryption keys from user PIN / password (knowledge factor).
+Password-based keys are derived using KMAC-256 with protocol-defined customization string.
 
 ## Activation ID
 
