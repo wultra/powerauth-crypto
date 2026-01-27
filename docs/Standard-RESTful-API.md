@@ -160,6 +160,9 @@ The JSON request object before level 1 encryption. The `activationData` field co
   "identityAttributes": {
     "code": "VVVVV-VVVVV-VVVVV-VTFVA"
   },
+  "customAttributes": {
+    "key": "value"
+  },
   "activationData": {
     "temporaryKeyId" : "f4d2171c-be66-4d04-aaa3-9d828aaeb15e",
     "encryptedData" : "KWabFKLAuQCkb+lNHyMA3Xx4HplMmQ3y9wnt7FMEH9...",
