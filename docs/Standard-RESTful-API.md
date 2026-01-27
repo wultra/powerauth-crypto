@@ -20,7 +20,7 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 - [`/pa/v4/password/change`](#password-change) - Change password for the knowledge factor (requires authentication).
 - [`/pa/v4/biometry/add`](#enable-biometry) - Enable the biometry factor (requires authentication).
 - [`/pa/v4/biometry/remove`](#remove-biometry) - Remove the biometry factor (requires authentication).
-- [`/pa/v4/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires encryption).
+- [`/pa/v4/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires authentication and encryption).
 - [`/pa/v4/upgrade/confirm`](#upgrade-confirm) - Finishes a protocol upgrade (requires authentication).
 - [`/pa/v4/keystore/create`](#create-new-key-pair) - Create a new temporary key pair for end-to-end encryption.
 <!-- end -->
