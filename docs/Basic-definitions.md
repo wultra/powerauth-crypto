@@ -10,7 +10,7 @@ The following basic cryptography algorithms and parameters are used in the Power
 
 A symmetric key encryption algorithm. The AES algorithm is used with 256-bit keys.
 
-- CTR mode is used for AEAD and key encryption.
+- CTR mode is used as the encryption primitive inside AEAD and for unauthenticated key wrapping (UKE).
 - GCM mode is used for local vault.
 
 #### Encryption
