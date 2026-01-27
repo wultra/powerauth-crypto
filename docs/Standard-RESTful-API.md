@@ -377,11 +377,11 @@ Create a static token which can be used for repeated requests to data resources 
 
 ##### Signature and Encryption Parameters
 
-| Request parameter | Value                                |
-|-------------------|--------------------------------------|
-| Method            | `POST`                               |
-| Signature uriId   | `/pa/token/create`                   |
-| Encryption        | `activation, sh1="/pa/token/create"` |
+| Request parameter    | Value                                |
+|----------------------|--------------------------------------|
+| Method               | `POST`                               |
+| Authentication uriId | `/pa/token/create`                   |
+| Encryption           | `activation, sh1="/pa/token/create"` |
 
 ##### Authorization Header
 
@@ -516,11 +516,11 @@ The following keys can be requested:
 
 ##### Authentication and Encryption Parameters
 
-| Request parameter | Value                                |
-|-------------------|--------------------------------------|
-| Method            | `POST`                               |
-| Signature uriId   | `/pa/vault/unlock`                   |
-| Encryption        | `activation, sh1="/pa/vault/unlock"` |
+| Request parameter    | Value                                |
+|----------------------|--------------------------------------|
+| Method               | `POST`                               |
+| Authentication uriId | `/pa/vault/unlock`                   |
+| Encryption           | `activation, sh1="/pa/vault/unlock"` |
 
 ##### Authorization Header
 
@@ -603,10 +603,10 @@ The request body should contain data used for computing the authentication code.
 
 ##### Authentication Code Parameters
 
-| Request parameter | Value                          |
-|-------------------|--------------------------------|
-| Method            | `POST`, `GET`, `PUT`, `DELETE` |
-| Signature uriId   | `/pa/auth/validate`            |
+| Request parameter    | Value                          |
+|----------------------|--------------------------------|
+| Method               | `POST`, `GET`, `PUT`, `DELETE` |
+| Authentication uriId | `/pa/auth/validate`            |
 
 ##### Authorization Header
 
