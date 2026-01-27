@@ -105,7 +105,7 @@ byte[] signature = MLDSA.sign(PrivateKey privateKey, byte[] message);
 boolean isValid = MLDSA.verify(PublicKey publicKey, byte[] message, byte[] signature);
 ```
 
-### KEM / ECDHE Key Agreement
+### KEM / ECDH Key Agreement
 
 Generate KEM key pair:
 

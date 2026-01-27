@@ -25,12 +25,12 @@ The following keys are used in the PowerAuth cryptography scheme.
 | _key_server *_                       |                                                |                                                                                                                                                              |
 | `KEY_SERVER_P256_PRIVATE`            | ECDH/ECDSA - private key                       | Used by older clients                                                                                                                                        |
 | `KEY_SERVER_P256_PUBLIC`             | ECDH/ECDSA - public key                        | Used by older clients                                                                                                                                        |
-| `KEY_SERVER_ECDSA_P384_PRIVATE`      | ECDSA - private key                            | Stored on client, used to assure authenticity of data signed by the user                                                                                     |
-| `KEY_SERVER_ECDSA_P384_PUBLIC`       | ECDSA - public key                             | Stored on server, used to verify authenticity of data signed by the user                                                                                     |
-| `KEY_SERVER_MLDSA65_PRIVATE`         | ML-DSA - private key                           | Stored on client, used to assure authenticity of data signed by the user                                                                                     |
-| `KEY_SERVER_MLDSA65_PUBLIC`          | ML-DSA - public key                            | Stored on server, used to verify authenticity of data signed by the user                                                                                     |
-| `KEY_SERVER_MLDSA87_PRIVATE`         | ML-DSA - private key                           | Stored on client, used to assure authenticity of data signed by the user                                                                                     |
-| `KEY_SERVER_MLDSA87_PUBLIC`          | ML-DSA - public key                            | Stored on server, used to verify authenticity of data signed by the user                                                                                     |
+| `KEY_SERVER_ECDSA_P384_PRIVATE`      | ECDSA - private key                            | Stored on server, used to assure authenticity of data signed by the user                                                                                     |
+| `KEY_SERVER_ECDSA_P384_PUBLIC`       | ECDSA - public key                             | Stored on client, used to verify authenticity of data signed by the user                                                                                     |
+| `KEY_SERVER_MLDSA65_PRIVATE`         | ML-DSA - private key                           | Stored on server, used to assure authenticity of data signed by the user                                                                                     |
+| `KEY_SERVER_MLDSA65_PUBLIC`          | ML-DSA - public key                            | Stored on client, used to verify authenticity of data signed by the user                                                                                     |
+| `KEY_SERVER_MLDSA87_PRIVATE`         | ML-DSA - private key                           | Stored on server, used to assure authenticity of data signed by the user                                                                                     |
+| `KEY_SERVER_MLDSA87_PUBLIC`          | ML-DSA - public key                            | Stored on client, used to verify authenticity of data signed by the user                                                                                     |
 | _other_                              |                                                |                                                                                                                                                              |
 | `KEY_TEMPORARY_SECRET`               | ECDH/Hybrid shared secret                      | A key deduced using `SharedSecret` protocol at the requested level of security. This is a temporary shared secret for E2EE purposes                          |
 | `KEY_ACTIVATION_SECRET`              | ECDH/Hybrid shared secret                      | A key deduced using `SharedSecret` protocol at the requested level of security. This is a long term shared secret created between the client and the server. |
@@ -41,9 +41,9 @@ The following keys are used in the PowerAuth cryptography scheme.
 | `KEK_AUTHENTICATION_CODE_KNOWLEDGE`  | Derived from user's password or PIN            | Encrypts and decrypts `KEY_AUTHENTICATION_CODE_KNOWLEDGE` on the client.                                                                                     |
 | `KEK_AUTHENTICATION_CODE_BIOMETRY`   | Platform specific                              | Encrypts and decrypts `KEY_AUTHENTICATION_CODE_BIOMETRY` on the client.                                                                                      |
 
-## Index registry
+## Label registry
 
-The following table contains the list of all derivation indexes for KDF function used in the protocol.
+The following table contains the list of all derivation labels for KDF function used in the protocol.
 
 | Label                           | Derived key                        | Source key                               | Description                                                                                                                |
 |---------------------------------|------------------------------------|------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
@@ -53,9 +53,9 @@ The following table contains the list of all derivation indexes for KDF function
 | `auth/knowledge`                | KEY_AUTHENTICATION_CODE_KNOWLEDGE  | KDK_AUTHENTICATION_CODE                  | Initial knowledge factor, before password is changed                                                                       |
 | `auth/biometry`                 | KEY_AUTHENTICATION_CODE_BIOMETRY   | KDK_AUTHENTICATION_CODE                  | Initial biometry factor, if biometry is enabled in activation process                                                      |
 | _Shared Secret_                 |                                    |                                          |                                                                                                                            |   
-| `shared-secret/ec-p384`         | KEY_SHARED_SECRET<sup>3</sup>      | ECDHE                                    | Shared secret calculated with EC_P384 algorithm                                                                            |
-| `shared-secret/ec-p384-ml-l3`   | KEY_SHARED_SECRET<sup>3</sup>      | ECDHE+ML-KEM                             | Shared secret calculated with EC_P384_ML_L3 algorithm                                                                      |
-| `shared-secret/ec-p384-ml-l5`   | KEY_SHARED_SECRET<sup>3</sup>      | ECDHE+ML-KEM                             | Shared secret calculated with EC_P384_ML_L5 algorithm                                                                      |
+| `shared-secret/ec-p384`         | KEY_SHARED_SECRET<sup>3</sup>      | ECDH                                     | Shared secret calculated with EC_P384 algorithm                                                                            |
+| `shared-secret/ec-p384-ml-l3`   | KEY_SHARED_SECRET<sup>3</sup>      | ECDH+ML-KEM                              | Shared secret calculated with EC_P384_ML_L3 algorithm                                                                      |
+| `shared-secret/ec-p384-ml-l5`   | KEY_SHARED_SECRET<sup>3</sup>      | ECDH+ML-KEM                              | Shared secret calculated with EC_P384_ML_L5 algorithm                                                                      |
 | _Encryption_                    |                                    |                                          |
 | `enc`                           | **KDK_ENCRYPTION**                 | KEY_ACTIVATION_SECRET                    | Base for encryption purpose                                                                                                |
 | `aead/enc`                      | KEY_ENC                            | BASE_KEY<sup>1</sup>                     | AEAD key for encryption                                                                                                    |
