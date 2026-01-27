@@ -786,11 +786,11 @@ Start a process to upgrade from protocol version 3, to version 4. The request is
 
 ##### Authentication and Encryption Parameters
 
-| Request parameter    | Value                           |
-|----------------------|---------------------------------|
-| Method               | `POST`                          |
-| Authentication uriId | `/pa/upgrade/start`             |
-| Encryption           | `activation, sh1="/pa/upgrade"` |
+| Request parameter    | Value                            |
+|----------------------|----------------------------------|
+| Method               | `POST`                           |
+| Authentication uriId | `/pa/upgrade/start`              |
+| Encryption           | `application, sh1="/pa/upgrade"` |
 
 ##### Encryption Header
 
