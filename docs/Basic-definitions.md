@@ -362,6 +362,8 @@ byte[] hash = Hash.sha3_256(byte[] original);
 byte[] hash = Hash.sha3_384(byte[] original);
 ```
 
+Note: SHA-384 (SHA-2) is used internally by ECDSA signatures for compatibility reasons.
+
 ### Password Hashing
 
 #### Compute Password Hash
