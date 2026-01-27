@@ -337,7 +337,7 @@ To construct the PowerAuth Client authentication code, use the `POST` method and
 | Method               | `POST`                  |
 | Authentication uriId | `/pa/activation/remove` |
 
-##### Signature Header
+##### Authorization Header
 
 ```
 X-PowerAuth-Authorization: PowerAuth ...
@@ -867,7 +867,7 @@ Finish an upgrade process.
 | Method               | `POST`                |
 | Authentication uriId | `/pa/upgrade/confirm` |
 
-##### Signature Header
+##### Authorization Header
 
 ```
 X-PowerAuth-Authorization: PowerAuth ...
