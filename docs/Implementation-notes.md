@@ -4,51 +4,81 @@ Following implementation notes use simplified Java code with definitions from th
 
 ## Used Cryptography
 
-A PowerAuth key exchange mechanism is based on **ECDH** key exchange algorithm with **P256r1 curve**. Additionally, an **ECDSA** (more specifically, **SHA256withECDSA** algorighm) is used for signing data sent from the service provider using a provider's Master Private Key. After a successful key exchange, both client and server have a shared master secret and they establish a shared counter initialized on 0. Later on, each authorization attempt increments this counter. A related hash-based counter is initialized as well with a random value and it is updated with each authentication attempt. The PowerAuth authentication code is computed using data, shared master secret and counter using the **HMAC** algorithm.
+PowerAuth protocol uses a hybrid cryptographic design:
+
+- **ECC (P-384)** for ECDSA signatures and ECDH key agreement
+- **ML-DSA (65 / 87)** for post-quantum hybrid signatures
+- **Hybrid shared secret establishment** (HPKE + PQC KEM)
+- **AEAD** construction for end-to-end encryption
+
+Application-scope and activation-scope responses are signed using ECDSA P-384 and optionally ML-DSA (hybrid mode). Long-term activation secrets and short-term temporary secrets are derived from hybrid key exchange.
+
+Authentication codes are computed from derived factor keys (possession / knowledge / biometry) and protocol data. Verification always happens on the server side.
+
+## Algorithm Suites and Shared Secret Derivation
+
+PowerAuth protocol supports multiple **algorithm suites** that define:
+
+- Which asymmetric keys are exchanged
+- Which KEMs participate in shared secret establishment
+- Whether post-quantum protection is enabled
+- Which signing keys are used for responses
+
+The selected algorithm suite directly impacts how `KEY_ACTIVATION_SECRET` and `KEY_TEMPORARY_SHARED_SECRET` are derived.
+
+Supported suites:
+
+- **EC_P384**
+    - Classical mode
+    - Uses ECDH P-384 (HPKE DHKEM)
+    - Shared secret is derived from a single ECDH-based DHKEM
+
+- **EC_P384_ML_L3**
+    - Hybrid post-quantum mode (Level 3)
+    - Uses ECDH P-384 (HPKE DHKEM) + ML-KEM-768
+    - Shared secret is derived from *both* ECC and PQC secrets
+
+- **EC_P384_ML_L5**
+    - Hybrid post-quantum mode (Level 5)
+    - Uses ECDH P-384 (HPKE DHKEM) + ML-KEM-1024
+    - Shared secret is derived from *both* ECC and PQC secrets
+
+For hybrid suites, multiple KEM secrets are concatenated and passed into a KMAC-based KDF (NIST SP 800‑56C style) together with protocol version and algorithm label:
+
+```
+LABEL = "shared-secret/<ALGORITHM>"
+```
+
+The resulting 256‑bit output becomes:
+
+- `KEY_ACTIVATION_SECRET` during activation
+- `KEY_TEMPORARY_SHARED_SECRET` during temporary key establishment
+
+Both client and server perform identical derivation. Neither side ever stores intermediate KEM secrets.
+
+Once an activation is established, the selected suite becomes fixed for that activation. Temporary keys must use one of the algorithms currently supported by the application, but activation requests continue to rely on the originally negotiated suite.
 
 ## Key Derivation Functions
 
-KDF (Key Derivation Function) is an algorithm used for deriving a secret key from a master secret key using a pseudo-random function. PowerAuth uses three types of functions for KDF:
+KDF (Key Derivation Function) is used to derive domain-separated keys from shared secrets.
 
-- **KDF** - AES-based KDF function. Works by encrypting fixed `long` index with a random secret master key. This function is handy for situations where developer selects the function index. A human readable index, such as "1", "2", or "1000" can be selected for key derivation.
-- **KDF_INTERNAL** - HMAC-SHA256-based KDF function. Works by computing HMAC-SHA256 of provided `byte[]` index with a random secret master key. This function is used in internal algorithm workings, in situations where readability of the index is not important at all.
-- **PBKDF2** - Standard algorithm for deriving long keys from short passwords. This function is considered a standard KDF and it is used only for deriving base key from the user entered password. Since it has no major impact on PowerAuth cryptography, we will not elaborate about this KDF in more details.
+PowerAuth uses label-based KDF instead of numeric indexes. Each key is derived using a string label such as:
 
-### KDF Description
+- `auth/*` – authentication domain
+- `enc/*` – encryption domain
+- `vault/*` – secure vault
+- `util/*` – protocol utilities
+- `other/*` – auxiliary derivations
 
-```java
-public SecretKey kdfDeriveSecretKey(SecretKey secret, long index) {
-    byte[] bytes = ByteBuffer.allocate(16).putLong(index).array();
-    byte[] iv = new byte[16];
-    byte[] newKeyBytes = AES.encrypt(bytes, iv, secret);
-    return KeyConversion.secretKeyFromBytes(newKeyBytes);
-}
-```
-
-### KDF_INTERNAL Description
+Example:
 
 ```java
-public SecretKey deriveSecretKeyHmac(SecretKey secret, byte[] index) {
-    byte[] derivedKey = Mac.hmacSha256(secret, index);
-    byte[] newKeyBytes = ByteUtil.convert32Bto16B(derivedKey32);
-    return KeyConversion.secretKeyFromBytes(newKeyBytes);
-}
+SecretKey KEY = KDF.derive(SOURCE_KEY, "auth/possession");
 ```
 
-For the purpose of completeness, the `ByteUtil.convert32Bto16B()` function is implemented in a following manner:
+In addition:
 
-```java
-public byte[] ByteUtil.convert32Bto16B(byte[] original) {
-    if (original.length != 32) {
-        return null; // error state
-    }
-    byte[] resultSecret = new byte[16];
-    for (int i = 0; i < 16; i++) {
-        resultSecret[i] = (byte) (original[i] ^ original[i + 16]);
-    }
-    return resultSecret;
-}
-```
+- **PBKDF2** is used only for deriving device encryption keys from user PIN / password (knowledge factor).
 
 ## Activation ID
 
@@ -70,7 +100,6 @@ c564e700-7e86-4a87-b6c8-a5a0cc89683f
 <!-- begin box warning -->
 A single UUID for an activation in `CREATED` or `PENDING_COMMIT` state must be valid only for a limited period of time (activation time window), that should be rather short (in minutes at most).
 <!-- end -->
-
 
 ## Activation Code
 
@@ -99,7 +128,7 @@ Both identifiers are embedded in the PowerAuth Client application (for example, 
 
 Application key is sent with every PowerAuth Authentication as `pa_application_key`.
 
-Application secret enters the authentication algorithm in final HMAC_SHA256 as a part of the `DATA` and hence it is a part of the PowerAuth authentication (sent implicitly in `pa_auth_code`). It never travels from the application in plain text format.
+Application secret enters the authentication algorithm in final MAC computation and hence it is a part of the PowerAuth authentication (sent implicitly in `pa_auth_code`). It never travels from the application in plain text format.
 
 ## Entering Values in Client Application
 
@@ -121,31 +150,33 @@ You can also check [Activation Code](./Activation-Code.md) document to get a mor
 
 ## Generating Key Pairs
 
-The device and server keys are generated using ECDH algorithm with P256 curve:
+The device and server ECC keys are generated using ECDSA / ECDH with **P-384** curve:
 
 ```java
 public KeyPair generateKeyPair() {
-    KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC", "BC"); // we assume BouncyCastle provider
-    kpg.initialize(new ECGenParameterSpec("secp256r1"));
-    KeyPair kp = kpg.generateKeyPair();
-    return kp;
+    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC", "BC");
+    keyPairGenerator.initialize(new ECGenParameterSpec("secp384r1"));
+    return kpg.generateKeyPair();
 }
 ```
-## Shared Key Derivation (ECDH)
 
-Shared key `KEY_MASTER_SECRET` is generated using the following algorithm (ECDH):
-
+Generating ML-DSA signing keys (used for hybrid signatures):
 ```java
-public SecretKey generateSharedKey(PrivateKey privateKey, PublicKey publicKey) throws InvalidKeyException {
-    KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH", "BC"); // we assume BouncyCastle provider
-    keyAgreement.init((Key) privateKey, new ECGenParameterSpec("secp256r1"));
-    keyAgreement.doPhase(publicKey, true);
-    final byte[] sharedSecret = keyAgreement.generateSecret();
-    byte[] resultSecret = new byte[16];
-    for (int i = 0; i < 16; i++) {
-        resultSecret[i] = (byte) (sharedSecret[i] ^ sharedSecret[i + 16]);
-    }
-    return convertBytesToSharedSecretKey(resultSecret);
+public KeyPair generateMlDsaKeyPair(MLDSAParameterSpec dsaParameterSpec) {
+    // variant: "ML-DSA-65" or "ML-DSA-87"
+    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("MLDSA", "BC");
+    keyPairGenerator.initialize(dsaParameterSpec);
+    return keyPairGenerator.generateKeyPair();
+}
+```
+
+Generating ML-KEM keys (used for hybrid shared secret derivation):
+```java
+public KeyPair generateMlKemKeyPair(MLKEMParameterSpec kemParameterSpec) {
+    // variant: "ML-KEM-768" or "ML-KEM-1024"
+    final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ML-KEM", "BC");
+    keyPairGenerator.initialize(kemParameterSpec);
+    return keyPairGenerator.generateKeyPair();
 }
 ```
 
@@ -155,17 +186,17 @@ All communication should be carried over a properly secured channel, such as HTT
 
 ## Lifecycle of the "Master Server Key Pair"
 
-Since the same `KEY_SERVER_MASTER_PRIVATE` key is used for all activations, the "latent private key fingerprints" may accumulate over the time, providing hints to attack the private key. While these hints are impractical from the attacker's perspective, it is recommended to renew the key after certain time period. Usually, this also requires timely update of the clients that bundle the "Master Server Public Key".
+Since the same master server key is used for all activations, the "latent private key fingerprints" may accumulate over the time. While these hints are impractical from the attacker's perspective, it is recommended to renew the key after certain time period. Usually, this also requires timely update of the clients that bundle the master server public key.
 
 ## Signing Data Using Master Server Private Key
 
-The master server key pair is generated using the same algorithm as a normal key pair, see above (with P256 curve).
+The master server key pair is generated using the same algorithm as a normal key pair, see above (with P-384 curve).
 
 In order to generate the signature for given bytes (obtained from string by conversion using UTF-8 encoding), following code is used:
 
 ```java
 public byte[] signatureForBytes(byte[] bytes, PrivateKey privateKey) {
-    Signature ecdsaSign = Signature.getInstance("SHA256withECDSA", "BC"); // we assume BouncyCastle provider
+    Signature ecdsaSign = Signature.getInstance("SHA384withECDSA", "BC"); // we assume BouncyCastle provider
     ecdsaSign.initSign(privateKey);
     ecdsaSign.update(bytes);
     byte[] signature = ecdsaSign.sign();
@@ -176,11 +207,20 @@ public byte[] signatureForBytes(byte[] bytes, PrivateKey privateKey) {
 To verify the signature, following code is used:
 
 ```java
-public boolean isSignatureCorrectForBytes(byte[] bytes, byte[] signature, PublicKey publicKey)
-    Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC"); // we assume BouncyCastle provider
+public boolean isSignatureCorrectForBytes(byte[] bytes, byte[] signature, PublicKey publicKey) {
+    Signature ecdsaVerify = Signature.getInstance("SHA384withECDSA", "BC"); // we assume BouncyCastle provider
     ecdsaVerify.initVerify(publicKey);
     ecdsaVerify.update(bytes);
     boolean result = ecdsaVerify.verify(signature);
     return result;
 }
 ```
+
+In hybrid mode, signatures may additionally include ML-DSA:
+
+- `MLDSA.sign(PrivateKey, byte[])`
+- `MLDSA.verify(PublicKey, byte[], signature)`
+
+Supported algorithms:
+- `ML-DSA-65`
+- `ML-DSA-87`
