@@ -46,7 +46,7 @@ Supported suites:
 For hybrid suites, multiple KEM secrets are concatenated and passed into a KMAC-based KDF (NIST SP 800‑56C style) together with protocol version and algorithm label:
 
 ```
-LABEL = "shared-secret/<ALGORITHM>"
+LABEL = "shared-secret/<algorithm_suite_id>"
 ```
 
 The resulting 256‑bit output becomes:
