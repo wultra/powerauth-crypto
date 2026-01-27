@@ -26,7 +26,7 @@ PowerAuth protocol supports multiple **algorithm suites** that define:
 
 The selected algorithm suite directly impacts how `KEY_ACTIVATION_SECRET` and `KEY_TEMPORARY_SHARED_SECRET` are derived.
 
-Supported suites:
+Supported algorithm suites:
 
 - **EC_P384**
     - Classical mode
