@@ -156,7 +156,7 @@ The device and server ECC keys are generated using ECDSA / ECDH with **P-384** c
 public KeyPair generateKeyPair() {
     final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC", "BC");
     keyPairGenerator.initialize(new ECGenParameterSpec("secp384r1"));
-    return kpg.generateKeyPair();
+    return keyPairGenerator.generateKeyPair();
 }
 ```
 
