@@ -178,6 +178,8 @@ byte[] ciphertext = AEAD.seal(
 );
 ```
 
+The nonce is prepended to the ciphertext during encryption.
+
 #### Open
 
 ```java
@@ -188,6 +190,8 @@ byte[] plaintext = AEAD.open(
         byte[] ciphertext
 );
 ```
+
+The nonce is automatically extracted during decryption from ciphertext.
 
 #### Extract Nonce
 
