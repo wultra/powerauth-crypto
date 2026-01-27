@@ -8,17 +8,20 @@ The following basic cryptography algorithms and parameters are used in the Power
 
 ### AES Symmetric Encryption
 
-A symmetric key encryption algorithm, uses CBC mode of operation. It defines the following methods:
+A symmetric key encryption algorithm. The AES algorithm is used with 256-bit keys.
+
+- CTR mode is used for AEAD and key encryption.
+- GCM mode is used for local vault.
 
 #### Encryption
 
-Encrypt bytes using symmetric key with given initialization vector and `AES/CBC/PKCS7Padding` transformation:
+Encrypt bytes using symmetric key with given initialization vector and `AES/CTR/NoPadding` transformation:
 
 ```java
 byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key);
 ```
 
-Encrypt bytes using symmetric key with given initialization vector and given cipher transformation.
+Encrypt bytes using symmetric key with given initialization vector and given cipher transformation:
 
 ```java
 byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key, String transformation);
@@ -26,42 +29,49 @@ byte[] encrypted = AES.encrypt(byte[] original, byte[] iv, SecretKey key, String
 
 #### Decryption
 
-Decrypt bytes using symmetric key with given initialization vector and `AES/CBC/PKCS7Padding` transformation:
+Decrypt bytes using symmetric key with given initialization vector and `AES/CTR/NoPadding` transformation:
 
 ```java
 byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key);
 ```
 
-Decrypt bytes using symmetric key with given initialization vector and given cipher transformation.
+Decrypt bytes using symmetric key with given initialization vector and given cipher transformation:
 
 ```java
 byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key, String transformation);
 ```
 
-### PBKDF2
+### Password KDF
 
-An algorithm for key stretching, converts a short password into long key by performing repeated hash iteration on the original data. HMAC-SHA1 algorithm is used for a pseudo-random function. Implementations must make sure resulting key is converted into a format usable by the AES algorithm.
+An algorithm for key stretching, converts a short password into long key by performing KMAC-based derivation on the original data. Implementations must make sure resulting key is converted into a format usable by the AES algorithm.
 
-The following method will stretch the password using given number of iterations to achieve key of given length in bits. Use a provided salt value.
+The following method will stretch the password using provided salt:
 
 ```java
-SecretKey expandedKey = PBKDF2.expand(char[] password, byte[] salt, long iterations, long lengthInBits);
+SecretKey expandedKey = KDF.derivePassword(byte[] password, byte[] salt);
 ```
 
+### Generic KDF
 
-### X9.63 KDF with SHA256
+Keys are derived from an original secret using hierarchical string labels to guarantee that derived keys are never reused for different purposes.
 
-A standard KDF function based on X9.63, with SHA256 as an internal hash function. It uses iterations of SHA256 hash function to derive a key of expected `length` of bytes.
+Keys are never reused for multiple purposes; each derived key has a unique label.
 
-Use the following method to derive a key of expected length from original secret value, using additional info byte value.
+The following method is used to derive a key from original secret value:
 
 ```java
-byte[] bytes = KDF_X9_63_SHA256.derive(byte[] secret, byte[] info, int length);
+SecretKey derivedKey = KDF.derive(SecretKey sourceKey, String label);
+```
+
+If raw bytes are required:
+
+```java
+byte[] bytes = KDF.deriveBytes(byte[] secret, String label, int length);
 ```
 
 ### ECDSA Signatures
 
-An algorithm for elliptic curve based signatures, uses SHA256 hash algorithm and P256r1 EC curve. It defines the following operations:
+An algorithm for elliptic curve based signatures, uses SHA3-384 hash algorithm and P-384 EC curve. It defines the following operations:
 
 #### Data Signing
 
@@ -79,33 +89,140 @@ Verify the signature for given data using a given public key.
 boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKey);
 ```
 
-### ECDH Key Agreement
+### ML-DSA Signatures
 
-An algorithm for elliptic curve Diffie-Hellman, uses P256r1 curve. We define a single operation on ECDH, a symmetric key deduction between parties A and B:
-
-Derive a shared secret using a private key of party A and a public key of party B using the follwing method.
+Post-quantum signature algorithm MLDSA can be used for post-quantum signatures.
 
 ```java
-SecretKey secretKey = ECDH.phase(PrivateKey privateKeyA, PublicKey publicKeyB);
+KeyPair keyPair = MLDSA.generateKeyPair(String algorithm); // ML-DSA-65 or ML-DSA-87
 ```
+
+```java
+byte[] signature = MLDSA.sign(PrivateKey privateKey, byte[] message);
+```
+
+```java
+boolean isValid = MLDSA.verify(PublicKey publicKey, byte[] message, byte[] signature);
+```
+
+### KEM / ECDHE Key Agreement
+
+Generate KEM key pair:
+
+```java
+KeyPair keyPair = KEM.generateKeyPair();
+```
+
+Encapsulation:
+
+```java
+Pair<SecretKey, byte[]> result = KEM.encapsulate(PublicKey publicKeyB);
+```
+
+Decapsulation:
+
+```java
+SecretKey secretKey = KEM.decapsulate(PrivateKey privateKeyA, byte[] ciphertext);
+```
+
+The resulting `SecretKey` represents the shared secret between parties.
+
+### SharedSecret Interface
+
+KEM is wrapped into a SharedSecret abstraction used by protocol flows.
+
+Client derives shared secret from server response:
+
+```java
+SecretKey secretKey = SharedSecret.computeSharedSecret(
+        SharedSecretClientContext context,
+        SharedSecretResponse response
+);
+```
+
+The interface internally uses `SharedSecretRequest`, `SharedSecretResponse`, and `SharedSecretClientContext` objects.
+
+### UKE (Unauthenticated Key Encapsulation)
+
+Primitive used for protecting factor-related keys (for example knowledge or biometry).
+
+UKE provides confidentiality without authentication and intentionally avoids authenticated encryption to prevent offline brute-force oracles on low-entropy secrets (such as PINs).
+
+Wrap key using provided KEK:
+
+```java
+byte[] wrapped = UKE.wrap(SecretKey key, SecretKey kek);
+```
+
+Unwrap key using provided KEK:
+
+```java
+SecretKey key = UKE.unwrap(byte[] wrapped, SecretKey kek);
+```
+
+### AEAD
+
+Authenticated encryption used for End-To-End encryption and key protection.
+
+A 12-byte unique nonce is used. For request/response flows, two independent nonces are used (one for request, one for response).
+
+#### Seal
+
+```java
+byte[] ciphertext = AEAD.seal(
+        SecretKey key,
+        byte[] keyContext,
+        byte[] nonce,
+        byte[] associatedData,
+        byte[] plaintext
+);
+```
+
+#### Open
+
+```java
+byte[] plaintext = AEAD.open(
+        SecretKey key,
+        byte[] keyContext,
+        byte[] associatedData,
+        byte[] ciphertext
+);
+```
+
+#### Extract Nonce
+
+```java
+byte[] nonce = AEAD.extractNonce(byte[] ciphertext);
+```
+
+AEAD internally derives encryption and authentication keys via KDF and authenticates data with KMAC-256.
 
 ### KDF
 
-A key derivation function used to derive a symmetric key with specific "index" from a given master key. Uses `AES` algorithm with the zero initialization vector to derive the new key in following way: `index` is converted to bytes, XORed with a 16 byte long zero array (to get 16 byte long array with bytes from the index) and AES encrypted using provided symmetric key `masterKey`.
+A key derivation function used to derive symmetric keys from a given master key.
 
-To obtain a key derived from a master key using a provided index, use:
+A hierarchical KMAC-based derivation is used with string labels.
+
+To obtain a key derived from a master key using a provided label:
 
 ```java
-SecretKey derivedKey = KDF.derive(SecretKey masterKey, long index);
+SecretKey derivedKey = KDF.derive(SecretKey masterKey, String label);
+```
+
+Example:
+
+```java
+SecretKey KDK_UTILITY = KDF.derive(masterKey, "util");
+SecretKey KEY_STATUS = KDF.derive(KDK_UTILITY, "util/mac/status");
 ```
 
 ### KDF_INTERNAL
 
-A second key derivation function for the algorithm internal purposes used to derive a symmetric key with specific "index" (in this case, `byte[16]`) from a given master key. Uses `HMAC-SHA256` to derive the new key in following way:
+A second key derivation function for internal algorithm purposes.
 
-The `index` used as `HMAC-SHA256` key, provided symmetric key `masterKey` is converted to key bytes used as `HMAC-SHA256` data, resulting 32B long byte array is then XORed on per-byte basis (0th with 16th, 1st with 17th, etc.) to obtain 16B long byte array.
+A KMAC-based derivation is used for internal indices, producing fixed-length symmetric keys.
 
-To obtain a key derived from a master key using a provided index, use:
+To obtain a key derived from a master key using a provided index:
 
 ```java
 SecretKey derivedKey = KDF_INTERNAL.derive(SecretKey masterKey, byte[] index);
@@ -115,24 +232,24 @@ SecretKey derivedKey = KDF_INTERNAL.derive(SecretKey masterKey, byte[] index);
 
 These functions are used in the pseudo-codes:
 
-### Key Generators.
+### Key Generators
 
 #### Generate Random Key Pair
 
-Generate a new EC key pair for the P256r1 elliptic curve.
+Generate a new EC key pair for the P-384 elliptic curve.
 
 ```java
-KeyPair keyPair = KeyGenerator.randomKeyPair();
+KeyPair keyPair = ECKeyGenerator.randomKeyPair("P-384");
 ```
 
-### Key Conversion Utilities.
+### Key Conversion Utilities
 
 #### Convert Private Key to Bytes
 
 Get bytes from the EC private key by encoding the D value (the number defining the EC private key).
 
 ```java
-byte[] privateKeyBytes = KeyConversion.getBytes(PrivateKey privKey)
+byte[] privateKeyBytes = KeyConversion.getBytes(PrivateKey privKey);
 ```
 
 #### Convert Bytes to Private Key
@@ -175,7 +292,7 @@ Create a symmetric key using provided bytes.
 SecretKey secretKey = KeyConversion.secretKeyFromBytes(byte[] secretKeyBytes);
 ```
 
-### Random Data Generators.
+### Random Data Generators
 
 #### Generate Random Data
 
@@ -214,27 +331,31 @@ String code = Generator.randomActivationCode();
 Function return an activation code from given random data.
 
 ```java
-String code = Generator.buildActivationCode(byte[10] randomBytes)
+String code = Generator.buildActivationCode(byte[10] randomBytes);
 ```
 
 ### MAC Functions
 
-#### HMAC-SHA256
+#### KMAC-256
 
-Compute HMAC-SHA256 signature for given message using provided symmetric key.
+Compute KMAC-256 signature for given message using provided symmetric key.
 
 ```java
-byte[] signature = Mac.hmacSha256(SecretKey key, byte[] message);
+byte[] signature = Mac.kmac256(SecretKey key, byte[] message, int outLength, String custom);
 ```
 
-### Hashing Functions.
+### Hashing Functions
 
-#### SHA256
+#### SHA3
 
-Compute SHA256 hash of a given input.
+Compute SHA3 hash of a given input.
 
 ```java
-byte[] hash = Hash.sha256(byte[] original);
+byte[] hash = Hash.sha3_256(byte[] original);
+```
+
+```java
+byte[] hash = Hash.sha3_384(byte[] original);
 ```
 
 ### Password Hashing
@@ -255,7 +376,7 @@ Verify password against Argon2 hash stored in Modular Crypt Format.
 boolean matches = PasswordHash.verify(byte[] password, String hash);
 ```
 
-### Utility Functions.
+### Utility Functions
 
 #### Obtain Zero Byte Array
 
