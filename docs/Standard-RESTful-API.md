@@ -375,7 +375,7 @@ Create a static token which can be used for repeated requests to data resources 
 
 #### Request
 
-##### Signature and Encryption Parameters
+##### Authentication and Encryption Parameters
 
 | Request parameter    | Value                                |
 |----------------------|--------------------------------------|
@@ -655,15 +655,14 @@ Change password (PIN) for the knowledge factor.
 
 Authenticated request using standard PowerAuth authentication using `POSSESSION_KNOWLEDGE` 2FA authentication.
 
-##### Authentication Parameters
+##### Authentication and Encryption Parameters
 
-| Request parameter    | Value                 |
-|----------------------|-----------------------|
-| Method               | `POST`                |
-| Authentication uriId | `/pa/password/change` |
+| Request parameter    | Value                                  |
+|----------------------|----------------------------------------|
+| Method               | `POST`                                 |
+| Authentication uriId | `/pa/password/change`                  |
+| Encryption           | `activation, sh1=/pa/password/change"` |
 
-The request is encrypted using standard end-to-end encryption in activation scope, `sh1="/pa/password/change"`.
- 
 ##### Authorization Header
 
 ```
@@ -785,12 +784,13 @@ Start a process to upgrade from protocol version 3, to version 4. The request is
 
 #### Request
 
-##### Encryption and Authentication Parameters
+##### Authentication and Encryption Parameters
 
 | Request parameter    | Value                           |
 |----------------------|---------------------------------|
-| Encryption           | `activation, sh1="/pa/upgrade"` |
+| Method               | `POST`                          |
 | Authentication uriId | `/pa/upgrade/start`             |
+| Encryption           | `activation, sh1="/pa/upgrade"` |
 
 ##### Encryption Header
 
