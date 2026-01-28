@@ -1,77 +1,139 @@
 # Activation Status
 
-PowerAuth Client may need to check for an activation status, so that it can determine if it should display UI for non-activated state (registration form), blocked state (how to unblock tutorial) or active state (login screen). To facilitate this use-case, PowerAuth Standard RESTful API publishes a [/pa/v3/activation/status](./Standard-RESTful-API#activation-status) endpoint.
+PowerAuth Client may need to check for an activation status, so that it can determine if it should display UI for non-activated state (registration form), blocked state (how to unblock tutorial) or active state (login screen). To facilitate this use-case, PowerAuth Standard RESTful API publishes a `/pa/activation/status` endpoint.
 
-Checking for an activation status is simple. Client needs to prepare a HTTP request with an activation ID and random `STATUS_CHALLENGE`. Server processes the request and sends back the response with activation status blob and random `STATUS_NONCE`. Activation status blob is an encrypted binary blob that encodes the activation status. Key `KEY_TRANSPORT` and `STATUS_IV` is used to encrypt the activation blob.
+Checking activation status is performed over standard end-to-end encryption with a temporary activation-scoped key. The legacy STATUS_CHALLENGE / STATUS_NONCE transport is no longer used.
+
+The server returns a Base64-encoded binary activation status blob that is integrity protected with KMAC and transported inside the encrypted response.
 
 ## Status Check Sequence
 
-The following sequence diagram shows the activation status check in more detail.
+The client calls the activation status endpoint with an empty request body using standard end-to-end encryption.
 
-![Check Activation Status](./resources/images/sequence_activation_status.png)
+Response body (before encryption):
 
-## Status Blob Encryption
+```json
+{
+  "activationStatus": "BASE64",
+  "customObject": {
+    "_comment": "Any optional service data"
+  }
+}
+```
 
-1. Both, client and server calculate `KEY_TRANSPORT_IV` as:
-    ```java
-    SecretKey KEY_TRANSPORT_IV = KDF.derive(KEY_TRANSPORT, 3000)
-    ```
-1. Client choose random 16 bytes long `STATUS_CHALLENGE` and send that value to the server:
-   ```java
-   byte[] STATUS_CHALLENGE = Generator.randomBytes(16)
-   ```
-1. Server choose random 16 bytes long `STATUS_NONCE` and calculates `STATUS_IV` as:
-   ```java
-   byte[] STATUS_NONCE = Generator.randomBytes(16)
-   byte[] STATUS_IV_DATA = ByteUtils.concat(STATUS_CHALLENGE, STATUS_NONCE)
-   byte[] STATUS_IV = KeyConversion.getBytes(KDF_INTERNAL.derive(KEY_TRANSPORT_IV, STATUS_IV_DATA))
-   ```
-1. Server uses `KEY_TRANSPORT` as key and `STATUS_IV` as IV to encrypt the status blob:
-   ```java
-   encryptedStatusBlob = AES.encrypt(statusBlob, STATUS_IV, KEY_TRANSPORT, "AES/CBC/NoPadding")
-   ```
-1. Server sends `encryptedStatusBlob` and `STATUS_NONCE` as response to the client.   
-1. Client receives `encryptedStatusBlob` and `STATUS_NONCE` and calculates the same `STATUS_IV` and then decrypts the status data:
-   ```java
-   byte[] STATUS_IV_DATA = ByteUtils.concat(STATUS_CHALLENGE, STATUS_NONCE)
-   byte[] STATUS_IV = KeyConversion.getBytes(KDF_INTERNAL.derive(KEY_TRANSPORT_IV, STATUS_IV_DATA))
-   byte[] statusBlob = AES.decrypt(encryptedStatusBlob, STATUS_IV, KEY_TRANSPORT, "AES/CBC/NoPadding")
-   ```
+Activation status uses activation-scoped end-to-end encryption with SHARED_INFO_1 = "/pa/activation/status".
 
 ## Status Blob Format
 
-When obtaining the activation status, application receives the binary status blob. Structure of the 32B long status blob is the following (without newlines):
+The final binary status blob is:
 
-```
-0xDEC0DED1 1B:${STATUS} 1B:${CURRENT_VERSION} 1B:${UPGRADE_VERSION}
-5B:${RESERVED} 1B:${CTR_BYTE} 1B:${FAIL_COUNT} 1B:${MAX_FAIL_COUNT}
-1B:${CTR_LOOK_AHEAD} 16B:${CTR_DATA_HASH}
+```java
+byte[] BINARY_STATUS_BLOB = ByteUtils.concat(STATUS_DATA, STATUS_MAC);
 ```
 
-where:
+### STATUS_DATA
 
-- The first 4 bytes (`0xDE 0xC0 0xDE 0xD1`) are basically a fixed prefix.
-    - Note that the last byte of this constant also represents the version of the status blob format. If we decide to change the status blob significantly, then the value will be changed to `0xD2`, `0xD3`, etc.
-- `${STATUS}` - A status of the activation record, it can be one of following values:
-    - `0x01 - CREATED`
-    - `0x02 - PENDING_COMMIT`
-    - `0x03 - ACTIVE`
-    - `0x04 - BLOCKED`
-    - `0x05 - REMOVED`
-- `${CURRENT_VERSION}` - 1 byte representing current version of crypto protocol, it can be one of following values:
-    - `0x02` - PowerAuth protocol version `2.x`
-    - `0x03` - PowerAuth protocol version `3.x`
-- `${UPGRADE_VERSION}` - 1 byte representing maximum protocol version supported by the PowerAuth Server. The set of possible values is identical to `${CURRENT_VERSION}`
-- `${RESERVED}` - 5 bytes reserved for the future use.
-- `${CTR_BYTE}` - 1 byte representing the least significant byte from current value of counter, calculated as:
-    ```java
-    byte CTR_BYTE = (byte)(CTR & 0xFF);
-    ```
-- `${FAIL_COUNT}` - 1 byte representing information about the number of failed attempts at the moment.
-- `${MAX_FAIL_COUNT}` - 1 byte representing information about the maximum allowed number of failed attempts.
-- `${CTR_LOOK_AHEAD}` - 1 byte representing constant for a look ahead window, used on the server to validate the authentication code.
-- `${CTR_DATA_HASH}` - 16 bytes containing hash from current value of a hash-based counter:
-    ```java
-    SecretKey KEY_TRANSPORT_CTR = KDF.derive(KEY_TRANSPORT, 4000);
-    byte[] CTR_DATA_HASH = KeyConversion.getBytes(KDF_INTERNAL.derive(KEY_TRANSPORT_CTR, CTR_DATA));
-    ```
+Binary layout:
+
+```
+4B:  0xDEC0DED4
+1B:  ${STATUS}
+1B:  ${CURRENT_VERSION}
+1B:  ${UPGRADE_VERSION}
+1B:  ${STATUS_FLAGS}
+4B:  ${RESERVED}
+1B:  ${CTR_BYTE}
+1B:  ${FAIL_COUNT}
+1B:  ${MAX_FAIL_COUNT}
+1B:  ${CTR_LOOK_AHEAD}
+32B: ${CTR_DATA_HASH}
+```
+
+Note: Magic prefix changed from `0xDEC0DED1` to `0xDEC0DED4` to indicate the newest status blob format.
+
+### STATUS_MAC
+
+Integrity protection:
+
+```java
+byte[] STATUS_MAC = Mac.kmac256(KEY_MAC_STATUS, STATUS_DATA, 32, "PA4MAC-STATUS");
+```
+
+Where:
+
+```java
+SecretKey KDK_UTILITY     = KDF.derive(KEY_ACTIVATION_SECRET, "util");
+SecretKey KEY_MAC_STATUS = KDF.derive(KDK_UTILITY, "util/mac/status");
+```
+
+Note: Even though the blob is delivered over end-to-end encryption, it is additionally authenticated with STATUS_MAC.
+
+## Status Fields
+
+### STATUS
+
+- `0x01` – CREATED
+- `0x02` – PENDING_COMMIT
+- `0x03` – ACTIVE
+- `0x04` – BLOCKED
+- `0x05` – REMOVED
+
+### CURRENT_VERSION
+
+Current protocol version of the activation.
+
+### UPGRADE_VERSION
+
+Maximum protocol version supported by the server for this activation.
+
+### STATUS_FLAGS
+
+Bitmask:
+
+- bit 0 – `STATUS_FLAG_ACTIVATION_CONFIRMATION` – pending client confirmation
+- bit 1 – `STATUS_FLAG_UPGRADE_CONFIRMATION` – pending upgrade confirmation
+- bit 2 – `STATUS_FLAG_UNSUPPORTED_ALGORITHM` – activation uses unsupported algorithm
+- bit 3 – `STATUS_FLAG_BIOMETRY_FACTOR_ON` – biometry factor enabled on server
+
+Flag explanation:
+
+Client should treat activation as upgradeable if `CURRENT_VERSION` differs from `UPGRADE_VERSION`.
+
+The `STATUS_FLAG_UNSUPPORTED_ALGORITHM` is used to denote that the algorithm used to create the activation is no longer supported.
+
+Pending activation confirmation is indicated by `STATUS_FLAG_ACTIVATION_CONFIRMATION`.
+
+Pending upgrade confirmation is indicated by `STATUS_FLAG_UPGRADE_CONFIRMATION`.
+
+### CTR_BYTE
+
+Least significant byte of current counter:
+
+```java
+byte CTR_BYTE = (byte)(CTR & 0xFF);
+```
+
+### Counters
+
+Counter explanation:
+
+- `FAIL_COUNT` = current failed attempts
+- `MAX_FAIL_COUNT` = maximum allowed attempts
+- `CTR_LOOK_AHEAD` = look-ahead window for server-side validation
+
+### CTR_DATA_HASH
+
+32-byte hash of the hash-based counter is calculated like this:
+
+```java
+byte[] CTR_DATA_HASH = Mac.kmac256(CTR_DATA, KEY_MAC_CTR_DATA, 32, "PA4MAC-CTR");
+```
+
+The key for counter data is obtained as follows:
+
+```java
+SecretKey KDK_UTILITY      = KDF.derive(KEY_ACTIVATION_SECRET, "util");
+SecretKey KEY_MAC_CTR_DATA = KDF.derive(KDK_UTILITY, "util/mac/ctr-data");
+```
+
+
