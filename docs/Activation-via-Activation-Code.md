@@ -104,7 +104,7 @@ The Activation Code Delivery Application plays no active role in the process of 
 
 1. PowerAuth Server encrypts response, containing `ACTIVATION_ID`, `CTR_DATA`, `KEY_SERVER_PUBLIC` with the same key as was used for level 2 encryption. This data is one more time encrypted by Enrollment Server, with the same key from level 1 encryption, and the response is sent to the PowerAuth Client.
 
-1. PowerAuth Mobile SDK decrypts the response with both levels of encryption, in the right order and receives `ACTIVATION_ID`, `KEY_SERVER_PUBLIC`, `CTR_DATA` and stores all that values locally in the volatile memory on the device.
+1. PowerAuth Mobile SDK decrypts both levels of encryption of the response in the right order and receives `ACTIVATION_ID`, `KEY_SERVER_PUBLIC`, `CTR_DATA` and stores all that values locally in the volatile memory on the device.
 
 1. PowerAuth Mobile SDK uses `KEY_DEVICE_PRIVATE` and `KEY_SERVER_PUBLIC` to deduce `KEY_MASTER_SECRET` using ECDH.
    ```java
