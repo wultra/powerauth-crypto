@@ -1,37 +1,45 @@
 # Activation Code
 
-The PowerAuth protocol 3, defines a new version of activation code, where OTP<sup>1</sup> is no longer applied. The format of the code is the same (four groups, each group is composed of five Base32 characters), but the code is no longer split into `OTP` and `SHORT_ID` parts. The new code has following features:
+The activation code is a short, user-facing activation identifier. It is not used in any cryptographic calculations. All cryptographic security is established through the shared-secret exchange and subsequent protocol steps.
 
-- The whole code is now a short activation identifier, and we call it simply `ACTIVATION_CODE`. This principally means, that the code is no longer used in the cryptographic calculations.
-- The code is using `CRC-16/ARC` to detect a typing errors. This is useful for scenarios, where the user needs to re-type the code manually.
-- 96 out of possible 100 bits are used (80 random bits + 16 bits for CRC).
+The activation code has the following properties:
 
-> Notes:
-> 1. PowerAuth protocol V2 defines OTP as a part of activation code. It's completely unrelated to an OTP described in chapter [Advanced Activation Flows](./Advanced-Activation-Flows.md).
+- Format: four groups, each group composed of five Base32 characters, separated by `-`.
+- The whole value is treated as a single identifier called `ACTIVATION_CODE`.
+- The code is protected by an embedded checksum to detect typing errors.
+- `CRC-16/ARC` is used for error detection, primarily for manual re-typing scenarios.
+- 96 out of possible 100 bits are used:
+    - 80 bits of randomness
+    - 16 bits of CRC
 
 ## Code Construction
 
-1. Generate 10 random bytes
-2. Calculate `CRC-16/ARC` from that 10 bytes. You can check a [reference implementation](resources/snippets/CRC16.java) in Java.
-3. Append CRC-16 in big endian order at the end of random bytes.
-4. Generate BASE32 representation from that 12 bytes, without padding characters.
-5. Split BASE32 string into four groups, each one contains file characters. Use "-" as a separator.
+1. Generate 10 random bytes (80 bits of entropy).
+2. Calculate `CRC-16/ARC` over those 10 bytes. You can check a [reference implementation](resources/snippets/CRC16.java) in Java.
+3. Append the CRC value in big-endian order to the end of the random bytes, producing 12 bytes total.
+4. Encode the resulting 12 bytes using Base32 without padding.
+5. Split the Base32 string into four groups, each containing five characters, and join them using `-` as a separator:
+
+The resulting format is following:
+```
+XXXXX-XXXXX-XXXXX-XXXXX
+```
 
 ## Code Validation
 
-The validation process is quite simple:
+Validation is intentionally simple and independent of the cryptographic layer:
+1. Verify that the activation code length is exactly 23 characters (including dashes). If not, the code is invalid.
+2. Remove all `-` characters.
+3. Verify that the remaining string contains only characters allowed by Base32 encoding.
+4. Decode the Base32 string into bytes.
+5. Verify that the decoded byte array length is exactly 12.
+6. Compute `CRC-16/ARC` over the first 10 bytes.
+7. Compare the computed CRC with the last two bytes (interpreted as big-endian).
+If the values do not match, the activation code contains mistyped or corrupted characters.
 
-1. Test whether the length of activation code is equal to 23. If not, then the code is not valid.
-2. Remove dashes form the code.
-3. Test whether the string contains only characters allowed in Base32 encoding.
-4. Decode Base32 string into sequence of bytes
-5. The length of decoded sequence must be 12
-6. Calculate CRC-16/ARC from first 10 bytes
-7. Compare the calculated value to last two bytes (in big endian order). If values doesn't match, then the code contains some mistyped characters.
+## Test Values
 
-### Test values
-
-You can use following simple values to test your application's validation logic:
+You can use the following values to test validation logic.
 
 - `AAAAA-AAAAA-AAAAA-AAAAA`
 - `LLLLL-LLLLL-LLLLL-LQJTA`
