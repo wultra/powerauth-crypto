@@ -82,7 +82,7 @@ The Activation Code Delivery Application plays no active role in the process of 
 
 1. PowerAuth Mobile SDK encrypts payload containing `ACTIVATION_DATA` and `ACTIVATION_CODE` with an application scoped encryption (level 1, `sh1="/pa/generic/application"`) and sends HTTPS request to the `/pa/v3/activation/create` endpoint.
 
-1. Enrollment Server decrypts the encryption envelope, with an application scoped encryption (level 1, `sh1="/pa/generic/application"`) and calls PowerAuth Server with `ACTIVATION_DATA`. At this step, the `ACTIVATION_CODE` is be used to identify the pending activation.
+1. Enrollment Server decrypts the received payload encrypted with an application scope encryption (level 1, `sh1="/pa/generic/application"`) and calls PowerAuth Server with `ACTIVATION_DATA`. At this step, the `ACTIVATION_CODE` is be used to identify the pending activation.
 
 1. PowerAuth Server receives `ACTIVATION_CODE` and `ACTIVATION_DATA` from Enrollment Server. The `ACTIVATION_CODE` identifies the record for a pending activation. If the record is unknown, then server returns a generic error.
 
