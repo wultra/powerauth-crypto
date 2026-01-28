@@ -2,35 +2,28 @@
 
 This document describes PowerAuth **End-To-End Encryption**.
 
+The End-to-End encryption is used for sending encrypted data to the server and back to the client in a request-response cycle.
+
 PowerAuth End-to-End encryption consists of two phases:
 
-1. **Temporary shared secret establishment**
-    - Client and server agree on `KEY_TEMPORARY_SHARED_SECRET`
-    - Server assigns `TEMPORARY_KEY_ID`
-2. **AEAD encryption**
-    - Client encrypts request
-    - Server decrypts request and encrypts response
+1. Temporary shared secret establishment - the client and server agree on shared key `KEY_TEMPORARY_SHARED_SECRET`, the actual process depends on the selected cryptographic algorithm suite.
+2. AEAD encryption - the client encrypts the request, sends to the server; the server encrypts the response and sends it to the client.
+
+Both client and server use the same encryption key for authenticated symmetric encryption. See the chapters below for details.
 
 ## Temporary Encryption Keys
 
-A temporary encryption key consists of:
+A temporary encryption key is identified by its identifier, for which the UUID format is used. The temporary key is stored on the server in the database together with its identifier, shared key `KEY_TEMPORARY_SHARED_SECRET` (encrypted) and expiration timestamp.
 
-- `TEMPORARY_KEY_ID`
-- `KEY_TEMPORARY_SHARED_SECRET`
+A single temporary key may be reused for multiple encrypted request/response cycles until it expires (the default expiration period is 5 minutes).
 
-These values together are obtained using a `GetTemporaryKey` request.
-
-A single temporary key may be reused for multiple encrypted request/response cycles until it expires.
-
-After the temporary key expiration is reached, both client and server must discard the temporary key.
-
-This mechanism provides replay protection and forward secrecy.
+After the temporary key expiration is reached, both client and server must discard the temporary key. This mechanism provides replay protection and forward secrecy.
 
 ## Forward Secrecy
 
 Forward secrecy is achieved by using temporary shared secrets.
 
-Because `KEY_TEMPORARY_SHARED_SECRET` is derived during `GetTemporaryKey` and discarded after temporary key expiration, compromise of long-term application or activation keys does not expose traffic outside the temporary key lifetime.
+Because `KEY_TEMPORARY_SHARED_SECRET` is derived when requesting the temporary key from the server and discarded after temporary key expiration, compromise of long-term application or activation keys does not expose traffic outside the temporary key lifetime.
 
 ## Basic Definitions
 
@@ -39,7 +32,7 @@ Because `KEY_TEMPORARY_SHARED_SECRET` is derived during `GetTemporaryKey` and di
 - `VERSION` – String with current protocol version (for example `"4.0"`)
 - `APPLICATION_KEY` – Application key
 - `ACTIVATION_ID` – Optional activation identifier
-- `APPLICATION_SECRET` – Application secret (Base64-encoded string)
+- `APPLICATION_SECRET` – Application secret (Base64-encoded string, must be decoded to raw bytes before use)
 - `SHARED_INFO_1` – Endpoint-specific pre-shared constant
 - `TEMPORARY_KEY_ID` – UUID identifying the temporary key
 - `KEY_TEMPORARY_SHARED_SECRET` – Temporary shared secret derived via KEM
@@ -49,9 +42,7 @@ Because `KEY_TEMPORARY_SHARED_SECRET` is derived during `GetTemporaryKey` and di
 - `PLAINTEXT` – Data to be encrypted
 - `ASSOCIATED_DATA` – Plaintext data authenticated by AEAD
 - `TIMESTAMP` – Unix timestamp in milliseconds
-- `NONCE` – 24 bytes long nonce (`REQUEST_NONCE || RESPONSE_NONCE`)
-- `REQUEST_NONCE` – First 12 bytes of `NONCE`
-- `RESPONSE_NONCE` – Last 12 bytes of `NONCE`
+- `NONCE` – 24 bytes long nonce (12 byte `REQUEST_NONCE` concatenated with 12 byte `RESPONSE_NONCE`)
 
 ## Encryption Scopes
 
@@ -68,9 +59,9 @@ Both scopes use identical cryptographic primitives but differ in how `ASSOCIATED
 
 Before encrypting any request, client and server must establish a temporary shared secret.
 
-This is done using `GetTemporaryKey` API with KEM-based key exchange.
+This is done using [Create New Temporary Key](./Standard-RESTful-API.md#create-new-temporary-key) endpoint in the REST API with KEM-based key exchange.
 
-### GetTemporaryKeyRequest
+### Request
 
 ```json
 {
@@ -84,9 +75,9 @@ This is done using `GetTemporaryKey` API with KEM-based key exchange.
 }
 ```
 
-Supported algorithms: EC_P384, EC_P384_ML_L3, and EC_P384_ML_L5.
+Supported algorithms: `EC_P384`, `EC_P384_ML_L3`, and `EC_P384_ML_L5`.
 
-### GetTemporaryKeyResponse
+### Response
 
 ```json
 {
@@ -107,9 +98,9 @@ Supported algorithms: EC_P384, EC_P384_ML_L3, and EC_P384_ML_L5.
 
 Result:
 
-- Both sides derive `KEY_TEMPORARY_SHARED_SECRET`
-- Server assigns `TEMPORARY_KEY_ID`
-- Client stores both values locally until expiration
+- Server assigns `TEMPORARY_KEY_ID`, stores the key in the database (with the shared secret encrypted at rest), and returns the identifier to the client.
+- Both sides derive the same `KEY_TEMPORARY_SHARED_SECRET`.
+- Client stores the temporary key locally until expiration.
 
 Each temporary key is used until expiration, after this a new temporary key is requested for additional encryption request/response cycles.
 
@@ -119,17 +110,16 @@ Each temporary key is used until expiration, after this a new temporary key is r
 
 Note: `APPLICATION_SECRET` is provided as Base64 and must be converted to raw bytes before use.
 
-### Application Scope
+Application scope:
 
 ```java
 byte[] SHARED_INFO_2 = Hash.sha3_256(APPLICATION_SECRET);
 ```
 
-### Activation Scope
+Activation scope:
 
 ```java
-byte[] SHARED_INFO_2 =
-    Mac.kmac256(KEY_E2EE_SHARED_INFO2, APPLICATION_SECRET, 32, "PA4SH2");
+byte[] SHARED_INFO_2 = Mac.kmac256(KEY_E2EE_SHARED_INFO2, APPLICATION_SECRET, 32, "PA4SH2");
 ```
 
 ## ASSOCIATED_DATA
@@ -161,15 +151,13 @@ Fields:
 - `encryptedData`
 - `timestamp`
 
-The response does not include `nonce` or `temporaryKeyId`, as both are already known
-from the request context.
+The response does not include `nonce` or `temporaryKeyId`, as both are already known from the request context.
 
 ## AEAD Encryption (Client Request)
 
 Assume we have:
 
 - `KEY_TEMPORARY_SHARED_SECRET`
-- `TEMPORARY_KEY_ID`
 - `PLAINTEXT`
 - `ASSOCIATED_DATA`
 - `SHARED_INFO_1`
@@ -193,7 +181,7 @@ byte[] NONCE = Bytes.concat(REQUEST_NONCE, RESPONSE_NONCE);
 byte[] IV = REQUEST_NONCE;
 ```
 
-Client must ensure that the `nonce` value is unique and must maintain per-temporary-key  history to prevent nonce reuse. Both request and response nonces must never be reused with the same temporary key.
+Client must ensure that both request and response nonces are unique and must maintain per-temporary-key history to prevent nonce reuse. Both request and response nonces must never be reused with the same temporary key.
 
 3. Build Key Context and AEAD Associated Data:
 
@@ -242,7 +230,7 @@ Given:
 Steps:
 
 1. Extract IV from first 12 bytes of `NONCE`.
-2. Recompute `KC` and `AD`.
+2. Recompute `KC` and `AD` using same algorithm as described above.
 3. Decrypt:
 
 ```java
@@ -285,12 +273,7 @@ For the response:
 Server validates every encrypted request:
 
 1. Timestamp must be within ±5 minutes of server time.
-2. Pair `(TEMPORARY_KEY_ID, NONCE)` must be unique.
-
-For AEAD:
-
-- `identifier = TEMPORARY_KEY_ID`
-- `unique_value = NONCE`
+2. `NONCE` must be unique for given `TEMPORARY_KEY_ID`.
 
 Duplicates are rejected and stored values expire automatically.
 
@@ -300,19 +283,19 @@ Client must also validate the response timestamp and relies on AEAD authenticati
 
 ### Client
 
-1. Obtain temporary key (`TEMPORARY_KEY_ID`, `KEY_TEMPORARY_SHARED_SECRET`).
-2. Encrypt request using AEAD.
-3. Send encrypted payload.
+1. Obtain temporary shared secret from the temporary key.
+2. Encrypt request using AEAD with a temporary shared secret.
+3. Send encrypted payload and wait for response from the server.
 4. Receive encrypted response.
 5. Decrypt response.
 
 ### Server
 
 1. Receive encrypted request.
-2. Look up `KEY_TEMPORARY_SHARED_SECRET` by `TEMPORARY_KEY_ID`.
-3. Validate timestamp and nonce uniqueness.
+2. Look up temporary shared secret in the database using the temporary key identifier in the request.
+3. Validate timestamp and nonce uniqueness to avoid replay attacks.
 4. Decrypt request.
-5. Encrypt response using same context.
+5. Encrypt response using the same temporary shared secret.
 
 ## Encrypted Request Example
 
@@ -363,8 +346,7 @@ Following constants can be used for application-specific purposes:
 | Generic application encryptor | Application | `/pa/generic/application` |
 | Generic activation encryptor  | Activation  | `/pa/generic/activation`  |
 
-Concrete REST endpoints may define their own `SHARED_INFO_1` constants to ensure
-cryptographic separation between use cases.
+Concrete REST endpoints define their own `SHARED_INFO_1` constants to ensure cryptographic separation between use cases.
 
 List of defined constants:
 
@@ -375,4 +357,4 @@ List of defined constants:
 | Vault unlock       | Activation  | `/pa/vault/unlock`    |
 | Create token       | Activation  | `/pa/token/create`    |
 | Change password    | Activation  | `/pa/password/change` |
-| Set up biometry    | Activation  | `/pa/biometry/add`    |
+| Enable biometry    | Activation  | `/pa/biometry/add`    |

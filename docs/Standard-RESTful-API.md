@@ -22,7 +22,7 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 - [`/pa/v4/biometry/remove`](#remove-biometry) - Remove the biometry factor (requires authentication).
 - [`/pa/v4/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires authentication and encryption).
 - [`/pa/v4/upgrade/confirm`](#upgrade-confirm) - Finishes a protocol upgrade (requires authentication).
-- [`/pa/v4/keystore/create`](#create-new-key-pair) - Create a new temporary key pair for end-to-end encryption.
+- [`/pa/v4/keystore/create`](#create-new-temporary-key) - Create a new temporary key pair for end-to-end encryption.
 <!-- end -->
 
 ## Security Features
@@ -891,9 +891,9 @@ X-PowerAuth-Authorization: PowerAuth ...
 ## Temporary Keys API
 
 <!-- begin api POST /pa/v4/keystore/create -->
-### Create New Key Pair
+### Create New Temporary Key
 
-Create a new temporary key pair with either application or activation scope, and obtain the temporary public for subsequent encryption.
+Create a new temporary key with either application or activation scope, and obtain the temporary public for subsequent encryption.
 
 <!-- begin remove -->
 | Request parameter | Value                    |
