@@ -148,7 +148,7 @@ You can also check [Activation Code](./Activation-Code.md) document to get a mor
 
 ## Generating Key Pairs
 
-The device and server ECC keys are generated using ECDSA / ECDH with **P-384** curve:
+The device and server ECC keys are generated for the **P-384** curve:
 
 ```java
 public KeyPair generateKeyPair() {
