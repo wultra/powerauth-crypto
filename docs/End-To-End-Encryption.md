@@ -308,21 +308,17 @@ Client must also validate the response timestamp and relies on AEAD authenticati
 }
 ```
 
-HTTP headers:
-
-### Application scope
+HTTP header in application scope:
 
 ```
 X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ=="
 ```
 
-### Activation scope
+HTTP header in activation scope:
 
 ```
 X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="3b09d6fd-9640-4731-bc99-8324672f4b27"
 ```
-
----
 
 ## Encrypted Response Example
 
