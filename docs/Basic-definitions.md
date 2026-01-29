@@ -45,8 +45,6 @@ byte[] original = AES.decrypt(byte[] encrypted, byte[] iv, SecretKey key, String
 
 Keys are derived from an original secret using hierarchical string labels to guarantee that derived keys are never reused for different purposes.
 
-Keys are never reused for multiple purposes; each derived key has a unique label.
-
 The following method is used to derive a key from original secret value:
 
 ```java
