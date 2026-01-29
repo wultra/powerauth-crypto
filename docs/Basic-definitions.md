@@ -91,14 +91,17 @@ boolean isValid = ECDSA.verify(byte[] data, byte[] signature, PublicKey publicKe
 
 Post-quantum signature algorithm MLDSA can be used for post-quantum signatures.
 
+A ML-DSA key pair is generated with a specified variant of the algorithm: 
 ```java
 KeyPair keyPair = MLDSA.generateKeyPair(String algorithm); // ML-DSA-65 or ML-DSA-87
 ```
 
+A signature is created by signing the message raw bytes by private key from the ML-DSA keypair:
 ```java
 byte[] signature = MLDSA.sign(PrivateKey privateKey, byte[] message);
 ```
 
+A signature is verified for message raw bytes using public key from the ML-DSA keypair:
 ```java
 boolean isValid = MLDSA.verify(PublicKey publicKey, byte[] message, byte[] signature);
 ```
