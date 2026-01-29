@@ -71,7 +71,7 @@ SecretKey expandedKey = KDF.derivePassword(byte[] password, byte[] salt);
 
 ### ECDSA Signatures
 
-An algorithm for elliptic curve based signatures, uses SHA-384 hash algorithm and P-384 EC curve. It defines the following operations:
+An algorithm for elliptic curve based signatures, uses SHA-384 hash algorithm and P-384 elliptic curve. It defines the following operations:
 
 #### Data Signing
 
