@@ -20,9 +20,9 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 - [`/pa/v4/password/change`](#password-change) - Change password for the knowledge factor (requires authentication).
 - [`/pa/v4/biometry/add`](#enable-biometry) - Enable the biometry factor (requires authentication).
 - [`/pa/v4/biometry/remove`](#remove-biometry) - Remove the biometry factor (requires authentication).
-- [`/pa/v4/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires encryption).
+- [`/pa/v4/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires authentication and encryption).
 - [`/pa/v4/upgrade/confirm`](#upgrade-confirm) - Finishes a protocol upgrade (requires authentication).
-- [`/pa/v4/keystore/create`](#create-new-key-pair) - Create a new temporary key pair for end-to-end encryption.
+- [`/pa/v4/keystore/create`](#create-new-temporary-key) - Create a new temporary key pair for end-to-end encryption.
 <!-- end -->
 
 ## Security Features
@@ -96,8 +96,8 @@ PowerAuth Client sends the following data on the server:
     - `deviceInfo` - Information about the user device, e.g. `iPhone12,3`.
     - `extras` - Any client side attributes associated with this activation, like a more detailed information about the client, etc.
 - Request encrypted with level 1 encryption:
-    - `activationType` - Assume that standard activation is using "CODE" constant as an activation type.
-    - `activationCode` - Represents an `ACTIVATION_CODE` value
+    - `type` - Assume that standard activation is using "CODE" constant as an activation type.
+    - `identityAttributes` - Contains the `ACTIVATION_CODE` value inside this map, mapped using the `code` key.
 - Not encrypted values (HTTP header)
     - `applicationKey` - Represents an application with a given `APPLICATION_KEY`
 
@@ -156,9 +156,12 @@ The JSON request object before level 1 encryption. The `activationData` field co
 
 ```json
 {
-  "activationType": "CODE",
+  "type": "CODE",
   "identityAttributes": {
     "code": "VVVVV-VVVVV-VVVVV-VTFVA"
+  },
+  "customAttributes": {
+    "key": "value"
   },
   "activationData": {
     "temporaryKeyId" : "f4d2171c-be66-4d04-aaa3-9d828aaeb15e",
@@ -229,7 +232,7 @@ The `activationData` contains an encrypted level 2 response. So, the JSON respon
 <!-- begin api POST /pa/v4/activation/status -->
 ### Activation Status
 
-Get the status of an activation with given activation ID. The PowerAuth Server response contains an encrypted activation status blob. The endpoint is encrypted using standard PowerAuth end-to-end encryption. More information about the format of status blob and encryption can be found in the [chapter on activation status cryptography](./Activation-Status.md).
+Get the status of an activation with given activation ID. The PowerAuth Server response contains an activation status blob. The endpoint is encrypted using standard PowerAuth end-to-end encryption. More information about the format of status blob and encryption can be found in the [chapter on activation status cryptography](./Activation-Status.md).
 
 This endpoint also returns a `customObject` object with custom application specific data. This object may be used for example to provide service specific data (current timestamp, info about service status, ...) in order to minimize number of required request in practical deployments (for example, mobile banking needs to ask for the service status data on application launch).
 
@@ -334,7 +337,7 @@ To construct the PowerAuth Client authentication code, use the `POST` method and
 | Method               | `POST`                  |
 | Authentication uriId | `/pa/activation/remove` |
 
-##### Signature Header
+##### Authorization Header
 
 ```
 X-PowerAuth-Authorization: PowerAuth ...
@@ -372,13 +375,13 @@ Create a static token which can be used for repeated requests to data resources 
 
 #### Request
 
-##### Signature and Encryption Parameters
+##### Authentication and Encryption Parameters
 
-| Request parameter | Value                                |
-|-------------------|--------------------------------------|
-| Method            | `POST`                               |
-| Signature uriId   | `/pa/token/create`                   |
-| Encryption        | `activation, sh1="/pa/token/create"` |
+| Request parameter    | Value                                |
+|----------------------|--------------------------------------|
+| Method               | `POST`                               |
+| Authentication uriId | `/pa/token/create`                   |
+| Encryption           | `activation, sh1="/pa/token/create"` |
 
 ##### Authorization Header
 
@@ -513,11 +516,11 @@ The following keys can be requested:
 
 ##### Authentication and Encryption Parameters
 
-| Request parameter | Value                                |
-|-------------------|--------------------------------------|
-| Method            | `POST`                               |
-| Signature uriId   | `/pa/vault/unlock`                   |
-| Encryption        | `activation, sh1="/pa/vault/unlock"` |
+| Request parameter    | Value                                |
+|----------------------|--------------------------------------|
+| Method               | `POST`                               |
+| Authentication uriId | `/pa/vault/unlock`                   |
+| Encryption           | `activation, sh1="/pa/vault/unlock"` |
 
 ##### Authorization Header
 
@@ -600,10 +603,10 @@ The request body should contain data used for computing the authentication code.
 
 ##### Authentication Code Parameters
 
-| Request parameter | Value                          |
-|-------------------|--------------------------------|
-| Method            | `POST`, `GET`, `PUT`, `DELETE` |
-| Signature uriId   | `/pa/auth/validate`            |
+| Request parameter    | Value                          |
+|----------------------|--------------------------------|
+| Method               | `POST`, `GET`, `PUT`, `DELETE` |
+| Authentication uriId | `/pa/auth/validate`            |
 
 ##### Authorization Header
 
@@ -652,15 +655,14 @@ Change password (PIN) for the knowledge factor.
 
 Authenticated request using standard PowerAuth authentication using `POSSESSION_KNOWLEDGE` 2FA authentication.
 
-##### Authentication Parameters
+##### Authentication and Encryption Parameters
 
-| Request parameter    | Value                 |
-|----------------------|-----------------------|
-| Method               | `POST`                |
-| Authentication uriId | `/pa/password/change` |
+| Request parameter    | Value                                  |
+|----------------------|----------------------------------------|
+| Method               | `POST`                                 |
+| Authentication uriId | `/pa/password/change`                  |
+| Encryption           | `activation, sh1=/pa/password/change"` |
 
-The request is encrypted using standard end-to-end encryption in activation scope, `sh1="/pa/password/change"`.
- 
 ##### Authorization Header
 
 ```
@@ -782,12 +784,13 @@ Start a process to upgrade from protocol version 3, to version 4. The request is
 
 #### Request
 
-##### Encryption and Authentication Parameters
+##### Authentication and Encryption Parameters
 
-| Request parameter    | Value                           |
-|----------------------|---------------------------------|
-| Encryption           | `activation, sh1="/pa/upgrade"` |
-| Authentication uriId | `/pa/upgrade/start`             |
+| Request parameter    | Value                            |
+|----------------------|----------------------------------|
+| Method               | `POST`                           |
+| Authentication uriId | `/pa/upgrade/start`              |
+| Encryption           | `application, sh1="/pa/upgrade"` |
 
 ##### Encryption Header
 
@@ -864,7 +867,7 @@ Finish an upgrade process.
 | Method               | `POST`                |
 | Authentication uriId | `/pa/upgrade/confirm` |
 
-##### Signature Header
+##### Authorization Header
 
 ```
 X-PowerAuth-Authorization: PowerAuth ...
@@ -888,9 +891,9 @@ X-PowerAuth-Authorization: PowerAuth ...
 ## Temporary Keys API
 
 <!-- begin api POST /pa/v4/keystore/create -->
-### Create New Key Pair
+### Create New Temporary Key
 
-Create a new temporary key pair with either application or activation scope, and obtain the temporary public for subsequent encryption.
+Create a new temporary key with either application or activation scope, and obtain the temporary public for subsequent encryption.
 
 <!-- begin remove -->
 | Request parameter | Value                    |
