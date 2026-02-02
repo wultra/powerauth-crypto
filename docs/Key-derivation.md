@@ -131,4 +131,3 @@ SecretKey KDK_APP_VAULT_2FA = KDF.derive(KDK_VAULT, "vault/kdk-app-vault-2fa");
 ```
 
 These keys allow applications to protect additional sensitive material that becomes available only after successful authentication.
-

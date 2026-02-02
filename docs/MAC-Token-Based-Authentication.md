@@ -31,7 +31,7 @@ This endpoint must be called with a standard PowerAuth authentication code. It c
 
 The endpoint then uses the same request and response encryption principles as described in a dedicated chapter for [End-to-End Encryption](./End-To-End-Encryption.md).
 
-Upon receiving and successfully validating a request authenticated using a PowerAuth authentication code, the server generates a new token for a given activation ID. Information about the used authentication code type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an ECIES encrypted response to the client.
+Upon receiving and successfully validating a request authenticated using a PowerAuth authentication code, the server generates a new token for a given activation ID. Information about the used authentication code type and factors are stored with the token. Then, the server takes the token ID and secret and sends them in an encrypted response to the client.
 
 The decrypted response data payload contains the following raw response format:
 
