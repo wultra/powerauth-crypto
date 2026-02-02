@@ -1,98 +1,133 @@
 # Key Derivation
 
-As an outcome of the [Activation](./Activation.md) process, a single shared secret `KEY_MASTER_SECRET` is established between the PowerAuth Client and PowerAuth Server. While additional shared secrets could be established by repeating the activation process, this may not be very practical, since the activation process is quite complex and several server-side calls would be required.
+As an outcome of the [Activation](./Activation.md) process, a single long‑term shared secret `KEY_ACTIVATION_SECRET` is established between the PowerAuth Client and PowerAuth Server.
 
-For this reason, PowerAuth establishes the concept of "derived keys". Each derived key is computed using the KDF algorithm (see [Implementation notes](./Implementation-notes.md) section for the definition):
+PowerAuth uses the concept of derived keys. Each derived key is computed using the KDF algorithm with string labels:
 
-```java
-SecretKey KEY_DERIVED = KDF.derive(KEY_MASTER_SECRET, INDEX);
+``` java
+SecretKey KEY_DERIVED = KDF.derive(SOURCE_KEY, "label/path");
 ```
 
-PowerAuth Client is supposed to store only these derived keys and a server's public key. Saying the same information more explicitly, PowerAuth Client must not store `KEY_MASTER_SECRET` or `KEY_DEVICE_PRIVATE` unencrypted. The `KEY_DEVICE_PRIVATE` is stored in encrypted vault. See the [Secure Vault](#secure-vault) section of this chapter. As a result, storing `KEY_MASTER_SECRET` is not necessary.
+The PowerAuth Client stores only derived keys and server public keys. The client must not store `KEY_ACTIVATION_SECRET` or `KEY_DEVICE_PRIVATE` in plaintext. The `KEY_DEVICE_PRIVATE` is stored  encrypted in the secure vault (see below). As a result, storing `KEY_ACTIVATION_SECRET` locally is not required.
 
-Several specific derived keys are reserved for the PowerAuth protocol.
+Each key has exactly one purpose and all domains (authentication, encryption, vault, utilities) are strictly separated
+via dedicated KDKs.
 
-## Request Signing Keys
+Depending on context, the term shared secret refers either to `KEY_ACTIVATION_SECRET` (long-term) or `KEY_TEMPORARY_SHARED_SECRET` (short-term).
 
-### Related to "Possession Factor"
+## Authentication Factor Keys
 
-The key related to the "possession factor" is deduced as:
+All factor keys are derived from an intermediate key:
 
-```java
-SecretKey KEY_SIGNATURE_POSSESSION = KDF.derive(KEY_MASTER_SECRET, 1);
+``` java
+SecretKey KDK_AUTHENTICATION_CODE = KDF.derive(KEY_ACTIVATION_SECRET, "auth");
 ```
 
-This key should be stored encrypted using a key derived using a PowerAuth Client device fingerprint, for example, from a unique device ID, Wi-Fi MAC address, etc. The way of deriving the encryption key is not defined in the PowerAuth specification and should follow the best practices available on specific platforms (i.e., iOS or Android).
+### Key Related to Possession Factor
 
-### Related to "Knowledge Factor"
-
-The related to the "knowledge factor" is deduced as:
-
-```java
-SecretKey KEY_SIGNATURE_KNOWLEDGE = KDF.derive(KEY_MASTER_SECRET, 2);
+``` java
+SecretKey KEY_AUTHENTICATION_CODE_POSSESSION = KDF.derive(KDK_AUTHENTICATION_CODE, "auth/possession");
 ```
 
-This key should be stored encrypted using a key derived from a password or a PIN code. PowerAuth Client should derive the encryption key using PBKDF2 algorithm with at least 10 000 iterations:
+This key is stored on the device using unauthenticated key encryption  and protected with a device‑specific key:
 
-```java
-char[] password = "1234".toCharArray();
-byte[] salt = Generator.randomBytes(16);
-int iterations = 10000;
-int lengthInBits = 128;
-SecretKey encryptionKey = PBKDF2.expand(password, salt, iterations, lengthInBits);
-byte[] iv = Generator.zeroBytes(16);
-byte[] keyKnowledgeBytes = KeyConversion.getBytes(KEY_SIGNATURE_KNOWLEDGE);
-byte[] C_KEY_SIGNATURE_KNOWLEDGE = AES.encrypt(keyKnowledgeBytes, iv, encryptionKey, "AES/CBC/NoPadding");
-
-// Store `C_KEY_SIGNATURE_KNOWLEDGE` and `salt`.
+``` java
+SecretKey DEVICE_KEY = Hash.sha3_256("device-specific-data");
+SecretKey KEK_AUTHENTICATION_CODE_POSSESSION = KDF.derive(DEVICE_KEY, "enc/kek-possession");
 ```
 
-The key `KEY_SIGNATURE_KNOWLEDGE` is then decrypted using the inverse algorithm - the stored salt end entered password is used to decrypt the encrypted `C_KEY_SIGNATURE_KNOWLEDGE`.
+The concrete method for obtaining device‑specific data is platform dependent and must follow platform best practices.
 
-<!-- begin box info -->
-Because of the `AES/CBC/NoPadding` mode, the decryption succeeds even when the PIN code or password is incorrect (i.e., attacker guessing a PIN code on a stolen device), resulting in an invalid knowledge factor-related key. This is a correct and desired behavior. The PIN code cannot be brute-forced locally because of it, the invalid key will enter the signature algorithm, which will produce an invalid signature value, and validation of such signature will then fail on the server side.
-<!-- end -->
+### Key Related to Knowledge Factor
 
-### Related to "Biometry Factor"
-
-The key related to the "inherence factor" is deduced as:
-
-```java
-SecretKey KEY_SIGNATURE_BIOMETRY = KDF.derive(KEY_MASTER_SECRET, 3);
+``` java
+SecretKey KEY_AUTHENTICATION_CODE_KNOWLEDGE = KDF.derive(KDK_AUTHENTICATION_CODE, "auth/knowledge");
 ```
 
-This key should be stored encrypted using a biometric storage, if it is available. Usually, the biometric storage is provided as a transparent mechanism on a specific platform (i.e., the [Secure Enclave](https://support.apple.com/cs-cz/guide/security/sec59b0b31ff/web) on iOS, or [StrongBox](https://developer.android.com/training/articles/keystore#HardwareSecurityModule) on Android) and therefore, it should be used as provided.
+This key is stored encrypted using a key derived from a password or PIN code using the Password-based KDF.
 
-## Master Transport Key
+The knowledge factor key may change over time (for example after password change). The server maintains current and next versions of this key.
 
-Key used for transferring an activation record status blob is deduced as:
+Because unauthenticated encryption is used, decryption with an incorrect PIN produces random key material. This is intentional: verification always happens on the server side.
 
-```java
-SecretKey KEY_TRANSPORT = KDF.derive(KEY_MASTER_SECRET, 1000);
+### Key Related to Biometric Factor
+
+``` java
+SecretKey KEY_AUTHENTICATION_CODE_BIOMETRY = KDF.derive(KDK_AUTHENTICATION_CODE, "auth/biometry");
 ```
 
-This key should be stored encrypted using a key derived using PowerAuth Client device fingerprint, for example unique device ID, Wi-Fi MAC address, etc. - generally the same way as `KEY_SIGNATURE_POSSESSION`. The way of deriving encryption key is not defined in PowerAuth specification.
+This key exists only if biometry is enabled. It is stored using platform  biometric storage (for example Secure Enclave on iOS or StrongBox on Android) and protected with a platform‑specific KEK.
+
+If the platform provides only 128‑bit KEK, then the key is expanded as:
+
+``` java
+SecretKey KEK_AUTHENTICATION_CODE_BIOMETRY_256 = KDF.derive(KEK_AUTHENTICATION_CODE_BIOMETRY_128, "other/expand-biometry-key");
+```
+
+Similarly to the knowledge factor, the biometry factor key is dynamic and may be replaced during biometry add / remove operations.
+
+## Encryption and Utility Keys
+
+Encryption-related keys are derived from:
+
+``` java
+SecretKey KDK_ENCRYPTION = KDF.derive(KEY_ACTIVATION_SECRET, "enc");
+```
+
+Local persistent data (such as device and server public keys, and utility KDKs) is protected with:
+
+``` java
+SecretKey KEY_LOCAL_DATA = KDF.derive(DEVICE_KEY, "enc/local");
+```
+
+Utility keys are derived from:
+
+``` java
+SecretKey KDK_UTILITY = KDF.derive(KEY_ACTIVATION_SECRET, "util");
+```
+
+This domain is used for protocol-support purposes, including:
+- MAC of hash-based counter (`util/mac/ctr-data`)
+- MAC of activation status (`util/mac/status`)
+- Signing temporary-key requests
+  - `util/mac/get-app-temp-key` (derived from `APP_SECRET`, application scope)
+  - `util/mac/get-act-temp-key` (derived from `KDK_UTILITY`, activation scope)
+- MAC of personalized data (`util/mac/personalized-data`)
+- SHARED_INFO_2 derivation for end-to-end encryption(`util/key-e2ee-sh2`)
+- Application-specific utilities (`util/app`)
+
+## Temporary Shared Secret
+
+The protocol uses temporary shared secrets for end‑to‑end encryption.
+
+For each encrypted session, the client and server establish:
+
+``` java
+SecretKey KEY_TEMPORARY_SHARED_SECRET;
+```
+
+This key is short‑lived and is derived via a dedicated shared‑secret exchange. It is then expanded into AEAD encryption keys for protecting request and response payloads. Temporary secrets are never persisted long‑term on the client.
 
 ## Secure Vault
 
-#### Vault Encryption Key
+### Vault Encryption Key
 
-An encryption key used for storing the original private key `KEY_DEVICE_PRIVATE` is deduced as:
+Local vault protection is derived directly from `KEY_ACTIVATION_SECRET`.
 
-```java
-SecretKey KEY_ENCRYPTION_VAULT = KDF.derive(KEY_MASTER_SECRET, 2000);
+``` java
+SecretKey KDK_VAULT = KDF.derive(KEY_ACTIVATION_SECRET, "vault");
+
+SecretKey KEK_DEVICE_PRIVATE = KDF.derive(KDK_VAULT, "vault/kek-device-private");
 ```
 
-<!-- begin box warning -->
-This key **MUST NOT** be stored on the PowerAuth Client at all. It must be sent upon successful 2FA authentication from the PowerAuth Server.
-<!-- end -->
+The original device private key is stored encrypted using AEAD. The vault encryption key is never stored directly. It is always re‑derived from `KEY_ACTIVATION_SECRET` when needed.
 
-The `KEY_ENCRYPTION_VAULT` is sent from the server encrypted using the [End-To-End Encryption](End-To-End-Encryption.md) with the `KEY_TRANSPORT` key (see above) for additional authentication.
+Additional vault derivation keys exist for application‑specific secrets that are released only after successful two‑factor authentication:
 
-The primary use-case for having an encrypted vault is storage of the original device primary key `KEY_DEVICE_PRIVATE`. This key should be stored on the device in a following way just after the activation:
+``` java
+SecretKey KDK_APP_VAULT_KNOWLEDGE = KDF.derive(KDK_VAULT, "vault/kdk-app-vault-knowledge");
 
-```java
-byte[] C_KEY_DEVICE_PRIVATE = AES.encrypt(KEY_DEVICE_PRIVATE, ByteUtils.zeroBytes(16), KEY_ENCRYPTION_VAULT);
+SecretKey KDK_APP_VAULT_2FA = KDF.derive(KDK_VAULT, "vault/kdk-app-vault-2fa");
 ```
 
-Since `KEY_ENCRYPTION_VAULT` is not stored on the client side, it must be fetched using authenticated request on server for decryption. Once the server verifies the authentication status (signature matches) and returns encrypted `KEY_ENCRYPTION_VAULT` key, client can decrypt it and then decrypt `KEY_DEVICE_PRIVATE`. The whole request and response protection is based on our encryption scheme.
+These keys allow applications to protect additional sensitive material that becomes available only after successful authentication.
