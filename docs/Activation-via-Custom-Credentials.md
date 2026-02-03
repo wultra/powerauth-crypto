@@ -18,7 +18,7 @@ The sequence diagrams below explain the PowerAuth key exchange during activation
 
 1. User enters the credentials identity attributes `IDENTITY_ATTRIBUTES` in the app with PowerAuth Mobile SDK. The entry can be manual or fully/partially handled using other mechanisms, such as deeplink.
 
-1. PowerAuth Mobile SDK generates new device signing key pairs (ECDSA and optionally ML=DSA, depending on selected algorithm).
+1. PowerAuth Mobile SDK generates new device signing key pairs (ECDSA and optionally ML-DSA, depending on selected algorithm).
 
 1. PowerAuth Mobile SDK prepares a shared secret request (containing selected `algorithm` together with ECDHE / ML-KEM contributions) and device public keys, and encrypts the payload using end-to-end encryption (application scope, `SHARED_INFO_1 = "/pa/activation"`).
 

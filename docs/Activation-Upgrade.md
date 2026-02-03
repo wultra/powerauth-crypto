@@ -44,7 +44,7 @@ Optionally, the biometric factor can be upgraded as part of the process.
 ### Client
 
 1. Client marks upgrade as in progress in persistent storage.
-2. Client generates new signing key pairs (ECDSA / MLDSA depending on algorithm).
+2. Client generates new signing key pairs (ECDSA / ML-DSA depending on algorithm).
 3. Client prepares a shared-secret request.
 
 Client sends request to `/pa/v4/upgrade/start`:

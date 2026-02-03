@@ -1,6 +1,6 @@
 # Activation Status
 
-PowerAuth Client may need to check for an activation status, so that it can determine if it should display UI for non-activated state (registration form), blocked state (how to unblock tutorial) or active state (login screen). To facilitate this use-case, PowerAuth Standard RESTful API publishes a `/pa/activation/status` endpoint.
+PowerAuth Client may need to check for an activation status, so that it can determine if it should display UI for non-activated state (registration form), blocked state (how to unblock tutorial) or active state (login screen). To facilitate this use-case, PowerAuth Standard RESTful API publishes a `/pa/v4/activation/status` endpoint.
 
 Checking activation status is performed over standard end-to-end encryption with a temporary activation-scoped key. The legacy STATUS_CHALLENGE / STATUS_NONCE transport is no longer used.
 
