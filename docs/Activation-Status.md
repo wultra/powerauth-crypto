@@ -66,7 +66,7 @@ SecretKey KDK_UTILITY     = KDF.derive(KEY_ACTIVATION_SECRET, "util");
 SecretKey KEY_MAC_STATUS = KDF.derive(KDK_UTILITY, "util/mac/status");
 ```
 
-Note: Even though the blob is delivered over end-to-end encryption, it is additionally authenticated with STATUS_MAC.
+Note: Even though the blob is delivered over end-to-end encryption, it is additionally authenticated with `STATUS_MAC`.
 
 ## Status Fields
 

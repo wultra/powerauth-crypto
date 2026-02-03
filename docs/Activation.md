@@ -76,6 +76,8 @@ The following diagram shows transitions between activation states:
 | `BLOCKED`        | The activation record is blocked and cannot be used for most of the use-cases, such as generating authentication codes. It can be unblocked and activated again.               |
 | `REMOVED`        | The activation record is removed and permanently blocked. It cannot be used for generating authentication codes or ever unblocked.                                             |
 
+Note: The application in `ACTIVE` state may not be confirmed by the mobile SDK yet. The confirmation process is asynchronous and does not update the activation state, instead it updates the `confirmation_pending` flag in the database and allows initial biometry setup.
+
 ## Related Topics
 
 - [Activation via Activation Code](./Activation-via-Activation-Code.md)

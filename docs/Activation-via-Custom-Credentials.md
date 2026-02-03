@@ -18,13 +18,13 @@ The sequence diagrams below explain the PowerAuth key exchange during activation
 
 1. User enters the credentials identity attributes `IDENTITY_ATTRIBUTES` in the app with PowerAuth Mobile SDK. The entry can be manual or fully/partially handled using other mechanisms, such as deeplink.
 
-1. PowerAuth Mobile SDK generates new device signing key pairs (ECDSA and optionally MLDSA, depending on selected algorithm).
+1. PowerAuth Mobile SDK generates new device signing key pairs (ECDSA and optionally ML=DSA, depending on selected algorithm).
 
-1. PowerAuth Mobile SDK prepares a shared secret request (containing selected `algorithm` together with ECDHE / ML-KEM contributions) and device public keys, and encrypts the payload using activation creation end-to-end encryption (application scope, E2EE V4, `SHARED_INFO_1 = "/pa/activation"`).
+1. PowerAuth Mobile SDK prepares a shared secret request (containing selected `algorithm` together with ECDHE / ML-KEM contributions) and device public keys, and encrypts the payload using end-to-end encryption (application scope, `SHARED_INFO_1 = "/pa/activation"`).
 
 1. PowerAuth Mobile SDK sends HTTPS request to the `/pa/v4/activation/create` endpoint with encrypted payload and `IDENTITY_ATTRIBUTES`.
 
-1. Enrollment Server decrypts the application-scoped E2EE envelope.
+1. Enrollment Server decrypts the application-scoped end-to-end encryption envelope.
 
 1. Enrollment Server verifies `IDENTITY_ATTRIBUTES` using its custom processing logic. As a result of this processing, Enrollment Server obtains a `USER_ID` value representing a unique identifier of the user with provided credentials.
 
@@ -34,7 +34,7 @@ The sequence diagrams below explain the PowerAuth key exchange during activation
 
 1. PowerAuth Server decrypts activation payload, stores device public keys, and performs shared secret establishment according to selected algorithm (ECDHE / ML-KEM).
 
-1. PowerAuth Server derives `KEY_ACTIVATION_SECRET`, generates its own signing key pairs (ECDSA / MLDSA), initializes counter data (`CTR_DATA`), sets activation state to `PENDING_COMMIT` (activation is now awaiting commit and client confirmation).
+1. PowerAuth Server derives `KEY_ACTIVATION_SECRET`, generates its own signing key pairs (ECDSA / ML-DSA), initializes counter data (`CTR_DATA`), sets activation state to `PENDING_COMMIT` (activation is now awaiting commit).
 
 1. PowerAuth Server prepares encrypted response containing `ACTIVATION_ID`, `CTR_DATA`, shared secret response, and server public keys, and sends it back via Enrollment Server.
 
@@ -54,9 +54,9 @@ If required by a specific use case, Enrollment Server may postpone the commit an
 
 After activation becomes `ACTIVE`, the mobile application must finalize activation on the client side:
 
-1. PowerAuth Mobile SDK calls `/pa/v4/activation/confirm` (authenticated with possession + knowledge).
+1. PowerAuth Mobile SDK calls `/pa/v4/activation/confirm` (authenticated with `possession_knowledge` factors).
 
-1. PowerAuth Server clears `pendingConfirmation` flag and stores initial factor configuration (for example biometric factor, if requested).
+1. PowerAuth Server clears the `pending_confirmation` flag in the database and stores initial factor configuration (optional biometric factor).
 
 1. PowerAuth Mobile SDK finalizes local activation state and completes factor setup.
 

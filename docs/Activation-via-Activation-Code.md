@@ -35,11 +35,11 @@ This diagram shows how the Activation Code Delivery Application requests the act
 
 1. The Activation Code Delivery Application requests a new activation for a given user.
 
-1. PowerAuth Server generates an `ACTIVATION_ID` and `ACTIVATION_CODE`. The activation code may optionally be signed with a hybrid signature, depending on the selected cryptographic algorithm. Due to the size of post-quantum signatures, QR codes typically contain only the activation code without signature.
+1. PowerAuth Server generates an `ACTIVATION_ID` and `ACTIVATION_CODE`, `CTR_DATA` - an initial value for hash based counter, and server key pairs (ECDSA and ML-DSA). The activation code may optionally be signed with a hybrid signature, depending on the selected cryptographic algorithm. Due to the size of post-quantum signatures, QR codes typically contain only the activation code without signature.
 
 1. Record associated with given `ACTIVATION_ID` is now in `CREATED` state.
 
-1. Activation Code Delivery Application receives an `ACTIVATION_CODE` (and optional `ACTIVATION_SIGNATURE` in custom online flows) and displays these information visually in the front-end so that a user can rewrite them in a mobile app with PowerAuth Mobile SDK.
+1. Activation Code Delivery Application receives an `ACTIVATION_CODE` (and optional map of activation signatures for supported signature algorithms) and displays these information visually in the front-end so that a user can rewrite them in a mobile app with PowerAuth Mobile SDK.
 
 ### Key Exchange
 
@@ -53,23 +53,23 @@ The Activation Code Delivery Application plays no active role in the process of 
 
 #### Process Description
 
-1. User enters the `ACTIVATION_CODE` (and optional `ACTIVATION_SIGNATURE`) in the app with PowerAuth Mobile SDK. The entry can be manual or using a QR code with activation data.
+1. User enters the `ACTIVATION_CODE` (and optional activation signature) in the app with PowerAuth Mobile SDK. The entry can be manual or using a QR code with activation data.
 
-1. If activation signature is present (custom activation scenarios), PowerAuth Mobile SDK verifies it against `ACTIVATION_CODE` using server master public key. QR-based activations typically do not include signature and this step is skipped.
+1. If activation signature is present, PowerAuth Mobile SDK verifies it against `ACTIVATION_CODE` using server master public key for used signature algorithm. QR-based activations do not include signature and this step is skipped.
 
-1. PowerAuth Mobile SDK generates new device signing key pairs (ECDSA and optionally MLDSA, depending on selected algorithm).
+1. PowerAuth Mobile SDK generates new device signing key pairs (ECDSA and optionally ML-DSA, depending on selected algorithm).
 
-1. PowerAuth Mobile SDK prepares a shared secret request (containing selected `algorithm` together with ECDHE / ML-KEM contributions) and encrypts the payload using activation creation end-to-end encryption (application scope, E2EE V4, `SHARED_INFO_1 = "/pa/activation"`).
+1. PowerAuth Mobile SDK prepares a shared secret request (containing selected `algorithm` together with ECDHE / ML-KEM request parameters) and encrypts the payload using end-to-end encryption (application scope, `SHARED_INFO_1 = "/pa/activation"`).
 
 1. PowerAuth Mobile SDK sends HTTPS request to the `/pa/v4/activation/create` endpoint with encrypted payload and `ACTIVATION_CODE`.
 
-1. Enrollment Server decrypts the application-scoped E2EE envelope and forwards activation data to PowerAuth Server.
+1. Enrollment Server decrypts the application-scoped end-to-end encryption envelope and forwards activation data to PowerAuth Server.
 
 1. PowerAuth Server receives `ACTIVATION_CODE` and encrypted activation payload. The `ACTIVATION_CODE` identifies the record for a pending activation. If the record is unknown, then server returns a generic error.
 
 1. PowerAuth Server decrypts activation payload, stores device public keys, and performs shared secret establishment according to selected algorithm (ECDHE / ML-KEM).
 
-1. PowerAuth Server derives `KEY_ACTIVATION_SECRET`, generates its own signing key pairs (ECDSA / MLDSA), initializes counter data (`CTR_DATA`), and changes the record status to `PENDING_COMMIT` (activation is now awaiting confirmation).
+1. PowerAuth Server derives `KEY_ACTIVATION_SECRET`, generates its own signing key pairs (ECDSA / ML-DSA), initializes counter data (`CTR_DATA`), and changes the record status to `PENDING_COMMIT` (activation is now awaiting commit).
 
 1. PowerAuth Server prepares encrypted response containing `ACTIVATION_ID`, `CTR_DATA`, shared secret response, and server public keys, and sends it back via Enrollment Server.
 
@@ -85,7 +85,7 @@ Note that the activation commit step can be skipped in case activation is commit
 
 #### Process Description
 
-1. PowerAuth Mobile SDK displays `H_K_DEVICE_PUBLIC`, so that a user can visually verify the device public key correctness by comparing the `H_K_DEVICE_PUBLIC` value displayed in the Master Front-End Application. The fingerprint is calculated using SHA3-256 and includes algorithm identifier and all exchanged public keys (ECDSA and MLDSA if applicable).
+1. PowerAuth Mobile SDK displays `H_K_DEVICE_PUBLIC`, so that a user can visually verify the device public key correctness by comparing the `H_K_DEVICE_PUBLIC` value displayed in the Master Front-End Application. The fingerprint is calculated using SHA3-256 and includes algorithm identifier and all exchanged public keys (ECDSA and ML-DSA if applicable).
 
    <!-- begin box info -->
    Note: Client and server should allow checking the public key fingerprint before committing the activation. This is necessary so that user can verify the exchanged information in order to detect the MITM attack.
@@ -95,7 +95,7 @@ Note that the activation commit step can be skipped in case activation is commit
 
 1. PowerAuth Server sets activation to `ACTIVE` state (the activation still requires client confirmation).
 
-1. After activation becomes `ACTIVE`, PowerAuth Mobile SDK calls `/pa/v4/activation/confirm` (authenticated with possession + knowledge) to finalize local activation state, configure biometric factor if requested, and clear `pendingConfirmation` on the server.
+1. After activation becomes `ACTIVE`, PowerAuth Mobile SDK calls `/pa/v4/activation/confirm` (authenticated with `possession_knowledge` factors) to finalize local activation state, optionally configure the biometric factor, and clear `the pending_confirmation` flag on the server in the database.
 
 ## Related Topics
 
@@ -104,3 +104,4 @@ Note that the activation commit step can be skipped in case activation is commit
 - [Checking Activation Status](./Activation-Status.md)
 - [Key Derivation](./Key-derivation.md)
 - [Advanced Activation Flows](./Advanced-Activation-Flows.md)
+

@@ -32,10 +32,10 @@ High-level flow:
 
 ## Authenticated Upgrade
 
-Upgrade to protocol V4 is authenticated:
+Upgrade to protocol version 4 is authenticated:
 
-- `/pa/v4/upgrade/start` is authenticated with V3 authentication code (possession_knowledge).
-- `/pa/v4/upgrade/confirm` is authenticated with V4 authentication code (possession factor).
+- `/pa/v4/upgrade/start` is authenticated with version 3 authentication code (possession_knowledge).
+- `/pa/v4/upgrade/confirm` is authenticated with version 4 authentication code (possession factor).
 
 Optionally, the biometric factor can be upgraded as part of the process.
 
@@ -73,7 +73,7 @@ Request body (before encryption):
 
 On `/pa/v4/upgrade/start`:
 
-1. Validate V3 authentication code.
+1. Validate version 3 authentication code.
 2. Decrypt request payload.
 3. Reject request if activation is already upgraded.
 4. Store the new device public keys.
@@ -162,13 +162,13 @@ The upgrade process is resilient to network failures.
 
 ### Protocol Behavior Before Upgrade Completes
 
-If the client supports V4 but activation is still V3:
+If the client supports version 4 but activation is still version 3:
 
 - Authentication code uses protocol 3.3
 - Token headers use protocol 3.3
 - End-to-end encryption uses protocol 3.3
 
-After the upgrade completes, all operations switch to protocol 4.
+After the upgrade completes, all operations switch to protocol version` 4.
 
 ## Database Changes
 
@@ -178,7 +178,7 @@ On the server:
 
 ## Biometry Key Migration
 
-Protocol V4 uses 256-bit keys instead of 128-bit keys.
+Protocol version 4 uses 256-bit keys instead of 128-bit keys.
 
 If biometry is enabled:
 
