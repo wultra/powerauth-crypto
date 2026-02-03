@@ -25,7 +25,7 @@ Creating a quick, low-value payment from an iPhone app.
 
 ## Creating a Token
 
-In order to create a new token, the client application must call a PowerAuth Standard RESTful API endpoint `/pa/v3/token/create`.
+In order to create a new token, the client application must call a PowerAuth Standard RESTful API endpoint `/pa/v4/token/create`.
 
 This endpoint must be called with a standard PowerAuth authentication code. It can be any type of authentication code - 1FA or 2FA. The token then implicitly carries the information about the authentication code it was issued with. Using the PowerAuth authentication code assures the authenticity and integrity of the data sent during the request.
 
@@ -37,8 +37,8 @@ The decrypted response data payload contains the following raw response format:
 
 ```json
 {
-   "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb",  
-   "tokenSecret": "VqAXEhziiT27lxoqREjtcQ=="
+  "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb",
+  "tokenSecret": "VqAXEhziiT27lxoqREjtcQ=="
 }
 ```
 
@@ -48,30 +48,32 @@ The client stores both `token_id` and `token_secret` in a suitable local storage
 
 ## Using the Tokens
 
-When using MAC Token-Based Authentication, the authentication of the RESTful API calls is achieved by computing a `token_digest` digest value on the client side that can be later validated on the server side. The algorithms for calculation and verification of the digest are, in principle, the same.
+When using MAC Token-Based Authentication, the authentication of the RESTful API calls is achieved by computing a `token_digest` value on the client side that can be later validated on the server side. The algorithms for calculation and verification of the digest are, in principle, the same.
 
-The `token_digest` value is computed using the following algorithm:
+The `token_digest` value is computed from the following input:
+
+- `nonce` – 16 bytes of random data
+- `timestamp` – Unix timestamp in milliseconds, converted to UTF-8 bytes from a string value
+- `version` – protocol version (for example `"4.0"`)
+- `token_secret` – 16 random bytes associated with the token
+
+The binary input for the MAC is constructed as:
+
+```
+nonce + "&" + timestamp + "&" + version
+```
+
+### Protocol Version 4.0
+
+For version **4.0**, the digest is computed using **KMAC256** with a custom string `PA4DIGEST`:
 
 ```java
-// '$timestamp' is a Unix timestamp in milliseconds (to achieve the required time
-//             precision) converted to a string and then to byte[] using UTF-8
-//             encoding
-// '$version' is the protocol version, represented as UTF-8 bytes of the version string
-long timestamp = Time.getTimestamp();
-byte[] timestamp_bytes = ByteUtils.encode(String.valueOf(timestamp));
-
-// '$nonce' value is 16B of random data
+byte[] timestamp = String.valueOf(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8);
 byte[] nonce = Generator.randomBytes(16);
-
-// '$nonce' is concatenated to '$timestamp' and '$version' using '&' character:
-//    $nonce + '&' + $timestamp + '&' + $version
-byte[] data = ByteUtils.concat(nonce, ByteUtils.encode("&"), timestamp_bytes, ByteUtils.encode("&"), version);
-
-// 'token_secret' is 16B of random data
-SecretKey key = KeyConversion.secretKeyFromBytes(token_secret);
-
-// Compute the digest using HMAC-SHA256
-byte[] token_digest = Mac.hmacSha256(key, data)
+byte[] version = "4.0".getBytes(StandardCharsets.UTF_8);
+byte[] data = ByteUtils.concat(nonce, "&".getBytes(StandardCharsets.UTF_8), timestamp, "&".getBytes(StandardCharsets.UTF_8), version);
+SecretKey key = convertBytesToSharedSecretKey(token_secret);
+byte[] token_digest = Kmac.kmac256(key, data, "PA4DIGEST".getBytes(StandardCharsets.UTF_8));
 ```
 
 In order to use the token authentication with the RESTful API call, you need to set the following HTTP header to the request:
@@ -81,26 +83,26 @@ X-PowerAuth-Token: PowerAuth token_id="${TOKEN_ID}"
     token_digest="${TOKEN_DIGEST}"
     nonce="${NONCE}"
     timestamp="${TIMESTAMP}"
-    version="3.2"
+    version="4.0"
 ```
 
 Transport representation of the HTTP header properties is following:
 
 - `token_id` - Identifier of the token, as is - UUID level 4.
-- `token_digest` - Digest value computed using `token_secret`, `nonce`, and `timestamp`, Base64 encoded.
+- `token_digest` - Digest value computed using `token_secret`, `nonce`, `timestamp`, and `version`, Base64 encoded.
 - `nonce` - Random cryptographic nonce, 16B long, Base64 encoded.
 - `timestamp` - Current timestamp in a Unix timestamp format (in milliseconds, to achieve required time precision), represented as a string value.
 - `version` - Protocol version.
 
 ## Token Removal
 
-You can remove a token with a given ID anytime by sending a signed request to the PowerAuth Standard RESTful API endpoint `/pa/v3/token/remove`:
+You can remove a token with a given ID anytime by sending a signed request to the PowerAuth Standard RESTful API endpoint `/pa/v4/token/remove`:
 
 ```json
 {
-    "requestObject": {
-        "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb"
-    }
+  "requestObject": {
+    "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb"
+  }
 }
 ```
 
@@ -110,8 +112,8 @@ If the authentication code validation is successful and after validating that th
 
 ```json
 {
-    "requestObject": {
-        "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb"
-    }
+  "requestObject": {
+    "tokenId": "d6561669-34d6-4fee-8913-89477687a5cb"
+  }
 }
 ```
