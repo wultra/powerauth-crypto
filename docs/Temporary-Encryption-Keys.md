@@ -68,7 +68,7 @@ The client app should process the response by verifying the signature and checki
 Besides [End-to-End Encryption](./End-To-End-Encryption.md) itself, the introduction of temporary encryption key impacts all use-cases that implicitly rely on data encryption, such as:
 
 - New activations (using all supported methods)
-- Obtaining and changing activation name from the mobile app.
+- Obtaining and changing activation name from the mobile app
 - Secure Vault
 - MAC-based Tokens
 - Obtaining User Info
