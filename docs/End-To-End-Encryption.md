@@ -104,6 +104,12 @@ Result:
 
 Each temporary key is used until expiration, after this a new temporary key is requested for additional encryption request/response cycles.
 
+## Shared Secret Derivation
+
+The shared secret derivation depends on the selected KEM algorithm (which can also be hybrid). The request contains one or more encapsulation keys, and the response also contains one more encapsulated keys. The derivation is algorithm-independent, and thus it works both for ECDH, ML-KEM, and hybrid schemes, and it can be easily extended with new cryptographic algorithms in the future, too.
+
+For more details see chapter [Shared Secret Derivation](./Shared-Secret-Derivation.md).
+
 ## SHARED_INFO_2
 
 `SHARED_INFO_2` binds encryption to application or activation-level secrets.

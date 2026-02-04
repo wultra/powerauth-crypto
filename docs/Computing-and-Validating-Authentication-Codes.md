@@ -61,12 +61,16 @@ SecretKey KDK_AUTHENTICATION_CODE = KDF.derive(KEY_ACTIVATION_SECRET, "auth");
 SecretKey KEY_AUTHENTICATION_CODE_KNOWLEDGE = KDF.derive(KDK_AUTHENTICATION_CODE, "auth/knowledge");
 ```
 
+The knowledge factor password (PIN) can be changed using the [dynamic factor keys](./Dynamic-Factor-Keys.md) functionality.
+
 ### Biometry factor
 
 ```java
 SecretKey KDK_AUTHENTICATION_CODE = KDF.derive(KEY_ACTIVATION_SECRET, "auth");
 SecretKey KEY_AUTHENTICATION_CODE_BIOMETRY = KDF.derive(KDK_AUTHENTICATION_CODE, "auth/biometry");
 ```
+
+The biometry factor can be added or removed using the [dynamic factor keys](./Dynamic-Factor-Keys.md) functionality.
 
 ## Computing the authentication code
 
