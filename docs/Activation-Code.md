@@ -6,8 +6,7 @@ The activation code has the following properties:
 
 - Format: four groups, each group composed of five Base32 characters, separated by `-`.
 - The whole value is treated as a single identifier called `ACTIVATION_CODE`.
-- The code is protected by an embedded checksum to detect typing errors.
-- `CRC-16/ARC` is used for error detection, primarily for manual re-typing scenarios.
+- The code is protected by an embedded `CRC-16/ARC` checksum to detect typing errors.
 - 96 out of possible 100 bits are used:
     - 80 bits of randomness
     - 16 bits of CRC
@@ -37,7 +36,7 @@ Validation is intentionally simple and independent of the cryptographic layer:
 7. Compare the computed CRC with the last two bytes (interpreted as big-endian).
 If the values do not match, the activation code contains mistyped or corrupted characters.
 
-## Test Values
+### Test Values
 
 You can use the following values to test validation logic.
 

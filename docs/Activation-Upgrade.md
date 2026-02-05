@@ -8,7 +8,7 @@ Upgrade is performed transparently by the PowerAuth Client, typically right afte
 
 ## Detecting Upgrade Availability
 
-The PowerAuth Client determines whether an upgrade is available from the activation status blob. Upgrade is reported to the application if the following condition is true:
+The PowerAuth Client determines whether an upgrade is available from the activation status blob. Upgrade is available for the application if the following condition is true:
 
 - `CURRENT_VERSION` is `3` and `UPGRADE_VERSION` is `4`
 
@@ -19,16 +19,16 @@ The V3 → V4 upgrade consists of two steps:
 1. `/pa/v4/upgrade/start`
 2. `/pa/v4/upgrade/confirm`
 
-Both endpoints use activation-scoped end-to-end encryption.
+Both endpoints use end-to-end encryption.
 
 High-level flow:
 
 1. Client detects upgrade availability from activation status.
 2. Client initiates upgrade by calling `/pa/v4/upgrade/start`.
-3. Server and client establish a new `KEY_ACTIVATION_SECRET` and exchange new signing keys.
+3. Server and client establish a new `KEY_ACTIVATION_SECRET`, exchange new signing keys, and set the `STATUS_FLAG_UPGRADE_CONFIRMATION` flag to `true`.
 4. Client migrates its local activation data to protocol V4.
 5. Client finalizes upgrade by calling `/pa/v4/upgrade/confirm` using V4 authentication.
-6. Server marks activation as protocol V4 and clears the pending-upgrade flag.
+6. Server marks activation as protocol V4 and clears the `STATUS_FLAG_UPGRADE_CONFIRMATION` flag.
 
 ## Authenticated Upgrade
 
@@ -47,7 +47,7 @@ Optionally, the biometric factor can be upgraded as part of the process.
 2. Client generates new signing key pairs (ECDSA / ML-DSA depending on algorithm).
 3. Client prepares a shared-secret request.
 
-Client sends request to `/pa/v4/upgrade/start`:
+4. Client sends request to `/pa/v4/upgrade/start`:
 
 - Encrypted with E2EE V4, application scope
 - `SHARED_INFO_1 = "/pa/upgrade/start"`
@@ -98,12 +98,12 @@ On `/pa/v4/upgrade/start`:
 
 After receiving response from `/pa/v4/upgrade/start`, client:
 
-- Decrypts response.
-- Derives new `KEY_ACTIVATION_SECRET`.
-- Stores new server public keys.
-- Encrypts and stores newly generated private signing keys (using `KEK_DEVICE_PRIVATE`, AEAD).
-- Switches local activation to protocol V4.
-- Upgrades biometric KEK if biometry is enabled.
+1. Decrypts response.
+2. Derives new `KEY_ACTIVATION_SECRET`.
+3. Stores new server public keys.
+4. Encrypts and stores newly generated private signing keys (using `KEK_DEVICE_PRIVATE`, AEAD).
+5. Switches local activation to protocol V4.
+6. Upgrades biometric KEK if biometry is enabled.
 
 At this point, the client operates locally in protocol V4, but the server still awaits confirmation.
 
@@ -113,8 +113,8 @@ At this point, the client operates locally in protocol V4, but the server still 
 
 Client sends request to `/pa/v4/upgrade/confirm`:
 
-- Authenticated with V4 authentication code (possession factor)
-- Request body is empty:
+1. Authenticated with V4 authentication code (possession factor)
+2. Request body is empty:
 
 ```json
 {}
@@ -140,8 +140,8 @@ On `/pa/v4/upgrade/confirm`:
 
 After successful response:
 
-- Client clears the local "upgrade in progress" flag.
-- Upgrade is complete.
+1. Client clears the local "upgrade in progress" flag.
+2. Upgrade is complete.
 
 From this point on, all operations use protocol V4.
 

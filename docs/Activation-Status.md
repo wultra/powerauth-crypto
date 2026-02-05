@@ -1,6 +1,6 @@
 # Activation Status
 
-PowerAuth Client may need to check for an activation status, so that it can determine if it should display UI for non-activated state (registration form), blocked state (how to unblock tutorial) or active state (login screen). To facilitate this use-case, PowerAuth Standard RESTful API publishes a `/pa/v4/activation/status` endpoint.
+PowerAuth Client may need to check for an activation status, so that it can determine if it should display UI for non-activated state (registration form), blocked state (how to unblock tutorial) or active state (login screen). To facilitate this use-case, PowerAuth Standard RESTful API publishes a [/pa/v4/activation/status](./Standard-RESTful-API#activation-status) endpoint.
 
 Checking activation status is performed over standard end-to-end encryption with a temporary activation-scoped key. The legacy STATUS_CHALLENGE / STATUS_NONCE transport is no longer used.
 
@@ -80,11 +80,11 @@ Note: Even though the blob is delivered over end-to-end encryption, it is additi
 
 ### CURRENT_VERSION
 
-Current protocol version of the activation.
+Current protocol version of the activation (currently `3` or `4`).
 
 ### UPGRADE_VERSION
 
-Maximum protocol version supported by the server for this activation.
+Maximum protocol version supported by the server for this activation (currently `4`).
 
 ### STATUS_FLAGS
 
@@ -119,7 +119,7 @@ Counter explanation:
 
 - `FAIL_COUNT` = current failed attempts
 - `MAX_FAIL_COUNT` = maximum allowed attempts
-- `CTR_LOOK_AHEAD` = look-ahead window for server-side validation
+- `CTR_LOOK_AHEAD` = tolerance on the server for counter iterations when the hashed-based counter is ahead on the client
 
 ### CTR_DATA_HASH
 
