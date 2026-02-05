@@ -37,7 +37,7 @@ The problem with the biometry factor is less problematic, but if the attacker ha
    ```
 1. Client encrypts `SharedSecretRequest` payload with E2EE, activation scope, `sh1="/pa/password/change"`
 
-1. Client sends encrypted Request to `/pa/v4/password/change`. The request is authenticated with PowerAuth V4 authentication code, with `passwordOld`
+1. Client sends the encrypted request to `/pa/v4/password/change`. The request is authenticated with PowerAuth V4 authentication code, with `passwordOld`
 
 1. Server verifies authentication code, if valid, then decrypts the payload and then:
    ```java
