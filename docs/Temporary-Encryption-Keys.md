@@ -1,6 +1,6 @@
 # Temporary Encryption Keys
 
-To provide better resilience of encryption via advanced features, such as forward secrecy, PowerAuth protocol supports temporary encryption keys (since protocol version 3.3). The idea is that the keys embedded in the mobile app (`KEY_SERVER_MASTER_PUBLIC`) and device specific server public key (`KEY_SERVER_PUBLIC`) are only used for signature verification, serving as trust store on the client for data signed on the server.
+To provide better resilience of encryption via advanced features, such as forward secrecy, PowerAuth protocol supports temporary encryption keys (since protocol version 3.3). The idea is that the keys embedded in the mobile app (`KEY_SERVER_*_PUBLIC`) and device specific server public keys (`KEY_DEVICE_*_PUBLIC`) are only used for signature verification, serving as trust store on the client for data signed on the server.
 
 Temporary encryption keys are created on the server side via PowerAuth Standard RESTful API. The server keeps the temporary encryption key that can be used in a standard end-to-end encryption.
 
@@ -23,7 +23,7 @@ The client sends request in the form of JWT, specifying two parameters:
 
 The JWT is signed using `HS384` with signing key `KEY_MAC_GET_APP_TEMP_KEY`.
 
-The server then takes the request, generates a temporary encryption key associated with the application key, and sends the JWT response signed with `ES384` using `KEY_SERVER_MASTER_PRIVATE` (optionally signed also with `MLDSA` algorithm based on used algorithm suite). The JWT response contains:
+The server then takes the request, generates a temporary encryption key associated with the application key, and sends the JWT response signed with `ES384` using `KEY_SERVER_ECDSA_384_PRIVATE` (optionally signed also with `MLDSA` algorithm based on used algorithm suite). The JWT response contains:
 
 - `sub` - identifier of the key
 - `applicationKey` - back reference to the original data
