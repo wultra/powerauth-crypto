@@ -1,8 +1,12 @@
 # Dynamic Factor Keys
 
-The purpose of this feature is to make it impossible for an attacker with access to local activation data to misuse it. If the attacker has access to such data (for example, if the device's cloud backup is broken and reveals the local private data) then he can deduce the knowledge key if the user changes the password. This is because the password change in previous versions of the protocol is a local operation, and therefore two different ciphertexts lead to the same plaintext. For example, if PIN is used, then the attacker must iterate over all PIN combinations with data before and after the change and find the match.
+Dynamic Factor Keys ensure that changes to authentication factors—such as passwords or biometric enrollment—are always reflected in freshly derived cryptographic material shared between the client and server.
 
-The problem with the biometry factor is less problematic, but if the attacker has a snapshot of such local data, then he can use biometric authentication code even if the biometry factor is later removed by the user. To prevent this, the server must know that the client has biometry turned on or off.
+Instead of relying on purely local updates, any modification of a factor (for example, changing a password or enabling/disabling biometrics) is accompanied by a server-assisted key exchange. This process results in new factor keys on both sides, effectively binding the updated factor state to newly established secrets.
+
+This design provides two important properties:
+- Password changes produce new knowledge factor keys. Each password update triggers a shared-secret exchange with the server, yielding a new knowledge factor key.
+- Biometric state is synchronized with the server. Enabling or removing biometrics also derives fresh biometric factor keys and updates the activation record on the server, ensuring that biometric authentication is only possible when it is explicitly enabled.
 
 ## Password change
 
