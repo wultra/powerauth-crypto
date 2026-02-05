@@ -106,7 +106,7 @@ Each temporary key is used until expiration, after this a new temporary key is r
 
 ## Shared Secret Derivation
 
-The shared secret derivation depends on the selected KEM algorithm (which can also be hybrid). The request contains one or more encapsulation keys, and the response also contains one more encapsulated keys. The derivation is algorithm-independent, and thus it works both for ECDH, ML-KEM, and hybrid schemes, and it can be easily extended with new cryptographic algorithms in the future, too.
+The shared secret derivation depends on the selected KEM algorithm (which can also be hybrid). The request contains one or more encapsulation keys, and the response also contains one or more encapsulated keys. The derivation is algorithm-independent, and thus it works both for ECDH, ML-KEM, and hybrid schemes, and it can be easily extended with new cryptographic algorithms in the future, too.
 
 For more details see chapter [Shared Secret Derivation](./Shared-Secret-Derivation.md).
 
