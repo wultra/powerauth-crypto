@@ -76,7 +76,7 @@ Besides [End-to-End Encryption](./End-To-End-Encryption.md) itself, the introduc
 
 ## JWS Signatures used During Temporary Key Establishment
 
-We adopter [RFC 7515 - JSON Web Signature](https://datatracker.ietf.org/doc/html/rfc7515#section-7.2.1) for the general serialization format for the digital signatures. For example:
+We adopt [RFC 7515 - JSON Web Signature](https://datatracker.ietf.org/doc/html/rfc7515#section-7.2.1) for the general serialization format for the digital signatures. For example:
 
 ```json
 {
