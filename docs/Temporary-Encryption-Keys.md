@@ -73,3 +73,104 @@ Besides [End-to-End Encryption](./End-To-End-Encryption.md) itself, the introduc
 - MAC-based Tokens
 - Obtaining User Info
 - Protocol upgrade
+
+## JWS Signatures used During Temporary Key Establishment
+
+We adopt [RFC 7515 - JSON Web Signature](https://datatracker.ietf.org/doc/html/rfc7515#section-7.2.1) for the general serialization format for the digital signatures. For example:
+
+```json
+{
+    "payload" : "<payload contents>",
+    "signatures" : [
+        {
+            "protected" : "<integrity-protected header 1 contents>",
+            "signature" : "<signature 1 contents>"
+        },
+        {
+            "protected" : "<integrity-protected header N contents>",
+            "signature" : "<signature N contents>"
+        }
+    ]
+}
+```
+
+This signature JSON format is used in the temporary key response payload.
+
+### Signing in EC_P384 Algorithm Suite
+
+For EC_P384 algorithm, ECDSA with P-384 and SHA-384 is used for the data signing. In this case, the signatures array contains only one object:
+
+```json
+[
+    {
+        "protected" : "eyJhbGciOiJFUzM4NCJ9",
+        "signature" : "BASE64-ECDSA-signature"
+    }
+]
+```
+
+> Be aware that the SHA-384 is used as hash, despite the fact we would like to adopt SHA-3 family of hashes in our protocol.
+
+#### Key selection
+
+| Scope               | Who signs     | Sign with                     | Verify with                  |
+|---------------------|---------------|-------------------------------|------------------------------|
+| Application         | Server        | KEY_MASTER_ECDSA_P384_PRIVATE | KEY_MASTER_ECDSA_P384_PUBLIC |
+| Activation          | Server        | KEY_SERVER_ECDSA_P384_PRIVATE | KEY_SERVER_ECDSA_P384_PUBLIC |
+| Activation          | Client        | KEY_DEVICE_ECDSA_P384_PRIVATE | KEY_DEVICE_ECDSA_P384_PUBLIC |
+
+### Signing in EC_P384_ML_L3 Algorithm Suite
+
+For `EC_P384_ML_L3` algorithm suits, we use both ECDSA with P-384 and SHA-384 and ML-DSA for the data signing. In this case, the signatures array contains two objects:
+
+```json
+[
+    {
+        "protected" : "eyJhbGciOiJFUzM4NCJ9",
+        "signature" : "BASE64-ECDSA-signature"
+    },
+    {
+        "protected" : "eyJhbGciOiJNTC1EU0EtNjUifQ==",
+        "signature" : "BASE64-ML-DSA-signature"
+    }
+]
+```
+
+#### Key selection
+
+| Scope               | Algorithm | Who signs | Sign with                     | Who verifies | Verify with                  |
+|---------------------|-----------|-----------|-------------------------------|--------------|------------------------------|
+| Application         | ECDSA     | Server    | KEY_MASTER_ECDSA_P384_PRIVATE | Client       | KEY_MASTER_ECDSA_P384_PUBLIC |
+| Application         | MLDSA     | Server    | KEY_MASTER_MLDSA65_PRIVATE    | Client       | KEY_MASTER_MLDSA65_PUBLIC    |
+| Activation          | ECDSA     | Server    | KEY_SERVER_ECDSA_P384_PRIVATE | Client       | KEY_SERVER_ECDSA_P384_PUBLIC |
+| Activation          | MLDSA     | Server    | KEY_SERVER_MLDSA65_PRIVATE    | Client       | KEY_SERVER_MLDSA65_PUBLIC    |
+| Activation          | ECDSA     | Client    | KEY_DEVICE_ECDSA_P384_PRIVATE | Server       | KEY_DEVICE_ECDSA_P384_PUBLIC |
+| Activation          | MLDSA     | Client    | KEY_DEVICE_MLDSA65_PRIVATE    | Server       | KEY_DEVICE_MLDSA65_PUBLIC    |
+
+### Signing in EC_P384_ML_L5 Algorithm Suite
+
+For `EC_P384_ML_L5` algorithm suite, we use both ECDSA with P-384 and SHA-384 and ML-DSA-87 for the data signing. In this case, the signatures array contains two objects:
+
+```json
+[
+    {
+        "protected" : "eyJhbGciOiJFUzM4NCJ9",
+        "signature" : "BASE64-ECDSA-signature"
+    },
+    {
+        "protected" : "eyJhbGciOiJNTC1EU0EtODcifQ",
+        "signature" : "BASE64-ML-DSA-signature"
+    }
+]
+```
+
+#### Key selection
+
+| Scope               | Algorithm | Who signs | Sign with                     | Who verifies | Verify with                  |
+|---------------------|-----------|-----------|-------------------------------|--------------|------------------------------|
+| Application         | ECDSA     | Server    | KEY_MASTER_ECDSA_P384_PRIVATE | Client       | KEY_MASTER_ECDSA_P384_PUBLIC |
+| Application         | MLDSA     | Server    | KEY_MASTER_MLDSA87_PRIVATE    | Client       | KEY_MASTER_MLDSA87_PUBLIC    |
+| Activation          | ECDSA     | Server    | KEY_SERVER_ECDSA_P384_PRIVATE | Client       | KEY_SERVER_ECDSA_P384_PUBLIC |
+| Activation          | MLDSA     | Server    | KEY_SERVER_MLDSA87_PRIVATE    | Client       | KEY_SERVER_MLDSA87_PUBLIC    |
+| Activation          | ECDSA     | Client    | KEY_DEVICE_ECDSA_P384_PRIVATE | Server       | KEY_DEVICE_ECDSA_P384_PUBLIC |
+| Activation          | MLDSA     | Client    | KEY_DEVICE_MLDSA87_PRIVATE    | Server       | KEY_DEVICE_MLDSA87_PUBLIC    |
