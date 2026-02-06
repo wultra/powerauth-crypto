@@ -19,7 +19,7 @@ The V3 → V4 upgrade consists of two steps:
 1. `/pa/v4/upgrade/start`
 2. `/pa/v4/upgrade/confirm`
 
-Both endpoints use end-to-end encryption.
+The start upgrade endpoint uses end-to-end encryption in application scope.
 
 High-level flow:
 
