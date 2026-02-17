@@ -1,11 +1,11 @@
 # Activation
 
-Before a mobile app can perform authentication and transaction verification, it must first register with the server. In order to establish strong device binding, a key exchange must take a place first. We call this key exchange process "the activation". During the activation, user needs to enter some credential to the mobile app to authenticate the key exchange.
+Before a mobile app can perform authentication and transaction verification, it must first register with the server. To establish strong device binding, a key exchange must take place first. We call this key exchange process "the activation". During the activation, the user needs to enter some credential to the mobile app to authenticate the key exchange.
 
-The following components typically play role in the process of activation via activation code:
+The following components typically play a role in the process of activation via activation code:
 
 - **PowerAuth Mobile SDK** - An SDK embedded in the mobile client application.
-- **Enrollment Server** - A front-end facing server application that is deployed in demilitarized zone (DMZ) in order to accommodate a communication between the PowerAuth Mobile SDK and PowerAuth Server.
+- **Enrollment Server** - A front-end facing server application that is deployed in a demilitarized zone (DMZ) in order to accommodate communication between the PowerAuth Mobile SDK and PowerAuth Server.
 - **Activation Code Delivery Application** - An application (for example Internet banking) that initiates the activation process by requesting and then displaying or sending the activation code for the use in the PowerAuth Mobile SDK.
 - **PowerAuth Server** - A server application hidden deep in the secure infrastructure. It stores activation records and verifies the request authentication codes.
 
@@ -15,9 +15,11 @@ Specific role of each component depends on a particular activation pattern, as e
 
 ## Activation Principle
 
-The basic underlying principle of the activation process is simple: The mobile application sends its public key to the server and in return, it receives the server's public key, initial counter value, and activation ID from the server.
+The basic underlying principle of the activation process is simple: The mobile application sends its public keys to the server, and in return, it receives the server's public keys, initial hash counter value, and activation ID from the server. 
 
-Of course, to make this process work in a secure manner, several additional items must be present during the flow.
+Apart from sharing the device and server public keys, a shared secret `KEY_ACTIVATION_SECRET` is established. The process for deriving the shared secret depends on the used algorithm suite, see the [List of Used Algorithms](./List-of-Used-Algorithms.md). Most typically, a hybrid scheme is used with ECDH and ML-KEM algorithms to ensure both classical and post-quantum safety. The shared secret is then used later to derive all necessary keys.
+
+As the last step, the activation is confirmed by the mobile device by calling the activation confirmation endpoint, and optionally, the biometric factor is enabled.
 
 ## Activation Types
 
@@ -46,17 +48,19 @@ A good place to review the exact request and response payload structure is in th
 
 ## Key Derivation
 
-After completing the activation flow, the mobile app and PowerAuth Server must derive additional factor specific authentication keys that are based on a shared secret established during the activation.
+After completing the activation flow, the mobile app and PowerAuth Server must derive additional factor-specific authentication keys that are based on a shared secret established during the activation.
 
-The mobile app then stores these derived keys and throws away the unencrypted device private key and any intermediate products of the activation process. Only the derived keys are stored on the mobile app using a method appropriate for the particular key.
+The mobile app then stores these derived keys and throws away any intermediate products of the activation process. Only the derived keys are stored on the mobile app using a method appropriate for the particular key.
 
-For example, an authentication key related to the "knowledge factor" is stored encrypted using a key derived from a PIN code, an authentication key related to the "biometry factor" is stored encrypted with a key that is retrieved from the biometric module of the device, etc.
+For example, an authentication key related to the knowledge factor is stored encrypted using a key derived from a PIN code, an authentication key related to the biometry factor is stored encrypted with a key retrieved from the biometric module of the device, etc.
+
+The biometry factor can also be set up or removed dynamically after the activation using specific endpoints for this use case. The password (PIN) used for the knowledge factor can be changed, too. 
 
 The detailed description of the [Key Derivation](./Key-derivation.md) is available in a separate chapter.
 
 ## Low-Level Implementation
 
-To assure the best resilience of the process and to make sure that no sensitive cryptographic data remains allocated in the memory, the core of the mobile app component is implemented in C/C++.
+To ensure the best resilience of the process and to make sure that no sensitive cryptographic data remains allocated in the memory, the core of the mobile app component is implemented in C/C++.
 
 ## Activation States
 
@@ -68,9 +72,11 @@ The following diagram shows transitions between activation states:
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `CREATED`        | The activation record is created using an external channel, such as the Internet banking, but the key exchange between the client and server did not happen yet.               |
 | `PENDING_COMMIT` | The activation record is created and key exchange between the client and server already took place, but the activation record needs additional approval before it can be used. |
-| `ACTIVE`         | The activation record is created and active. It is ready to be used for typical use-cases, such as generating authentication codes.                                             |
-| `BLOCKED`        | The activation record is blocked and cannot be used for most of the use-cases, such as generating authentication codes. It can be unblocked and activated again.                |
-| `REMOVED`        | The activation record is removed and permanently blocked. It cannot be used for generating authentication codes or ever unblocked.                                              |
+| `ACTIVE`         | The activation record is created and active. It is ready to be used for typical use-cases, such as generating authentication codes.                                            |
+| `BLOCKED`        | The activation record is blocked and cannot be used for most of the use-cases, such as generating authentication codes. It can be unblocked and activated again.               |
+| `REMOVED`        | The activation record is removed and permanently blocked. It cannot be used for generating authentication codes or ever unblocked.                                             |
+
+Note: The application in `ACTIVE` state may not be confirmed by the mobile SDK yet. The confirmation process is asynchronous and does not update the activation state, instead it updates the `confirmation_pending` flag in the database and allows initial biometry setup.
 
 ## Related Topics
 

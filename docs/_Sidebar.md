@@ -27,6 +27,8 @@
 - [Advanced Activation Flows](./Advanced-Activation-Flows)
 - [Implementation Details](./Implementation-notes.md)
 - [Upgrade Process](Activation-Upgrade.md)
+- [Shared Secret Derivation](Shared-Secret-Derivation.md)
+- [Dynamic Factor Keys](Dynamic-Factor-Keys.md)
 - [List of Used Algorithms](./List-of-Used-Algorithms.md)
 - [List of Used Keys](./List-of-Used-Keys.md)
 
