@@ -1,100 +1,191 @@
 # Activation Upgrade
 
-This document describes how PowerAuth protocol is upgraded from an older to a newer version. Currently, only upgrade from protocol `V2` to `V3` is defined.
+This document describes how an existing PowerAuth activation is upgraded from protocol version 3 to protocol version 4.
 
-### Test upgrade availability
+The upgrade introduces new cryptographic algorithms, new factor keys, and a new shared secret. The process is authenticated and requires user presence (PIN / password, and optionally biometry).
 
-PowerAuth Client can detect whether the activation upgrade is possible by fetching an [activation status](./Activation-Status.md). The encrypted status blob contains two protocol version related values:
+Upgrade is performed transparently by the PowerAuth Client, typically right after activation status indicates that upgrade is available.
 
-- `${CURRENT_VERSION}`, represents current version of protocol, stored on PowerAuth Server.
-- `${UPGRADE_VERSION}`, represents maximum supported version of protocol, supported by PowerAuth Server. If value is higher than `${CURRENT_VERSION}`, then the protocol upgrade is available.
+## Detecting Upgrade Availability
 
-As you can see, to determine whether the upgrade is possible is quite easy. The last requirement is that PowerAuth Client must support that upgrade process to the latest protocol version available on the server. PowerAuth Server typically provides backward compatibility for clients still communicating in older version of the protocol. All that basically means, that you need to update PowerAuth Mobile SDK in your application, once the newer server is deployed to the production.
+The PowerAuth Client determines whether an upgrade is available from the activation status blob. Upgrade is available for the application if the following condition is true:
 
-## Upgrade to V3
+- `CURRENT_VERSION` is `3` and `UPGRADE_VERSION` is `4`
 
-Due to changes we have introduced in protocol version 3, the main purpose of the upgrade is to securely acquire an initial value of hash-based counter (we call this value as `CTR_DATA`). In order to do that, there are two new endpoints in PowerAuth RESTful API:
+## Overview
 
-- `/pa/v3/upgrade/start` - PowerAuth Client initiates an upgrade process. The response contains an initial `CTR_DATA` value. The whole request and response is protected by our ECIES encryption scheme.
-- `/pa/v3/upgrade/commit` - PowerAuth Client commits and finishes the upgrade process. The request must be signed with PowerAuth Signature in version 3, with the "possession" factor involved.
+The V3 → V4 upgrade consists of two steps:
 
-### Upgrade Start endpoint
+1. `/pa/v4/upgrade/start`
+2. `/pa/v4/upgrade/confirm`
 
-This diagram shows how start of upgrade is implemented on PowerAuth Server.
+The start upgrade endpoint uses end-to-end encryption in application scope.
 
-![Upgrade Start Process](./resources/images/upgrade_protocol_v3_start.png)
+High-level flow:
 
-Diagram explained:
+1. Client detects upgrade availability from activation status.
+2. Client initiates upgrade by calling `/pa/v4/upgrade/start`.
+3. Server and client establish a new `KEY_ACTIVATION_SECRET`, exchange new signing keys, and set the `STATUS_FLAG_UPGRADE_CONFIRMATION` flag to `true`.
+4. Client migrates its local activation data to protocol V4.
+5. Client finalizes upgrade by calling `/pa/v4/upgrade/confirm` using V4 authentication.
+6. Server marks activation as protocol V4 and clears the `STATUS_FLAG_UPGRADE_CONFIRMATION` flag.
 
-1. PowerAuth Server gets an activation entry for an activation, to be upgraded. 
-   - This step must also implement a basic validations, like check, whether the requested activation for `ACTIVATION_ID` exists.
+## Authenticated Upgrade
 
-2. If status of activation is not `ACTIVE`, then "400 - Bad Request" error is returned.
-   - Makes no sense to upgrade an unfinished, blocked or removed activations 
+Upgrade to protocol version 4 is authenticated:
 
-3. If current activation version is not `V2`, then "400 - Bad Request" error is returned. 
-   - This step is basically a prevention that upgrade cannot be started, once the activation is already upgraded.
+- `/pa/v4/upgrade/start` is authenticated with version 3 authentication code (possession_knowledge).
+- `/pa/v4/upgrade/confirm` is authenticated with version 4 authentication code (possession factor).
 
-4. Generate `CTR_DATA` only once
-   - Server should not re-generate `CTR_DATA` for each subsequent call to "start". If we do such thing, then the attacker may change the value on the server, because our ECIES doesn't prevent against replay attacks. That will basically invalidate the activation on the server, because client will no longer be able to calculate a valid signature.
-   
-5. Return `CTR_DATA` in response object.
-   - Note that the sequence doesn't show ECIES request decryption and the response encryption.
+Optionally, the biometric factor can be upgraded as part of the process.
 
-### Upgrade Commit endpoint
+## Upgrade Start
 
-This diagram shows how upgrade commit is implemented on PowerAuth Server.
+### Client
 
-![Upgrade Commit Process](./resources/images/upgrade_protocol_v3_commit.png)
+1. Client marks upgrade as in progress in persistent storage.
+2. Client generates new signing key pairs (ECDSA / ML-DSA depending on algorithm).
+3. Client prepares a shared-secret request.
 
-Diagram explained:
+4. Client sends request to `/pa/v4/upgrade/start`:
 
-1. PowerAuth Server gets an activation entry for an activation, to be upgraded. 
-   - This step must also implement a basic validations, like check, whether the requested activation for `ACTIVATION_ID` exists.
+- Encrypted with E2EE V4, application scope
+- `SHARED_INFO_1 = "/pa/upgrade/start"`
+- Authenticated with V3 authentication code (`uriId = "/pa/upgrade/start"`)
 
-2. If status of activation is not `ACTIVE`, then "401 - Unauthorized" error is returned.
-   - Makes no sense to upgrade an unfinished, blocked or removed activations 
+Request body (before encryption):
 
-3. If current activation version is not `V2`, then "401 - Unauthorized" error is returned.
-   - This step is basically a prevention that upgrade cannot be started, once the activation is already upgraded.
+```json
+{
+  "sharedSecretRequest": {
+    "algorithm": "EC_P384_ML_L3",
+    "encapsulationKeys": [ "Base64" ]
+  },
+  "devicePublicKeys": {
+    "ecdsa": "Base64",
+    "mldsa": "Base64"
+  },
+  "enableBiometry": true
+}
+```
 
-4. If database doesn't contain `CTR_DATA`, then "401 - Unauthorized" error is returned.
+### Server
 
-5. PowerAuth Server validates signature. The validation must enforce signature version V3, to check, whether the client calculated the signature with right `CTR_DATA`.
-   - In case of failure, the "401 - Unauthorized" error is returned.
+On `/pa/v4/upgrade/start`:
 
-6. PowerAuth Server now can set version of activation to V3 
-   - From this point, only `V3` signatures will be accepted on the server. 
-   - The client also gets `V3` in the next encrypted activation status blob.
+1. Validate version 3 authentication code.
+2. Decrypt request payload.
+3. Reject request if activation is already upgraded.
+4. Store the new device public keys.
+5. Derive a new `KEY_ACTIVATION_SECRET` including all factor keys (biometry optional).
+6. Set `STATUS_FLAG_UPGRADE_CONFIRMATION = 1` on activation record.
+7. Configure the biometric factor based on request.
+8. Prepare response payload:
 
-### PowerAuth Client sequence
+```json
+{
+  "sharedSecretResponse": {
+    "encapsulatedKeys": [ "Base64" ]
+  },
+  "serverPublicKeys": {
+    "ecdsa": "Base64",
+    "mldsa": "Base64"
+  }
+}
+```
 
-Following diagram shows the upgrade process form PowerAuth Client perspective.
+### Client (after response)
 
-![Upgrade sequence on PowerAuth Client](./resources/images/upgrade_protocol_v3_mobile_sdk.png)
+After receiving response from `/pa/v4/upgrade/start`, client:
 
-The PowerAuth Client is typically implementing the upgrade process as a silent, transparent operation, as a part of [getting activation status](./Activation-Status.md):
+1. Decrypts response.
+2. Derives new `KEY_ACTIVATION_SECRET`.
+3. Stores new server public keys.
+4. Encrypts and stores newly generated private signing keys (using `KEK_DEVICE_PRIVATE`, AEAD).
+5. Switches local activation to protocol V4.
+6. Upgrades biometric KEK if biometry is enabled.
 
-1. PowerAuth Client gets an activation status blob (by requesting `/pa/v3/activation/status` endpoint)
-   - In case of error, the error is immediately returned as the result of the whole operation.
+At this point, the client operates locally in protocol V4, but the server still awaits confirmation.
 
-2. If the current status of activation is not `ACTIVE`, then return the received status immediately
+## Upgrade Confirm
 
-3. If upgrade is not available (see [Test upgrade availability](#test-upgrade-availability)), then return the received status blob immediately.
+### Client
 
-4. If client doesn't have `CTR_DATA` value locally, then continue with step 5, otherwise go to step 7.
+Client sends request to `/pa/v4/upgrade/confirm`:
 
-5. Start the upgrade process, by requesting `/pa/v3/upgrade/start` endpoint
-   - The request is encrypted with an "activation scoped" ECIES, `sh1="/pa/upgrade"` 
-   - The response contains initial `CTR_DATA` value, which has to be exactly 16 bytes long.
+1. Authenticated with V4 authentication code (possession factor)
+2. Request body is empty:
 
-6. Client can upgrade its local activation data to protocol `V3`. This step has following implications: 
-   - Client must store `CTR_DATA` into its persistent data storage.
-   - Each next PowerAuth Signature will be calculated as `V3`.
+```json
+{}
+```
 
-7. Commit the upgrade process, by requesting `/pa/v3/upgrade/commit` endpoint
-   - The request is signed with `V3` signature
+### Server
 
-If the last step succeeds without an error, then the protocol is fully migrated to version 3. 
+On `/pa/v4/upgrade/confirm`:
 
-The whole upgrade process is designed to be reliable against a random network connection errors. The PowerAuth Client can typically recover from such networking errors by simply retrying the whole upgrade process.
+1. Verify that activation is awaiting upgrade confirmation.
+2. Validate V4 authentication code.
+3. Clear `STATUS_FLAG_UPGRADE_CONFIRMATION`.
+4. Set activation protocol version to `4`.
+5. Return:
+
+```json
+{
+  "status": "OK"
+}
+```
+
+### Client
+
+After successful response:
+
+1. Client clears the local "upgrade in progress" flag.
+2. Upgrade is complete.
+
+From this point on, all operations use protocol V4.
+
+## Recovery From Failures
+
+The upgrade process is resilient to network failures.
+
+- Failure after `/pa/v4/upgrade/start` (the client did not receive response):
+   - Client clears the local upgrade-in-progress flag.
+   - Application retries upgrade from the beginning.
+
+- Failure after `/pa/v4/upgrade/confirm` (the client did not receive response):
+   - Client fetches activation status.
+   - If the server already reports protocol V4, the client completes locally.
+   - If the server is still V3 and `STATUS_FLAG_UPGRADE_CONFIRMATION` is set, client retries `/pa/v4/upgrade/confirm`.
+
+## Special Situations
+
+### Protocol Behavior Before Upgrade Completes
+
+If the client supports version 4 but activation is still version 3:
+
+- Authentication code uses protocol 3.3
+- Token headers use protocol 3.3
+- End-to-end encryption uses protocol 3.3
+
+After the upgrade completes, all operations switch to protocol version` 4.
+
+## Database Changes
+
+On the server:
+
+- `pa_activation.version` is set to `4` after successful upgrade.
+
+## Biometry Key Migration
+
+Protocol version 4 uses 256-bit keys instead of 128-bit keys.
+
+If biometry is enabled:
+
+### iOS
+
+SDK generates a new 256-bit KEK and stores it in Keychain silently.
+
+### Android
+
+If `authenticateOnBiometricKeySetup` is enabled, user authentication is required to generate the new 256-bit key.

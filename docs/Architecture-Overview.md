@@ -20,7 +20,7 @@ As you can see, there are only couple components present:
 PowerAuth Deployment requires installation of just one easy to deploy component.
 
 - PowerAuth Server
-    - The core server component that manages activated devices, enables the activation process, verifies signatures and keeps system configuration.
+    - The core server component that manages activated devices, enables the activation process, verifies authentication codes and keeps system configuration.
     - Component communicates using RESTful services.
     - Documentation:
         - [Deploying PowerAuth Server](https://github.com/wultra/powerauth-server/blob/develop/docs/Deploying-PowerAuth-Server.md)
