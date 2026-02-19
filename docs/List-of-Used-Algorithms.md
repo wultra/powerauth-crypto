@@ -46,7 +46,7 @@ The following algorithms are used in the PowerAuth cryptography scheme.
 
 ### PowerAuth Protocol 3.x — **Legacy**
 
-**Current protocol version:** `3.3`
+**Latest 3.x protocol version:** `3.3`
 
 #### Cryptographic Primitives
 

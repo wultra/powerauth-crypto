@@ -967,7 +967,7 @@ The decoded content of the JWT payload is:
 
 The issued public key can be related to either application or activation scope, based on the presence of `activationId` (see the request description for the details). In both cases, the JWT with the public key is signed using `ES384` algorithm (optionally also with `MLDSA`), and the scope determines what key is used:
 
-- Application scope: Private key is the application-specific master server private key `KEY_SERVER_MASTER_PRIVATE`.
+- Application scope: Private key is the application-specific master server private key `KEY_MASTER_ECDSA_P384_PRIVATE` (alternatively `KEY_MASTER_MLDSA65_PRIVATE` / `KEY_MASTER_MLDSA87_PRIVATE` for ML-DSA algorithms).
 - Activation scope: Private key is the activation-specific server private key `KEY_SERVER_PRIVATE`.
 
 <!-- end -->

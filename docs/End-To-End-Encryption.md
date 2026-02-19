@@ -42,7 +42,7 @@ Because `KEY_TEMPORARY_SHARED_SECRET` is derived when requesting the temporary k
 - `PLAINTEXT` – Data to be encrypted
 - `ASSOCIATED_DATA` – Plaintext data authenticated by AEAD
 - `TIMESTAMP` – Unix timestamp in milliseconds
-- `NONCE` – 24 bytes long nonce (12 byte `REQUEST_NONCE` concatenated with 12 byte `RESPONSE_NONCE`)
+- `NONCE` – 24 bytes long nonce (a 12 byte `REQUEST_NONCE` concatenated with a 12 byte `RESPONSE_NONCE`)
 
 ## Encryption Scopes
 
