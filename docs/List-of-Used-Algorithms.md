@@ -8,7 +8,7 @@ The **Cryptographic Algorithm Suite** is a collection of specific cryptographic 
 
 | Suite ID        | Status  | Description                                                                                                                                                |
 |-----------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `EC_P384_ML_L3` | Current | **Hybrid PQC Level 3**<ul><li>Key agreement: `ECDH (P-384) + ML-KEM-768`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-65`.</li></ul>Targets NIST PQC Level 3. |
+| `EC_P384_ML_L3` | Current | **Hybrid PQC Level 3**<ul><li>Key agreement: `ECDH (P-384) + ML-KEM-768`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-65`</li></ul>Targets NIST PQC Level 3. |
 | `EC_P384_ML_L5` | Current | **Hybrid PQC Level 5**<ul><li>Key agreement: `ECDH (P-384) + ML-KEM-1024`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-87`</li></ul>Targets NIST PQC Level 5. |
 | `EC_P384`       | Current | **Curve: NIST P-384 (`secp384r1`)**<ul><li>Key agreement: `ECDH (P-384, SHA-3 KDF)`</li><li>Digital signatures: `ECDSA (P-384, SHA-384)`</li></ul>No PQC component. |
 | `ML_L3`         | Testing | **PQC-only Level 3**<ul><li>Key agreement: `ML-KEM-768`</li><li>Digital signatures: `ML-DSA-65`</li></ul>Targets NIST PQC Level 3. |
