@@ -2,27 +2,29 @@
 
 The following algorithms are used in the PowerAuth cryptography scheme.
 
-## Shared Secret Algorithm Suite IDs (4.0)
+## Cryptographic Algorithm Suite IDs (4.0)
+
+The **Cryptographic Algorithm Suite** is a collection of specific cryptographic algorithms used throughout the various areas of the PowerAuth protocol. The main components are algorithms for key agreement and algorithms for digital signatures.
 
 | Suite ID        | Status  | Description                                                                                                                                                |
 |-----------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `EC_P384_ML_L3` | Current | Hybrid PQC Level 3. ECDH (P-384) + ML-KEM-768. Secrets concatenated before KDF. Signatures: ECDSA (P-384, SHA-384) + ML-DSA-65. Targets NIST PQC Level 3.  |
-| `EC_P384_ML_L5` | Current | Hybrid PQC Level 5. ECDH (P-384) + ML-KEM-1024. Secrets concatenated before KDF. Signatures: ECDSA (P-384, SHA-384) + ML-DSA-87. Targets NIST PQC Level 5. |
-| `EC_P384`       | Current | Curve: NIST P-384 (`secp384r1`). Key Exchange: ECDH (P-384, SHA-3 KDF). Signatures: ECDSA (P-384, SHA-384). No PQC component.                              |
-| `ML_L3`         | Testing | PQC-only: ML-KEM-768 + ML-DSA-65.                                                                                                                          |
-| `ML_L5`         | Testing | PQC-only: ML-KEM-1024 + ML-DSA-87.                                                                                                                         |
-| `EC_P256`       | Legacy  | Curve: NIST P-256 (`secp256r1`). Key Exchange: ECDH (P-256). Signatures: ECDSA (P-256, SHA-256). Retained for 3.x compatibility only.                      |
+| `EC_P384_ML_L3` | Current | **Hybrid PQC Level 3**<ul><li>Key agreement: `ECDH (P-384) + ML-KEM-768`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-65`.</li></ul>Targets NIST PQC Level 3. |
+| `EC_P384_ML_L5` | Current | **Hybrid PQC Level 5**<ul><li>Key agreement: `ECDH (P-384) + ML-KEM-1024`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-87`</li></ul>Targets NIST PQC Level 5. |
+| `EC_P384`       | Current | **Curve: NIST P-384 (`secp384r1`)**<ul><li>Key agreement: `ECDH (P-384, SHA-3 KDF)`</li><li>Digital signatures: `ECDSA (P-384, SHA-384)`</li></ul>No PQC component. |
+| `ML_L3`         | Testing | **PQC-only Level 3**<ul><li>Key agreement: `ML-KEM-768`</li><li>Digital signatures: `ML-DSA-65`</li></ul>Targets NIST PQC Level 3. |
+| `ML_L5`         | Testing | **PQC-only Level 5**<ul><li>Key agreement: `ML-KEM-1024`</li><li>Digital signatures: `ML-DSA-87`</li></ul>Targets NIST PQC Level 5. |
+| `EC_P256`       | Legacy  | **Curve: NIST P-256 (`secp256r1`)**<ul><li>Key agreement: `ECDH (P-256)`</li><li>Digital signatures: `ECDSA (P-256, SHA-256)`</li></ul>Retained for 3.x compatibility only. |
 
 ## End‑to‑End Encryption
 
 ### AEAD (Authenticated Encryption with Associated Data)
-- **Encryption:** AES‑256 in CTR mode.
-- **Authentication:** KMAC‑256.
-- **Properties:** Confidentiality, integrity, authentication, replay protection, and crypto agility. Used uniformly across shared‑secret suites above except legacy suite `EC_P256` which uses the `ECIES` scheme.
+- **Encryption:** `AES‑256` in CTR mode.
+- **Authentication:** `KMAC‑256`.
+- **Properties:** Confidentiality, integrity, authentication, replay protection, and crypto agility. Used uniformly across shared‑secret suites above, except legacy suite `EC_P256`, which uses the `ECIES` scheme.
 
 ## Algorithm Selection & Negotiation
 - Clients and servers negotiate the shared secret suite (e.g., `EC_P384`, `EC_P384_ML_L3`, `EC_P384_ML_L5`) during capability exchange.
-- AEAD with AES‑256‑CTR + KMAC‑256 is used across 4.0 suites to streamline implementation.
+- `AEAD` with `AES‑256‑CTR + KMAC‑256` is used across 4.0 suites to streamline implementation.
 - Hybrid suites concatenate classical and PQC secrets before KDF.
 
 ## List of Used Algorithms
