@@ -31,17 +31,19 @@ public interface RequestResponseValidator<Req extends EncryptedRequest, Res exte
      * all required parameters are present in the request object.
      *
      * @param request Encrypted request object to validate.
+     * @param validateRequestData Whether request data should be validated.
      * @return true if object appears to contain valid data, otherwise false.
      */
-    boolean validateEncryptedRequest(Req request);
+    boolean validateEncryptedRequest(Req request, boolean validateRequestData);
 
     /**
      * Test whether encrypted response contains valid data. The function does a simple formal validation whether
      * all required parameters are present in the response object.
      *
      * @param response Encrypted response object to validate.
+     * @param validateResponseData Whether response data should be validated.
      * @return true if object appears to contain valid data, otherwise false.
      */
-    boolean validateEncryptedResponse(Res response);
+    boolean validateEncryptedResponse(Res response, boolean validateResponseData);
 
 }

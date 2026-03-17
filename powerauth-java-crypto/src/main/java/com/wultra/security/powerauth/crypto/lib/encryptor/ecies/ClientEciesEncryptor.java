@@ -181,7 +181,7 @@ public class ClientEciesEncryptor implements ClientEncryptor<EciesEncryptedReque
         }
 
         // Validate and decode response payload
-        if (!validator.validateEncryptedResponse(response)) {
+        if (!validator.validateEncryptedResponse(response, true)) {
             throw new EncryptorException("Invalid encrypted response object");
         }
 

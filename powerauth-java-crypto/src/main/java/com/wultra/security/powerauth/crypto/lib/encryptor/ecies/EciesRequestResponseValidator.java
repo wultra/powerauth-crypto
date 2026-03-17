@@ -64,11 +64,14 @@ public class EciesRequestResponseValidator implements RequestResponseValidator<E
     }
 
     @Override
-    public boolean validateEncryptedRequest(EciesEncryptedRequest request) {
+    public boolean validateEncryptedRequest(EciesEncryptedRequest request, boolean validateRequestData) {
         if (request == null) {
             return false;
         }
-        if (request.getEphemeralPublicKey() == null || request.getEncryptedData() == null || request.getMac() == null) {
+        if (request.getEphemeralPublicKey() == null) {
+            return false;
+        }
+        if (validateRequestData && (request.getEncryptedData() == null || request.getMac() == null)) {
             return false;
         }
         if (useTemporaryKeys == (request.getTemporaryKeyId() == null)) {
@@ -86,11 +89,11 @@ public class EciesRequestResponseValidator implements RequestResponseValidator<E
     }
 
     @Override
-    public boolean validateEncryptedResponse(EciesEncryptedResponse response) {
+    public boolean validateEncryptedResponse(EciesEncryptedResponse response, boolean validateResponseData) {
         if (response == null) {
             return false;
         }
-        if (response.getEncryptedData() == null || response.getMac() == null) {
+        if (validateResponseData && (response.getEncryptedData() == null || response.getMac() == null)) {
             return false;
         }
         if (useTimestamp) {
