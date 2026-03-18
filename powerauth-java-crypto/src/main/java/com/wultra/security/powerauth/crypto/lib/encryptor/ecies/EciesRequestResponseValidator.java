@@ -65,10 +65,18 @@ public class EciesRequestResponseValidator implements RequestResponseValidator<E
 
     @Override
     public boolean validateEncryptedRequest(EciesEncryptedRequest request) {
+        if (!validateEncryptedRequestWithoutData(request)) {
+            return false;
+        }
+        return request.getEncryptedData() != null && request.getMac() != null;
+    }
+
+    @Override
+    public boolean validateEncryptedRequestWithoutData(EciesEncryptedRequest request) {
         if (request == null) {
             return false;
         }
-        if (request.getEphemeralPublicKey() == null || request.getEncryptedData() == null || request.getMac() == null) {
+        if (request.getEphemeralPublicKey() == null) {
             return false;
         }
         if (useTemporaryKeys == (request.getTemporaryKeyId() == null)) {

@@ -386,6 +386,7 @@ public class GeneralEncryptorTest {
         request = copyRequest(validRequest);
         request.setEncryptedData(null);
         assertFalse(validator.validateEncryptedRequest(request));
+        assertTrue(validator.validateEncryptedRequestWithoutData(request));
         request = copyRequest(validRequest);
         request.setEphemeralPublicKey(null);
         assertFalse(validator.validateEncryptedRequest(request));
