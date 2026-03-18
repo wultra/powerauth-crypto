@@ -124,7 +124,7 @@ public class ServerAeadEncryptor implements ServerEncryptor<AeadEncryptedRequest
         if (!canDecryptRequest()) {
             throw new EncryptorException("Encryptor is not ready for request decryption");
         }
-        if (!validator.validateEncryptedRequest(request, true)) {
+        if (!validator.validateEncryptedRequest(request)) {
             throw new EncryptorException("Invalid encrypted request object.");
         }
         try {

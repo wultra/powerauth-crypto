@@ -164,7 +164,7 @@ public class ClientAeadEncryptor implements ClientEncryptor<AeadEncryptedRequest
         if (!canDecryptResponse()) {
             throw new EncryptorException("Encryptor is not ready for response decryption");
         }
-        if (!validator.validateEncryptedResponse(response, true)) {
+        if (!validator.validateEncryptedResponse(response)) {
             throw new EncryptorException("Invalid encrypted response object");
         }
         try {

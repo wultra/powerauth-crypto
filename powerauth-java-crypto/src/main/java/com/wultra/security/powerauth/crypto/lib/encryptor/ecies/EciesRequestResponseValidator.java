@@ -64,14 +64,14 @@ public class EciesRequestResponseValidator implements RequestResponseValidator<E
     }
 
     @Override
-    public boolean validateEncryptedRequest(EciesEncryptedRequest request, boolean validateRequestData) {
+    public boolean validateEncryptedRequest(EciesEncryptedRequest request) {
         if (request == null) {
             return false;
         }
         if (request.getEphemeralPublicKey() == null) {
             return false;
         }
-        if (validateRequestData && (request.getEncryptedData() == null || request.getMac() == null)) {
+        if (request.getEncryptedData() == null || request.getMac() == null) {
             return false;
         }
         if (useTemporaryKeys == (request.getTemporaryKeyId() == null)) {
@@ -89,11 +89,33 @@ public class EciesRequestResponseValidator implements RequestResponseValidator<E
     }
 
     @Override
-    public boolean validateEncryptedResponse(EciesEncryptedResponse response, boolean validateResponseData) {
+    public boolean validateEncryptedRequestWithoutData(EciesEncryptedRequest request) {
+        if (request == null) {
+            return false;
+        }
+        if (request.getEphemeralPublicKey() == null) {
+            return false;
+        }
+        if (useTemporaryKeys == (request.getTemporaryKeyId() == null)) {
+            return false;
+        }
+        if (useNonceForRequest == (request.getNonce() == null)) {
+            // Fails when nonce is missing in 3.1+
+            // Fails when nonce is present in 3.0
+            return false;
+        }
+        // Next statement return false when:
+        // - timestamp is missing in 3.2+
+        // - timestamp is present in 3.0 and 3.1
+        return useTimestamp == (request.getTimestamp() != null);
+    }
+
+    @Override
+    public boolean validateEncryptedResponse(EciesEncryptedResponse response) {
         if (response == null) {
             return false;
         }
-        if (validateResponseData && (response.getEncryptedData() == null || response.getMac() == null)) {
+        if (response.getEncryptedData() == null || response.getMac() == null) {
             return false;
         }
         if (useTimestamp) {

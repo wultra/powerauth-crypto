@@ -50,11 +50,11 @@ public class AeadRequestResponseValidator implements RequestResponseValidator<Ae
     }
 
     @Override
-    public boolean validateEncryptedRequest(AeadEncryptedRequest request, boolean validateRequestData) {
+    public boolean validateEncryptedRequest(AeadEncryptedRequest request) {
         if (request == null) {
             return false;
         }
-        if (validateRequestData && request.getEncryptedData() == null) {
+        if (request.getEncryptedData() == null) {
             return false;
         }
         if (request.getTemporaryKeyId() == null) {
@@ -67,11 +67,25 @@ public class AeadRequestResponseValidator implements RequestResponseValidator<Ae
     }
 
     @Override
-    public boolean validateEncryptedResponse(AeadEncryptedResponse response, boolean validateResponseData) {
+    public boolean validateEncryptedRequestWithoutData(AeadEncryptedRequest request) {
+        if (request == null) {
+            return false;
+        }
+        if (request.getTemporaryKeyId() == null) {
+            return false;
+        }
+        if (request.getNonce() == null) {
+            return false;
+        }
+        return request.getTimestamp() != null;
+    }
+
+    @Override
+    public boolean validateEncryptedResponse(AeadEncryptedResponse response) {
         if (response == null) {
             return false;
         }
-        if (validateResponseData && response.getEncryptedData() == null) {
+        if (response.getEncryptedData() == null) {
             return false;
         }
         return response.getTimestamp() != null;

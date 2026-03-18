@@ -173,7 +173,7 @@ public class GeneralEncryptorTest {
         assertTrue(serverEncryptor.canDecryptRequest());
         assertFalse(serverEncryptor.canEncryptResponse());
         // Decrypt request on server
-        assertTrue(validator.validateEncryptedRequest(request, true));
+        assertTrue(validator.validateEncryptedRequest(request));
         final byte[] requestDataDecrypted = serverEncryptor.decryptRequest(request);
         assertTrue(serverEncryptor.canDecryptRequest());
         assertTrue(serverEncryptor.canEncryptResponse());
@@ -186,7 +186,7 @@ public class GeneralEncryptorTest {
         dataValidator.validateResponse(response);
 
         // Decrypt response on client
-        assertTrue(validator.validateEncryptedResponse(response, true));
+        assertTrue(validator.validateEncryptedResponse(response));
         final byte[] responseDataDecrypted = clientEncryptor.decryptResponse(response);
         assertTrue(clientEncryptor.canEncryptRequest());
         assertFalse(clientEncryptor.canDecryptResponse());
@@ -378,71 +378,70 @@ public class GeneralEncryptorTest {
 
         // Test for invalid requests
 
-        assertTrue(validator.validateEncryptedRequest(validRequest, true));
+        assertTrue(validator.validateEncryptedRequest(validRequest));
 
         EciesEncryptedRequest request = copyRequest(validRequest);
         request.setMac(null);
-        assertFalse(validator.validateEncryptedRequest(request, true));
+        assertFalse(validator.validateEncryptedRequest(request));
         request = copyRequest(validRequest);
         request.setEncryptedData(null);
-        assertFalse(validator.validateEncryptedRequest(request, true));
-        assertTrue(validator.validateEncryptedRequest(request, false));
+        assertFalse(validator.validateEncryptedRequest(request));
+        assertTrue(validator.validateEncryptedRequestWithoutData(request));
         request = copyRequest(validRequest);
         request.setEphemeralPublicKey(null);
-        assertFalse(validator.validateEncryptedRequest(request, true));
+        assertFalse(validator.validateEncryptedRequest(request));
 
         if ("3.1".equals(version) || "3.2".equals(version) || "3.3".equals(version)) {
             request = copyRequest(validRequest);
             request.setNonce(null);
-            assertFalse(validator.validateEncryptedRequest(request, true));
+            assertFalse(validator.validateEncryptedRequest(request));
         }
         if ("3.2".equals(version) || "3.3".equals(version)) {
             request = copyRequest(validRequest);
             request.setTimestamp(null);
-            assertFalse(validator.validateEncryptedRequest(request, true));
+            assertFalse(validator.validateEncryptedRequest(request));
         }
         // Additional data in older protocols
         if ("3.0".equals(version)) {
             request = copyRequest(validRequest);
             request.setNonce("AAA");
-            assertFalse(validator.validateEncryptedRequest(request, true));
+            assertFalse(validator.validateEncryptedRequest(request));
             request = copyRequest(validRequest);
             request.setTimestamp(128L);
-            assertFalse(validator.validateEncryptedRequest(request, true));
+            assertFalse(validator.validateEncryptedRequest(request));
         }
         if ("3.1".equals(version)) {
             request = copyRequest(validRequest);
             request.setTimestamp(128L);
-            assertFalse(validator.validateEncryptedRequest(request, true));
+            assertFalse(validator.validateEncryptedRequest(request));
         }
 
         // Test for invalid responses
 
-        assertTrue(validator.validateEncryptedResponse(validResponse, true));
+        assertTrue(validator.validateEncryptedResponse(validResponse));
 
         EciesEncryptedResponse response = copyResponse(validResponse);
         response.setMac(null);
-        assertFalse(validator.validateEncryptedResponse(response, true));
+        assertFalse(validator.validateEncryptedResponse(response));
         response = copyResponse(validResponse);
         response.setEncryptedData(null);
-        assertFalse(validator.validateEncryptedResponse(response, true));
-        assertTrue(validator.validateEncryptedResponse(response, false));
+        assertFalse(validator.validateEncryptedResponse(response));
         if ("3.2".equals(version) || "3.3".equals(version)) {
             response = copyResponse(validResponse);
             response.setTimestamp(null);
-            assertFalse(validator.validateEncryptedResponse(response, true));
+            assertFalse(validator.validateEncryptedResponse(response));
             response = copyResponse(validResponse);
             response.setNonce(null);
-            assertFalse(validator.validateEncryptedResponse(response, true));
+            assertFalse(validator.validateEncryptedResponse(response));
         }
         // Additional data in older protocols
         if ("3.0".equals(version) || "3.1".equals(version)) {
             response = copyResponse(validResponse);
             response.setNonce("AAA");
-            assertFalse(validator.validateEncryptedResponse(response, true));
+            assertFalse(validator.validateEncryptedResponse(response));
             response = copyResponse(validResponse);
             response.setTimestamp(123L);
-            assertFalse(validator.validateEncryptedResponse(response, true));
+            assertFalse(validator.validateEncryptedResponse(response));
         }
     }
 

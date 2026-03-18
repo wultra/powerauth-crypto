@@ -154,7 +154,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
             throw new EncryptorException("Encryptor is not ready for request decryption.");
         }
         // Validate and decode request payload
-        if (!validator.validateEncryptedRequest(request, true)) {
+        if (!validator.validateEncryptedRequest(request)) {
             throw new EncryptorException("Invalid encrypted request object.");
         }
 
