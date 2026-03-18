@@ -65,27 +65,10 @@ public class EciesRequestResponseValidator implements RequestResponseValidator<E
 
     @Override
     public boolean validateEncryptedRequest(EciesEncryptedRequest request) {
-        if (request == null) {
+        if (!validateEncryptedRequestWithoutData(request)) {
             return false;
         }
-        if (request.getEphemeralPublicKey() == null) {
-            return false;
-        }
-        if (request.getEncryptedData() == null || request.getMac() == null) {
-            return false;
-        }
-        if (useTemporaryKeys == (request.getTemporaryKeyId() == null)) {
-            return false;
-        }
-        if (useNonceForRequest == (request.getNonce() == null)) {
-            // Fails when nonce is missing in 3.1+
-            // Fails when nonce is present in 3.0
-            return false;
-        }
-        // Next statement return false when:
-        // - timestamp is missing in 3.2+
-        // - timestamp is present in 3.0 and 3.1
-        return useTimestamp == (request.getTimestamp() != null);
+        return request.getEncryptedData() != null && request.getMac() != null;
     }
 
     @Override

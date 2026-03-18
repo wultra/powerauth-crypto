@@ -51,19 +51,10 @@ public class AeadRequestResponseValidator implements RequestResponseValidator<Ae
 
     @Override
     public boolean validateEncryptedRequest(AeadEncryptedRequest request) {
-        if (request == null) {
+        if (!validateEncryptedRequestWithoutData(request)) {
             return false;
         }
-        if (request.getEncryptedData() == null) {
-            return false;
-        }
-        if (request.getTemporaryKeyId() == null) {
-            return false;
-        }
-        if (request.getNonce() == null) {
-            return false;
-        }
-        return request.getTimestamp() != null;
+        return request.getEncryptedData() != null;
     }
 
     @Override
