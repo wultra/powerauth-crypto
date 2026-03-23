@@ -17,6 +17,11 @@
 
 package com.wultra.security.powerauth.crypto.lib.sdk;
 
+/**
+ * Exception that may be thrown on SDK configuration serialization or deserialization error.
+ *
+ * @author Jan Pesek, jan.pesek@wultra.com
+ */
 public class SdkConfigurationException extends Exception {
 
     public SdkConfigurationException() {
