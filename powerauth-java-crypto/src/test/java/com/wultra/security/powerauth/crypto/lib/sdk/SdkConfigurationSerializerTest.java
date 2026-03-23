@@ -17,10 +17,7 @@
 
 package com.wultra.security.powerauth.crypto.lib.sdk;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
-
-import java.security.Security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,7 +31,6 @@ class SdkConfigurationSerializerTest {
 
     @Test
     void testSerializeAndDeserialize() throws Exception {
-        Security.addProvider(new BouncyCastleProvider());
         final String appKey = "w4+hAeogFLTZjcSjPwbG2g==";
         final String appSecret = "Szls/7JWbKN+FAOijHcsPA==";
         final String masterPublicKeyP256 = "BEEOwljSgItBIAnzr3f7K36s+KKoUzC8LE+K+7Dy0X6iAkcPXAjLP1KKPxdqyM/iihHAcW5x/WzJPCbtytcJo2w=";

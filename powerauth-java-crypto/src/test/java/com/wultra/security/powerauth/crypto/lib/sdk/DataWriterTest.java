@@ -17,10 +17,10 @@
 
 package com.wultra.security.powerauth.crypto.lib.sdk;
 
-import org.bouncycastle.util.encoders.Base64;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +36,7 @@ class DataWriterTest {
     @Test
     void testCountWrite() {
         final String countsGeneratedBySdk = "AAF/gICA/4EAgQG//8AAQADAAP//wAEAAMD////BAAAAwQIDBNAgMED/////";
-        final DataReader reader = new DataReader(Base64.decode(countsGeneratedBySdk));
+        final DataReader reader = new DataReader(Base64.getDecoder().decode(countsGeneratedBySdk));
         final List<Integer> expectedCounts = new ArrayList<>();
         expectedCounts.add(0);
         expectedCounts.add(1);
