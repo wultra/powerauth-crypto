@@ -21,6 +21,7 @@ import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.generator.IdentifierGenerator;
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.server.activation.PowerAuthServerActivation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -57,7 +58,7 @@ public class PowerAuthActivationTest {
      * Test that the keys are correctly generated.
      */
     @Test
-    public void testGenerateKeys() throws CryptoProviderException {
+    public void testGenerateKeys() throws CryptoProviderException, GenericCryptoException {
         KeyGenerator keyGenerator = new KeyGenerator();
         KeyPair kp = keyGenerator.generateKeyPair(EcCurve.P256);
         System.out.println("Private Key: " + Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertPrivateKeyToBytes(kp.getPrivate())));

@@ -22,6 +22,9 @@ import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderEx
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.jce.spec.ECPrivateKeySpec;
+import org.bouncycastle.jce.spec.ECPublicKeySpec;
+import org.bouncycastle.math.ec.ECPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +34,7 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.security.spec.*;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * Key convertor for conversion of symmetric and asymmetric keys.
@@ -52,9 +55,10 @@ public class KeyConvertor {
      * @param publicKey An EC public key to be converted.
      * @return A byte array representation of the EC public key.
      * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     * @throws GenericCryptoException When public key is invalid.
      */
     @Deprecated
-    public byte[] convertPublicKeyToBytes(PublicKey publicKey) throws CryptoProviderException {
+    public byte[] convertPublicKeyToBytes(PublicKey publicKey) throws CryptoProviderException, GenericCryptoException {
         return convertPublicKeyToBytes(EcCurve.P256, publicKey);
     }
     
@@ -65,16 +69,24 @@ public class KeyConvertor {
      * @param publicKey An EC public key to be converted.
      * @return A byte array representation of the EC public key.
      * @throws CryptoProviderException When crypto provider is incorrectly initialized.
+     * @throws GenericCryptoException When public key is invalid.
      */
-    public byte[] convertPublicKeyToBytes(EcCurve curve, PublicKey publicKey) throws CryptoProviderException {
-        // Extract public key point
-        ECPoint ecPoint = ((ECPublicKey) publicKey).getW();
-        // Create EC point using Bouncy Castle library
-        ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
-        if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
-            throw new CryptoProviderException("Crypto provider does not support curve " + curve.getName());
+    public byte[] convertPublicKeyToBytes(EcCurve curve, PublicKey publicKey) throws CryptoProviderException, GenericCryptoException {
+        if (!(publicKey instanceof ECPublicKey ecPublicKey)) {
+            throw new GenericCryptoException("Public key to be converted is not an instance of ECPublicKey");
         }
-        org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().createPoint(ecPoint.getAffineX(), ecPoint.getAffineY());
+        // Extract public key point
+        final java.security.spec.ECPoint ecPoint = ecPublicKey.getW();
+        // Create EC point using Bouncy Castle library
+        final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
+        if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
+            throw new CryptoProviderException("Crypto provider does not support EC curve " + curve.getName());
+        }
+        if (!(ecPublicKey.getParams().getOrder().equals(ecSpec.getN()))) {
+            throw new GenericCryptoException("Public key EC curve order does not match EC curve order");
+        }
+        final ECPoint point = ecSpec.getCurve().createPoint(ecPoint.getAffineX(), ecPoint.getAffineY()).normalize();
+        publicKeyValidator.validate(ecSpec.getCurve(), point);
         // Extract byte[] uncompressed representation
         return point.getEncoded(false);
     }
@@ -111,23 +123,15 @@ public class KeyConvertor {
     public PublicKey convertBytesToPublicKey(EcCurve curve, byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException, GenericCryptoException {
         try {
             // Decode EC point using Bouncy Castle and extract its coordinates
-            ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
+            final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
             if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
-                throw new CryptoProviderException("Crypto provider does not support the curve " + curve.getName());
+                throw new CryptoProviderException("Crypto provider does not support EC curve " + curve.getName());
             }
-            org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().decodePoint(keyBytes);
+            final ECPoint point = ecSpec.getCurve().decodePoint(keyBytes).normalize();
             publicKeyValidator.validate(ecSpec.getCurve(), point);
-
-            BigInteger x = point.getAffineXCoord().toBigInteger();
-            BigInteger y = point.getAffineYCoord().toBigInteger();
-
-            // Generate public key using Java security API
-            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            parameters.init(new ECGenParameterSpec(curve.getName()));
-            ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
-            ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
-            return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(ecPublicKeySpec);
-        } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
+            final ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
+            return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(pubSpec);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (IllegalArgumentException ex) {
@@ -172,19 +176,13 @@ public class KeyConvertor {
             // Validate the point is correct
             final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
             if (ecSpec == null) { // can happen with incorrectly initialized crypto provider.
-                throw new CryptoProviderException("Crypto provider does not support the curve " + curve.getName());
+                throw new CryptoProviderException("Crypto provider does not support EC curve " + curve.getName());
             }
-            final org.bouncycastle.math.ec.ECPoint point = ecSpec.getCurve().createPoint(x, y);
+            final ECPoint point = ecSpec.getCurve().createPoint(x, y).normalize();
             publicKeyValidator.validate(ecSpec.getCurve(), point);
-
-            // Generate public key using Java security API
-            final AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            parameters.init(new ECGenParameterSpec(curve.getName()));
-            final ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
-
-            final ECPublicKeySpec ecPublicKeySpec = new ECPublicKeySpec(new ECPoint(x, y), ecParameterSpec);
-            return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(ecPublicKeySpec);
-        } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
+            final ECPublicKeySpec pubSpec = new ECPublicKeySpec(point, ecSpec);
+            return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePublic(pubSpec);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         } catch (IllegalArgumentException ex) {
@@ -197,10 +195,15 @@ public class KeyConvertor {
      *
      * @param privateKey An EC private key to be converted to bytes.
      * @return A byte array containing the representation of the EC private key.
+     * @throws GenericCryptoException When private key is invalid.
      */
-    public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) {
+    public byte[] convertPrivateKeyToBytes(PrivateKey privateKey) throws GenericCryptoException {
+        if (!(privateKey instanceof ECPrivateKey ecPrivateKey)) {
+            throw new GenericCryptoException("Private key to be converted is not an instance of ECPrivateKey");
+        }
+
         // Private key is stored including the sign bit as regular Java BigInteger representation
-        return ((ECPrivateKey) privateKey).getS().toByteArray();
+        return ecPrivateKey.getS().toByteArray();
     }
 
     /**
@@ -230,13 +233,10 @@ public class KeyConvertor {
      */
     public PrivateKey convertBytesToPrivateKey(EcCurve curve, byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
         try {
-            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
-            parameters.init(new ECGenParameterSpec(curve.getName()));
-            ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
-            // Private key is stored including the sign bit as regular Java BigInteger representation
-            ECPrivateKeySpec ecPrivateKeySpec = new ECPrivateKeySpec(new BigInteger(keyBytes), ecParameterSpec);
+            final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
+            final ECPrivateKeySpec ecPrivateKeySpec = new ECPrivateKeySpec(new BigInteger(keyBytes), ecSpec);
             return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePrivate(ecPrivateKeySpec);
-        } catch (NoSuchAlgorithmException | InvalidParameterSpecException | NoSuchProviderException ex) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
             logger.warn(ex.getMessage(), ex);
             throw new CryptoProviderException(ex.getMessage(), ex);
         }
