@@ -234,6 +234,9 @@ public class KeyConvertor {
     public PrivateKey convertBytesToPrivateKey(EcCurve curve, byte[] keyBytes) throws InvalidKeySpecException, CryptoProviderException {
         try {
             final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve.getName());
+            if (ecSpec == null) {
+                throw new CryptoProviderException("Crypto provider does not support EC curve " + curve.getName());
+            }
             final ECPrivateKeySpec ecPrivateKeySpec = new ECPrivateKeySpec(new BigInteger(keyBytes), ecSpec);
             return KeyFactory.getInstance("EC", PowerAuthConfiguration.CRYPTO_PROVIDER_NAME).generatePrivate(ecPrivateKeySpec);
         } catch (NoSuchAlgorithmException | NoSuchProviderException ex) {
