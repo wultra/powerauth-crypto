@@ -83,7 +83,7 @@ public class KeyConvertor {
             throw new CryptoProviderException("Crypto provider does not support EC curve " + curve.getName());
         }
         if (!(ecPublicKey.getParams().getOrder().equals(ecSpec.getN()))) {
-            throw new GenericCryptoException("Public key EC curve order does not match EC curve order");
+            throw new GenericCryptoException("EC curve has unexpected order");
         }
         final ECPoint point = ecSpec.getCurve().createPoint(ecPoint.getAffineX(), ecPoint.getAffineY()).normalize();
         publicKeyValidator.validate(ecSpec.getCurve(), point);
