@@ -8,12 +8,12 @@ The **Cryptographic Algorithm Suite** is a collection of specific cryptographic 
 
 | Suite ID        | Status  | Description                                                                                                                                                |
 |-----------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `EC_P384_ML_L3` | Current | **Hybrid PQC Level 3** <ul><li>Key agreement: `ECDH (P-384) + ML-KEM-768`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-65`</li></ul>Targets NIST PQC Level 3. |
-| `EC_P384_ML_L5` | Current | **Hybrid PQC Level 5** <ul><li>Key agreement: `ECDH (P-384) + ML-KEM-1024`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-87`</li></ul>Targets NIST PQC Level 5. |
-| `EC_P384`       | Current | **Curve: NIST P-384 (`secp384r1`)** <ul><li>Key agreement: `ECDH (P-384, SHA-3 KDF)`</li><li>Digital signatures: `ECDSA (P-384, SHA-384)`</li></ul>No PQC component. |
-| `ML_L3`         | Testing | **PQC-only Level 3** <ul><li>Key agreement: `ML-KEM-768`</li><li>Digital signatures: `ML-DSA-65`</li></ul>Targets NIST PQC Level 3. |
-| `ML_L5`         | Testing | **PQC-only Level 5** <ul><li>Key agreement: `ML-KEM-1024`</li><li>Digital signatures: `ML-DSA-87`</li></ul>Targets NIST PQC Level 5. |
-| `EC_P256`       | Legacy  | **Curve: NIST P-256 (`secp256r1`)** <ul><li>Key agreement: `ECDH (P-256)`</li><li>Digital signatures: `ECDSA (P-256, SHA-256)`</li></ul>Retained for 3.x compatibility only. |
+| `EC_P384_ML_L3` | Current | {::nomarkdown}**Hybrid PQC Level 3** <ul><li>Key agreement: `ECDH (P-384) + ML-KEM-768`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-65`</li></ul>Targets NIST PQC Level 3.{:/} |
+| `EC_P384_ML_L5` | Current | {::nomarkdown}**Hybrid PQC Level 5** <ul><li>Key agreement: `ECDH (P-384) + ML-KEM-1024`. Secrets concatenated before KDF.</li><li>Digital signatures: `ECDSA (P-384, SHA-384) + ML-DSA-87`</li></ul>Targets NIST PQC Level 5.{:/} |
+| `EC_P384`       | Current | {::nomarkdown}**Curve: NIST P-384 (`secp384r1`)** <ul><li>Key agreement: `ECDH (P-384, SHA-3 KDF)`</li><li>Digital signatures: `ECDSA (P-384, SHA-384)`</li></ul>No PQC component.{:/} |
+| `ML_L3`         | Testing | {::nomarkdown}**PQC-only Level 3** <ul><li>Key agreement: `ML-KEM-768`</li><li>Digital signatures: `ML-DSA-65`</li></ul>Targets NIST PQC Level 3.{:/} |
+| `ML_L5`         | Testing | {::nomarkdown}**PQC-only Level 5** <ul><li>Key agreement: `ML-KEM-1024`</li><li>Digital signatures: `ML-DSA-87`</li></ul>Targets NIST PQC Level 5.{:/} |
+| `EC_P256`       | Legacy  | {::nomarkdown}**Curve: NIST P-256 (`secp256r1`)** <ul><li>Key agreement: `ECDH (P-256)`</li><li>Digital signatures: `ECDSA (P-256, SHA-256)`</li></ul>Retained for 3.x compatibility only.{:/} |
 
 ## End‑to‑End Encryption
 
@@ -37,7 +37,7 @@ The **Cryptographic Algorithm Suite** is a collection of specific cryptographic 
 
 | Algorithm            | Impacts        | Note                                                                                                                                                                        |
 |----------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `AEAD`               | mobile, server | Symmetric encryption in AEAD scheme using AES with 256 bit keys. CTR mode is used for encryption, integrity guaranteed via KMAC‑256.                                        |
+| `AEAD`               | mobile, server | Symmetric encryption in AEAD scheme using AES with 256-bit keys. CTR mode is used for encryption, integrity guaranteed via KMAC‑256.                                        |
 | `KMAC-256`           | mobile, server | Message authentication and AEAD tag, also used in KDF constructions and factor keys: Possession, Knowledge, Biometry. On mobile, KMAC-256 is used for PIN-to-ke derivation. |
 | `ECDH P-384`         | mobile, server | Key agreement for classical part of hybrid and for EC_P384 suite on curve `secp384r1`.                                                                                      |
 | `ECDSA P-384`        | mobile, server | Asymmetric signatures based on ECDSA with SHA‑384 on curve `secp384r1`.                                                                                                     |
@@ -60,10 +60,10 @@ The **Cryptographic Algorithm Suite** is a collection of specific cryptographic 
 | `ECDSA`       | mobile, server | Asymmetric signatures based on ECC, with `secp256r1` curve and `SHA256` hash function (`SHA256withECDSA`).                                                                                                                                                |
 | `ECIES`       | mobile, server | Asymmetric encryption scheme based on ECC, with `secp256r1` and `X9.63` (`SHA256`) KDF function.                                                                                                                                                          |
 | `HMAC-SHA256` | mobile, server | MAC algorithm with `SHA256` as underlying has function. Used in various situations across the protocol.                                                                                                                                                   |
-| `HMAC-SHA512` | server         | MAC algorithm with `SHA512` as underlying has function. Currently only used when validating TOTP in proximity OTP feature.                                                                                                                                |
-| `PBKDF2`      | mobile         | Derivation function, used with `HMAC-SHA1` algorithm (`PBKDF2WithHmacSHA1`) and 10 000 iterations. _Note: Used exclusively for deriving a symmetric encryption key from PIN code on a mobile device, and hence strength of the algorithm is unimportant._ |
+| `HMAC-SHA512` | server         | MAC algorithm with `SHA512` as underlying has function. Currently, it is only used when validating TOTP in the proximity OTP feature.                                                                                                                                |
+| `PBKDF2`      | mobile         | Derivation function, used with `HMAC-SHA1` algorithm (`PBKDF2WithHmacSHA1`) and 10 000 iterations. _Note: Used exclusively for deriving a symmetric encryption key from PIN code on a mobile device, and hence the strength of the algorithm is unimportant._ |
 | `SHA256`      | mobile, server | Hash function. Used in various situations across the protocol.                                                                                                                                                                                            |
-| `X9.63`       | mobile, server | Key derivation function with `SHA256`. Used for deriving keys with random index.                                                                                                                                                                          |
+| `X9.63`       | mobile, server | Key derivation function with `SHA256`. Used for deriving keys with a random index.                                                                                                                                                                        |
 
 #### Algorithm Providers
 - **Server‑Side:** [Bouncy Castle](https://www.bouncycastle.org/)
