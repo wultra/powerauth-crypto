@@ -24,17 +24,33 @@ package com.wultra.security.powerauth.crypto.lib.sdk;
  */
 public class SdkConfigurationException extends Exception {
 
+    /**
+     * Constructs a new exception with {@code null} as its detail message and cause.
+     */
     public SdkConfigurationException() {
     }
 
+    /**
+     * Constructs a new exception with the specified detail message and {@code null} cause.
+     * @param message the detail message.
+     */
     public SdkConfigurationException(final String message) {
         super(message);
     }
 
+    /**
+     * Constructs a new exception with the specified detail message and cause.
+     * @param message the detail message.
+     * @param cause the cause.
+     */
     public SdkConfigurationException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Constructs a new exception with the specified cause.
+     * @param cause the cause.
+     */
     public SdkConfigurationException(final Throwable cause) {
         super(cause);
     }
