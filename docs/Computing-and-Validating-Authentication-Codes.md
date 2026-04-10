@@ -72,21 +72,13 @@ The biometry factor can be added or removed using the [dynamic factor keys](./Dy
 
 ## Computing the authentication code
 
-PowerAuth authentication code is in principle multi-factor. It uses factor keys as derived above. The authentication code may include one, two or three factors, therefore achieving 1FA, 2FA or 3FA. In order to determine the type of the authentication code, following constants are used:
+PowerAuth authentication code is in principle multifactor. It uses factor keys as derived above. The authentication code may include one or two factors, therefore achieving 1FA or 2FA. In order to determine the type of the authentication code, following constants are used:
 
 - **1FA** - only a single factor is used
 	- `possession` - Authentication code uses only possession related key `KEY_AUTHENTICATION_CODE_POSSESSION`.
-	- `knowledge` - Authentication code uses only knowledge related key `KEY_AUTHENTICATION_CODE_KNOWLEDGE`.
-	- `biometry` - Authentication code uses only biometry related key `KEY_AUTHENTICATION_CODE_BIOMETRY`.
 - **2FA** - possession and one another factor is used
 	- `possession_knowledge` - Authentication code uses two keys: a possession related key `KEY_AUTHENTICATION_CODE_POSSESSION` and then knowledge related key `KEY_AUTHENTICATION_CODE_KNOWLEDGE`.
 	- `possession_biometry` - Authentication code uses two keys: a possession related key `KEY_AUTHENTICATION_CODE_POSSESSION` and then biometry related key `KEY_AUTHENTICATION_CODE_BIOMETRY`.
-- **3FA** - all three factors are used
-	- `possession_knowledge_biometry` - Authentication code uses three keys: a possession related key `KEY_AUTHENTICATION_CODE_POSSESSION`, then knowledge related key `KEY_AUTHENTICATION_CODE_KNOWLEDGE`, and finally biometry related key `KEY_AUTHENTICATION_CODE_BIOMETRY`.
-
-<!-- begin box info -->
-While all values are possible to use, only the values `possession`, `possession_knowledge` and `possession_biometry` are used in any practical setup.
-<!-- end -->
 
 When using more than one factor key, the keys are added additively in the authentication algorithm, so that the factors can be validated individually. The resulting PowerAuth authentication code can be then represented in two different formats:
 
