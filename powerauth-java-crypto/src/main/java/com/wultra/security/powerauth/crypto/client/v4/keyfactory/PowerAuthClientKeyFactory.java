@@ -59,19 +59,11 @@ public class PowerAuthClientKeyFactory {
         }
         if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
             factorKeys.add(possessionFactorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.KNOWLEDGE)) {
-            factorKeys.add(knowledgeFactorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.BIOMETRY)) {
-            factorKeys.add(biometryFactorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
             factorKeys.add(possessionFactorKey);
             factorKeys.add(knowledgeFactorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
             factorKeys.add(possessionFactorKey);
-            factorKeys.add(biometryFactorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
-            factorKeys.add(possessionFactorKey);
-            factorKeys.add(knowledgeFactorKey);
             factorKeys.add(biometryFactorKey);
         }
         return factorKeys;
@@ -98,12 +90,6 @@ public class PowerAuthClientKeyFactory {
         if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
             final SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.KNOWLEDGE)) {
-            final SecretKey factorKey = generateKnowledgeFactorKey(keyActivationSecret);
-            factorKeys.add(factorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.BIOMETRY)) {
-            final SecretKey factorKey = generateBiometryFactorKey(keyActivationSecret);
-            factorKeys.add(factorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
             SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
@@ -111,13 +97,6 @@ public class PowerAuthClientKeyFactory {
             factorKeys.add(factorKey);
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
             SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
-            factorKeys.add(factorKey);
-            factorKey = generateBiometryFactorKey(keyActivationSecret);
-            factorKeys.add(factorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
-            SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
-            factorKeys.add(factorKey);
-            factorKey = generateKnowledgeFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
             factorKey = generateBiometryFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);

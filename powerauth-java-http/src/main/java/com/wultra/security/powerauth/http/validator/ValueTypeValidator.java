@@ -53,9 +53,7 @@ public class ValueTypeValidator {
      * Admissible authentication code types in the header.
      */
     private static final Set<String> EXPECTED_AUTH_CODE_TYPES = new HashSet<>(Arrays.asList(
-            "possession", "knowledge", "biometry",
-            "possession_knowledge", "possession_biometry",
-            "possession_knowledge_biometry"
+            "possession", "possession_knowledge", "possession_biometry"
     ));
 
     /**

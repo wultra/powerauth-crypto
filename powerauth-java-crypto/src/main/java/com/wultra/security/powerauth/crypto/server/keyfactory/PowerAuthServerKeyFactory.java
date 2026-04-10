@@ -80,16 +80,6 @@ public class PowerAuthServerKeyFactory {
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.KNOWLEDGE)) {
-
-            SecretKey factorKey = generateServerKnowledgeFactorKey(masterSecretKey);
-            factorKeys.add(factorKey);
-
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.BIOMETRY)) {
-
-            SecretKey factorKey = generateServerBiometryFactorKey(masterSecretKey);
-            factorKeys.add(factorKey);
-
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
@@ -100,15 +90,6 @@ public class PowerAuthServerKeyFactory {
         } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
-            factorKeys.add(factorKey);
-            factorKey = generateServerBiometryFactorKey(masterSecretKey);
-            factorKeys.add(factorKey);
-
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE_BIOMETRY)) {
-
-            SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
-            factorKeys.add(factorKey);
-            factorKey = generateServerKnowledgeFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
             factorKey = generateServerBiometryFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
