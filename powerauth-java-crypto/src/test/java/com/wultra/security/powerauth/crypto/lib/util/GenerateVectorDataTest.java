@@ -262,7 +262,7 @@ public class GenerateVectorDataTest {
     @Test
     public void testAuthenticationCodeValidationV3() throws Exception {
 
-        TestSet testSet = new TestSet("authentication-v3.json", "Client must be able to compute PowerAuth authentication code (using 1FA, 2FA, 3FA factor keys) based on given data, counter and authentication code type");
+        TestSet testSet = new TestSet("authentication-v3.json", "Client must be able to compute PowerAuth authentication code (using 1FA, 2FA factor keys) based on given data, counter and authentication code type");
 
         int max = 5;
         int keyMax = 2;
@@ -340,27 +340,6 @@ public class GenerateVectorDataTest {
                     ctrData = hashBasedCounter.next(ctrData);
                 }
 
-                for (int k = 0; k < validationCount; k++) {
-
-                    // generate random data
-                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
-
-                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionKey, knowledgeKey, biometryKey), ctrData, authenticationCodeConfiguration);
-                    String authenticationCodeType = "possession_knowledge_biometry";
-
-                    Map<String, String> input = new LinkedHashMap<>();
-                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionKey)));
-                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeKey)));
-                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryKey)));
-                    input.put("authenticationCodeType", authenticationCodeType);
-                    input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
-                    input.put("data", Base64.getEncoder().encodeToString(data));
-                    Map<String, String> output = new LinkedHashMap<>();
-                    output.put("authenticationCode", authenticationCode);
-                    testSet.addData(input, output);
-
-                    ctrData = hashBasedCounter.next(ctrData);
-                }
             }
         }
         writeTestVector(testSet);
@@ -380,7 +359,7 @@ public class GenerateVectorDataTest {
     @Test
     public void testAuthenticationCodeValidationV31Plus() throws Exception {
 
-        TestSet testSet = new TestSet("authentication-v31.json", "Client must be able to compute PowerAuth authentication code (using 1FA, 2FA, 3FA factor keys) based on given data, counter and authentication code type");
+        TestSet testSet = new TestSet("authentication-v31.json", "Client must be able to compute PowerAuth authentication code (using 1FA, 2FA factor keys) based on given data, counter and authentication code type");
 
         int max = 5;
         int keyMax = 2;
@@ -458,27 +437,6 @@ public class GenerateVectorDataTest {
                     ctrData = hashBasedCounter.next(ctrData);
                 }
 
-                for (int k = 0; k < validationCount; k++) {
-
-                    // generate random data
-                    byte[] data = keyGenerator.generateRandomBytes((int) (Math.random() * dataMax));
-
-                    String authenticationCode = clientAuth.computeAuthCode(data, Arrays.asList(possessionFactorKey, knowledgeFactorKey, biometryFactorKey), ctrData, authenticationCodeConfiguration);
-                    String authenticationCodeType = "possession_knowledge_biometry";
-
-                    Map<String, String> input = new LinkedHashMap<>();
-                    input.put("possessionFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(possessionFactorKey)));
-                    input.put("knowledgeFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(knowledgeFactorKey)));
-                    input.put("biometryFactorKey", Base64.getEncoder().encodeToString(KEY_CONVERTOR.convertSharedSecretKeyToBytes(biometryFactorKey)));
-                    input.put("authenticationCodeType", authenticationCodeType);
-                    input.put("counterData", Base64.getEncoder().encodeToString(ctrData));
-                    input.put("data", Base64.getEncoder().encodeToString(data));
-                    Map<String, String> output = new LinkedHashMap<>();
-                    output.put("authenticationCode", authenticationCode);
-                    testSet.addData(input, output);
-
-                    ctrData = hashBasedCounter.next(ctrData);
-                }
             }
         }
         writeTestVector(testSet);
