@@ -54,7 +54,7 @@ public enum SharedSecretAlgorithm {
     ML_L3,
 
     /**
-     * ML with level 3 (ML-KEM-1024 / ML-DSA-87), testing only.
+     * ML with level 5 (ML-KEM-1024 / ML-DSA-87), testing only.
      */
     ML_L5;
 
