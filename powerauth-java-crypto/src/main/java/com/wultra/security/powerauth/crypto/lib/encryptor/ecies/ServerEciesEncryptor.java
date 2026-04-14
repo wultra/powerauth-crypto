@@ -32,7 +32,6 @@ import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderEx
 import com.wultra.security.powerauth.crypto.lib.util.EciesUtils;
 import com.wultra.security.powerauth.crypto.lib.util.SideChannelUtils;
 
-import java.util.Arrays;
 import java.util.Base64;
 
 /**
