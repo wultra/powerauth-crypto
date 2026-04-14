@@ -75,19 +75,19 @@ public class PowerAuthServerKeyFactory {
             return factorKeys;
         }
 
-        if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
+        if (powerAuthCodeType == PowerAuthCodeType.POSSESSION) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_KNOWLEDGE) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
             factorKey = generateServerKnowledgeFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_BIOMETRY) {
 
             SecretKey factorKey = generateServerPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);

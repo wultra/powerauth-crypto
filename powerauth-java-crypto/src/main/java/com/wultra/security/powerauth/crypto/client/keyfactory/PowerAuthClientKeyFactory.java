@@ -62,16 +62,16 @@ public class PowerAuthClientKeyFactory {
             return factorKeys;
         }
 
-        if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
+        if (powerAuthCodeType == PowerAuthCodeType.POSSESSION) {
 
             factorKeys.add(possessionFactorKey);
 
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_KNOWLEDGE) {
 
             factorKeys.add(possessionFactorKey);
             factorKeys.add(knowledgeFactorKey);
 
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_BIOMETRY) {
 
             factorKeys.add(possessionFactorKey);
             factorKeys.add(biometryFactorKey);
@@ -97,19 +97,19 @@ public class PowerAuthClientKeyFactory {
 
         List<SecretKey> factorKeys = new ArrayList<>();
 
-        if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
+        if (powerAuthCodeType == PowerAuthCodeType.POSSESSION) {
 
             SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_KNOWLEDGE) {
 
             SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
             factorKey = generateClientKnowledgeFactorKey(masterSecretKey);
             factorKeys.add(factorKey);
 
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_BIOMETRY) {
 
             SecretKey factorKey = generateClientPossessionFactorKey(masterSecretKey);
             factorKeys.add(factorKey);

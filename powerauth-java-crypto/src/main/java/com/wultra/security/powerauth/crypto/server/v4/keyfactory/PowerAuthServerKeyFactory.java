@@ -59,12 +59,12 @@ public class PowerAuthServerKeyFactory {
         if (powerAuthCodeType == null) {
             return factorKeys;
         }
-        if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
+        if (powerAuthCodeType == PowerAuthCodeType.POSSESSION) {
             factorKeys.add(possessionFactorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_KNOWLEDGE) {
             factorKeys.add(possessionFactorKey);
             factorKeys.add(knowledgeFactorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_BIOMETRY) {
             factorKeys.add(possessionFactorKey);
             factorKeys.add(biometryFactorKey);
         }
@@ -89,15 +89,15 @@ public class PowerAuthServerKeyFactory {
      */
     public List<SecretKey> keysForAuthenticationCodeType(PowerAuthCodeType powerAuthCodeType, SecretKey keyActivationSecret) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
         final List<SecretKey> factorKeys = new ArrayList<>();
-        if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION)) {
+        if (powerAuthCodeType == PowerAuthCodeType.POSSESSION) {
             final SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_KNOWLEDGE)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_KNOWLEDGE) {
             SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
             factorKey = generateKnowledgeFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
-        } else if (powerAuthCodeType.equals(PowerAuthCodeType.POSSESSION_BIOMETRY)) {
+        } else if (powerAuthCodeType == PowerAuthCodeType.POSSESSION_BIOMETRY) {
             SecretKey factorKey = generatePossessionFactorKey(keyActivationSecret);
             factorKeys.add(factorKey);
             factorKey = generateBiometryFactorKey(keyActivationSecret);
