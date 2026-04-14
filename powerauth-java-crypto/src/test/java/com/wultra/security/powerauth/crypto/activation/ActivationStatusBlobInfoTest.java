@@ -212,4 +212,17 @@ public class ActivationStatusBlobInfoTest {
         assertTrue(statusBlobDecoded.isValid());
     }
 
+    @Test
+    public void testActivationStatusBlobV4_Missing() {
+        final com.wultra.security.powerauth.crypto.client.v4.activation.PowerAuthClientActivation clientActivation = new com.wultra.security.powerauth.crypto.client.v4.activation.PowerAuthClientActivation();
+        assertThrows(GenericCryptoException.class, () -> clientActivation.getStatusFromBlob(null));
+    }
+
+    @Test
+    public void testActivationStatusBlobV4_Invalid() {
+        final com.wultra.security.powerauth.crypto.client.v4.activation.PowerAuthClientActivation clientActivation = new com.wultra.security.powerauth.crypto.client.v4.activation.PowerAuthClientActivation();
+        assertThrows(GenericCryptoException.class, () -> clientActivation.getStatusFromBlob(new byte[32]));
+    }
+
+
 }
