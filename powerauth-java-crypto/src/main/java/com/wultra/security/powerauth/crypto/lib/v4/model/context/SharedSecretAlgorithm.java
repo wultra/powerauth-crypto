@@ -88,8 +88,8 @@ public enum SharedSecretAlgorithm {
      */
     public MLDSAParameterSpec getMlDsaParameterSpec() {
         return switch (this) {
-            case EC_P384_ML_L3 -> MLDSAParameterSpec.ml_dsa_65;
-            case EC_P384_ML_L5 -> MLDSAParameterSpec.ml_dsa_87;
+            case EC_P384_ML_L3, ML_L3 -> MLDSAParameterSpec.ml_dsa_65;
+            case EC_P384_ML_L5, ML_L5 -> MLDSAParameterSpec.ml_dsa_87;
             default -> null;
         };
     }
