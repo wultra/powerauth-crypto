@@ -42,7 +42,7 @@ public class ValueTypeValidator {
     /**
      * Regexp for validating decimalized authentication code values.
      */
-    private static final String AUTH_CODE_REGEX = "^[0-9]{8}(-[0-9]{8}){0,2}$";
+    private static final String AUTH_CODE_REGEX = "^[0-9]{8}(-[0-9]{8}){0,1}$";
 
     /**
      * Regexp for validating decimal strings.
@@ -136,17 +136,17 @@ public class ValueTypeValidator {
                 }
                 case V31, V32, V33 -> {
                     // "3.1" and later authentication code uses "BASE64" format with 16-byte component size.
-                    // Valid encoded lengths: 24, 44, 64 (decoded: 16, 32, 48 bytes)
-                    if (length == 24 || length == 44 || length == 64) {
-                        return isValidBase64OfLengthRange(authCode, 16, 48);
+                    // Valid encoded lengths: 24, 44 (decoded: 16, 32 bytes)
+                    if (length == 24 || length == 44) {
+                        return isValidBase64OfLengthRange(authCode, 16, 32);
                     }
                     return false;
                 }
                 case V40 -> {
                     // "4.0" authentication code uses "BASE64" format with 32-byte component size.
-                    // Valid encoded lengths: 44, 88, 128 (decoded: 32, 64, 96 bytes)
-                    if (length == 44 || length == 88 || length == 128) {
-                        return isValidBase64OfLengthRange(authCode, 32, 96);
+                    // Valid encoded lengths: 44, 88 (decoded: 32, 64 bytes)
+                    if (length == 44 || length == 88) {
+                        return isValidBase64OfLengthRange(authCode, 32, 64);
                     }
                     return false;
                 }

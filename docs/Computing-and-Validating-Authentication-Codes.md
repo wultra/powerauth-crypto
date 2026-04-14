@@ -82,7 +82,7 @@ PowerAuth authentication code is in principle multifactor. It uses factor keys a
 
 When using more than one factor key, the keys are added additively in the authentication algorithm, so that the factors can be validated individually. The resulting PowerAuth authentication code can be then represented in two different formats:
 
-1. For online validation, the PowerAuth authentication code is one Base64 string. The length depends on the number of factors involved in the calculation (32, 64 or 96 bytes encoded in Base64).
+1. For online validation, the PowerAuth authentication code is one Base64 string. The length depends on the number of factors involved in the calculation (32 or 64 bytes encoded in Base64).
 1. For offline validation purposes, the PowerAuth authentication code is a sequence of one to three numeric strings with configurable amount of digits, each sequence is separated by "-" character.
 
 Both formats share the same core algorithm to calculate the authentication code components:
@@ -205,7 +205,7 @@ byte[] CTR_DATA_next = Hash.sha3_256(CTR_DATA);
 
 ### Loop Unrolling
 
-The following examples explain how multi-factor authentication code components are derived from factor keys in the protocol. The core idea is that each additional factor extends a KMAC-based derivation chain, where `CTR_DATA` is always part of the input and `||` denotes byte concatenation. For 1F, the derived key is computed directly from `CTR_DATA` using factor 0 and then used to compute the MAC over request data. For 2F and 3F, the derivation becomes nested, so that factor 1 depends on the result of factor 0, and factor 2 depends on the result of factor 1 (which already includes factor 0). This chaining binds factors together in a deterministic order and ensures that the resulting authentication code cannot be computed or validated correctly unless all required factors are available.
+The following examples explain how multifactor authentication code components are derived from factor keys in the protocol. The core idea is that each additional factor extends a KMAC-based derivation chain, where `CTR_DATA` is always part of the input and `||` denotes byte concatenation. For 1F, the derived key is computed directly from `CTR_DATA` using factor 0 and then used to compute the MAC over request data. For 2F the derivation becomes nested, so that factor 1 depends on the result of factor 0. This chaining binds factors together in a deterministic order and ensures that the resulting authentication code cannot be computed or validated correctly unless all required factors are available.
 
 #### 1F component
 
@@ -225,18 +225,6 @@ DERIVED_KEY = KMAC(key: FACTOR_KEYS[1],
                               data: CTR_DATA))
 
 MAC = KMAC(key: DERIVED_KEY, data: DATA)
-```
-
-#### 3F component
-
-```
-DERIVED_KEY = KMAC(key: FACTOR_KEYS[2], 
-                   data: CTR_DATA ||
-                         KMAC(key: FACTOR_KEYS[1],
-                              data: CTR_DATA || 
-                                    KMAC(key: FACTOR_KEYS[0],
-                                         data: CTR_DATA)))
-MAC = KMAC(key: DERIVED_KEY, data: DATA)    
 ```
 
 ## Validating the authentication code
