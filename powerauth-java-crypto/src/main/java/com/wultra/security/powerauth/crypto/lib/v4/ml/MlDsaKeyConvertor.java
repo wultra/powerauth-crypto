@@ -44,7 +44,7 @@ public class MlDsaKeyConvertor implements PqcDsaKeyConvertor {
      * Constructs convertor for ML-DSA algorithm.
      */
     public MlDsaKeyConvertor() {
-        this("MLDSA");
+        this("ML-DSA");
     }
 
     /**
