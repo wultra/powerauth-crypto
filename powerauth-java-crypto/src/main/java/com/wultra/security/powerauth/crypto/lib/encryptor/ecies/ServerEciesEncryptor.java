@@ -196,7 +196,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
         final byte[] plaintext = eciesDecryptor.decrypt(eciesPayload);
         // Keep envelope key and nonce used for the request if protocol require use the same nonce also for the response.
         this.envelopeKey = envelopeKey;
-        this.requestNonce = validator.isUseTimestamp() ? null : requestNonce;
+        this.requestNonce = requestNonce;
         // Return decrypted data.
         return plaintext;
     }
