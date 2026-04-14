@@ -51,6 +51,8 @@ import java.util.Arrays;
  */
 public class PowerAuthClientActivation {
 
+    private static final int STATUS_BLOB_V3_BINARY_LENGTH = 32;
+
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
 
@@ -162,7 +164,7 @@ public class PowerAuthClientActivation {
      * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      */
     public ActivationStatusBlobInfo getStatusFromEncryptedBlob(byte[] cStatusBlob, byte[] challenge, byte[] nonce, SecretKey transportKey) throws InvalidKeyException, GenericCryptoException, CryptoProviderException {
-        if (cStatusBlob.length != 32) {
+        if (cStatusBlob.length != STATUS_BLOB_V3_BINARY_LENGTH) {
             throw new GenericCryptoException("Invalid status blob size");
         }
 

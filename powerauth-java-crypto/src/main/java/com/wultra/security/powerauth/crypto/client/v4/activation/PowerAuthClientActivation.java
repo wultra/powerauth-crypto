@@ -54,6 +54,8 @@ import java.util.Arrays;
  */
 public class PowerAuthClientActivation {
 
+    private static final int STATUS_BLOB_V4_BINARY_LENGTH = 48;
+
     private static final SignatureUtils SIGNATURE_UTILS = new SignatureUtils();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static PqcDsa pqcDsaMlL3;
@@ -213,7 +215,7 @@ public class PowerAuthClientActivation {
         if (statusBlob == null) {
             throw new GenericCryptoException("Status blob must not be null");
         }
-        if (statusBlob.length != 48) {
+        if (statusBlob.length != STATUS_BLOB_V4_BINARY_LENGTH) {
             throw new GenericCryptoException("Invalid status blob size: expected 48 bytes, got " + statusBlob.length);
         }
         // Prepare objects to read status info into
