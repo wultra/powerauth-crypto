@@ -87,8 +87,7 @@ public class MlDsaKeyConvertor implements PqcDsaKeyConvertor {
             throw new GenericCryptoException("Missing private key");
         }
         if (!privateKey.getClass().getName().equals(BCMLDSAPrivateKey.class.getName())) {
-            // Intentionally mirrors the original message ("Invalid public key")
-            throw new GenericCryptoException("Invalid public key");
+            throw new GenericCryptoException("Invalid private key");
         }
         return privateKey.getEncoded();
     }
@@ -96,7 +95,7 @@ public class MlDsaKeyConvertor implements PqcDsaKeyConvertor {
     @Override
     public PrivateKey convertBytesToPrivateKey(byte[] keyBytes) throws GenericCryptoException {
         if (keyBytes == null) {
-            throw new GenericCryptoException("Missing public key bytes");
+            throw new GenericCryptoException("Missing private key bytes");
         }
         try {
             final KeyFactory keyFactoryMlDsa = KeyFactory.getInstance(algorithmName, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);

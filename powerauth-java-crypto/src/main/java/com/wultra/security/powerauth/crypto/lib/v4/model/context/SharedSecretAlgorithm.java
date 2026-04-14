@@ -54,7 +54,7 @@ public enum SharedSecretAlgorithm {
     ML_L3,
 
     /**
-     * ML with level 3 (ML-KEM-1024 / ML-DSA-87), testing only.
+     * ML with level 5 (ML-KEM-1024 / ML-DSA-87), testing only.
      */
     ML_L5;
 
@@ -88,8 +88,8 @@ public enum SharedSecretAlgorithm {
      */
     public MLDSAParameterSpec getMlDsaParameterSpec() {
         return switch (this) {
-            case EC_P384_ML_L3 -> MLDSAParameterSpec.ml_dsa_65;
-            case EC_P384_ML_L5 -> MLDSAParameterSpec.ml_dsa_87;
+            case EC_P384_ML_L3, ML_L3 -> MLDSAParameterSpec.ml_dsa_65;
+            case EC_P384_ML_L5, ML_L5 -> MLDSAParameterSpec.ml_dsa_87;
             default -> null;
         };
     }
