@@ -83,7 +83,7 @@ PowerAuth authentication code is in principle multifactor. It uses factor keys a
 When using more than one factor key, the keys are added additively in the authentication algorithm, so that the factors can be validated individually. The resulting PowerAuth authentication code can be then represented in two different formats:
 
 1. For online validation, the PowerAuth authentication code is one Base64 string. The length depends on the number of factors involved in the calculation (32 or 64 bytes encoded in Base64).
-1. For offline validation purposes, the PowerAuth authentication code is a sequence of one to three numeric strings with configurable amount of digits, each sequence is separated by "-" character.
+1. For offline validation purposes, the PowerAuth authentication code is a sequence of one or two numeric strings with configurable amount of digits, each sequence is separated by "-" character.
 
 Both formats share the same core algorithm to calculate the authentication code components:
 
