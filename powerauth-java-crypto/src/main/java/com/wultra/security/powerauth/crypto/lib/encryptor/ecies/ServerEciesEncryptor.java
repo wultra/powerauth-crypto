@@ -30,6 +30,7 @@ import com.wultra.security.powerauth.crypto.lib.encryptor.model.v3.ServerEciesSe
 import com.wultra.security.powerauth.crypto.lib.generator.KeyGenerator;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.util.EciesUtils;
+import com.wultra.security.powerauth.crypto.lib.util.SideChannelUtils;
 
 import java.util.Arrays;
 import java.util.Base64;
@@ -257,7 +258,7 @@ public class ServerEciesEncryptor implements ServerEncryptor<EciesEncryptedReque
             // 3.2+
             for (int attempts = 0; attempts < 8; attempts++) {
                 byte[] responseNonce = keyGenerator.generateRandomBytes(16);
-                if (!Arrays.equals(responseNonce, requestNonce)) {
+                if (!SideChannelUtils.constantTimeAreEqual(responseNonce, requestNonce)) {
                     return responseNonce;
                 }
             }
