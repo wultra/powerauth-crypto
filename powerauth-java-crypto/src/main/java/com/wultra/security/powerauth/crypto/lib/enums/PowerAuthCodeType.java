@@ -33,16 +33,6 @@ public enum PowerAuthCodeType {
     POSSESSION("possession"),
 
     /**
-     * 1FA authentication code using knowledge factor key, value = "knowledge"
-     */
-    KNOWLEDGE("knowledge"),
-
-    /**
-     * 1FA authentication code using biometry factor key, value = "biometry"
-     */
-    BIOMETRY("biometry"),
-
-    /**
      * 2FA authentication code using possession and knowledge factor key, value = "possession_knowledge"
      */
     POSSESSION_KNOWLEDGE("possession_knowledge"),
@@ -50,12 +40,7 @@ public enum PowerAuthCodeType {
     /**
      * 2FA authentication code using possession and biometry factor key, value = "possession_biometry"
      */
-    POSSESSION_BIOMETRY("possession_biometry"),
-
-    /**
-     * 3FA authentication code using possession, knowledge and biometry factor key, value = "possession_knowledge_biometry"
-     */
-    POSSESSION_KNOWLEDGE_BIOMETRY("possession_knowledge_biometry");
+    POSSESSION_BIOMETRY("possession_biometry");
 
     private final String value;
 
