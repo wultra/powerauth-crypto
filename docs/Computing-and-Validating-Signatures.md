@@ -41,26 +41,18 @@ In case the data for offline signature is being normalized, then the following r
 
 ## Computing the Signature
 
-PowerAuth signature is in principle multi-factor. It uses all keys as defined in the [Key Derivation](./Key-derivation.md) chapter. The signature may include one, two or three factors, therefore achieving 1FA, 2FA or 3FA. In order to determine the type of the signature, following constants are used:
+PowerAuth signature is in principle multifactor. It uses all keys as defined in the [Key Derivation](./Key-derivation.md) chapter. The signature may include one or two factors, therefore achieving 1FA or 2FA. In order to determine the type of the signature, following constants are used:
 
 - **1FA** - only a single factor is used
 	- `possession` - Signature uses only possession related key `KEY_SIGNATURE_POSSESSION`.
-	- `knowledge` - Signature uses only knowledge related key `KEY_SIGNATURE_KNOWLEDGE`.
-	- `biometry` - Signature uses only biometry related key `KEY_SIGNATURE_BIOMETRY`.
 - **2FA** - possession and one another factor is used
 	- `possession_knowledge` - Signature uses two keys: a possession related key `KEY_SIGNATURE_POSSESSION` and then knowledge related key `KEY_SIGNATURE_KNOWLEDGE`.
 	- `possession_biometry` - Signature uses two keys: a possession related key `KEY_SIGNATURE_POSSESSION` and then biometry related key `KEY_SIGNATURE_BIOMETRY`.
-- **3FA** - all three factors are used
-	- `possession_knowledge_biometry` - Signature uses three keys: a possession related key `KEY_SIGNATURE_POSSESSION`, then knowledge related key `KEY_SIGNATURE_KNOWLEDGE`, and finally biometry related key `KEY_SIGNATURE_BIOMETRY`.
-
-<!-- begin box info -->
-While all values are possible to use, only the values `possession`, `possession_knowledge` and `possession_biometry` are used in any practical setup.
-<!-- end -->
 
 When using more than one factor key, the keys are added additively in the signature algorithm, so that the factors can be validated individually. The resulting PowerAuth signature can be then represented in two different formats:
 
-1. For online validation, the PowerAuth signature is one Base64 string. The length depends on the number of factors involved in the calculation (16, 32 or 48 bytes encoded in Base64).
-1. For offline validation purposes, the PowerAuth signature is a sequence of one to three numeric strings with 8 digits, each sequence is separated by "-" character.
+1. For online validation, the PowerAuth signature is one Base64 string. The length depends on the number of factors involved in the calculation (16 or 32 bytes encoded in Base64).
+1. For offline validation purposes, the PowerAuth signature is a sequence of one or two numeric strings with 8 digits, each sequence is separated by "-" character.
 
 Both formats share the same core algorithm to calculate the signature components:
 
