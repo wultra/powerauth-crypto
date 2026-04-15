@@ -588,7 +588,6 @@ The following authentication code types are supported:
 
 - `possession_knowledge`
 - `possession_biometry`
-- `possession_knowledge_biometry`
 
 The request body should contain data used for computing the authentication code.
 
