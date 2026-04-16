@@ -6,6 +6,7 @@ For updating to 2026.04, please follow these migration guides:
 
 - [PowerAuth Server - Migration from version 2.0.0 to version 2.1.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-2.1.0.md)
 - [Enrollment Server - Migration from version 2.0.0 to version 2.1.0](https://github.com/wultra/enrollment-server/blob/develop/docs/PowerAuth-Enrollment-Server-2.1.0.md)
+- [PowerAuth Push Server - Migration from version 2.0.0 to version 2.1.0](https://github.com/wultra/powerauth-push-server/blob/develop/docs/PowerAuth-Push-Server-2.1.0.md)
 
 
 ## Components for version 2026.04
