@@ -6,7 +6,6 @@ For updating to 2026.04, please follow these migration guides:
 
 - [PowerAuth Server - Migration from version 2.0.0 to version 2.1.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-2.1.0.md)
 - [Enrollment Server - Migration from version 2.0.0 to version 2.1.0](https://github.com/wultra/enrollment-server/blob/develop/docs/PowerAuth-Enrollment-Server-2.1.0.md)
-- [PowerAuth Cloud - Migration from version 2.0.0 to version 2.1.0](https://github.com/wultra/powerauth-cloud/blob/develop/docs/PowerAuth-Cloud-2.1.0.md)
 
 
 ## Components for version 2026.04
@@ -31,7 +30,7 @@ For updating to 2026.04, please follow these migration guides:
 | Component                   | Application Name            | Version | Description                                                                       |
 |-----------------------------|-----------------------------|---------|-----------------------------------------------------------------------------------|
 | PowerAuth Command Line Tool | `powerauth-java-cmd.jar`    | 2.0.0   | Command line tool for integration testing.                                        |
-| User Data Store             | `user-data-store.war`       | 1.5.0   | Server component which stores clients personal data securely.                     |
+| User Data Store             | `user-data-store.war`       | 1.5.0   | Server component which stores clients' personal data securely.                    |
 | Liveness Check Proxy        | `liveness-check-proxy.war`  | 1.2.0   | Server component which is used for biometric liveness check.                      |
 | Mobile Utility Server       | `mobile-utility-server.war` | 2.0.0   | Server component for dynamic SSL pinning, text localization, and other utilities. |
 | SSL Pinning Tool            | `ssl-pinning-tool.jar`      | 2.0.0   | A command line utility used to sign SSL certificates for dynamic SSL pinning.     |
@@ -55,7 +54,7 @@ For updating to 2026.04, please follow these migration guides:
 | Component                                 | Library Name                            | Version | Description                                                                                     |
 |-------------------------------------------|-----------------------------------------|---------|-------------------------------------------------------------------------------------------------|
 | PowerAuth RESTful Model                   | `powerauth-restful-model.jar`           | 2.1.0   | Model classes for request and response objects used in PowerAuth Standard RESTful API.          |
-| PowerAuth RESTful API Security for Spring | `powerauth-restful-security-spring.jar` | 2.1.0   | High-level integration libraries for RESTful API security, build for Spring MVC.                |
+| PowerAuth RESTful API Security for Spring | `powerauth-restful-security-spring.jar` | 2.1.0   | High-level integration libraries for RESTful API security, built for Spring MVC.                |
 | PowerAuth REST Client for Spring          | `powerauth-rest-client-spring.jar`      | 2.1.0   | REST service client for PowerAuth Server service.                                               |
 | PowerAuth Push Server RESTful Model       | `powerauth-push-model.jar`              | 2.1.0   | Model classes for request and response objects used in PowerAuth Push Server.                   |
 | PowerAuth Push Server RESTful Client      | `powerauth-push-client.jar`             | 2.1.0   | Client implementation that simplifies integration with PowerAuth Push Server service.           |
