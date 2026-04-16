@@ -1,9 +1,5 @@
 # PowerAuth 2026.04
 
-PowerAuth 2026.04 is a major release of the PowerAuth protocol stack.
-It provides high security resistant to known quantum attacks.
-
-
 ## Migration guides
 
 For updating to 2026.04, please follow these migration guides:
