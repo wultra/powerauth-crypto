@@ -215,8 +215,8 @@ public class PowerAuthClientActivation {
         if (statusBlob == null) {
             throw new GenericCryptoException("Status blob must not be null");
         }
-        if (statusBlob.length != STATUS_BLOB_V4_BINARY_LENGTH) {
-            throw new GenericCryptoException("Invalid status blob size: expected 48 bytes, got " + statusBlob.length);
+        if (statusBlob.length < STATUS_BLOB_V4_BINARY_LENGTH) {
+            throw new GenericCryptoException("Invalid status blob size");
         }
         // Prepare objects to read status info into
         final ActivationStatusBlobInfo statusInfo = new ActivationStatusBlobInfo();
