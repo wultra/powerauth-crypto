@@ -38,7 +38,7 @@ For updating to 2025.12, please follow these migration guides:
 | PowerAuth Command Line Tool | `powerauth-java-cmd.jar`    | 2.0.0   | Command line tool for integration testing.                                        |
 | User Data Store             | `user-data-store.war`       | 1.5.0   | Server component which stores clients personal data securely.                     |
 | Liveness Check Proxy        | `liveness-check-proxy.war`  | 1.2.0   | Server component which is used for biometric liveness check.                      |
-| Mobile Utility Server       | `mobile-utility-server.war` | 2.0.0   | Server component for dynamic SSL pinning, text localization, and other utilities. |
+| Mobile Utility Server       | `mobile-utility-server.war` | 1.11.0  | Server component for dynamic SSL pinning, text localization, and other utilities. |
 | SSL Pinning Tool            | `ssl-pinning-tool.jar`      | 2.0.0   | A command line utility used to sign SSL certificates for dynamic SSL pinning.     |
 
 
