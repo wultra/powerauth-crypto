@@ -20,6 +20,7 @@ package com.wultra.security.powerauth.crypto.lib.v4.hash;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.generator.HashBasedCounter;
+import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,7 +57,7 @@ class HashBasedCounterTest {
 
     @ParameterizedTest
     @MethodSource("jsonDataHashBasedCounterProvider")
-    void testHashBasedCounter(Map<String, String> vector) throws GenericCryptoException {
+    void testHashBasedCounter(Map<String, String> vector) throws GenericCryptoException, CryptoProviderException {
         final HashBasedCounter counter = new HashBasedCounter("4.0");
         byte[] ctrData = Base64.getDecoder().decode(vector.get("ctrData[0]"));
         for (int i = 0; i < 20; i++) {

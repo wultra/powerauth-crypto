@@ -75,7 +75,7 @@ public class HashBasedCounter implements Counter {
     }
 
     @Override
-    public byte[] next(byte[] ctrData) throws GenericCryptoException {
+    public byte[] next(byte[] ctrData) throws CryptoProviderException, GenericCryptoException {
         if (ctrData == null) {
             throw new GenericCryptoException("Missing input counter data");
         }
@@ -83,9 +83,6 @@ public class HashBasedCounter implements Counter {
         switch (version) {
             case "3.0", "3.1", "3.2", "3.3" -> {
                 final byte[] nextData = Hash.sha256(ctrData);
-                if (nextData == null) {
-                    throw new GenericCryptoException("Hash calculation failed");
-                }
                 nextCtrData = KEY_GENERATOR.convert32Bto16B(nextData);
             }
             case "4.0" -> nextCtrData = Sha3.hash256(ctrData);

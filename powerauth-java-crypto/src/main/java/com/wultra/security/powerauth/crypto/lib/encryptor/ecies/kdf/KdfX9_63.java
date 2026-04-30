@@ -16,6 +16,7 @@
  */
 package com.wultra.security.powerauth.crypto.lib.encryptor.ecies.kdf;
 
+import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.util.ByteUtils;
 import com.wultra.security.powerauth.crypto.lib.util.Hash;
@@ -36,9 +37,10 @@ public class KdfX9_63 {
      * @param sharedInfo Extra information used for derived key computation.
      * @param outputBytes Requested size of the key.
      * @return Derived key using the X9.63 KDF with SHA256 digest.
+     * @throws CryptoProviderException In case cryptography provider is incorrectly initialized.
      * @throws GenericCryptoException In case key derivation fails.
      */
-    public static byte[] derive(byte[] secret, byte[] sharedInfo, int outputBytes) throws GenericCryptoException {
+    public static byte[] derive(byte[] secret, byte[] sharedInfo, int outputBytes) throws CryptoProviderException, GenericCryptoException {
         if (secret == null) {
             throw new GenericCryptoException("Missing secret for KDF X9.63");
         }
@@ -57,12 +59,7 @@ public class KdfX9_63 {
             if (sharedInfo != null) {
                 System.arraycopy(sharedInfo, 0, round, secret.length + 4, sharedInfo.length);
             }
-            // Hash the value
             temp = Hash.sha256(round);
-            if (temp == null || temp.length == 0) {
-                result = new byte[0];
-                break;
-            }
             // Append working batch to result
             result = ByteUtils.concat(result, temp);
             ++i;
