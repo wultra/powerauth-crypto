@@ -16,8 +16,7 @@
  */
 package com.wultra.security.powerauth.crypto.lib.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -35,8 +34,6 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Hash {
 
-    private static final Logger logger = LoggerFactory.getLogger(Hash.class);
-
     /**
      * Compute hash digest for given data using SHA-256.
      * @param originalBytes Original bytes to be hashed.
@@ -52,13 +49,13 @@ public class Hash {
      * Compute SHA256 hash of provided bytes.
      * @param originalBytes Original bytes.
      * @return SHA256 hash of provided original bytes.
+     * @throws CryptoProviderException In case the hash algorithm does not exist.
      */
-    public static byte[] sha256(byte[] originalBytes) {
+    public static byte[] sha256(byte[] originalBytes) throws CryptoProviderException {
         try {
             return hash(originalBytes);
-        } catch (NoSuchAlgorithmException ex) {
-            logger.warn(ex.getMessage(), ex);
-            return null;
+        } catch (NoSuchAlgorithmException e) {
+            throw new CryptoProviderException("SHA-256 algorithm is not available", e);
         }
     }
 
@@ -66,8 +63,9 @@ public class Hash {
      * Compute SHA256 hash of provided string, that was transferred to data using UTF-8 charset.
      * @param string String to be hashed.
      * @return SHA256 hash of provided string.
+     * @throws CryptoProviderException In case the hash algorithm does not exist.
      */
-    public static byte[] sha256(String string) {
+    public static byte[] sha256(String string) throws CryptoProviderException {
         return sha256(string, StandardCharsets.UTF_8);
     }
 
@@ -76,8 +74,9 @@ public class Hash {
      * @param string Original string to be hashed.
      * @param charset Charset to be used to convert string to bytes.
      * @return SHA256 hash of provided string.
+     * @throws CryptoProviderException In case the hash algorithm does not exist.
      */
-    public static byte[] sha256(String string, Charset charset) {
+    public static byte[] sha256(String string, Charset charset) throws CryptoProviderException {
         byte[] originalBytes = string.getBytes(charset);
         return sha256(originalBytes);
     }

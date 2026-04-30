@@ -18,6 +18,7 @@ package com.wultra.security.powerauth.crypto.lib.util;
 
 import com.wultra.security.powerauth.crypto.lib.encryptor.ecies.exception.EciesException;
 import com.wultra.security.powerauth.crypto.lib.encryptor.model.EncryptorScope;
+import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -121,7 +122,11 @@ public final class EciesUtils {
         final byte[] applicationSecretBytes = applicationSecret.getBytes(StandardCharsets.UTF_8);
         if (scope == EncryptorScope.APPLICATION_SCOPE) {
             // Application scope
-            return Hash.sha256(applicationSecretBytes);
+            try {
+                return Hash.sha256(applicationSecretBytes);
+            } catch (CryptoProviderException e) {
+                throw new EciesException("SHA-256 algorithm is not available", e);
+            }
         } else {
             // Activation scope
             if (transportKey == null || transportKey.length != 16) {

@@ -39,8 +39,9 @@ public interface Counter {
      * Generate next counter data based on current counter data.
      * @param ctrData Current counter data.
      * @return Next counter data.
+     * @throws CryptoProviderException In case key cryptography provider is incorrectly initialized.
      * @throws GenericCryptoException In case next counter value could not be derived.
      */
-    byte[] next(byte[] ctrData) throws GenericCryptoException;
+    byte[] next(byte[] ctrData) throws CryptoProviderException, GenericCryptoException;
 
 }
