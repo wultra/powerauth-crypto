@@ -48,13 +48,7 @@ Keys are derived from an original secret using hierarchical string labels to gua
 The following method is used to derive a key from original secret value:
 
 ```java
-SecretKey derivedKey = KDF.derive(SecretKey sourceKey, String label);
-```
-
-If raw bytes are required:
-
-```java
-byte[] bytes = KDF.deriveBytes(byte[] secret, String label, int length);
+SecretKey derivedKey = KDF.derive(SecretKey key, String label, byte[] diversifier, int outLength);
 ```
 
 ### Password KDF
@@ -64,7 +58,7 @@ An algorithm for key stretching, converts a short password into long key by perf
 The following method will stretch the password using provided salt:
 
 ```java
-SecretKey expandedKey = KDF.derivePassword(byte[] password, byte[] salt);
+SecretKey expandedKey = KDF.derivePassword(String password, byte[] salt);
 ```
 
 ### ECDSA Signatures
@@ -107,6 +101,8 @@ boolean isValid = MLDSA.verify(PublicKey publicKey, byte[] message, byte[] signa
 ```
 
 ### KEM / ECDH Key Agreement
+
+KEM abstracts both ECDHE (P-384) and ML-KEM (ML-KEM-768 for `EC_P384_ML_L3`, ML-KEM-1024 for `EC_P384_ML_L5`). The concrete algorithm is selected based on the active security level.
 
 Generate KEM key pair:
 
@@ -211,7 +207,7 @@ A hierarchical KMAC-based derivation is used with string labels.
 To obtain a key derived from a master key using a provided label:
 
 ```java
-SecretKey derivedKey = KDF.derive(SecretKey masterKey, String label);
+SecretKey derivedKey = KDF.derive(SecretKey key, String label, byte[] diversifier, int outLength);
 ```
 
 Example:
@@ -336,6 +332,23 @@ Compute KMAC-256 signature for given message using provided symmetric key.
 ```java
 byte[] signature = Mac.kmac256(SecretKey key, byte[] message, int outLength, String custom);
 ```
+
+#### KMAC-256 Customization Strings
+
+The following customization strings (`custom` parameter) are used across the protocol:
+
+| Customization String | Used In                  | Description                                              |
+|----------------------|--------------------------|----------------------------------------------------------|
+| `PA4CODE`            | Authentication codes     | Authentication code component MAC calculation            |
+| `PA4DIGEST`          | MAC tokens               | MAC token header digest                                 |
+| `PA4DIGEST-DATA`     | Data digests             | Generic data digest MAC                                 |
+| `PA4SH2`             | End-to-end encryption    | `SHARED_INFO_2` calculation in E2EE                     |
+| `PA4MAC-QR`          | Activation (mobile SDK)  | Activation code QR signature MAC                        |
+| `PA4MAC-STATUS`      | Activation status        | Activation status blob MAC                              |
+| `PA4MAC-CTR`         | Authentication codes     | Counter data (`CTR_DATA`) hash MAC                      |
+| `PA4KDF`             | Key derivation           | Generic KMAC-based key derivation (`KDF.derive`)        |
+| `PA4PBKDF`           | Password key derivation  | Password-based key derivation (`KDF.derivePassword`)    |
+| `PA4MAC-AEAD`        | AEAD encryption          | AEAD authentication tag calculation                     |
 
 ### Hashing Functions
 

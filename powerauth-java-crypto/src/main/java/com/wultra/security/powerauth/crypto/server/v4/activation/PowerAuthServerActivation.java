@@ -202,7 +202,7 @@ public class PowerAuthServerActivation {
                 .put(statusBlobInfo.getFailedAttempts())     // 1 byte
                 .put(statusBlobInfo.getMaxFailedAttempts())  // 1 byte
                 .put(ctrLookAhead)                           // 1 byte
-                .put(ctrDataHash)                            // 16 bytes
+                .put(ctrDataHash)                            // 32 bytes
                 .array();
     }
 

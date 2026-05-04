@@ -100,13 +100,22 @@ This domain is used for protocol-support purposes, including:
 
 The protocol uses temporary shared secrets for end‑to‑end encryption.
 
-For each encrypted session, the client and server establish:
+For each encrypted session, the client and server establish a `KEY_TEMPORARY_SHARED_SECRET` using the following KDF label based on the selected algorithm:
 
 ``` java
-SecretKey KEY_TEMPORARY_SHARED_SECRET;
+SecretKey KEY_TEMPORARY_SHARED_SECRET = KDF.derive(SHARED_SECRET_MATERIAL, "shared-secret/EC_P384", null, 32);          // EC_P384
+SecretKey KEY_TEMPORARY_SHARED_SECRET = KDF.derive(SHARED_SECRET_MATERIAL, "shared-secret/EC_P384_ML_L3", null, 32);    // EC_P384_ML_L3
+SecretKey KEY_TEMPORARY_SHARED_SECRET = KDF.derive(SHARED_SECRET_MATERIAL, "shared-secret/EC_P384_ML_L5", null, 32);    // EC_P384_ML_L5
 ```
 
-This key is short‑lived and is derived via a dedicated shared‑secret exchange. It is then expanded into AEAD encryption keys for protecting request and response payloads. Temporary secrets are never persisted long‑term on the client.
+This key is short‑lived and is derived via a dedicated shared‑secret exchange. It is then expanded into AEAD encryption keys for protecting request and response payloads:
+
+``` java
+SecretKey KEY_ENC = KDF.derive(KEY_TEMPORARY_SHARED_SECRET, "aead/enc", keyContext, 32);
+SecretKey KEY_MAC = KDF.derive(KEY_TEMPORARY_SHARED_SECRET, "aead/mac", keyContext, 32);
+```
+
+Temporary secrets and their derived keys are never persisted long‑term on the client.
 
 ## Secure Vault
 
@@ -120,7 +129,7 @@ SecretKey KDK_VAULT = KDF.derive(KEY_ACTIVATION_SECRET, "vault");
 SecretKey KEK_DEVICE_PRIVATE = KDF.derive(KDK_VAULT, "vault/kek-device-private");
 ```
 
-The original device private key is stored encrypted using AEAD. The vault encryption key is never stored directly. It is always re‑derived from `KEY_ACTIVATION_SECRET` when needed.
+The original device private key is stored encrypted using AES-256-GCM. The vault encryption key is never stored directly. It is always re‑derived from `KEY_ACTIVATION_SECRET` when needed.
 
 Additional vault derivation keys exist for application‑specific secrets that are released only after successful two‑factor authentication:
 

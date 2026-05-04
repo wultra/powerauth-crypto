@@ -67,7 +67,12 @@ public enum CustomString {
     /**
      * Key derivation for MAC for activation status.
      */
-    PA4MAC_STATUS("PA4MAC-STATUS");
+    PA4MAC_STATUS("PA4MAC-STATUS"),
+
+    /**
+     * Key derivation for MAC for offline QR code signature.
+     */
+    PA4MAC_QR("PA4MAC-QR");
 
     private final String customString;
 

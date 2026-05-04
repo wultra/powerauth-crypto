@@ -31,6 +31,7 @@
 - [Dynamic Factor Keys](Dynamic-Factor-Keys.md)
 - [List of Used Algorithms](./List-of-Used-Algorithms.md)
 - [List of Used Keys](./List-of-Used-Keys.md)
+- [SDK Configuration](./SDK-Configuration.md)
 
 **Tutorials**
 

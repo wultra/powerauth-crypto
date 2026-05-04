@@ -85,7 +85,7 @@ Note that the activation commit step can be skipped in case activation is commit
 
 #### Process Description
 
-1. PowerAuth Mobile SDK displays `H_K_DEVICE_PUBLIC`, so that a user can visually verify the device public key correctness by comparing the `H_K_DEVICE_PUBLIC` value displayed in the Master Front-End Application. The fingerprint is calculated using SHA3-256 and includes algorithm identifier and all exchanged public keys (ECDSA and ML-DSA if applicable).
+1. PowerAuth Mobile SDK displays `H_K_DEVICE_PUBLIC`, so that a user can visually verify the device public key correctness by comparing the `H_K_DEVICE_PUBLIC` value displayed in the Master Front-End Application. See [Public Key Fingerprint Calculation](#public-key-fingerprint-calculation) below.
 
    <!-- begin box info -->
    Note: Client and server should allow checking the public key fingerprint before committing the activation. This is necessary so that user can verify the exchanged information in order to detect the MITM attack.
@@ -96,6 +96,67 @@ Note that the activation commit step can be skipped in case activation is commit
 1. PowerAuth Server sets activation to `ACTIVE` state (the activation still requires client confirmation).
 
 1. After activation becomes `ACTIVE`, PowerAuth Mobile SDK calls `/pa/v4/activation/confirm` (authenticated with `possession_knowledge` factors) to finalize local activation state, optionally configure the biometric factor, and clear `the pending_confirmation` flag on the server in the database.
+
+## Public Key Fingerprint Calculation
+
+The `H_K_DEVICE_PUBLIC` fingerprint is an 8-digit decimal number derived from the exchanged public keys. The calculation differs per algorithm suite.
+
+The following helper functions are used to normalize public keys:
+
+```java
+byte[] getNormalizedPublicKeyBytes(ECPublicKey publicKey) {
+    // Use coord X only, represented as big endian number
+    return publicKey.getW().getAffineX().toByteArray();
+}
+
+byte[] getNormalizedPublicKeyBytes(MLDSAPublicKey publicKey) {
+    // Assume that getEncoded() by default returns key in SPKI (x509) format
+    return publicKey.getEncoded();
+}
+```
+
+**EC_P384:**
+
+```java
+byte[] fingerprintBytes = ByteUtils.concat(
+    ByteUtils.encode("EC_P384"),                                // algorithm name encoded in UTF-8
+    getNormalizedPublicKeyBytes(KEY_DEVICE_ECDSA_P384_PUBLIC),  // P-384 device's public key
+    ByteUtils.encode(activationId),                             // Activation identifier
+    getNormalizedPublicKeyBytes(KEY_SERVER_ECDSA_P384_PUBLIC)   // P-384 server's public key
+);
+byte[] truncatedBytes = ByteUtils.truncate(Hash.sha3_256(fingerprintBytes), 4);
+int H_K_DEVICE_PUBLIC = (ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (int) Math.pow(10, 8);
+```
+
+**EC_P384_ML_L3:**
+
+```java
+byte[] fingerprintBytes = ByteUtils.concat(
+    ByteUtils.encode("EC_P384_ML_L3"),                          // algorithm name encoded in UTF-8
+    getNormalizedPublicKeyBytes(KEY_DEVICE_ECDSA_P384_PUBLIC),  // P-384 device's public key
+    getNormalizedPublicKeyBytes(KEY_DEVICE_MLDSA65_PUBLIC),     // ML-DSA device's public key
+    ByteUtils.encode(activationId),                             // Activation identifier
+    getNormalizedPublicKeyBytes(KEY_SERVER_ECDSA_P384_PUBLIC),  // P-384 server's public key
+    getNormalizedPublicKeyBytes(KEY_SERVER_MLDSA65_PUBLIC)      // ML-DSA server's public key
+);
+byte[] truncatedBytes = ByteUtils.truncate(Hash.sha3_256(fingerprintBytes), 4);
+int H_K_DEVICE_PUBLIC = (ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (int) Math.pow(10, 8);
+```
+
+**EC_P384_ML_L5:**
+
+```java
+byte[] fingerprintBytes = ByteUtils.concat(
+    ByteUtils.encode("EC_P384_ML_L5"),                          // algorithm name encoded in UTF-8
+    getNormalizedPublicKeyBytes(KEY_DEVICE_ECDSA_P384_PUBLIC),  // P-384 device's public key
+    getNormalizedPublicKeyBytes(KEY_DEVICE_MLDSA87_PUBLIC),     // ML-DSA device's public key
+    ByteUtils.encode(activationId),                             // Activation identifier
+    getNormalizedPublicKeyBytes(KEY_SERVER_ECDSA_P384_PUBLIC),  // P-384 server's public key
+    getNormalizedPublicKeyBytes(KEY_SERVER_MLDSA87_PUBLIC)      // ML-DSA server's public key
+);
+byte[] truncatedBytes = ByteUtils.truncate(Hash.sha3_256(fingerprintBytes), 4);
+int H_K_DEVICE_PUBLIC = (ByteUtils.getInt(truncatedBytes) & 0x7FFFFFFF) % (int) Math.pow(10, 8);
+```
 
 ## Related Topics
 
