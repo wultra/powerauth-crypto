@@ -207,7 +207,7 @@ A hierarchical KMAC-based derivation is used with string labels.
 To obtain a key derived from a master key using a provided label:
 
 ```java
-SecretKey derivedKey = KDF.derive(SecretKey key, String label, byte[] diversifier, int outLength);
+SecretKey derivedKey = KDF.derive(SecretKey masterKey, String label);
 ```
 
 Example:
