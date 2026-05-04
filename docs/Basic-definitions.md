@@ -48,7 +48,13 @@ Keys are derived from an original secret using hierarchical string labels to gua
 The following method is used to derive a key from original secret value:
 
 ```java
-SecretKey derivedKey = KDF.derive(SecretKey key, String label, byte[] diversifier, int outLength);
+SecretKey derivedKey = KDF.derive(SecretKey sourceKey, String label);
+```
+
+If raw bytes are required:
+
+```java
+byte[] bytes = KDF.deriveBytes(byte[] secret, String label, int length);
 ```
 
 ### Password KDF
