@@ -145,21 +145,71 @@ The interface internally uses `SharedSecretRequest`, `SharedSecretResponse`, and
 
 ### UKE (Unauthenticated Key Encapsulation)
 
-Primitive used for protecting factor-related keys (for example knowledge or biometry).
+On the mobile device, each factor key is encrypted with a key derived from factor data:
 
-UKE provides confidentiality without authentication and intentionally avoids authenticated encryption to prevent offline brute-force oracles on low-entropy secrets (such as PINs).
+| Factor key                           | Factor data          | KEK derivation                          |
+|--------------------------------------|----------------------|-----------------------------------------|
+| `KEY_AUTHENTICATION_CODE_POSSESSION` | device specific data | `SHA3_256(device-specific-data)`        |
+| `KEY_AUTHENTICATION_CODE_KNOWLEDGE`  | password, salt       | `KDF.derivePassword(password, salt)`    |
+| `KEY_AUTHENTICATION_CODE_BIOMETRY`   | random 32 bytes      | depends on platform <sup>1)</sup>       |
 
-Wrap key using provided KEK:
+> Note 1 - On Android, random bytes are encrypted with key, stored in KeyStore and protected with biometry.
+
+> Note 1 - On iOS, random bytes are stored to keychain as is and the record is protected with biometry.
+
+Each factor key is encrypted with an appropriate KEK using AES-256-CTR cipher with random IV.
+
+#### Constants
 
 ```java
-byte[] wrapped = UKE.wrap(SecretKey key, SecretKey kek);
+int IV_LENGTH = 16;
+int KEY_LENGTH = 32;
 ```
 
-Unwrap key using provided KEK:
+#### Wrap
+
+`byte[] UKE.wrap(SecretKey kek, SecretKey key)` — wraps a factor key with the provided KEK:
 
 ```java
-SecretKey key = UKE.unwrap(byte[] wrapped, SecretKey kek);
+byte[] iv = Generator.randomBytes(IV_LENGTH);
+byte[] keyBytes = KeyConversion.getBytes(key);
+if (keyBytes.length != KEY_LENGTH) {
+    throw new InvalidArgumentException();
+}
+byte[] encryptedKey = AES.encrypt(keyBytes, iv, kek, "AES/CTR/NoPadding");
+return ByteUtils.concat(iv, encryptedKey);
 ```
+
+#### Unwrap
+
+`SecretKey UKE.unwrap(SecretKey kek, byte[] wrappedKey)` — recovers a previously wrapped factor key:
+
+```java
+if (wrappedKey.length != IV_LENGTH + KEY_LENGTH) {
+    throw new InvalidArgumentException();
+}
+byte[] iv = ByteUtils.subarray(wrappedKey, 0, IV_LENGTH);
+byte[] encryptedKey = ByteUtils.subarray(wrappedKey, IV_LENGTH, KEY_LENGTH);
+byte[] keyBytes = AES.decrypt(encryptedKey, iv, kek, "AES/CTR/NoPadding");
+return KeyConversion.secretKeyFromBytes(keyBytes);
+```
+
+#### Rationale
+
+In this case we're using AES-CTR with random-IV for the encryption. We don't want to use any key wrapping scheme or authenticated encryption here, because this will reveal information about the key in offline. For example, if knowledge factor key is 4 digits long PIN and we encrypt the factor key with GCM, or AES-KW, then attacker can iterate over all 10^4 PINs and test whether decryption, or key unwrap succeed.
+
+#### Example with knowledge factor
+
+```java
+// This is example for KNOWLEDGE factor. Other factors differ only in the way how KEK is obtained.
+byte[] salt = Generator.randomBytes(32);
+SecretKey kek = KDF.derivePassword(password, salt);
+//
+byte[] C_KEY_AUTHENTICATION_CODE_KNOWLEDGE = UKE.wrap(kek, KEY_AUTHENTICATION_CODE_KNOWLEDGE);
+// Keep (salt, C_KEY_AUTHENTICATION_CODE_KNOWLEDGE) in persistent storage
+```
+
+In case that user changes the password, we must ensure that KEK is different.
 
 ### AEAD
 
