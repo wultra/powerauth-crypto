@@ -16,6 +16,7 @@
  */
 package com.wultra.security.powerauth.crypto.lib.totp;
 
+import com.wultra.security.powerauth.crypto.lib.config.PowerAuthConfiguration;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
@@ -281,7 +282,7 @@ public final class Totp {
     @SuppressWarnings("java:S2139") // NOSONAR We need to be sure that the exception is logged, better twice than never
     private static byte[] computeHash(final String algorithm, final byte[] keyBytes, final byte[] data) throws CryptoProviderException {
         try {
-            final Mac hmac = Mac.getInstance(algorithm);
+            final Mac hmac = Mac.getInstance(algorithm, PowerAuthConfiguration.CRYPTO_PROVIDER_NAME);
             final SecretKeySpec macKey = new SecretKeySpec(keyBytes, "RAW");
             hmac.init(macKey);
             return hmac.doFinal(data);
