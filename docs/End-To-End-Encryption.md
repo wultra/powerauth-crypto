@@ -276,12 +276,64 @@ For the response:
 
 ## Replay Protection
 
-Server validates every encrypted request:
+### Overview
 
-1. Timestamp must be within ±5 minutes of server time.
-2. `NONCE` must be unique for given `TEMPORARY_KEY_ID`.
+PowerAuth prevents replay attacks in end-to-end encryption and MAC token authentication by combining timestamp validation with unique value tracking.
 
-Duplicates are rejected and stored values expire automatically.
+Every encrypted request must include a `TIMESTAMP` (Unix timestamp in milliseconds). The server rejects requests with timestamps outside a ±5 minute window. Additionally, the server records each unique value after accepting a request and rejects duplicates.
+
+### `pa_unique_values` Table
+
+The server maintains a `pa_unique_values` table to track used unique values:
+
+| Column             | Type         | Description                                          |
+|--------------------|--------------|------------------------------------------------------|
+| `type`             | INT(11)      | Type of unique value (see below)                     |
+| `identifier`       | VARCHAR(37)  | Identifier scoped to the record type                 |
+| `unique_value`     | VARCHAR(255) | The unique value being tracked                       |
+| `timestamp_expire` | DATETIME     | Expiration timestamp for this record                 |
+
+#### Record Types
+
+| Type | Name                    | `identifier`       | `unique_value`       |
+|------|-------------------------|--------------------|----------------------|
+| `1`  | TOKEN                   | `TOKEN_ID`         | `NONCE`              |
+| `2`  | ECIES_APPLICATION_SCOPE | `APPLICATION_KEY`  | `KEY_EPH_PUB+NONCE`  |
+| `3`  | ECIES_ACTIVATION_SCOPE  | `ACTIVATION_ID`    | `KEY_EPH_PUB+NONCE`  |
+| `4`  | ECIES_WITH_TEMP_KEY     | `TEMPORARY_KEY_ID` | `KEY_EPH_PUB+NONCE`  |
+| `5`  | AEAD_V4                 | `TEMPORARY_KEY_ID` | `NONCE`              |
+
+The server runs a periodic cleanup job to remove records where `timestamp_expire` is less than the current timestamp.
+
+> Keep in mind that the expiration of the temporary key used in ECIES or AEAD encryption schemes must match the expiration of E2EE-related records in `pa_unique_values`. If the temporary key remains valid beyond the duration defined by the `EXPIRATION` constant, it may allow for replay attacks.
+
+### Validation for AEAD_V4
+
+Let `EXPIRATION = 5 minutes`, `IDENTIFIER = TEMPORARY_KEY_ID`, `CURRENT_TIMESTAMP = current server time`.
+
+1. Verify `TIMESTAMP` is present — reject if missing (required for V4).
+2. Verify `TIMESTAMP` is within `CURRENT_TIMESTAMP ± EXPIRATION` — reject if outside range.
+3. Look up a record with `type = 5`, `identifier = TEMPORARY_KEY_ID`, `unique_value = NONCE` in `pa_unique_values`.
+   - If record exists — reject (duplicate nonce).
+   - If no record — continue.
+4. Insert new record into `pa_unique_values` with `EXPIRATION` as TTL.
+5. Accept the request.
+
+### Validation for MAC Tokens
+
+Let `EXPIRATION = 5 minutes` (for protocol 3.2+), `EXTENDED_EXPIRATION = 120 minutes` (for protocol 3.0 and 3.1).
+
+1. Verify the token header is correctly calculated — reject if invalid.
+2. Verify `TIMESTAMP` is within the acceptable range:
+   - Protocol 3.0/3.1: within `CURRENT_TIMESTAMP ± EXTENDED_EXPIRATION`
+   - Protocol 3.2+: within `CURRENT_TIMESTAMP ± EXPIRATION`
+3. Look up a record with `type = 1`, `identifier = TOKEN_ID`, `unique_value = NONCE` in `pa_unique_values`.
+   - If record exists — reject (duplicate nonce).
+   - If no record — continue.
+4. Insert new record into `pa_unique_values` using `EXPIRATION` (or `EXTENDED_EXPIRATION` for older protocols) as TTL.
+5. Accept the request.
+
+### Client Validation
 
 Client must also validate the response timestamp and relies on AEAD authentication to ensure response freshness and integrity.
 

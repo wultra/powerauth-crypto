@@ -126,7 +126,7 @@ Counter explanation:
 32-byte hash of the hash-based counter is calculated like this:
 
 ```java
-byte[] CTR_DATA_HASH = Mac.kmac256(CTR_DATA, KEY_MAC_CTR_DATA, 32, "PA4MAC-CTR");
+byte[] CTR_DATA_HASH = Mac.kmac256(KEY_MAC_CTR_DATA, CTR_DATA, 32, "PA4MAC-CTR");
 ```
 
 The key for counter data is obtained as follows:

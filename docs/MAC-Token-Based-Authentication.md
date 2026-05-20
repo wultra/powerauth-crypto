@@ -42,7 +42,7 @@ The decrypted response data payload contains the following raw response format:
 }
 ```
 
-The `tokenId` value is in UUID level 4 format, and it uniquely identifies the token in the system and is sent with every request that requires MAC token-based authentication. The `token_secret` value is a random 16B value encoded as Base64. It is stored on the device and used as a secret key for computing the MAC later.
+The `tokenId` value is in UUID level 4 format, and it uniquely identifies the token in the system and is sent with every request that requires MAC token-based authentication. The `token_secret` value is a random 32B value encoded as Base64. It is stored on the device and used as a secret key for computing the MAC later.
 
 The client stores both `token_id` and `token_secret` in a suitable local storage (iOS Keychain, encrypted Shared Preferences).
 
@@ -55,7 +55,7 @@ The `token_digest` value is computed from the following input:
 - `nonce` – 16 bytes of random data
 - `timestamp` – Unix timestamp in milliseconds, converted to UTF-8 bytes from a string value
 - `version` – protocol version (for example `"4.0"`)
-- `token_secret` – 16 random bytes associated with the token
+- `token_secret` – 32 random bytes associated with the token
 
 The binary input for the MAC is constructed as:
 
