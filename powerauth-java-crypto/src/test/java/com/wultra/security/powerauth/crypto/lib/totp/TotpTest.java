@@ -17,6 +17,7 @@
 package com.wultra.security.powerauth.crypto.lib.totp;
 
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,6 +27,7 @@ import org.junit.jupiter.params.converter.TypedArgumentConverter;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.opentest4j.AssertionFailedError;
 
+import java.security.Security;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HexFormat;
@@ -38,6 +40,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Lubos Racansky, lubos.racansky@wultra.com
  */
 class TotpTest {
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     private static final int DIGITS_NUMBER = 8;
 
