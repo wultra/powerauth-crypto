@@ -17,8 +17,6 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
 import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
@@ -33,9 +31,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SharedSecretMlKem1024Test {
 
     private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new MlKemKeyConvertor();
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -88,7 +88,7 @@ public class SharedSecretMlKem1024Test {
         );
     }
 
-    private static Stream<Map<String, String>> jsonDataMlkem_1024_Provider() throws IOException {
+    private static Stream<Map<String, String>> jsonDataMlkem_1024_Provider() {
         InputStream stream = SharedSecretMlKem1024Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/MLKEM_1024_Test_Vectors.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("mlkem_test_vectors").stream();

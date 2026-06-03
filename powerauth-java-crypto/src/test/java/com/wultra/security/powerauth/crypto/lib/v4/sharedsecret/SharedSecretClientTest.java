@@ -17,8 +17,6 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.v4.dh.DhKem;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.SharedSecretAlgorithm;
@@ -30,17 +28,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.InputStream;
 import java.security.Security;
 import java.util.Base64;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SharedSecretClientTest {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
 
     static {
         Security.addProvider(new BouncyCastleProvider());

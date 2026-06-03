@@ -16,8 +16,6 @@
  */
 package com.wultra.security.powerauth.crypto.lib.v4.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wultra.security.powerauth.crypto.client.v4.activation.PowerAuthClientActivation;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.generator.IdentifierGenerator;
@@ -36,6 +34,9 @@ import org.bouncycastle.jcajce.interfaces.MLDSAPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -80,9 +81,9 @@ public class GenerateVectorDataTest {
 
         System.out.println("Test vectors will be generated in folder: " + testVectorFolder.getAbsolutePath());
 
-        // Create Object Mapper
-        objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper = JsonMapper.builder()
+                .enable(SerializationFeature.INDENT_OUTPUT)
+                .build();
     }
 
     /**

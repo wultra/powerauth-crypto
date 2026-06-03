@@ -16,8 +16,6 @@
  */
 package com.wultra.security.powerauth.crypto.encryption;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ClientEncryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.EncryptorFactory;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ServerEncryptor;
@@ -37,8 +35,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -61,7 +61,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 public class EciesEncryptorGeneratedTest {
 
     private static final EncryptorFactory ENCRYPTOR_FACTORY = new EncryptorFactory();
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
 
@@ -162,45 +162,45 @@ public class EciesEncryptorGeneratedTest {
         testVectors_Success(vector, "3.3", EncryptorId.ACTIVATION_SCOPE_GENERIC);
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider30() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider30() {
         return jsonDataE2ee_ApplicationScope_Provider("3.0");
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider31() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider31() {
         return jsonDataE2ee_ApplicationScope_Provider("3.1");
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider32() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider32() {
         return jsonDataE2ee_ApplicationScope_Provider("3.2");
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider33() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider33() {
         return jsonDataE2ee_ApplicationScope_Provider("3.3");
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider(String protocolVersion) throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider(String protocolVersion) {
         InputStream stream = E2eeEncryptorTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v3/encryptor/E2ee_Application_Scope_Test_Vectors_" + protocolVersion.replace(".", "") + ".json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("e2ee_test_vectors_application_scope").stream();
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider30() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider30() {
         return jsonDataE2ee_ActivationScope_Provider("3.0");
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider31() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider31() {
         return jsonDataE2ee_ActivationScope_Provider("3.1");
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider32() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider32() {
         return jsonDataE2ee_ActivationScope_Provider("3.2");
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider33() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider33() {
         return jsonDataE2ee_ActivationScope_Provider("3.3");
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider(String protocolVersion) throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ActivationScope_Provider(String protocolVersion) {
         InputStream stream = E2eeEncryptorTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v3/encryptor/E2ee_Activation_Scope_Test_Vectors_" + protocolVersion.replace(".", "") + ".json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("e2ee_test_vectors_activation_scope").stream();

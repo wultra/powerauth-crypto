@@ -17,13 +17,13 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.hash;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -38,15 +38,15 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
  */
 class Sha3Test {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
 
-    static Stream<Map<String, String>> jsonDataSha3_256Provider() throws IOException {
+    static Stream<Map<String, String>> jsonDataSha3_256Provider() {
         InputStream sha3_256Stream = Sha3Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/hash/SHA3_256_Test_Vectors.json");
         Map<String, List<Map<String, String>>> sha3_256Data = MAPPER.readValue(sha3_256Stream, new TypeReference<>() {});
         return sha3_256Data.get("sha3_256_test_vectors").stream();
     }
 
-    static Stream<Map<String, String>> jsonDataSha3_384Provider() throws IOException {
+    static Stream<Map<String, String>> jsonDataSha3_384Provider() {
         InputStream sha3_384Stream = Sha3Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/hash/SHA3_384_Test_Vectors.json");
         Map<String, List<Map<String, String>>> sha3_384Data = MAPPER.readValue(sha3_384Stream, new TypeReference<>() {});
         return sha3_384Data.get("sha3_384_test_vectors").stream();
