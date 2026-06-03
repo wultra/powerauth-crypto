@@ -17,16 +17,16 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.hash;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.generator.HashBasedCounter;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.Security;
 import java.util.Base64;
@@ -43,13 +43,13 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
  */
 class HashBasedCounterTest {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
 
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    static Stream<Map<String, String>> jsonDataHashBasedCounterProvider() throws IOException {
+    static Stream<Map<String, String>> jsonDataHashBasedCounterProvider() {
         InputStream sha3_256Stream = HashBasedCounterTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/hash/Hash_Based_Counter_Test_Vectors.json");
         Map<String, List<Map<String, String>>> sha3_256Data = MAPPER.readValue(sha3_256Stream, new TypeReference<>() {});
         return sha3_256Data.get("hash_based_counter_test_vectors").stream();

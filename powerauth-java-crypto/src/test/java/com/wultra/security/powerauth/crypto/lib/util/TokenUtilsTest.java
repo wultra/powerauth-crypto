@@ -16,8 +16,6 @@
  */
 package com.wultra.security.powerauth.crypto.lib.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.model.exception.CryptoProviderException;
 import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoException;
 import com.wultra.security.powerauth.crypto.lib.v4.sharedsecret.SharedSecretEcdheTest;
@@ -25,8 +23,10 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.Security;
 import java.util.Base64;
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TokenUtilsTest {
 
     private static final TokenUtils TOKEN_UTILS = new TokenUtils();
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -95,7 +95,7 @@ public class TokenUtilsTest {
         assertTrue(TOKEN_UTILS.validateTokenDigest(nonce, timestamp, "4.0", tokenSecret, tokenDigest));
     }
 
-    private static Stream<Map<String, String>> jsonDataTokenDigestV40_Provider() throws IOException {
+    private static Stream<Map<String, String>> jsonDataTokenDigestV40_Provider() {
         final InputStream stream = SharedSecretEcdheTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/token/Token_Digest_Test_Vectors.json");
         final Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("token_digest_test_vectors").stream();

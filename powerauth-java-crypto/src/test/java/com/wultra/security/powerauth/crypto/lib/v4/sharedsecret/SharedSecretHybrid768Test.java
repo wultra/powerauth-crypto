@@ -17,8 +17,6 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
@@ -36,11 +34,14 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.*;
+import java.security.PrivateKey;
+import java.security.Security;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -55,7 +56,7 @@ public class SharedSecretHybrid768Test {
 
     private static final KeyConvertor KEY_CONVERTOR_EC = new KeyConvertor();
     private static final PqcKemKeyConvertor KEY_CONVERTOR_PQC = new MlKemKeyConvertor();
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -94,7 +95,7 @@ public class SharedSecretHybrid768Test {
         );
     }
 
-    private static Stream<Map<String, String>> jsonDataEcdhe_P384_Mlkem_768_Provider() throws IOException {
+    private static Stream<Map<String, String>> jsonDataEcdhe_P384_Mlkem_768_Provider() {
         InputStream stream = SharedSecretHybrid768Test.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_MLKEM_768_Test_Vectors.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("ecdhe_mlkem_test_vectors").stream();

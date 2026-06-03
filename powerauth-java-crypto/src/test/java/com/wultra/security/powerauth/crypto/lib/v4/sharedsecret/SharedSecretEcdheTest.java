@@ -17,8 +17,6 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.sharedsecret;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.enums.EcCurve;
 import com.wultra.security.powerauth.crypto.lib.util.KeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
@@ -33,9 +31,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SharedSecretEcdheTest {
 
     private static final KeyConvertor KEY_CONVERTOR = new KeyConvertor();
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -87,7 +87,7 @@ public class SharedSecretEcdheTest {
         );
     }
 
-    private static Stream<Map<String, String>> jsonDataEcdhe_P384_Provider() throws IOException {
+    private static Stream<Map<String, String>> jsonDataEcdhe_P384_Provider() {
         InputStream stream = SharedSecretEcdheTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/sharedsecret/ECDHE_P384_Test_Vectors.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("ecdhe_test_vectors").stream();

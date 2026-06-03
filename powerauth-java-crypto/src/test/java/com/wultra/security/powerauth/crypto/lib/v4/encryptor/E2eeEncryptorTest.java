@@ -17,8 +17,6 @@
 
 package com.wultra.security.powerauth.crypto.lib.v4.encryptor;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ClientEncryptor;
 import com.wultra.security.powerauth.crypto.lib.encryptor.EncryptorFactory;
 import com.wultra.security.powerauth.crypto.lib.encryptor.ServerEncryptor;
@@ -28,8 +26,8 @@ import com.wultra.security.powerauth.crypto.lib.model.exception.GenericCryptoExc
 import com.wultra.security.powerauth.crypto.lib.v4.api.Kem;
 import com.wultra.security.powerauth.crypto.lib.v4.dh.DhKem;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.aead.ClientAeadEncryptor;
-import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.request.AeadEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.context.AeadSecrets;
+import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.request.AeadEncryptedRequest;
 import com.wultra.security.powerauth.crypto.lib.v4.encryptor.model.response.AeadEncryptedResponse;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKem;
 import com.wultra.security.powerauth.crypto.lib.v4.model.context.DefaultSharedSecretClientContext;
@@ -43,6 +41,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -56,7 +57,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test of AEAD encryptor for V4 end-to-end encryption scheme.
@@ -66,7 +68,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class E2eeEncryptorTest {
 
     private static final EncryptorFactory ENCRYPTOR_FACTORY = new EncryptorFactory();
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
     private static final KeyGenerator KEY_GENERATOR = new KeyGenerator();
 
     static {
@@ -135,7 +137,7 @@ public class E2eeEncryptorTest {
         assertArrayEquals(responseData.getBytes(StandardCharsets.UTF_8), decryptedResponse);
     }
 
-    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider() throws IOException {
+    private static Stream<Map<String, String>> jsonDataE2ee_ApplicationScope_Provider() {
         InputStream stream = E2eeEncryptorTest.class.getResourceAsStream("/com/wultra/security/powerauth/crypto/lib/v4/encryptor/E2ee_Application_Scope_Test_Vectors_40.json");
         Map<String, List<Map<String, String>>> testData = MAPPER.readValue(stream, new TypeReference<>() {});
         return testData.get("e2ee_test_vectors_application_scope").stream();
