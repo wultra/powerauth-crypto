@@ -89,6 +89,7 @@ class AeadRequestResponseValidatorTest {
     void requestWithMalformedBase64NonceIsRejected() {
         final AeadEncryptedRequest request = request("not-valid-base64!!!");
         assertFalse(validator.validateEncryptedRequest(request));
+        assertFalse(validator.validateEncryptedRequestWithoutData(request));
     }
 
     @Test
