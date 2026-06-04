@@ -82,6 +82,7 @@ class AeadRequestResponseValidatorTest {
         final String longNonce = Base64.getEncoder().encodeToString(new byte[48]);
         final AeadEncryptedRequest request = request(longNonce);
         assertFalse(validator.validateEncryptedRequest(request));
+        assertFalse(validator.validateEncryptedRequestWithoutData(request));
     }
 
     @Test
