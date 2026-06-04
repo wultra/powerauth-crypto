@@ -94,6 +94,7 @@ class AeadRequestResponseValidatorTest {
     void requestWithNullNonceIsRejected() {
         final AeadEncryptedRequest request = request(null);
         assertFalse(validator.validateEncryptedRequest(request));
+        assertFalse(validator.validateEncryptedRequestWithoutData(request));
     }
 
     @Test
