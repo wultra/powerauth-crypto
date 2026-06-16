@@ -1,6 +1,9 @@
 # Changelog
 
-## 2.2.0
+All notable changes to this project are documented in this file, following the
+[Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) format.
+
+## 2.2.0 (TBA)
 ### Added
 - Add documentation for UKE [(#930)](https://github.com/wultra/powerauth-crypto/issues/930)
 - Add request and response nonce validation [(#949)](https://github.com/wultra/powerauth-crypto/issues/949)
