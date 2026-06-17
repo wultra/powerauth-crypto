@@ -31,7 +31,7 @@ For updating to 2026.06, please follow these migration guides:
 | PowerAuth Command Line Tool | `powerauth-java-cmd.jar`    | 2.2.0   | Command line tool for integration testing.                                        |
 | User Data Store             | `user-data-store.war`       | 1.6.0   | Server component which stores clients' personal data securely.                    |
 | Liveness Check Proxy        | `liveness-check-proxy.war`  | 1.3.0   | Server component which is used for biometric liveness check.                      |
-| Mobile Utility Server       | `mobile-utility-server.war` | 2.1.0   | Server component for dynamic SSL pinning, text localization, and other utilities. |
+| Mobile Utility Server       | `mobile-utility-server.war` | 2.2.0   | Server component for dynamic SSL pinning, text localization, and other utilities. |
 | SSL Pinning Tool            | `ssl-pinning-tool.jar`      | 2.0.0   | A command line utility used to sign SSL certificates for dynamic SSL pinning.     |
 
 
@@ -57,11 +57,11 @@ For updating to 2026.06, please follow these migration guides:
 | PowerAuth REST Client for Spring          | `powerauth-rest-client-spring.jar`      | 2.2.0   | REST service client for PowerAuth Server service.                                               |
 | PowerAuth Push Server RESTful Model       | `powerauth-push-model.jar`              | 2.2.0   | Model classes for request and response objects used in PowerAuth Push Server.                   |
 | PowerAuth Push Server RESTful Client      | `powerauth-push-client.jar`             | 2.2.0   | Client implementation that simplifies integration with PowerAuth Push Server service.           |
-| PowerAuth Data Adapter RESTful Model      | `powerauth-data-adapter-model.jar`      | 2.1.0   | Model classes for request and response objects used in PowerAuth Data Adapter component.        |
-| PowerAuth Data Adapter Client             | `powerauth-data-adapter-client.jar`     | 2.1.0   | Client implementation that simplifies integration with PowerAuth Data Adapter custom component. |
-| PowerAuth Next Step RESTful Model         | `powerauth-nextstep-model.jar`          | 2.1.0   | Model classes for request and response objects used in PowerAuth Next Step service.             |
-| PowerAuth Next Step Client                | `powerauth-nextstep-client.jar`         | 2.1.0   | Client implementation that simplifies integration with PowerAuth Next Step service.             |
-| PowerAuth Mobile Token Model              | `mtoken-model.jar`                      | 2.1.0   | Model classes for request and response objects used in PowerAuth Mobile Token.                  |
+| PowerAuth Data Adapter RESTful Model      | `powerauth-data-adapter-model.jar`      | 2.2.0   | Model classes for request and response objects used in PowerAuth Data Adapter component.        |
+| PowerAuth Data Adapter Client             | `powerauth-data-adapter-client.jar`     | 2.2.0   | Client implementation that simplifies integration with PowerAuth Data Adapter custom component. |
+| PowerAuth Next Step RESTful Model         | `powerauth-nextstep-model.jar`          | 2.2.0   | Model classes for request and response objects used in PowerAuth Next Step service.             |
+| PowerAuth Next Step Client                | `powerauth-nextstep-client.jar`         | 2.2.0   | Client implementation that simplifies integration with PowerAuth Next Step service.             |
+| PowerAuth Mobile Token Model              | `mtoken-model.jar`                      | 2.2.0   | Model classes for request and response objects used in PowerAuth Mobile Token.                  |
 
 ### Technical Dependencies
 
