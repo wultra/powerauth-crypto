@@ -20,10 +20,8 @@ For updating to 2026.06, please follow these migration guides:
 | PowerAuth Admin        | `powerauth-admin.war`        | 2.2.0   | Administration console for PowerAuth Server.                |
 | PowerAuth Push Server  | `powerauth-push-server.war`  | 2.2.0   | Simple to deploy push server for APNS and FCM.              |
 | Enrollment Server      | `enrollment-server.war`      | 2.2.0   | Enrollment server for PowerAuth.                            |
-| PowerAuth Web Flow     | `powerauth-webflow.war`      | 2.1.0   | Central web authentication page.                            |
-| PowerAuth Next Step    | `powerauth-next-step.war`    | 2.1.0   | Authorization server used for PowerAuth Web Flow component. |
-| PowerAuth Data Adapter | `powerauth-data-adapter.war` | 2.1.0   | Customization component for PowerAuth Web Flow.             |
-| PowerAuth Tpp Engine   | `powerauth-tpp-engine.war`   | 2.1.0   | Third party provider registry and consent engine.           |
+| PowerAuth Next Step    | `powerauth-next-step.war`    | 2.2.0   | Authorization server used for PowerAuth Web Flow component. |
+| PowerAuth Data Adapter | `powerauth-data-adapter.war` | 2.2.0   | Customization component for PowerAuth Web Flow.             |
 
 
 ### Utilities
