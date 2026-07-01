@@ -73,7 +73,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <central.publishing.plugin.version>0.10.0</central.publishing.plugin.version>
+        <central.publishing.plugin.version>0.11.0</central.publishing.plugin.version>
 
         <bouncycastle.version>1.84</bouncycastle.version>
         <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
@@ -84,7 +84,7 @@
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
         <lombok.version>1.18.46</lombok.version>
         <slf4j.version>2.0.18</slf4j.version>
-        <junit.version>6.1.0</junit.version>
+        <junit.version>6.1.1</junit.version>
     </properties>
 
     <dependencyManagement>
