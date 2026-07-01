@@ -1,8 +1,8 @@
-# PowerAuth 2026.06
+# PowerAuth 2026.07
 
 ## Migration guides
 
-For updating to 2026.06, please follow these migration guides:
+For updating to 2026.07, please follow these migration guides:
 
 - [PowerAuth Server - Migration from version 2.1.0 to version 2.2.0](https://github.com/wultra/powerauth-server/blob/develop/docs/PowerAuth-Server-2.2.0.md)
 - [Enrollment Server - Migration from version 2.1.0 to version 2.2.0](https://github.com/wultra/enrollment-server/blob/develop/docs/PowerAuth-Enrollment-Server-2.2.0.md)
@@ -41,7 +41,6 @@ For updating to 2026.06, please follow these migration guides:
 |--------------------|---------|---------------------------------------------|
 | iOS                | 2.0.0   | A client library for iOS.                   |
 | watchOS            | 2.0.0   | A limited library for watchOS.              |
-| iOS App Extensions | 2.0.0   | A limited library for iOS App Extensions.   |
 | Android            | 2.0.0   | A client library for Android.               |
 | React Native       | 5.0.0   | React Native wrapper library for PowerAuth. |
 | Cordova            | 5.0.0   | Cordova wrapper library for PowerAuth.      |
