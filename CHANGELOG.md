@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.2.0] - 2026-07-01
+
 ### Added
 - Add documentation for UKE [(#930)](https://github.com/wultra/powerauth-crypto/issues/930)
 - Add request and response nonce validation [(#949)](https://github.com/wultra/powerauth-crypto/issues/949)
@@ -17,5 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Use BC provider for TOTP instead of default JCA [(#934)](https://github.com/wultra/powerauth-crypto/issues/934)
+- Register Lombok annotation processor to fix compilation [(#936)](https://github.com/wultra/powerauth-crypto/issues/936)
 
-[unreleased]: https://github.com/wultra/powerauth-crypto/compare/2.1.0...HEAD
+[unreleased]: https://github.com/wultra/powerauth-crypto/compare/2.2.0...HEAD
+[2.2.0]: https://github.com/wultra/powerauth-crypto/compare/2.1.0...2.2.0
