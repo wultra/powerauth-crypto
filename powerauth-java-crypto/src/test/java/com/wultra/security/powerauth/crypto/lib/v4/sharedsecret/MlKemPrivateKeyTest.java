@@ -21,10 +21,14 @@ import com.wultra.security.powerauth.crypto.lib.util.ByteUtils;
 import com.wultra.security.powerauth.crypto.lib.v4.api.PqcKemKeyConvertor;
 import com.wultra.security.powerauth.crypto.lib.v4.ml.MlKemKeyConvertor;
 import org.bouncycastle.crypto.SecretWithEncapsulation;
+import org.bouncycastle.crypto.kems.MLKEMExtractor;
+import org.bouncycastle.crypto.kems.MLKEMGenerator;
+import org.bouncycastle.crypto.params.MLKEMParameters;
+import org.bouncycastle.crypto.params.MLKEMPrivateKeyParameters;
+import org.bouncycastle.crypto.params.MLKEMPublicKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.mlkem.BCMLKEMPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.pqc.crypto.mlkem.*;
 import org.junit.jupiter.api.Test;
 
 import java.security.SecureRandom;
