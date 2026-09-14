@@ -128,7 +128,7 @@ public class InvalidPointTest {
         final GenericCryptoException exception = assertThrows(GenericCryptoException.class, () ->
                         keyConvertor.convertBytesToPublicKey(EcCurve.P384, Base64.getDecoder().decode("Pes+/6wnmrjwVa2L9v2wqUDBYMCtq0qvQ7JIZ6+nZe6fsT+vr85+rUPunAIaK3tRAuIkIROUwYEvj/TlcemQ5Q==")));
 
-        assertEquals("Invalid point encoding 0x3D", exception.getMessage());
+        assertEquals("Invalid point encoding type: 0x3D", exception.getMessage());
     }
 
     /**
