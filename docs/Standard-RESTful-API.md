@@ -656,11 +656,11 @@ Authenticated request using standard PowerAuth authentication using `POSSESSION_
 
 ##### Authentication and Encryption Parameters
 
-| Request parameter    | Value                                  |
-|----------------------|----------------------------------------|
-| Method               | `POST`                                 |
-| Authentication uriId | `/pa/password/change`                  |
-| Encryption           | `activation, sh1=/pa/password/change"` |
+| Request parameter    | Value                                   |
+|----------------------|-----------------------------------------|
+| Method               | `POST`                                  |
+| Authentication uriId | `/pa/password/change`                   |
+| Encryption           | `activation, sh1="/pa/password/change"` |
 
 ##### Authorization Header
 
@@ -754,9 +754,11 @@ Authenticated request using standard PowerAuth authentication using `POSSESSION`
 X-PowerAuth-Authorization: PowerAuth ...
 ```
 
-#### Request
+##### Body
 
-This endpoint does not use a request body.
+```json
+{}
+```
 
 #### Response 200
 
