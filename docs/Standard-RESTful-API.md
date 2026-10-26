@@ -393,6 +393,12 @@ Get the detail of the authenticated activation. The request is authenticated usi
 | Method            | `POST`                                    |
 | Encryption        | `activation, sh1="/pa/generic/activation"` |
 
+##### Encryption Headers
+
+```
+X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+```
+
 ##### Authorization Header
 
 ```
@@ -1139,7 +1145,7 @@ Get the server status and the list of supported cryptographic algorithms. The re
 
 ##### Body
 
-The optional `applicationKey` is used for filtering the algorithms supported for the given application:
+The optional `applicationKey` is required to obtain `supportedAlgorithms`. When it is omitted, `supportedAlgorithms` is `null` and the call must not be used for capability discovery:
 
 ```json
 {
@@ -1192,6 +1198,12 @@ The request is not authenticated, it is protected by the standard PowerAuth end-
 |-------------------|-------|
 | Method            | `POST` |
 | Encryption        | `application, sh1="/pa/generic/application"` |
+
+##### Encryption Headers
+
+```
+X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ=="
+```
 
 ##### Body
 
@@ -1255,6 +1267,12 @@ The request is not authenticated, it is protected by the standard PowerAuth end-
 | Method            | `POST` |
 | Encryption        | `activation, sh1="/pa/generic/activation"` |
 
+##### Encryption Headers
+
+```
+X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+```
+
 ##### Body
 
 The encrypted payload carries no data. The body has the following format:
@@ -1316,6 +1334,12 @@ Get OpenID Connect style claims of the user who owns the activation. The request
 |-------------------|-------|
 | Method            | `POST` |
 | Encryption        | `activation, sh1="/pa/generic/activation"` |
+
+##### Encryption Headers
+
+```
+X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+```
 
 ##### Body
 
