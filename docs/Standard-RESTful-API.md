@@ -490,7 +490,7 @@ An actual JSON request body after the encryption:
 ```
 
 <!-- begin box warning -->
-When renaming an activation, the PowerAuth authentication code must be calculated from the final encrypted data ("encrypt-then-authenticate").
+When renaming an activation, the PowerAuth authentication code must be calculated from the plaintext request before encryption ("sign-then-encrypt").
 <!-- end -->
 
 #### Response 200
@@ -1171,7 +1171,7 @@ The optional `applicationKey` is required to obtain `supportedAlgorithms`. When 
 }
 ```
 
-The `application` values are present only if the server provides the build information.
+If build properties are unavailable, the `application` object is still returned with `name` and `version` set to `"UNKNOWN"`.
 <!-- end -->
 
 ## Configuration API
