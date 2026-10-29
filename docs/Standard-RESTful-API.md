@@ -13,6 +13,8 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 - [`/pa/v4/activation/status`](#activation-status) - Query for an activation status.
 - [`/pa/v4/activation/confirm`](#activation-confirm) - Confirm activation (requires authentication).
 - [`/pa/v4/activation/remove`](#activation-remove) - Remove an activation (requires authentication).
+- [`/pa/v4/activation/detail`](#activation-detail) - Get an activation detail (requires token authentication and encryption).
+- [`/pa/v4/activation/rename`](#activation-rename) - Rename an activation (requires authentication and encryption).
 - [`/pa/v4/token/create`](#create-token) - Create a token (requires authentication and encryption).
 - [`/pa/v4/token/remove`](#remove-token) - Remove a token (requires authentication).
 - [`/pa/v4/vault/unlock`](#vault-unlock) - Get a key to unlock secure vault (requires authentication and encryption).
@@ -23,6 +25,10 @@ The following endpoints are published in PowerAuth Standard RESTful API (protoco
 - [`/pa/v4/upgrade/start`](#upgrade-start) - Start a protocol upgrade (requires authentication and encryption).
 - [`/pa/v4/upgrade/confirm`](#upgrade-confirm) - Finishes a protocol upgrade (requires authentication).
 - [`/pa/v4/keystore/create`](#create-new-temporary-key) - Create a new temporary key pair for end-to-end encryption.
+- [`/pa/v4/status`](#server-status) - Get the server status and supported algorithms.
+- [`/pa/v4/config/application`](#application-configuration) - Get application scoped configuration (requires encryption).
+- [`/pa/v4/config/activation`](#activation-configuration) - Get activation scoped configuration (requires encryption).
+- [`/pa/v4/user/info`](#user-info) - Get user info claims (requires encryption).
 <!-- end -->
 
 ## Security Features
@@ -114,6 +120,7 @@ PowerAuth Server decrypts both levels of encryption and returns the following da
     - `ctrData` - Initial value for hash-based counter.
 - Response values encrypted with level 1 encryption
     - `customAttributes` - Structure for application-specific data.
+    - `userInfo` - Optional user info claims provided by the server application, if available.
 
 After receiving the response, PowerAuth Client decrypts both layers of response data and continues with the activation process. You can check the documentation for an [Activation](./Activation.md) for more details.
 
@@ -201,6 +208,9 @@ The JSON response after level 1 decryption unwraps to:
   "customAttributes": {
     "any-key": "any-value"
   },
+  "userInfo": {
+    "sub": "..."
+  },
   "activationData": {
     "encryptedData" : "S3bqj2xq60Td3cYJ1x8dEjdw+6v5k74QZGNNBFunuC...",
     "timestamp" : 1769422877150
@@ -254,12 +264,15 @@ Activation ID and encryption context are provided via standard PowerAuth request
   "status": "OK",
   "responseObject": {
     "activationStatus": "19gyYaW5ZhdGl...",
+    "timestampBlockExpire": 1769425681453,
     "customObject": {
       "_comment": "Any object data, such as timestamp, service status info, etc."
     }
   }
 }
 ```
+
+The optional `timestampBlockExpire` contains the expiration of a temporary block in milliseconds since Unix epoch, or `null` when the activation is not temporarily blocked.
 <!-- end -->
 
 <!-- begin api POST /pa/v4/activation/confirm -->
@@ -317,7 +330,7 @@ The `enableBiometry` flag is optional. If set to true, the server enables the de
 
 Remove an activation with given ID, set the activation status to `REMOVED`. Activation can be removed only after successful verification of the signature.
 
-PowerAuth Client sends an authenticated request using an activation ID. Authentication is carried around using the standard PowerAuth authentication code with at least two factors (2FA).
+PowerAuth Client sends an authenticated request using an activation ID. Authentication is carried around using the standard PowerAuth authentication code with at least two factors (2FA). A deployment may explicitly allow the `POSSESSION` 1FA authentication as well.
 
 <!-- begin remove -->
 | Request parameter | Value                      |
@@ -354,6 +367,149 @@ Any, the value is ignored but must match the authorization header.
   "status": "OK",
   "responseObject": {
     "activationId": "3c816946-2df7-4804-989c-31a87aa494bc"
+  }
+}
+```
+<!-- end -->
+
+<!-- begin api POST /pa/v4/activation/detail -->
+### Activation Detail
+
+Get the detail of the authenticated activation. The request is authenticated using a [PowerAuth token](./MAC-Token-Based-Authentication.md) created by the `possession_knowledge` or `possession_biometry` factors. The response is encrypted using the standard PowerAuth end-to-end encryption.
+
+<!-- begin remove -->
+| Request parameter | Value                      |
+|-------------------|----------------------------|
+| Method            | `POST`                     |
+| Resource URI      | `/pa/v4/activation/detail` |
+<!-- end -->
+
+#### Request
+
+##### Encryption Parameters
+
+| Request parameter | Value                                     |
+|-------------------|-------------------------------------------|
+| Method            | `POST`                                    |
+| Encryption        | `activation, sh1="/pa/generic/activation"` |
+
+##### Encryption Headers
+
+```
+X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+```
+
+##### Authorization Header
+
+```
+X-PowerAuth-Token: PowerAuth token_id="...", ...
+```
+
+##### Body
+
+The request is encrypted, the encrypted payload carries no data. The body has the following format:
+
+```json
+{
+  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
+  "encryptedData" : "...",
+  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
+  "timestamp" : 1769425681453
+}
+```
+
+#### Response 200
+
+```json
+{
+  "encryptedData": "...",
+  "timestamp": 1769425681453
+}
+```
+
+The JSON object after the decryption:
+
+```json
+{
+  "status": "OK",
+  "responseObject": {
+    "activationId": "3c816946-2df7-4804-989c-31a87aa494bc",
+    "activationName": "My iPhone"
+  }
+}
+```
+<!-- end -->
+
+<!-- begin api POST /pa/v4/activation/rename -->
+### Activation Rename
+
+Change the name of the authenticated activation. The request is authenticated using standard PowerAuth authentication with `POSSESSION_KNOWLEDGE` or `POSSESSION_BIOMETRY` factors and is encrypted using the standard PowerAuth end-to-end encryption.
+
+<!-- begin remove -->
+| Request parameter | Value                      |
+|-------------------|----------------------------|
+| Method            | `POST`                     |
+| Resource URI      | `/pa/v4/activation/rename` |
+<!-- end -->
+
+#### Request
+
+##### Authentication and Encryption Parameters
+
+| Request parameter    | Value                                     |
+|----------------------|-------------------------------------------|
+| Method               | `POST`                                    |
+| Authentication uriId | `/pa/activation/rename`                   |
+| Encryption           | `activation, sh1="/pa/generic/activation"` |
+
+##### Authorization Header
+
+```
+X-PowerAuth-Authorization: PowerAuth ...
+```
+
+##### Body
+
+The JSON request object before the encryption:
+
+```json
+{
+  "activationName": "My new iPhone"
+}
+```
+
+An actual JSON request body after the encryption:
+
+```json
+{
+  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
+  "encryptedData" : "...",
+  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
+  "timestamp" : 1769425681453
+}
+```
+
+<!-- begin box warning -->
+When renaming an activation, the PowerAuth authentication code must be calculated from the plaintext request before encryption ("sign-then-encrypt").
+<!-- end -->
+
+#### Response 200
+
+```json
+{
+  "encryptedData": "...",
+  "timestamp": 1769425681453
+}
+```
+
+The JSON object after the decryption:
+
+```json
+{
+  "status": "OK",
+  "responseObject": {
+    "activationId": "3c816946-2df7-4804-989c-31a87aa494bc",
+    "activationName": "My new iPhone"
   }
 }
 ```
@@ -586,6 +742,7 @@ Validate a PowerAuth signature in the `X-PowerAuth-Authorization` HTTP header. T
 
 The following authentication code types are supported:
 
+- `possession`
 - `possession_knowledge`
 - `possession_biometry`
 
@@ -637,8 +794,8 @@ The JSON request body can contain any valid JSON data:
 {
   "status": "ERROR",
   "responseObject": {
-    "code": "POWERAUTH_AUTH_FAIL",
-    "message": "Authentication failed"
+    "code": "ERR_AUTHENTICATION",
+    "message": "POWER_AUTH_CODE_INVALID"
   }
 }
 ```
@@ -698,12 +855,13 @@ Enable the dynamic biometry factor.
 
 Authenticated request using standard PowerAuth authentication using `POSSESSION_KNOWLEDGE` 2FA authentication.
 
-##### Authentication Parameters
+##### Authentication and Encryption Parameters
 
-| Request parameter    | Value              |
-|----------------------|--------------------|
-| Method               | `POST`             |
-| Authentication uriId | `/pa/biometry/add` |
+| Request parameter    | Value                                |
+|----------------------|--------------------------------------|
+| Method               | `POST`                               |
+| Authentication uriId | `/pa/biometry/add`                   |
+| Encryption           | `activation, sh1="/pa/biometry/add"` |
 
 ##### Authorization Header
 
@@ -756,9 +914,7 @@ X-PowerAuth-Authorization: PowerAuth ...
 
 ##### Body
 
-```json
-{}
-```
+Any, the value is ignored but must match the authorization header.
 
 #### Response 200
 
@@ -787,11 +943,11 @@ Start a process to upgrade from protocol version 3, to version 4. The request is
 
 ##### Authentication and Encryption Parameters
 
-| Request parameter    | Value                            |
-|----------------------|----------------------------------|
-| Method               | `POST`                           |
-| Authentication uriId | `/pa/upgrade/start`              |
-| Encryption           | `application, sh1="/pa/upgrade"` |
+| Request parameter    | Value                                  |
+|----------------------|----------------------------------------|
+| Method               | `POST`                                 |
+| Authentication uriId | `/pa/upgrade/start`                    |
+| Encryption           | `application, sh1="/pa/upgrade/start"` |
 
 ##### Encryption Header
 
@@ -876,9 +1032,7 @@ X-PowerAuth-Authorization: PowerAuth ...
 
 ##### Body
 
-```json
-{}
-```
+Any, the value is ignored but must match the authorization header.
 
 #### Response 200
 
@@ -971,4 +1125,257 @@ The issued public key can be related to either application or activation scope, 
 - Application scope: Private key is the application-specific master server private key `KEY_MASTER_ECDSA_P384_PRIVATE` (alternatively `KEY_MASTER_MLDSA65_PRIVATE` / `KEY_MASTER_MLDSA87_PRIVATE` for ML-DSA algorithms).
 - Activation scope: Private key is the activation-specific server private key `KEY_SERVER_PRIVATE`.
 
+<!-- end -->
+
+## Server Information API
+
+<!-- begin api POST /pa/v4/status -->
+### Server Status
+
+Get the server status and the list of supported cryptographic algorithms. The request is not authenticated and not encrypted.
+
+<!-- begin remove -->
+| Request parameter | Value           |
+|-------------------|-----------------|
+| Method            | `POST`          |
+| Resource URI      | `/pa/v4/status` |
+<!-- end -->
+
+#### Request
+
+##### Body
+
+The optional `applicationKey` is required to obtain `supportedAlgorithms`. When it is omitted, `supportedAlgorithms` is `null` and the call must not be used for capability discovery:
+
+```json
+{
+  "requestObject": {
+    "applicationKey": "UNfS0VZX3JhbmRvbQ=="
+  }
+}
+```
+
+#### Response 200
+
+```json
+{
+  "status": "OK",
+  "responseObject": {
+    "serverTime": 1769425681453,
+    "supportedAlgorithms": ["EC_P384_ML_L5"],
+    "application": {
+      "name": "powerauth-restful-server",
+      "version": "2.3.0"
+    }
+  }
+}
+```
+
+If build properties are unavailable, the `application` object is still returned with `name` and `version` set to `"UNKNOWN"`.
+<!-- end -->
+
+## Configuration API
+
+<!-- begin api POST /pa/v4/config/application -->
+### Application Configuration
+
+Get configuration items visible in the application scope, shared by all activations.
+
+<!-- begin remove -->
+| Request parameter | Value        |
+|-------------------|--------------|
+| Method            | `POST`       |
+| Resource URI      | `/pa/v4/config/application` |
+<!-- end -->
+
+#### Request
+
+The request is not authenticated, it is protected by the standard PowerAuth end-to-end encryption only.
+
+##### Encryption Parameters
+
+| Request parameter | Value |
+|-------------------|-------|
+| Method            | `POST` |
+| Encryption        | `application, sh1="/pa/generic/application"` |
+
+##### Encryption Headers
+
+```
+X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ=="
+```
+
+##### Body
+
+The encrypted payload carries no data. The body has the following format:
+
+```json
+{
+  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
+  "encryptedData" : "...",
+  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
+  "timestamp" : 1769425681453
+}
+```
+
+#### Response 200
+
+```json
+{
+  "encryptedData": "...",
+  "timestamp": 1769425681453
+}
+```
+
+The JSON object after the decryption:
+
+```json
+{
+  "config": [
+    {
+      "key": "exampleKey",
+      "value": "exampleValue",
+      "scope": "APPLICATION"
+    }
+  ]
+}
+```
+
+The `value` can be a scalar or a nested object. The `scope` is either `APPLICATION` or `ACTIVATION`.
+<!-- end -->
+
+<!-- begin api POST /pa/v4/config/activation -->
+### Activation Configuration
+
+Get configuration items visible in the activation scope. The response may contain items of both scopes. The activation must be valid.
+
+<!-- begin remove -->
+| Request parameter | Value        |
+|-------------------|--------------|
+| Method            | `POST`       |
+| Resource URI      | `/pa/v4/config/activation` |
+<!-- end -->
+
+#### Request
+
+The request is not authenticated, it is protected by the standard PowerAuth end-to-end encryption only.
+
+##### Encryption Parameters
+
+| Request parameter | Value |
+|-------------------|-------|
+| Method            | `POST` |
+| Encryption        | `activation, sh1="/pa/generic/activation"` |
+
+##### Encryption Headers
+
+```
+X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+```
+
+##### Body
+
+The encrypted payload carries no data. The body has the following format:
+
+```json
+{
+  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
+  "encryptedData" : "...",
+  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
+  "timestamp" : 1769425681453
+}
+```
+
+#### Response 200
+
+```json
+{
+  "encryptedData": "...",
+  "timestamp": 1769425681453
+}
+```
+
+The JSON object after the decryption:
+
+```json
+{
+  "config": [
+    {
+      "key": "exampleKey",
+      "value": "exampleValue",
+      "scope": "ACTIVATION"
+    }
+  ]
+}
+```
+
+The `value` can be a scalar or a nested object. The `scope` is either `APPLICATION` or `ACTIVATION`.
+<!-- end -->
+
+## User Info API
+
+<!-- begin api POST /pa/v4/user/info -->
+### User Info
+
+Get OpenID Connect style claims of the user who owns the activation. The request is not signed, it is protected by the standard PowerAuth end-to-end encryption in the activation scope only. The activation must be valid.
+
+<!-- begin remove -->
+| Request parameter | Value              |
+|-------------------|--------------------|
+| Method            | `POST`             |
+| Resource URI      | `/pa/v4/user/info` |
+<!-- end -->
+
+#### Request
+
+##### Encryption Parameters
+
+| Request parameter | Value |
+|-------------------|-------|
+| Method            | `POST` |
+| Encryption        | `activation, sh1="/pa/generic/activation"` |
+
+##### Encryption Headers
+
+```
+X-PowerAuth-Encryption: PowerAuth version="4.0", application_key="UNfS0VZX3JhbmRvbQ==", activation_id="c564e700-7e86-4a87-b6c8-a5a0cc89683f"
+```
+
+##### Body
+
+The JSON request object before the encryption is empty (no claims filtering is supported):
+
+```json
+{}
+```
+
+An actual JSON request body after the encryption:
+
+```json
+{
+  "temporaryKeyId" : "5c283065-ce1e-4c81-a3e2-dc058eadd94b",
+  "encryptedData" : "...",
+  "nonce" : "RDBNaXa1pTmUqR764aUOIrgTjV4Fw0iF",
+  "timestamp" : 1769425681453
+}
+```
+
+#### Response 200
+
+```json
+{
+  "encryptedData": "...",
+  "timestamp": 1769425681453
+}
+```
+
+The JSON object after the decryption contains the user claims provided by the server application, for example:
+
+```json
+{
+  "sub": "123456",
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
+```
 <!-- end -->
